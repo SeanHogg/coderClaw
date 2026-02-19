@@ -2,7 +2,7 @@
 set -euo pipefail
 
 INSTALL_URL="${CODERCLAW_INSTALL_URL:-https://coderclaw.ai/install.sh}"
-DEFAULT_PACKAGE="openclaw"
+DEFAULT_PACKAGE="coderclaw"
 PACKAGE_NAME="${CODERCLAW_INSTALL_PACKAGE:-$DEFAULT_PACKAGE}"
 
 echo "==> Pre-flight: ensure git absent"
