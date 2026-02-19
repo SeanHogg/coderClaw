@@ -1,3 +1,10 @@
+import {
+  codeAnalysisTool,
+  projectKnowledgeTool,
+  orchestrateTool,
+  workflowStatusTool,
+  gitHistoryTool,
+} from "../coderclaw/tools/index.js";
 import type { OpenClawConfig } from "../config/config.js";
 import { resolvePluginTools } from "../plugins/tools.js";
 import type { GatewayMessageChannel } from "../utils/message-channel.js";
@@ -158,6 +165,11 @@ export function createOpenClawTools(options?: {
     ...(webSearchTool ? [webSearchTool] : []),
     ...(webFetchTool ? [webFetchTool] : []),
     ...(imageTool ? [imageTool] : []),
+    codeAnalysisTool,
+    projectKnowledgeTool,
+    orchestrateTool,
+    workflowStatusTool,
+    gitHistoryTool,
   ];
 
   const pluginTools = resolvePluginTools({
