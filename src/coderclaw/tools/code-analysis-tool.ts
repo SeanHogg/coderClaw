@@ -38,7 +38,7 @@ export const codeAnalysisTool: AgentTool<typeof CodeAnalysisSchema, string> = {
     "Analyze code structure, dependencies, and semantic relationships in a project. Returns AST information, dependency graphs, and code maps.",
   parameters: CodeAnalysisSchema,
   async execute(_toolCallId: string, params: CodeAnalysisParams) {
-    const { projectRoot, filePatterns, _includeTests } = params;
+    const { projectRoot, filePatterns, includeTests: _includeTests } = params;
 
     try {
       // Load project context if available
