@@ -12,18 +12,18 @@ x-i18n:
   workflow: 15
 ---
 
-# OpenClaw 🦞
+# CoderClaw 🦞
 
 <p align="center">
     <img
-        src="/assets/openclaw-logo-text-dark.png"
-        alt="OpenClaw"
+        src="/assets/coderclaw-logo-text-dark.png"
+        alt="CoderClaw"
         width="500"
         class="dark:hidden"
     />
     <img
-        src="/assets/openclaw-logo-text.png"
-        alt="OpenClaw"
+        src="/assets/coderclaw-logo-text.png"
+        alt="CoderClaw"
         width="500"
         class="hidden dark:block"
     />

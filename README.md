@@ -1,4 +1,4 @@
-# 🦞 CoderClaw — Personal AI Assistant
+# 🦞 CoderClaw — AI-Powered Coding Assistant
 
 <p align="center">
     <picture>
@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <strong>EXFOLIATE! EXFOLIATE!</strong>
+  <strong>CODE. DEBUG. DEPLOY.</strong>
 </p>
 
 <p align="center">
@@ -519,16 +519,6 @@ Use these when you’re past the onboarding flow and want the deeper reference.
 ## Email hooks (Gmail)
 
 - [docs.coderclaw.ai/gmail-pubsub](https://docs.coderclaw.ai/automation/gmail-pubsub)
-
-## Molty
-
-CoderClaw was built for **Molty**, a space lobster AI assistant. 🦞
-by Peter Steinberger and the community.
-
-- [coderclaw.ai](https://coderclaw.ai)
-- [soul.md](https://soul.md)
-- [steipete.me](https://steipete.me)
-- [@openclaw](https://x.com/openclaw)
 
 ## Community
 

@@ -1,7 +1,7 @@
 {
-  "name": "openclaw",
+  "name": "coderclaw",
   "version": "2026.2.18",
-  "description": "Distributed AI runtime with secure orchestration - Built on OpenClaw's multi-channel gateway",
+  "description": "Distributed AI Coding assistant runtime with secure orchestration - Built on OpenClaw's multi-channel gateway",
   "keywords": ["ai", "distributed", "runtime", "orchestration", "coderclaw", "gateway", "multi-agent", "rbac", "security"],
   "homepage": "https://github.com/SeanHogg/coderClaw#readme",
   "bugs": {
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/SeanHogg/coderClaw.git"
   },
   "bin": {
-    "openclaw": "openclaw.mjs"
+    "coderclaw": "coderclaw.mjs"
   },
   "directories": {
     "doc": "docs",
@@ -23,7 +23,8 @@
   "files": [
     "CHANGELOG.md",
     "LICENSE",
-    "openclaw.mjs",
+    "assets/coderclaw-logo.jpg",
+    "coderclaw.mjs",
     "README-header.png",
     "README.md",
     "assets/",
@@ -44,7 +45,7 @@
       "types": "./dist/plugin-sdk/account-id.d.ts",
       "default": "./dist/plugin-sdk/account-id.js"
     },
-    "./cli-entry": "./openclaw.mjs"
+    "./cli-entry": "./coderclaw.mjs"
   },
   "scripts": {
     "android:assemble": "cd apps/android && ./gradlew :app:assembleDebug",

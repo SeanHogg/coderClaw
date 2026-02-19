@@ -1,5 +1,5 @@
 ---
-summary: "CoderClaw is a distributed AI runtime built on OpenClaw's multi-channel gateway architecture."
+summary: "CoderClaw is an AI-powered coding assistant with multi-channel integrations."
 read_when:
   - Introducing CoderClaw to newcomers
 title: "CoderClaw"
@@ -25,8 +25,8 @@ title: "CoderClaw"
 > _"EXFOLIATE! EXFOLIATE!"_ — A space lobster, probably
 
 <p align="center">
-  <strong>Distributed AI runtime with secure orchestration across WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
-  Built on <a href="https://github.com/openclaw/openclaw">OpenClaw</a>'s proven gateway architecture with Phase 2 enhancements.
+  <strong>AI-powered coding assistant with multi-channel integrations for WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
+  Get coding help, code reviews, and development assistance from anywhere. Plugins add Mattermost and more platforms.
 </p>
 
 <Columns>
