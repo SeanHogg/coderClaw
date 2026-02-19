@@ -201,6 +201,19 @@ const coreEntries: CoreCliEntry[] = [
       mod.registerBrowserCli(program);
     },
   },
+  {
+    commands: [
+      {
+        name: "coderclaw",
+        description: "Developer-first multi-agent AI system for code workflows",
+        hasSubcommands: true,
+      },
+    ],
+    register: async ({ program }) => {
+      const mod = await import("../../commands/coderclaw.js");
+      program.addCommand(mod.createCoderClawCommand());
+    },
+  },
 ];
 
 function collectCoreCliCommandNames(predicate?: (command: CoreCliCommandDescriptor) => boolean) {
