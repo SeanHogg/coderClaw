@@ -40,7 +40,7 @@ export async function onboardCommand(opts: OnboardOptions, runtime: RuntimeEnv =
     runtime.error(
       [
         "Non-interactive onboarding requires explicit risk acknowledgement.",
-        "Read: https://docs.openclaw.ai/security",
+        "Read: https://docs.coderclaw.ai/security",
         `Re-run with: ${formatCliCommand("openclaw onboard --non-interactive --accept-risk ...")}`,
       ].join("\n"),
     );
@@ -59,10 +59,10 @@ export async function onboardCommand(opts: OnboardOptions, runtime: RuntimeEnv =
   if (process.platform === "win32") {
     runtime.log(
       [
-        "Windows detected — OpenClaw runs great on WSL2!",
+        "Windows detected — CoderClaw runs great on WSL2!",
         "Native Windows might be trickier.",
         "Quick setup: wsl --install (one command, one reboot)",
-        "Guide: https://docs.openclaw.ai/windows",
+        "Guide: https://docs.coderclaw.ai/windows",
       ].join("\n"),
     );
   }
