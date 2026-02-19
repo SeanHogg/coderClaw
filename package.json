@@ -1,20 +1,20 @@
 {
-  "name": "openclaw",
+  "name": "coderclaw",
   "version": "2026.2.18",
-  "description": "Multi-channel AI gateway with extensible messaging integrations",
+  "description": "AI-powered coding assistant with multi-channel messaging integrations",
   "keywords": [],
-  "homepage": "https://github.com/openclaw/openclaw#readme",
+  "homepage": "https://github.com/SeanHogg/coderClaw#readme",
   "bugs": {
-    "url": "https://github.com/openclaw/openclaw/issues"
+    "url": "https://github.com/SeanHogg/coderClaw/issues"
   },
   "license": "MIT",
   "author": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openclaw/openclaw.git"
+    "url": "git+https://github.com/SeanHogg/coderClaw.git"
   },
   "bin": {
-    "openclaw": "openclaw.mjs"
+    "coderclaw": "coderclaw.mjs"
   },
   "directories": {
     "doc": "docs",
@@ -23,7 +23,7 @@
   "files": [
     "CHANGELOG.md",
     "LICENSE",
-    "openclaw.mjs",
+    "coderclaw.mjs",
     "README-header.png",
     "README.md",
     "assets/",
@@ -44,7 +44,7 @@
       "types": "./dist/plugin-sdk/account-id.d.ts",
       "default": "./dist/plugin-sdk/account-id.js"
     },
-    "./cli-entry": "./openclaw.mjs"
+    "./cli-entry": "./coderclaw.mjs"
   },
   "scripts": {
     "android:assemble": "cd apps/android && ./gradlew :app:assembleDebug",

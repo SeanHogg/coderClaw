@@ -1,0 +1,113 @@
+name: npm Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+concurrency:
+  group: npm-release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Build and test before publishing
+  build-and-test:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Node environment
+        uses: ./.github/actions/setup-node-env
+        with:
+          install-bun: "false"
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test
+
+      - name: Check package
+        run: pnpm release:check
+
+  # Publish to npm
+  publish:
+    needs: build-and-test
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    if: github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Node environment
+        uses: ./.github/actions/setup-node-env
+        with:
+          install-bun: "false"
+
+      - name: Download dist artifact (if available)
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: dist-build
+          path: dist/
+
+      - name: Build if no dist artifact
+        if: failure()
+        run: pnpm build
+
+      - name: Configure npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+          npm config set scope @${{ github.repository_owner }}
+          npm config list
+
+      - name: Check if this is a new version
+        id: version-check
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "package-version=$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
+          
+          # Check if version already exists on npm
+          if npm view coderclaw@$PACKAGE_VERSION >/dev/null 2>&1; then
+            echo "version-exists=true" >> "$GITHUB_OUTPUT"
+            echo "Version $PACKAGE_VERSION already exists on npm"
+          else
+            echo "version-exists=false" >> "$GITHUB_OUTPUT"
+            echo "Version $PACKAGE_VERSION is new"
+          fi
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm
+        if: steps.version-check.outputs.version-exists == 'false'
+        run: npm publish --access public
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') || contains(github.ref_name, 'rc') }}
+
+      - name: Update npm latest tag (main branch only)
+        if: github.ref == 'refs/heads/main' && steps.version-check.outputs.version-exists == 'false'
+        run: npm dist-tag add coderclaw@$(node -p "require('./package.json').version") latest
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
