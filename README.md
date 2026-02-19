@@ -1,4 +1,4 @@
-# 🦞 CoderClaw — AI-Powered Coding Assistant
+# 🦞 CoderClaw — Developer-First Multi-Agent AI System
 
 <p align="center">
     <picture>
@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <strong>CODE. DEBUG. DEPLOY.</strong>
+  <strong>CREATE. REVIEW. TEST. DEBUG. REFACTOR. UNDERSTAND.</strong>
 </p>
 
 <p align="center">
@@ -18,24 +18,136 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
-**CoderClaw** is a _distributed AI runtime with secure orchestration_ you run on your own devices.
+**CoderClaw** is a developer-first, multi-agent AI system for code creation, review, testing, debugging, refactoring, and deep codebase understanding. It operates as an **orchestration engine inside real developer workflows**.
 
-Built on top of OpenClaw's proven gateway architecture, CoderClaw adds **Phase 2 capabilities**:
-- **Transport Abstraction Layer**: Protocol-agnostic runtime for local or remote task execution
+## 🎯 Core Mission
+
+An AI assistant that deeply understands your codebase and coordinates specialized agents to handle the complete software development lifecycle.
+
+### Key Capabilities
+
+**🧠 Deep Knowledge & Context Engine**
+- **AST Parsing**: Extract semantic information from TypeScript/JavaScript code
+- **Semantic Code Maps**: Track functions, classes, interfaces, dependencies
+- **Dependency Graphs**: Understand file relationships and impact radius
+- **Cross-File References**: Track imports, exports, and usage patterns
+- **Git History Awareness**: Analyze evolution, blame, diffs, and change patterns
+- **Persistent Context**: Maintain `.coderClaw/` directory with project knowledge
+
+**🤖 Multi-Agent Orchestration**
+- **Dynamic Agent Spawning**: Create specialized agents on-demand
+- **Task Lifecycle Management**: Track status, dependencies, progress
+- **Iterative Refinement**: Generate → Test → Debug → Re-run loops
+- **Result Aggregation**: Combine outputs from multiple agents
+- **Deterministic Execution**: Formal state machine with audit trails
+
+**👨‍💻 Developer-Centric Agent Roles**
+- **Code Creator**: Implements features and generates code
+- **Code Reviewer**: Reviews for quality, security, performance
+- **Test Generator**: Creates comprehensive test suites
+- **Bug Analyzer**: Diagnoses and fixes bugs systematically
+- **Refactor Agent**: Improves structure while preserving behavior
+- **Documentation Agent**: Creates clear, helpful documentation
+- **Architecture Advisor**: Provides high-level design guidance
+
+**🔌 Extensible & Pluggable**
+- Define custom agent roles via `.coderClaw/agents/`
+- Community-extensible agent libraries
+- Project-specific skills in `.coderClaw/skills/`
+- Long-lived memory in `.coderClaw/memory/`
+
+### Distributed Runtime
+
+Built on OpenClaw's proven gateway architecture with **Phase 2 enhancements**:
+- **Transport Abstraction Layer**: Protocol-agnostic local or remote execution
 - **Distributed Task Lifecycle**: Formal state machine with complete audit trails
-- **Identity & Security Model**: RBAC, device trust, and granular policy enforcement
+- **Identity & Security Model**: RBAC, device trust, granular policy enforcement
 - **Enhanced Orchestrator**: Team-ready collaboration with deterministic execution
 
-It answers you on the channels you already use (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat), plus extension channels like BlueBubbles, Matrix, Zalo, and Zalo Personal. It can speak and listen on macOS/iOS/Android, and can render a live Canvas you control.
+It connects to the channels you already use (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat), plus extension channels like BlueBubbles, Matrix, Zalo, and Zalo Personal. It can speak and listen on macOS/iOS/Android, and can render a live Canvas you control.
 
-If you want a secure, distributed AI assistant that's ready for team collaboration and CI/CD integration, this is it.
+If you want an AI assistant that understands code deeply and orchestrates multi-agent workflows, this is it.
 
-[Website](https://coderclaw.ai) · [Docs](https://docs.coderclaw.ai) · [Vision](VISION.md) · [DeepWiki](https://deepwiki.com/openclaw/openclaw) · [Getting Started](https://docs.coderclaw.ai/start/getting-started) · [Updating](https://docs.coderclaw.ai/install/updating) · [Showcase](https://docs.coderclaw.ai/start/showcase) · [FAQ](https://docs.coderclaw.ai/start/faq) · [Wizard](https://docs.coderclaw.ai/start/wizard) · [Nix](https://github.com/openclaw/nix-openclaw) · [Docker](https://docs.coderclaw.ai/install/docker) · [Discord](https://discord.gg/clawd)
+[Website](https://coderclaw.ai) · [Docs](https://docs.coderclaw.ai) · [Vision](VISION.md) · [Multi-Agent System](docs/coderclaw.md) · [Examples](examples/coderclaw) · [Getting Started](https://docs.coderclaw.ai/start/getting-started) · [Updating](https://docs.coderclaw.ai/install/updating) · [Showcase](https://docs.coderclaw.ai/start/showcase) · [FAQ](https://docs.coderclaw.ai/start/faq) · [Discord](https://discord.gg/clawd)
 
-Preferred setup: run the onboarding wizard (`openclaw onboard`) in your terminal.
-The wizard guides you step by step through setting up the gateway, workspace, channels, and skills. The CLI wizard is the recommended path and works on **macOS, Linux, and Windows (via WSL2; strongly recommended)**.
-Works with npm, pnpm, or bun.
-New install? Start here: [Getting started](https://docs.coderclaw.ai/start/getting-started)
+## 🚀 Quick Start
+
+### Installation
+
+Runtime: **Node ≥22**.
+
+```bash
+npm install -g openclaw@latest
+# or: pnpm add -g openclaw@latest
+
+openclaw onboard --install-daemon
+```
+
+The wizard installs the Gateway daemon (launchd/systemd user service) so it stays running.
+
+### Initialize a CoderClaw Project
+
+```bash
+# Navigate to your project directory
+cd my-project
+
+# Initialize coderClaw context
+openclaw coderclaw init
+
+# This creates .coderClaw/ with:
+#   - context.yaml (project metadata)
+#   - architecture.md (design docs)
+#   - rules.yaml (coding standards)
+#   - agents/ (custom agent roles)
+#   - skills/ (project-specific skills)
+#   - memory/ (knowledge base)
+```
+
+### Run Multi-Agent Workflows
+
+```bash
+# Start the gateway
+openclaw gateway --port 18789 --verbose
+
+# Talk to the assistant
+openclaw agent --message "Analyze the codebase structure" --thinking high
+
+# Orchestrate multi-agent workflow
+openclaw agent --message "Create a user authentication feature with tests and review" --thinking high
+```
+
+### Access CoderClaw from Messaging Channels
+
+Send messages to your connected channels (WhatsApp, Telegram, Slack, Discord, etc.):
+
+```
+@coderclaw analyze the dependency graph for src/api/
+
+@coderclaw create a refactoring plan for the authentication module
+
+@coderclaw review the latest changes for security issues
+```
+
+Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run `openclaw doctor`).
+
+## 🏗️ Project Structure
+
+When you initialize a coderClaw project, it creates a `.coderClaw/` directory:
+
+```
+.coderClaw/
+├── context.yaml          # Project metadata, languages, frameworks, dependencies
+├── architecture.md       # Architectural documentation and design patterns
+├── rules.yaml           # Coding standards, testing requirements, git conventions
+├── agents/              # Custom agent role definitions (community-extensible)
+│   └── custom-agent.yaml
+├── skills/              # Project-specific skills
+│   └── project-skill.ts
+└── memory/              # Persistent project knowledge and semantic indices
+    └── semantic-index.db
+```
+
+This persistent context enables deep codebase understanding and intelligent agent coordination.
 
 **Subscriptions (OAuth):**
 
