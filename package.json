@@ -1,14 +1,14 @@
 {
   "name": "coderclaw",
   "version": "2026.2.18",
-  "description": "AI-powered coding assistant with multi-channel messaging integrations",
-  "keywords": [],
+  "description": "Distributed AI Coding assistant runtime with secure orchestration - Built on OpenClaw's multi-channel gateway",
+  "keywords": ["ai", "distributed", "runtime", "orchestration", "coderclaw", "gateway", "multi-agent", "rbac", "security"],
   "homepage": "https://github.com/SeanHogg/coderClaw#readme",
   "bugs": {
     "url": "https://github.com/SeanHogg/coderClaw/issues"
   },
   "license": "MIT",
-  "author": "",
+  "author": "Sean Hogg",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SeanHogg/coderClaw.git"

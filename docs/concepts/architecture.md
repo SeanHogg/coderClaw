@@ -1,5 +1,5 @@
 ---
-summary: "WebSocket gateway architecture, components, and client flows"
+summary: "WebSocket gateway architecture, components, and client flows (CoderClaw Phase 2 enhanced)"
 read_when:
   - Working on gateway protocol, clients, or transports
 title: "Gateway Architecture"
@@ -7,12 +7,15 @@ title: "Gateway Architecture"
 
 # Gateway architecture
 
-Last updated: 2026-01-22
+Last updated: 2026-02-19
 
 ## Overview
 
+CoderClaw extends [OpenClaw](https://github.com/openclaw/openclaw)'s WebSocket gateway with **Phase 2 distributed runtime capabilities**:
+
 - A single long‑lived **Gateway** owns all messaging surfaces (WhatsApp via
   Baileys, Telegram via grammY, Slack, Discord, Signal, iMessage, WebChat).
+- **Phase 2 Runtime Layer** adds transport abstraction, distributed task lifecycle, and security controls.
 - Control-plane clients (macOS app, CLI, web UI, automations) connect to the
   Gateway over **WebSocket** on the configured bind host (default
   `127.0.0.1:18789`).
@@ -32,6 +35,29 @@ Last updated: 2026-01-22
 - Exposes a typed WS API (requests, responses, server‑push events).
 - Validates inbound frames against JSON Schema.
 - Emits events like `agent`, `chat`, `presence`, `health`, `heartbeat`, `cron`.
+- **Phase 2**: Integrates distributed task engine and security service.
+
+### Phase 2 Runtime Components
+
+**Transport Abstraction Layer**:
+- Protocol-agnostic interface for local/remote task execution
+- Pluggable adapters (Local, HTTP, WebSocket, gRPC)
+- Runtime status monitoring and discovery
+
+**Distributed Task Engine**:
+- Formal state machine (PENDING → PLANNING → RUNNING → COMPLETED/FAILED/CANCELLED)
+- Globally unique task IDs with persistence
+- Complete audit trail and resumability
+- Task relationships and progress tracking
+
+**Security Service**:
+- Multi-provider authentication (OIDC, GitHub, Google, Local)
+- Device trust levels (trusted, verified, untrusted)
+- Role-based access control (RBAC) with built-in roles
+- Granular permissions at session, agent, skill, and repo levels
+- Comprehensive audit logging
+
+For details, see [Phase 2 Documentation](/phase2).
 
 ### Clients (mac app / CLI / web admin)
 

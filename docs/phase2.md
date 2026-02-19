@@ -1,10 +1,12 @@
 # Phase 2: Distributed AI Runtime & Secure Control Mesh
 
-coderClaw Phase 2 introduces a networked, distributed AI node architecture with secure remote orchestration capabilities while maintaining deterministic execution and security boundaries.
+CoderClaw Phase 2 introduces a networked, distributed AI node architecture with secure remote orchestration capabilities while maintaining deterministic execution and security boundaries.
+
+> **Foundation**: CoderClaw is built on [OpenClaw](https://github.com/openclaw/openclaw)'s proven multi-channel gateway architecture. Phase 2 adds enterprise-ready features for distributed execution, security, and team collaboration.
 
 ## Overview
 
-Phase 2 transforms coderClaw from a local-only development runtime into a distributed system that can:
+Phase 2 transforms CoderClaw from a local-only development runtime into a distributed system that can:
 
 - Execute tasks locally or remotely
 - Manage distributed task lifecycles
@@ -297,7 +299,7 @@ const task = await runtime.submitTask({
 
 ### Local-Only Mode
 
-Default single-machine setup:
+Default single-machine setup (backward compatible with OpenClaw):
 
 ```typescript
 const runtime = new CoderClawRuntime(new LocalTransportAdapter(context), "local-only");
