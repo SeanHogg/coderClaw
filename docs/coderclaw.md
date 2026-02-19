@@ -1,4 +1,4 @@
-# coderClaw: Multi-Agent Developer System
+# CoderClaw: Multi-Agent Developer System
 
 coderClaw is a developer-first, multi-agent AI system designed for code creation, review, testing, debugging, refactoring, and deep codebase understanding. It operates as an **orchestration engine inside real developer workflows**.
 
@@ -15,7 +15,7 @@ An AI assistant that:
 
 ### 1. Deep Knowledge & Context Engine
 
-coderClaw builds and maintains a persistent, structured project knowledge model:
+CoderClaw builds and maintains a persistent, structured project knowledge model:
 
 #### AST Parsing & Semantic Analysis
 - **TypeScript/JavaScript Support**: Full syntax tree parsing
@@ -209,6 +209,7 @@ Add custom skills in `.coderClaw/skills/`:
 ## Project Structure
 
 When you initialize a coderClaw project:
+CoderClaw stores project-specific context in a `.coderClaw/` directory:
 
 ```
 .coderClaw/
@@ -352,12 +353,12 @@ Define your own workflow steps with dependencies.
 
 ## Integration with OpenClaw
 
-coderClaw extends OpenClaw's existing capabilities:
+CoderClaw extends OpenClaw's existing capabilities:
 
 - **Skills**: Use coding-agent skill for interactive development
 - **Subagents**: Orchestrate workflows spawn subagents automatically
 - **Memory**: Project knowledge integrates with OpenClaw's memory system
-- **Tools**: coderClaw tools available alongside existing OpenClaw tools
+- **Tools**: CoderClaw tools available alongside existing OpenClaw tools
 - **Workspace**: Project context complements workspace-level configuration
 - **Transport Layer**: Distributed execution via transport adapters
 - **Security**: RBAC and policy enforcement
@@ -383,7 +384,7 @@ coderClaw is built on OpenClaw's infrastructure:
 
 ## Security
 
-coderClaw respects OpenClaw's security model:
+CoderClaw respects OpenClaw's security model and adds Phase 2 enhancements:
 
 - Project context files are read-only during execution
 - Code analysis runs with same permissions as other tools
