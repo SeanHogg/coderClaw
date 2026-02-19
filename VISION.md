@@ -3,16 +3,21 @@
 OpenClaw is the AI that actually does things.
 It runs on your devices, in your channels, with your rules.
 
+**CoderClaw** extends this vision with a developer-first, multi-agent AI system for comprehensive software development workflows.
+
 This document explains the current state and direction of the project.
 We are still early, so iteration is fast.
 Project overview and developer docs: [`README.md`](README.md)
+Multi-agent system: [`docs/coderclaw.md`](docs/coderclaw.md)
 Contribution guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 OpenClaw started as a personal playground to learn AI and build something genuinely useful:
 an assistant that can run real tasks on a real computer.
 It evolved through several names and shells: Warelay -> Clawdbot -> Moltbot -> OpenClaw.
 
-The goal: a personal assistant that is easy to use, supports a wide range of platforms, and respects privacy and security.
+**CoderClaw** represents the next evolution: an orchestration engine for code creation, review, testing, debugging, refactoring, and deep codebase understanding.
+
+The goal: a personal assistant that is easy to use, supports a wide range of platforms, respects privacy and security, and **deeply understands your code**.
 
 The current focus is:
 
@@ -21,6 +26,8 @@ Priority:
 - Security and safe defaults
 - Bug fixes and stability
 - Setup reliability and first-run UX
+- **Multi-agent orchestration for development workflows**
+- **Deep codebase understanding with AST parsing and semantic analysis**
 
 Next priorities:
 
@@ -30,6 +37,9 @@ Next priorities:
 - Better computer-use and agent harness capabilities
 - Ergonomics across CLI and web frontend
 - Companion apps on macOS, iOS, Android, Windows, and Linux
+- **Additional language support for code analysis (Python, Go, Java, Rust)**
+- **Enhanced workflow patterns and agent templates**
+- **Community-driven agent marketplace**
 
 Contribution rules:
 
