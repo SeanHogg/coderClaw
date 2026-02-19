@@ -1,22 +1,22 @@
 ---
-summary: "OpenClaw is a multi-channel gateway for AI agents that runs on any OS."
+summary: "CoderClaw is a distributed AI runtime built on OpenClaw's multi-channel gateway architecture."
 read_when:
-  - Introducing OpenClaw to newcomers
-title: "OpenClaw"
+  - Introducing CoderClaw to newcomers
+title: "CoderClaw"
 ---
 
-# OpenClaw 🦞
+# CoderClaw 🦞
 
 <p align="center">
     <img
-        src="/assets/openclaw-logo-text-dark.png"
-        alt="OpenClaw"
+        src="/assets/coderclaw-logo-text-dark.png"
+        alt="CoderClaw"
         width="500"
         class="dark:hidden"
     />
     <img
-        src="/assets/openclaw-logo-text.png"
-        alt="OpenClaw"
+        src="/assets/coderclaw-logo-text.png"
+        alt="CoderClaw"
         width="500"
         class="hidden dark:block"
     />
@@ -25,13 +25,13 @@ title: "OpenClaw"
 > _"EXFOLIATE! EXFOLIATE!"_ — A space lobster, probably
 
 <p align="center">
-  <strong>Any OS gateway for AI agents across WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
-  Send a message, get an agent response from your pocket. Plugins add Mattermost and more.
+  <strong>Distributed AI runtime with secure orchestration across WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
+  Built on <a href="https://github.com/openclaw/openclaw">OpenClaw</a>'s proven gateway architecture with Phase 2 enhancements.
 </p>
 
 <Columns>
   <Card title="Get Started" href="/start/getting-started" icon="rocket">
-    Install OpenClaw and bring up the Gateway in minutes.
+    Install CoderClaw and bring up the Gateway in minutes.
   </Card>
   <Card title="Run the Wizard" href="/start/wizard" icon="sparkles">
     Guided setup with `openclaw onboard` and pairing flows.
@@ -41,18 +41,19 @@ title: "OpenClaw"
   </Card>
 </Columns>
 
-## What is OpenClaw?
+## What is CoderClaw?
 
-OpenClaw is a **self-hosted gateway** that connects your favorite chat apps — WhatsApp, Telegram, Discord, iMessage, and more — to AI coding agents like Pi. You run a single Gateway process on your own machine (or a server), and it becomes the bridge between your messaging apps and an always-available AI assistant.
+CoderClaw is a **distributed AI runtime** built on top of [OpenClaw](https://github.com/openclaw/openclaw)'s self-hosted gateway. It connects your favorite chat apps — WhatsApp, Telegram, Discord, iMessage, and more — to AI coding agents, with added **Phase 2 capabilities** for secure orchestration, distributed task execution, and team collaboration.
 
-**Who is it for?** Developers and power users who want a personal AI assistant they can message from anywhere — without giving up control of their data or relying on a hosted service.
+**Who is it for?** Developers and teams who want a personal AI assistant with enterprise-ready features like RBAC, audit trails, and CI/CD integration — without giving up control of their data or relying on a hosted service.
 
-**What makes it different?**
+**What makes it different from OpenClaw?**
 
-- **Self-hosted**: runs on your hardware, your rules
-- **Multi-channel**: one Gateway serves WhatsApp, Telegram, Discord, and more simultaneously
-- **Agent-native**: built for coding agents with tool use, sessions, memory, and multi-agent routing
-- **Open source**: MIT licensed, community-driven
+- **Distributed Runtime**: Execute tasks locally or remotely with transport abstraction
+- **Enhanced Security**: RBAC, device trust levels, and granular policy enforcement
+- **Task Lifecycle Management**: Formal state machine with audit trails and resumability
+- **Team Collaboration**: Multi-session isolation and shared agent registries
+- **CI/CD Ready**: Designed for automated workflows and team-wide deployments
 
 **What do you need?** Node 22+, an API key (Anthropic recommended), and 5 minutes.
 
@@ -60,7 +61,7 @@ OpenClaw is a **self-hosted gateway** that connects your favorite chat apps — 
 
 ```mermaid
 flowchart LR
-  A["Chat apps + plugins"] --> B["Gateway"]
+  A["Chat apps + plugins"] --> B["CoderClaw Gateway<br/>(OpenClaw + Phase 2)"]
   B --> C["Pi agent"]
   B --> D["CLI"]
   B --> E["Web Control UI"]
@@ -68,35 +69,35 @@ flowchart LR
   B --> G["iOS and Android nodes"]
 ```
 
-The Gateway is the single source of truth for sessions, routing, and channel connections.
+The Gateway is the single source of truth for sessions, routing, and channel connections, enhanced with distributed task execution and security controls.
 
 ## Key capabilities
 
 <Columns>
+  <Card title="Distributed Runtime" icon="network">
+    Execute tasks locally or remotely with transport abstraction layer.
+  </Card>
+  <Card title="Enhanced Security" icon="shield">
+    RBAC, device trust levels, and audit logging for enterprise-ready deployments.
+  </Card>
   <Card title="Multi-channel gateway" icon="network">
     WhatsApp, Telegram, Discord, and iMessage with a single Gateway process.
   </Card>
-  <Card title="Plugin channels" icon="plug">
-    Add Mattermost and more with extension packages.
+  <Card title="Task Lifecycle" icon="clock">
+    Formal state machine with persistence, resumability, and audit trails.
   </Card>
-  <Card title="Multi-agent routing" icon="route">
-    Isolated sessions per agent, workspace, or sender.
+  <Card title="Team Collaboration" icon="users">
+    Multi-session isolation and shared agent registries for teams.
   </Card>
-  <Card title="Media support" icon="image">
-    Send and receive images, audio, and documents.
-  </Card>
-  <Card title="Web Control UI" icon="monitor">
-    Browser dashboard for chat, config, sessions, and nodes.
-  </Card>
-  <Card title="Mobile nodes" icon="smartphone">
-    Pair iOS and Android nodes with Canvas support.
+  <Card title="CI/CD Integration" icon="git-branch">
+    Automated workflows with deterministic execution and GitHub Actions support.
   </Card>
 </Columns>
 
 ## Quick start
 
 <Steps>
-  <Step title="Install OpenClaw">
+  <Step title="Install CoderClaw">
     ```bash
     npm install -g openclaw@latest
     ```
@@ -124,15 +125,16 @@ Open the browser Control UI after the Gateway starts.
 - Remote access: [Web surfaces](/web) and [Tailscale](/gateway/tailscale)
 
 <p align="center">
-  <img src="whatsapp-openclaw.jpg" alt="OpenClaw" width="420" />
+  <img src="whatsapp-openclaw.jpg" alt="CoderClaw Control UI" width="420" />
 </p>
 
 ## Configuration (optional)
 
 Config lives at `~/.openclaw/openclaw.json`.
 
-- If you **do nothing**, OpenClaw uses the bundled Pi binary in RPC mode with per-sender sessions.
+- If you **do nothing**, CoderClaw uses the bundled Pi binary in RPC mode with per-sender sessions.
 - If you want to lock it down, start with `channels.whatsapp.allowFrom` and (for groups) mention rules.
+- For Phase 2 features, see [Phase 2 Configuration](/phase2#configuration).
 
 Example:
 

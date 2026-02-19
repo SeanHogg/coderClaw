@@ -1,17 +1,17 @@
 {
   "name": "openclaw",
   "version": "2026.2.18",
-  "description": "Multi-channel AI gateway with extensible messaging integrations",
-  "keywords": [],
-  "homepage": "https://github.com/openclaw/openclaw#readme",
+  "description": "Distributed AI runtime with secure orchestration - Built on OpenClaw's multi-channel gateway",
+  "keywords": ["ai", "distributed", "runtime", "orchestration", "coderclaw", "gateway", "multi-agent", "rbac", "security"],
+  "homepage": "https://github.com/SeanHogg/coderClaw#readme",
   "bugs": {
-    "url": "https://github.com/openclaw/openclaw/issues"
+    "url": "https://github.com/SeanHogg/coderClaw/issues"
   },
   "license": "MIT",
-  "author": "",
+  "author": "Sean Hogg",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openclaw/openclaw.git"
+    "url": "git+https://github.com/SeanHogg/coderClaw.git"
   },
   "bin": {
     "openclaw": "openclaw.mjs"
