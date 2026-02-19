@@ -23,6 +23,7 @@
   "files": [
     "CHANGELOG.md",
     "LICENSE",
+    "assets/coderclaw-logo.jpg",
     "coderclaw.mjs",
     "README-header.png",
     "README.md",
