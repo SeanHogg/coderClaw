@@ -1,4 +1,4 @@
-# 🦞 CoderClaw — Personal AI Assistant
+# 🦞 CoderClaw — AI-Powered Coding Assistant
 
 <p align="center">
     <picture>
@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <strong>EXFOLIATE! EXFOLIATE!</strong>
+  <strong>CODE. DEBUG. DEPLOY.</strong>
 </p>
 
 <p align="center">

@@ -12,7 +12,7 @@ x-i18n:
   workflow: 15
 ---
 
-# OpenClaw 🦞
+# CoderClaw 🦞
 
 <p align="center">
     <img

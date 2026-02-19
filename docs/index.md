@@ -1,11 +1,11 @@
 ---
-summary: "OpenClaw is a multi-channel gateway for AI agents that runs on any OS."
+summary: "CoderClaw is an AI-powered coding assistant with multi-channel integrations."
 read_when:
-  - Introducing OpenClaw to newcomers
-title: "OpenClaw"
+  - Introducing CoderClaw to newcomers
+title: "CoderClaw"
 ---
 
-# OpenClaw 🦞
+# CoderClaw 🦞
 
 <p align="center">
     <img
@@ -25,8 +25,8 @@ title: "OpenClaw"
 > _"EXFOLIATE! EXFOLIATE!"_ — A space lobster, probably
 
 <p align="center">
-  <strong>Any OS gateway for AI agents across WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
-  Send a message, get an agent response from your pocket. Plugins add Mattermost and more.
+  <strong>AI-powered coding assistant with multi-channel integrations for WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
+  Get coding help, code reviews, and development assistance from anywhere. Plugins add Mattermost and more platforms.
 </p>
 
 <Columns>
