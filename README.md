@@ -77,10 +77,10 @@ If you want an AI assistant that understands code deeply and orchestrates multi-
 Runtime: **Node ≥22**.
 
 ```bash
-npm install -g openclaw@latest
-# or: pnpm add -g openclaw@latest
+npm install -g coderclaw@latest
+# or: pnpm add -g coderclaw@latest
 
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 The wizard installs the Gateway daemon (launchd/systemd user service) so it stays running.
@@ -92,7 +92,7 @@ The wizard installs the Gateway daemon (launchd/systemd user service) so it stay
 cd my-project
 
 # Initialize coderClaw context
-openclaw coderclaw init
+coderclaw coderclaw init
 
 # This creates .coderClaw/ with:
 #   - context.yaml (project metadata)
@@ -107,13 +107,13 @@ openclaw coderclaw init
 
 ```bash
 # Start the gateway
-openclaw gateway --port 18789 --verbose
+coderclaw gateway --port 18789 --verbose
 
 # Talk to the assistant
-openclaw agent --message "Analyze the codebase structure" --thinking high
+coderclaw agent --message "Analyze the codebase structure" --thinking high
 
 # Orchestrate multi-agent workflow
-openclaw agent --message "Create a user authentication feature with tests and review" --thinking high
+coderclaw agent --message "Create a user authentication feature with tests and review" --thinking high
 ```
 
 ### Access CoderClaw from Messaging Channels
@@ -128,7 +128,7 @@ Send messages to your connected channels (WhatsApp, Telegram, Slack, Discord, et
 @coderclaw review the latest changes for security issues
 ```
 
-Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run `openclaw doctor`).
+Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run `coderclaw doctor`).
 
 ## 🏗️ Project Structure
 
@@ -166,10 +166,10 @@ Model note: while any model is supported, I strongly recommend **Anthropic Pro/M
 Runtime: **Node ≥22**.
 
 ```bash
-npm install -g openclaw@latest
-# or: pnpm add -g openclaw@latest
+npm install -g coderclaw@latest
+# or: pnpm add -g coderclaw@latest
 
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 The wizard installs the Gateway daemon (launchd/systemd user service) so it stays running.
@@ -181,18 +181,18 @@ Runtime: **Node ≥22**.
 Full beginner guide (auth, pairing, channels): [Getting started](https://docs.coderclaw.ai/start/getting-started)
 
 ```bash
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 
-openclaw gateway --port 18789 --verbose
+coderclaw gateway --port 18789 --verbose
 
 # Send a message
-openclaw message send --to +1234567890 --message "Hello from CoderClaw"
+coderclaw message send --to +1234567890 --message "Hello from CoderClaw"
 
 # Talk to the assistant (optionally deliver back to any connected channel: WhatsApp/Telegram/Slack/Discord/Google Chat/Signal/iMessage/BlueBubbles/Microsoft Teams/Matrix/Zalo/Zalo Personal/WebChat)
-openclaw agent --message "Ship checklist" --thinking high
+coderclaw agent --message "Ship checklist" --thinking high
 ```
 
-Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run `openclaw doctor`).
+Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run `coderclaw doctor`).
 
 ## Development channels
 
@@ -200,7 +200,7 @@ Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run
 - **beta**: prerelease tags (`vYYYY.M.D-beta.N`), npm dist-tag `beta` (macOS app may be missing).
 - **dev**: moving head of `main`, npm dist-tag `dev` (when published).
 
-Switch channels (git + npm): `openclaw update --channel stable|beta|dev`.
+Switch channels (git + npm): `coderclaw update --channel stable|beta|dev`.
 Details: [Development channels](https://docs.coderclaw.ai/install/development-channels).
 
 ## From source (development)
@@ -208,20 +208,20 @@ Details: [Development channels](https://docs.coderclaw.ai/install/development-ch
 Prefer `pnpm` for builds from source. Bun is optional for running TypeScript directly.
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
+git clone https://github.com/SeanHogg/coderClaw.git
+cd coderClaw
 
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
 pnpm build
 
-pnpm openclaw onboard --install-daemon
+pnpm coderclaw onboard --install-daemon
 
 # Dev loop (auto-reload on TS changes)
 pnpm gateway:watch
 ```
 
-Note: `pnpm openclaw ...` runs TypeScript directly (via `tsx`). `pnpm build` produces `dist/` for running via Node / the packaged `openclaw` binary.
+Note: `pnpm coderclaw ...` runs TypeScript directly (via `tsx`). `pnpm build` produces `dist/` for running via Node / the packaged `coderclaw` binary.
 
 ## Security defaults (DM access)
 
@@ -232,10 +232,10 @@ Full security guide: [Security](https://docs.coderclaw.ai/gateway/security)
 Default behavior on Telegram/WhatsApp/Signal/iMessage/Microsoft Teams/Discord/Google Chat/Slack:
 
 - **DM pairing** (`dmPolicy="pairing"` / `channels.discord.dmPolicy="pairing"` / `channels.slack.dmPolicy="pairing"`; legacy: `channels.discord.dm.policy`, `channels.slack.dm.policy`): unknown senders receive a short pairing code and the bot does not process their message.
-- Approve with: `openclaw pairing approve <channel> <code>` (then the sender is added to a local allowlist store).
+- Approve with: `coderclaw pairing approve <channel> <code>` (then the sender is added to a local allowlist store).
 - Public inbound DMs require an explicit opt-in: set `dmPolicy="open"` and include `"*"` in the channel allowlist (`allowFrom` / `channels.discord.allowFrom` / `channels.slack.allowFrom`; legacy: `channels.discord.dm.allowFrom`, `channels.slack.dm.allowFrom`).
 
-Run `openclaw doctor` to surface risky/misconfigured DM policies.
+Run `coderclaw doctor` to surface risky/misconfigured DM policies.
 
 ## Highlights
 
@@ -314,7 +314,7 @@ See [docs/phase2.md](docs/phase2.md) for complete documentation and [examples/ph
 
 ### Tools + automation
 
-- [Browser control](https://docs.coderclaw.ai/tools/browser): dedicated openclaw Chrome/Chromium, snapshots, actions, uploads, profiles.
+- [Browser control](https://docs.coderclaw.ai/tools/browser): dedicated coderclaw Chrome/Chromium, snapshots, actions, uploads, profiles.
 - [Canvas](https://docs.coderclaw.ai/platforms/mac/canvas): [A2UI](https://docs.coderclaw.ai/platforms/mac/canvas#canvas-a2ui) push/reset, eval, snapshot.
 - [Nodes](https://docs.coderclaw.ai/nodes): camera snap/clip, screen record, [location.get](https://docs.coderclaw.ai/nodes/location-command), notifications.
 - [Cron + wakeups](https://docs.coderclaw.ai/automation/cron-jobs); [webhooks](https://docs.coderclaw.ai/automation/webhook); [Gmail Pub/Sub](https://docs.coderclaw.ai/automation/gmail-pubsub).
@@ -347,7 +347,7 @@ WhatsApp / Telegram / Slack / Discord / Google Chat / Signal / iMessage / BlueBu
 └──────────────┬────────────────┘
                │
                ├─ Pi agent (RPC)
-               ├─ CLI (openclaw …)
+               ├─ CLI (coderclaw …)
                ├─ WebChat UI
                ├─ macOS app
                └─ iOS / Android nodes
@@ -357,7 +357,7 @@ WhatsApp / Telegram / Slack / Discord / Google Chat / Signal / iMessage / BlueBu
 
 - **[Gateway WebSocket network](https://docs.coderclaw.ai/concepts/architecture)** — single WS control plane for clients, tools, and events (plus ops: [Gateway runbook](https://docs.coderclaw.ai/gateway)).
 - **[Tailscale exposure](https://docs.coderclaw.ai/gateway/tailscale)** — Serve/Funnel for the Gateway dashboard + WS (remote access: [Remote](https://docs.coderclaw.ai/gateway/remote)).
-- **[Browser control](https://docs.coderclaw.ai/tools/browser)** — openclaw‑managed Chrome/Chromium with CDP control.
+- **[Browser control](https://docs.coderclaw.ai/tools/browser)** — coderclaw‑managed Chrome/Chromium with CDP control.
 - **[Canvas + A2UI](https://docs.coderclaw.ai/platforms/mac/canvas)** — agent‑driven visual workspace (A2UI host: [Canvas/A2UI](https://docs.coderclaw.ai/platforms/mac/canvas#canvas-a2ui)).
 - **[Voice Wake](https://docs.coderclaw.ai/nodes/voicewake) + [Talk Mode](https://docs.coderclaw.ai/nodes/talk)** — always‑on speech and continuous conversation.
 - **[Nodes](https://docs.coderclaw.ai/nodes)** — Canvas, camera snap/clip, screen record, `location.get`, notifications, plus macOS‑only `system.run`/`system.notify`.
@@ -451,7 +451,7 @@ Note: signed builds required for macOS permissions to stick across rebuilds (see
 
 - Pairs as a node via the Bridge.
 - Voice trigger forwarding + Canvas surface.
-- Controlled via `openclaw nodes …`.
+- Controlled via `coderclaw nodes …`.
 
 Runbook: [iOS connect](https://docs.coderclaw.ai/platforms/ios).
 
@@ -463,13 +463,13 @@ Runbook: [iOS connect](https://docs.coderclaw.ai/platforms/ios).
 
 ## Agent workspace + skills
 
-- Workspace root: `~/.openclaw/workspace` (configurable via `agents.defaults.workspace`).
+- Workspace root: `~/.coderclaw/workspace` (configurable via `agents.defaults.workspace`).
 - Injected prompt files: `AGENTS.md`, `SOUL.md`, `TOOLS.md`.
-- Skills: `~/.openclaw/workspace/skills/<skill>/SKILL.md`.
+- Skills: `~/.coderclaw/workspace/skills/<skill>/SKILL.md`.
 
 ## Configuration
 
-Minimal `~/.openclaw/openclaw.json` (model + defaults):
+Minimal `~/.coderclaw/openclaw.json` (model + defaults):
 
 ```json5
 {
@@ -491,7 +491,7 @@ Details: [Security guide](https://docs.coderclaw.ai/gateway/security) · [Docker
 
 ### [WhatsApp](https://docs.coderclaw.ai/channels/whatsapp)
 
-- Link the device: `pnpm openclaw channels login` (stores creds in `~/.openclaw/credentials`).
+- Link the device: `pnpm coderclaw channels login` (stores creds in `~/.coderclaw/credentials`).
 - Allowlist who can talk to the assistant via `channels.whatsapp.allowFrom`.
 - If `channels.whatsapp.groups` is set, it becomes a group allowlist; include `"*"` to allow all.
 
