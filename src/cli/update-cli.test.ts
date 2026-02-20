@@ -30,8 +30,8 @@ vi.mock("../infra/update-runner.js", () => ({
   runGatewayUpdate: vi.fn(),
 }));
 
-vi.mock("../infra/openclaw-root.js", () => ({
-  resolveOpenClawPackageRoot: vi.fn(),
+vi.mock("../infra/coderclaw-root.js", () => ({
+  resolveCoderClawPackageRoot: vi.fn(),
 }));
 
 vi.mock("../config/config.js", () => ({
@@ -108,7 +108,7 @@ vi.mock("../runtime.js", () => ({
 }));
 
 const { runGatewayUpdate } = await import("../infra/update-runner.js");
-const { resolveOpenClawPackageRoot } = await import("../infra/openclaw-root.js");
+const { resolveCoderClawPackageRoot } = await import("../infra/coderclaw-root.js");
 const { readConfigFileSnapshot, writeConfigFile } = await import("../config/config.js");
 const { checkUpdateStatus, fetchNpmTagVersion, resolveNpmChannelTag } =
   await import("../infra/update-check.js");
@@ -130,7 +130,7 @@ describe("update-cli", () => {
   };
 
   beforeAll(async () => {
-    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-update-tests-"));
+    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-update-tests-"));
   });
 
   afterAll(async () => {
@@ -139,7 +139,7 @@ describe("update-cli", () => {
 
   const baseConfig = {} as OpenClawConfig;
   const baseSnapshot: ConfigFileSnapshot = {
-    path: "/tmp/openclaw-config.json",
+    path: "/tmp/coderclaw-config.json",
     exists: true,
     raw: "{}",
     parsed: {},
@@ -166,7 +166,7 @@ describe("update-cli", () => {
   };
 
   const mockPackageInstallStatus = (root: string) => {
-    vi.mocked(resolveOpenClawPackageRoot).mockResolvedValue(root);
+    vi.mocked(resolveCoderClawPackageRoot).mockResolvedValue(root);
     vi.mocked(checkUpdateStatus).mockResolvedValue({
       root,
       installKind: "package",
@@ -212,7 +212,7 @@ describe("update-cli", () => {
     confirm.mockReset();
     select.mockReset();
     vi.mocked(runGatewayUpdate).mockReset();
-    vi.mocked(resolveOpenClawPackageRoot).mockReset();
+    vi.mocked(resolveCoderClawPackageRoot).mockReset();
     vi.mocked(readConfigFileSnapshot).mockReset();
     vi.mocked(writeConfigFile).mockReset();
     vi.mocked(checkUpdateStatus).mockReset();
@@ -230,7 +230,7 @@ describe("update-cli", () => {
     serviceLoaded.mockReset();
     prepareRestartScript.mockReset();
     runRestartScript.mockReset();
-    vi.mocked(resolveOpenClawPackageRoot).mockResolvedValue(process.cwd());
+    vi.mocked(resolveCoderClawPackageRoot).mockResolvedValue(process.cwd());
     vi.mocked(readConfigFileSnapshot).mockResolvedValue(baseSnapshot);
     vi.mocked(fetchNpmTagVersion).mockResolvedValue({
       tag: "latest",
@@ -277,7 +277,7 @@ describe("update-cli", () => {
     readPackageVersion.mockResolvedValue("1.0.0");
     resolveGlobalManager.mockResolvedValue("npm");
     serviceLoaded.mockResolvedValue(false);
-    prepareRestartScript.mockResolvedValue("/tmp/openclaw-restart-test.sh");
+    prepareRestartScript.mockResolvedValue("/tmp/coderclaw-restart-test.sh");
     runRestartScript.mockResolvedValue(undefined);
     setTty(false);
     setStdoutTty(false);
@@ -407,7 +407,7 @@ describe("update-cli", () => {
   it("honors --tag override", async () => {
     const tempDir = await createCaseDir("openclaw-update");
 
-    vi.mocked(resolveOpenClawPackageRoot).mockResolvedValue(tempDir);
+    vi.mocked(resolveCoderClawPackageRoot).mockResolvedValue(tempDir);
     vi.mocked(runGatewayUpdate).mockResolvedValue({
       status: "ok",
       mode: "npm",
@@ -487,10 +487,10 @@ describe("update-cli", () => {
       durationMs: 100,
     };
 
-    const envSnapshot = captureEnv(["OPENCLAW_UPDATE_IN_PROGRESS"]);
+    const envSnapshot = captureEnv(["CODERCLAW_UPDATE_IN_PROGRESS"]);
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
     try {
-      delete process.env.OPENCLAW_UPDATE_IN_PROGRESS;
+      delete process.env.CODERCLAW_UPDATE_IN_PROGRESS;
       vi.mocked(runGatewayUpdate).mockResolvedValue(mockResult);
       vi.mocked(runDaemonRestart).mockResolvedValue(true);
       vi.mocked(doctorCommand).mockResolvedValue(undefined);
@@ -502,7 +502,7 @@ describe("update-cli", () => {
         defaultRuntime,
         expect.objectContaining({ nonInteractive: true }),
       );
-      expect(process.env.OPENCLAW_UPDATE_IN_PROGRESS).toBeUndefined();
+      expect(process.env.CODERCLAW_UPDATE_IN_PROGRESS).toBeUndefined();
 
       const logLines = vi.mocked(defaultRuntime.log).mock.calls.map((call) => String(call[0]));
       expect(
@@ -634,10 +634,10 @@ describe("update-cli", () => {
 
   it("updateWizardCommand offers dev checkout and forwards selections", async () => {
     const tempDir = await createCaseDir("openclaw-update-wizard");
-    const envSnapshot = captureEnv(["OPENCLAW_GIT_DIR"]);
+    const envSnapshot = captureEnv(["CODERCLAW_GIT_DIR"]);
     try {
       setTty(true);
-      process.env.OPENCLAW_GIT_DIR = tempDir;
+      process.env.CODERCLAW_GIT_DIR = tempDir;
 
       vi.mocked(checkUpdateStatus).mockResolvedValue({
         root: "/test/path",

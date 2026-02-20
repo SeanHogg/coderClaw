@@ -22,7 +22,7 @@ Hooks 提供了一个可扩展的事件驱动系统，用于响应智能体命�
 Hooks 是在事件发生时运行的小脚本。有两种类型：
 
 - **Hooks**（本页）：当智能体事件触发时在 Gateway 网关内运行，如 `/new`、`/reset`、`/stop` 或生命周期事件。
-- **Webhooks**：外部 HTTP webhooks，让其他系统触发 OpenClaw 中的工作。参见 [Webhook Hooks](/automation/webhook) 或使用 `openclaw webhooks` 获取 Gmail 助手命令。
+- **Webhooks**：外部 HTTP webhooks，让其他系统触发 OpenClaw 中的工作。参见 [Webhook Hooks](/automation/webhook) 或使用 `coderclaw webhooks` 获取 Gmail 助手命令。
 
 Hooks 也可以捆绑在插件中；参见 [插件](/tools/plugin#plugin-hooks)。
 
@@ -57,30 +57,30 @@ OpenClaw 附带三个自动发现的捆绑 hooks：
 列出可用的 hooks：
 
 ```bash
-openclaw hooks list
+coderclaw hooks list
 ```
 
 启用一个 hook：
 
 ```bash
-openclaw hooks enable session-memory
+coderclaw hooks enable session-memory
 ```
 
 检查 hook 状态：
 
 ```bash
-openclaw hooks check
+coderclaw hooks check
 ```
 
 获取详细信息：
 
 ```bash
-openclaw hooks info session-memory
+coderclaw hooks info session-memory
 ```
 
 ### 新手引导
 
-在新手引导期间（`openclaw onboard`），你将被提示启用推荐的 hooks。向导会自动发现符合条件的 hooks 并呈现供选择。
+在新手引导期间（`coderclaw onboard`），你将被提示启用推荐的 hooks。向导会自动发现符合条件的 hooks 并呈现供选择。
 
 ## Hook 发现
 
@@ -105,7 +105,7 @@ my-hook/
 Hook 包是标准的 npm 包，通过 `package.json` 中的 `openclaw.hooks` 导出一个或多个 hooks。使用以下命令安装：
 
 ```bash
-openclaw hooks install <path-or-spec>
+coderclaw hooks install <path-or-spec>
 ```
 
 示例 `package.json`：
@@ -114,7 +114,7 @@ openclaw hooks install <path-or-spec>
 {
   "name": "@acme/my-hooks",
   "version": "0.1.0",
-  "openclaw": {
+  "coderclaw": {
     "hooks": ["./hooks/my-hook", "./hooks/other-hook"]
   }
 }
@@ -133,9 +133,9 @@ Hook 包可以附带依赖；它们将安装在 `~/.openclaw/hooks/<id>` 下。
 ---
 name: my-hook
 description: "Short description of what this hook does"
-homepage: https://docs.openclaw.ai/automation/hooks#my-hook
+homepage: https://docs.coderclaw.ai/automation/hooks#my-hook
 metadata:
-  { "openclaw": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
+  { "coderclaw": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
 ---
 
 # My Hook
@@ -281,7 +281,7 @@ cd ~/.openclaw/hooks/my-hook
 ---
 name: my-hook
 description: "Does something useful"
-metadata: { "openclaw": { "emoji": "🎯", "events": ["command:new"] } }
+metadata: { "coderclaw": { "emoji": "🎯", "events": ["command:new"] } }
 ---
 
 # My Custom Hook
@@ -310,10 +310,10 @@ export default handler;
 
 ```bash
 # Verify hook is discovered
-openclaw hooks list
+coderclaw hooks list
 
 # Enable it
-openclaw hooks enable my-hook
+coderclaw hooks enable my-hook
 
 # Restart your gateway process (menu bar app restart on macOS, or restart your dev process)
 
@@ -407,46 +407,46 @@ Hooks 可以有自定义配置：
 
 ```bash
 # List all hooks
-openclaw hooks list
+coderclaw hooks list
 
 # Show only eligible hooks
-openclaw hooks list --eligible
+coderclaw hooks list --eligible
 
 # Verbose output (show missing requirements)
-openclaw hooks list --verbose
+coderclaw hooks list --verbose
 
 # JSON output
-openclaw hooks list --json
+coderclaw hooks list --json
 ```
 
 ### Hook 信息
 
 ```bash
 # Show detailed info about a hook
-openclaw hooks info session-memory
+coderclaw hooks info session-memory
 
 # JSON output
-openclaw hooks info session-memory --json
+coderclaw hooks info session-memory --json
 ```
 
 ### 检查资格
 
 ```bash
 # Show eligibility summary
-openclaw hooks check
+coderclaw hooks check
 
 # JSON output
-openclaw hooks check --json
+coderclaw hooks check --json
 ```
 
 ### 启用/禁用
 
 ```bash
 # Enable a hook
-openclaw hooks enable session-memory
+coderclaw hooks enable session-memory
 
 # Disable a hook
-openclaw hooks disable command-logger
+coderclaw hooks disable command-logger
 ```
 
 ## 捆绑的 Hooks
@@ -487,7 +487,7 @@ openclaw hooks disable command-logger
 **启用**：
 
 ```bash
-openclaw hooks enable session-memory
+coderclaw hooks enable session-memory
 ```
 
 ### command-logger
@@ -529,7 +529,7 @@ grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 **启用**：
 
 ```bash
-openclaw hooks enable command-logger
+coderclaw hooks enable command-logger
 ```
 
 ### boot-md
@@ -550,7 +550,7 @@ openclaw hooks enable command-logger
 **启用**：
 
 ```bash
-openclaw hooks enable boot-md
+coderclaw hooks enable boot-md
 ```
 
 ## 最佳实践
@@ -607,13 +607,13 @@ const handler: HookHandler = async (event) => {
 尽可能在元数据中指定确切事件：
 
 ```yaml
-metadata: { "openclaw": { "events": ["command:new"] } } # Specific
+metadata: { "coderclaw": { "events": ["command:new"] } } # Specific
 ```
 
 而不是：
 
 ```yaml
-metadata: { "openclaw": { "events": ["command"] } } # General - more overhead
+metadata: { "coderclaw": { "events": ["command"] } } # General - more overhead
 ```
 
 ## 调试
@@ -633,7 +633,7 @@ Registered hook: boot-md -> gateway:startup
 列出所有发现的 hooks：
 
 ```bash
-openclaw hooks list --verbose
+coderclaw hooks list --verbose
 ```
 
 ### 检查注册
@@ -652,7 +652,7 @@ const handler: HookHandler = async (event) => {
 检查为什么 hook 不符合条件：
 
 ```bash
-openclaw hooks info my-hook
+coderclaw hooks info my-hook
 ```
 
 在输出中查找缺失的要求。
@@ -757,7 +757,7 @@ Gateway 网关启动
 
 3. 列出所有发现的 hooks：
    ```bash
-   openclaw hooks list
+   coderclaw hooks list
    ```
 
 ### Hook 不符合条件
@@ -765,7 +765,7 @@ Gateway 网关启动
 检查要求：
 
 ```bash
-openclaw hooks info my-hook
+coderclaw hooks info my-hook
 ```
 
 查找缺失的：
@@ -780,7 +780,7 @@ openclaw hooks info my-hook
 1. 验证 hook 已启用：
 
    ```bash
-   openclaw hooks list
+   coderclaw hooks list
    # Should show ✓ next to enabled hooks
    ```
 
@@ -837,7 +837,7 @@ node -e "import('./path/to/handler.ts').then(console.log)"
    ---
    name: my-hook
    description: "My custom hook"
-   metadata: { "openclaw": { "emoji": "🎯", "events": ["command:new"] } }
+   metadata: { "coderclaw": { "emoji": "🎯", "events": ["command:new"] } }
    ---
 
    # My Hook
@@ -862,7 +862,7 @@ node -e "import('./path/to/handler.ts').then(console.log)"
 
 4. 验证并重启你的 Gateway 网关进程：
    ```bash
-   openclaw hooks list
+   coderclaw hooks list
    # Should show: 🎯 my-hook ✓
    ```
 
@@ -877,6 +877,6 @@ node -e "import('./path/to/handler.ts').then(console.log)"
 ## 另请参阅
 
 - [CLI 参考：hooks](/cli/hooks)
-- [捆绑 Hooks README](https://github.com/openclaw/openclaw/tree/main/src/hooks/bundled)
+- [捆绑 Hooks README](https://github.com/SeanHogg/coderClaw/tree/main/src/hooks/bundled)
 - [Webhook Hooks](/automation/webhook)
 - [配置](/gateway/configuration#hooks)

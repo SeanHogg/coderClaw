@@ -16,7 +16,7 @@ function buildConfig() {
       enabled: true,
       color: "#FF4500",
       headless: true,
-      defaultProfile: "openclaw",
+      defaultProfile: "coderclaw",
       profiles: { ...cfgProfiles },
     },
   };
@@ -43,7 +43,7 @@ describe("server-context hot-reload profiles", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     cfgProfiles = {
-      openclaw: { cdpPort: 18800, color: "#FF4500" },
+      coderclaw: { cdpPort: 18800, color: "#FF4500" },
     };
     cachedConfig = null; // Clear simulated cache
   });
@@ -51,7 +51,7 @@ describe("server-context hot-reload profiles", () => {
   it("forProfile hot-reloads newly added profiles from config", async () => {
     const { loadConfig } = await import("../config/config.js");
 
-    // Start with only openclaw profile
+    // Start with only coderclaw profile
     // 1. Prime the cache by calling loadConfig() first
     const cfg = loadConfig();
     const resolved = resolveBrowserConfig(cfg.browser, cfg);
@@ -74,7 +74,7 @@ describe("server-context hot-reload profiles", () => {
       }),
     ).toBeNull();
 
-    // 2. Simulate adding a new profile to config (like user editing openclaw.json)
+    // 2. Simulate adding a new profile to config (like user editing coderclaw.json)
     cfgProfiles.desktop = { cdpUrl: "http://127.0.0.1:9222", color: "#0066CC" };
 
     // 3. Verify without clearConfigCache, loadConfig() still returns stale cached value
@@ -140,7 +140,7 @@ describe("server-context hot-reload profiles", () => {
     const after = resolveBrowserProfileWithHotReload({
       current: state,
       refreshConfigFromDisk: true,
-      name: "openclaw",
+      name: "coderclaw",
     });
     expect(after?.cdpPort).toBe(19999);
     expect(state.resolved.profiles.openclaw?.cdpPort).toBe(19999);

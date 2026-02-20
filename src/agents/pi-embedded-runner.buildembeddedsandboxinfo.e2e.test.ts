@@ -6,8 +6,8 @@ function createSandboxContext(overrides?: Partial<SandboxContext>): SandboxConte
   const base = {
     enabled: true,
     sessionKey: "session:test",
-    workspaceDir: "/tmp/openclaw-sandbox",
-    agentWorkspaceDir: "/tmp/openclaw-workspace",
+    workspaceDir: "/tmp/coderclaw-sandbox",
+    agentWorkspaceDir: "/tmp/coderclaw-workspace",
     workspaceAccess: "none",
     containerName: "openclaw-sbx-test",
     containerWorkdir: "/workspace",
@@ -46,7 +46,7 @@ describe("buildEmbeddedSandboxInfo", () => {
 
     expect(buildEmbeddedSandboxInfo(sandbox)).toEqual({
       enabled: true,
-      workspaceDir: "/tmp/openclaw-sandbox",
+      workspaceDir: "/tmp/coderclaw-sandbox",
       containerWorkspaceDir: "/workspace",
       workspaceAccess: "none",
       agentWorkspaceMount: undefined,
@@ -70,7 +70,7 @@ describe("buildEmbeddedSandboxInfo", () => {
       }),
     ).toEqual({
       enabled: true,
-      workspaceDir: "/tmp/openclaw-sandbox",
+      workspaceDir: "/tmp/coderclaw-sandbox",
       containerWorkspaceDir: "/workspace",
       workspaceAccess: "none",
       agentWorkspaceMount: undefined,

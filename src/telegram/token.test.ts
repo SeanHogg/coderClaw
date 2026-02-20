@@ -8,20 +8,20 @@ import { resolveTelegramToken } from "./token.js";
 import { readTelegramUpdateOffset, writeTelegramUpdateOffset } from "./update-offset-store.js";
 
 function withTempDir(): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-telegram-token-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "coderclaw-telegram-token-"));
 }
 
 async function withTempStateDir<T>(fn: (dir: string) => Promise<T>) {
-  const previous = process.env.OPENCLAW_STATE_DIR;
-  const dir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "openclaw-telegram-"));
-  process.env.OPENCLAW_STATE_DIR = dir;
+  const previous = process.env.CODERCLAW_STATE_DIR;
+  const dir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "coderclaw-telegram-"));
+  process.env.CODERCLAW_STATE_DIR = dir;
   try {
     return await fn(dir);
   } finally {
     if (previous === undefined) {
-      delete process.env.OPENCLAW_STATE_DIR;
+      delete process.env.CODERCLAW_STATE_DIR;
     } else {
-      process.env.OPENCLAW_STATE_DIR = previous;
+      process.env.CODERCLAW_STATE_DIR = previous;
     }
     await fsPromises.rm(dir, { recursive: true, force: true });
   }

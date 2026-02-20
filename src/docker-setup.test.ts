@@ -39,7 +39,7 @@ exit 0
 }
 
 async function createDockerSetupSandbox(): Promise<DockerSetupSandbox> {
-  const rootDir = await mkdtemp(join(tmpdir(), "openclaw-docker-setup-"));
+  const rootDir = await mkdtemp(join(tmpdir(), "coderclaw-docker-setup-"));
   const scriptPath = join(rootDir, "docker-setup.sh");
   const dockerfilePath = join(rootDir, "Dockerfile");
   const composePath = join(rootDir, "docker-compose.yml");
@@ -71,7 +71,7 @@ function createEnv(
     DOCKER_STUB_LOG: sandbox.logPath,
     CODERCLAW_GATEWAY_TOKEN: "test-token",
     CODERCLAW_CONFIG_DIR: join(sandbox.rootDir, "config"),
-    CODERCLAW_WORKSPACE_DIR: join(sandbox.rootDir, "openclaw"),
+    CODERCLAW_WORKSPACE_DIR: join(sandbox.rootDir, "coderclaw"),
   };
 
   for (const [key, value] of Object.entries(overrides)) {
@@ -120,7 +120,7 @@ describe("docker-setup.sh", () => {
       env: createEnv(sandbox, {
         CODERCLAW_DOCKER_APT_PACKAGES: "ffmpeg build-essential",
         CODERCLAW_EXTRA_MOUNTS: undefined,
-        CODERCLAW_HOME_VOLUME: "openclaw-home",
+        CODERCLAW_HOME_VOLUME: "coderclaw-home",
       }),
       stdio: ["ignore", "ignore", "pipe"],
     });
@@ -130,9 +130,9 @@ describe("docker-setup.sh", () => {
     expect(envFile).toContain("CODERCLAW_EXTRA_MOUNTS=");
     expect(envFile).toContain("CODERCLAW_HOME_VOLUME=openclaw-home");
     const extraCompose = await readFile(join(sandbox.rootDir, "docker-compose.extra.yml"), "utf8");
-    expect(extraCompose).toContain("openclaw-home:/home/node");
+    expect(extraCompose).toContain("coderclaw-home:/home/node");
     expect(extraCompose).toContain("volumes:");
-    expect(extraCompose).toContain("openclaw-home:");
+    expect(extraCompose).toContain("coderclaw-home:");
     const log = await readFile(sandbox.logPath, "utf8");
     expect(log).toContain("--build-arg CODERCLAW_DOCKER_APT_PACKAGES=ffmpeg build-essential");
   });

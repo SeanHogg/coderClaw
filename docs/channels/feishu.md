@@ -173,7 +173,7 @@ Choose **Feishu** and paste your App ID + App Secret.
 
 ### Configure via config file
 
-Edit `~/.coderclaw/openclaw.json`:
+Edit `~/.coderclaw/coderclaw.json`:
 
 ```json5
 {

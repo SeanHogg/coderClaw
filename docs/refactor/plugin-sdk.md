@@ -34,7 +34,7 @@ Contents (examples):
 
 Delivery:
 
-- Publish as `openclaw/plugin-sdk` (or export from core under `openclaw/plugin-sdk`).
+- Publish as `coderclaw/plugin-sdk` (or export from core under `coderclaw/plugin-sdk`).
 - Semver with explicit stability guarantees.
 
 ### 2) Plugin Runtime (execution surface, injected)
@@ -154,7 +154,7 @@ Notes:
 
 ### Phase 0: scaffolding
 
-- Introduce `openclaw/plugin-sdk`.
+- Introduce `coderclaw/plugin-sdk`.
 - Add `api.runtime` to `OpenClawPluginApi` with the surface above.
 - Maintain existing imports during a transition window (deprecation warnings).
 
@@ -189,7 +189,7 @@ Notes:
 
 - SDK: semver, published, documented changes.
 - Runtime: versioned per core release. Add `api.runtime.version`.
-- Plugins declare a required runtime range (e.g., `openclawRuntime: ">=2026.2.0"`).
+- Plugins declare a required runtime range (e.g., `coderclawRuntime: ">=2026.2.0"`).
 
 ## Testing strategy
 

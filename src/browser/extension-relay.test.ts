@@ -158,17 +158,17 @@ describe("chrome extension relay server", () => {
 
   it("derives relay auth headers from gateway token for loopback URLs", async () => {
     const port = await getFreePort();
-    const prev = process.env.OPENCLAW_GATEWAY_TOKEN;
-    process.env.OPENCLAW_GATEWAY_TOKEN = "test-gateway-token";
+    const prev = process.env.CODERCLAW_GATEWAY_TOKEN;
+    process.env.CODERCLAW_GATEWAY_TOKEN = "test-gateway-token";
     try {
       const headers = getChromeExtensionRelayAuthHeaders(`http://127.0.0.1:${port}`);
       expect(Object.keys(headers)).toContain("x-openclaw-relay-token");
       expect((headers["x-openclaw-relay-token"] ?? "").length).toBeGreaterThan(20);
     } finally {
       if (prev === undefined) {
-        delete process.env.OPENCLAW_GATEWAY_TOKEN;
+        delete process.env.CODERCLAW_GATEWAY_TOKEN;
       } else {
-        process.env.OPENCLAW_GATEWAY_TOKEN = prev;
+        process.env.CODERCLAW_GATEWAY_TOKEN = prev;
       }
     }
   });
@@ -387,8 +387,8 @@ describe("chrome extension relay server", () => {
       fakeRelay.once("error", reject);
     });
 
-    const prev = process.env.OPENCLAW_GATEWAY_TOKEN;
-    process.env.OPENCLAW_GATEWAY_TOKEN = "test-gateway-token";
+    const prev = process.env.CODERCLAW_GATEWAY_TOKEN;
+    process.env.CODERCLAW_GATEWAY_TOKEN = "test-gateway-token";
     try {
       cdpUrl = `http://127.0.0.1:${port}`;
       const relay = await ensureChromeExtensionRelayServer({ cdpUrl });
@@ -399,9 +399,9 @@ describe("chrome extension relay server", () => {
       expect(status.connected).toBe(false);
     } finally {
       if (prev === undefined) {
-        delete process.env.OPENCLAW_GATEWAY_TOKEN;
+        delete process.env.CODERCLAW_GATEWAY_TOKEN;
       } else {
-        process.env.OPENCLAW_GATEWAY_TOKEN = prev;
+        process.env.CODERCLAW_GATEWAY_TOKEN = prev;
       }
       await new Promise<void>((resolve) => fakeRelay.close(() => resolve()));
     }

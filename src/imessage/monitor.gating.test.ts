@@ -19,7 +19,7 @@ function baseCfg(): OpenClawConfig {
     },
     session: { mainKey: "main" },
     messages: {
-      groupChat: { mentionPatterns: ["@openclaw"] },
+      groupChat: { mentionPatterns: ["@coderclaw"] },
     },
   } as unknown as OpenClawConfig;
 }

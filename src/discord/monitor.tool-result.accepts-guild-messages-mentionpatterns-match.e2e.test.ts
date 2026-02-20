@@ -116,10 +116,10 @@ function createDefaultThreadConfig(): LoadedConfig {
     agents: {
       defaults: {
         model: "anthropic/claude-opus-4-5",
-        workspace: "/tmp/openclaw",
+        workspace: "/tmp/coderclaw",
       },
     },
-    session: { store: "/tmp/openclaw-sessions.json" },
+    session: { store: "/tmp/coderclaw-sessions.json" },
     messages: { responsePrefix: "PFX" },
     channels: {
       discord: {
@@ -206,10 +206,10 @@ describe("discord tool result dispatch", () => {
         agents: {
           defaults: {
             model: "anthropic/claude-opus-4-5",
-            workspace: "/tmp/openclaw",
+            workspace: "/tmp/coderclaw",
           },
         },
-        session: { store: "/tmp/openclaw-sessions.json" },
+        session: { store: "/tmp/coderclaw-sessions.json" },
         channels: {
           discord: {
             dm: { enabled: true, policy: "open" },
@@ -271,10 +271,10 @@ describe("discord tool result dispatch", () => {
           defaults: {
             model: "anthropic/claude-opus-4-5",
             humanDelay: { mode: "off" },
-            workspace: "/tmp/openclaw",
+            workspace: "/tmp/coderclaw",
           },
         },
-        session: { store: "/tmp/openclaw-sessions.json" },
+        session: { store: "/tmp/coderclaw-sessions.json" },
         channels: {
           discord: { dm: { enabled: true, policy: "open" } },
         },
@@ -320,10 +320,10 @@ describe("discord tool result dispatch", () => {
       agents: {
         defaults: {
           model: "anthropic/claude-opus-4-5",
-          workspace: "/tmp/openclaw",
+          workspace: "/tmp/coderclaw",
         },
       },
-      session: { store: "/tmp/openclaw-sessions.json" },
+      session: { store: "/tmp/coderclaw-sessions.json" },
       channels: {
         discord: {
           dm: { enabled: true, policy: "open" },
@@ -450,8 +450,8 @@ describe("discord tool result dispatch", () => {
     }>();
 
     const cfg = {
-      agent: { model: "anthropic/claude-opus-4-5", workspace: "/tmp/openclaw" },
-      session: { store: "/tmp/openclaw-sessions.json" },
+      agent: { model: "anthropic/claude-opus-4-5", workspace: "/tmp/coderclaw" },
+      session: { store: "/tmp/coderclaw-sessions.json" },
       channels: {
         discord: {
           dm: { enabled: true, policy: "open" },

@@ -7,7 +7,7 @@ import { writeSkill } from "./skills.e2e-test-helpers.js";
 
 describe("buildWorkspaceSkillStatus", () => {
   it("reports missing requirements and install options", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-"));
     const skillDir = path.join(workspaceDir, "skills", "status-skill");
 
     await writeSkill({
@@ -32,7 +32,7 @@ describe("buildWorkspaceSkillStatus", () => {
     expect(skill?.install[0]?.id).toBe("brew");
   });
   it("respects OS-gated skills", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-"));
     const skillDir = path.join(workspaceDir, "skills", "os-skill");
 
     await writeSkill({
@@ -57,10 +57,10 @@ describe("buildWorkspaceSkillStatus", () => {
     }
   });
   it("marks bundled skills blocked by allowlist", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-"));
     const bundledDir = path.join(workspaceDir, ".bundled");
     const bundledSkillDir = path.join(bundledDir, "peekaboo");
-    const originalBundled = process.env.OPENCLAW_BUNDLED_SKILLS_DIR;
+    const originalBundled = process.env.CODERCLAW_BUNDLED_SKILLS_DIR;
 
     await writeSkill({
       dir: bundledSkillDir,
@@ -70,7 +70,7 @@ describe("buildWorkspaceSkillStatus", () => {
     });
 
     try {
-      process.env.OPENCLAW_BUNDLED_SKILLS_DIR = bundledDir;
+      process.env.CODERCLAW_BUNDLED_SKILLS_DIR = bundledDir;
       const report = buildWorkspaceSkillStatus(workspaceDir, {
         managedSkillsDir: path.join(workspaceDir, ".managed"),
         config: { skills: { allowBundled: ["other-skill"] } },
@@ -82,15 +82,15 @@ describe("buildWorkspaceSkillStatus", () => {
       expect(skill?.eligible).toBe(false);
     } finally {
       if (originalBundled === undefined) {
-        delete process.env.OPENCLAW_BUNDLED_SKILLS_DIR;
+        delete process.env.CODERCLAW_BUNDLED_SKILLS_DIR;
       } else {
-        process.env.OPENCLAW_BUNDLED_SKILLS_DIR = originalBundled;
+        process.env.CODERCLAW_BUNDLED_SKILLS_DIR = originalBundled;
       }
     }
   });
 
   it("filters install options by OS", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-"));
     const skillDir = path.join(workspaceDir, "skills", "install-skill");
 
     await writeSkill({

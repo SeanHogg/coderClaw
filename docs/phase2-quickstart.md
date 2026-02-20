@@ -50,7 +50,7 @@ EOF
 ### 2. Try a Simple Task
 
 ```typescript
-import { CoderClawRuntime, LocalTransportAdapter } from "openclaw/transport";
+import { CoderClawRuntime, LocalTransportAdapter } from "coderclaw/transport";
 
 // Create runtime with local adapter
 const adapter = new LocalTransportAdapter(context);
@@ -174,7 +174,7 @@ EOF
 ### Example 1: Task Submission with Progress Tracking
 
 ```typescript
-import { DistributedTaskEngine, MemoryTaskStorage } from "openclaw/transport";
+import { DistributedTaskEngine, MemoryTaskStorage } from "coderclaw/transport";
 
 const taskEngine = new DistributedTaskEngine(new MemoryTaskStorage());
 

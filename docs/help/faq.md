@@ -20,13 +20,13 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [It is stuck on "wake up my friend" / onboarding will not hatch. What now?](#it-is-stuck-on-wake-up-my-friend-onboarding-will-not-hatch-what-now)
   - [Can I migrate my setup to a new machine (Mac mini) without redoing onboarding?](#can-i-migrate-my-setup-to-a-new-machine-mac-mini-without-redoing-onboarding)
   - [Where do I see what is new in the latest version?](#where-do-i-see-what-is-new-in-the-latest-version)
-  - [I can't access docs.openclaw.ai (SSL error). What now?](#i-cant-access-docsopenclawai-ssl-error-what-now)
+  - [I can't access docs.coderclaw.ai (SSL error). What now?](#i-cant-access-docsopenclawai-ssl-error-what-now)
   - [What's the difference between stable and beta?](#whats-the-difference-between-stable-and-beta)
   - [How do I install the beta version, and what's the difference between beta and dev?](#how-do-i-install-the-beta-version-and-whats-the-difference-between-beta-and-dev)
   - [How do I try the latest bits?](#how-do-i-try-the-latest-bits)
   - [How long does install and onboarding usually take?](#how-long-does-install-and-onboarding-usually-take)
   - [Installer stuck? How do I get more feedback?](#installer-stuck-how-do-i-get-more-feedback)
-  - [Windows install says git not found or openclaw not recognized](#windows-install-says-git-not-found-or-openclaw-not-recognized)
+  - [Windows install says git not found or coderclaw not recognized](#windows-install-says-git-not-found-or-openclaw-not-recognized)
   - [The docs didn't answer my question - how do I get a better answer?](#the-docs-didnt-answer-my-question-how-do-i-get-a-better-answer)
   - [How do I install OpenClaw on Linux?](#how-do-i-install-openclaw-on-linux)
   - [How do I install OpenClaw on a VPS?](#how-do-i-install-openclaw-on-a-vps)
@@ -116,7 +116,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [How do I connect a Mac node to a remote Gateway (Tailscale Serve)?](#how-do-i-connect-a-mac-node-to-a-remote-gateway-tailscale-serve)
   - [Should I install on a second laptop or just add a node?](#should-i-install-on-a-second-laptop-or-just-add-a-node)
 - [Env vars and .env loading](#env-vars-and-env-loading)
-  - [How does OpenClaw load environment variables?](#how-does-openclaw-load-environment-variables)
+  - [How does OpenClaw load environment variables?](#how-does-coderclaw-load-environment-variables)
   - ["I started the Gateway via the service and my env vars disappeared." What now?](#i-started-the-gateway-via-the-service-and-my-env-vars-disappeared-what-now)
   - [I set `COPILOT_GITHUB_TOKEN`, but models status shows "Shell env: off." Why?](#i-set-copilotgithubtoken-but-models-status-shows-shell-env-off-why)
 - [Sessions and multiple chats](#sessions-and-multiple-chats)
@@ -238,7 +238,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
    If RPC is down, fall back to:
 
    ```bash
-   tail -f "$(ls -t /tmp/openclaw/openclaw-*.log | head -1)"
+   tail -f "$(ls -t /tmp/coderclaw/coderclaw-*.log | head -1)"
    ```
 
    File logs are separate from service logs; see [Logging](/logging) and [Troubleshooting](/gateway/troubleshooting).
@@ -343,7 +343,7 @@ The wizard opens your browser with a clean (non-tokenized) dashboard URL right a
 **Localhost (same machine):**
 
 - Open `http://127.0.0.1:18789/`.
-- If it asks for auth, paste the token from `gateway.auth.token` (or `OPENCLAW_GATEWAY_TOKEN`) into Control UI settings.
+- If it asks for auth, paste the token from `gateway.auth.token` (or `CODERCLAW_GATEWAY_TOKEN`) into Control UI settings.
 - Retrieve it from the gateway host: `coderclaw config get gateway.auth.token` (or generate one: `coderclaw doctor --generate-gateway-token`).
 
 **Not on localhost:**
@@ -416,7 +416,7 @@ keeps your bot "exactly the same" (memory, session history, auth, and channel
 state) as long as you copy **both** locations:
 
 1. Install OpenClaw on the new machine.
-2. Copy `$OPENCLAW_STATE_DIR` (default: `~/.coderclaw`) from the old machine.
+2. Copy `$CODERCLAW_STATE_DIR` (default: `~/.coderclaw`) from the old machine.
 3. Copy your workspace (default: `~/.coderclaw/workspace`).
 4. Run `coderclaw doctor` and restart the Gateway service.
 
@@ -440,10 +440,10 @@ Newest entries are at the top. If the top section is marked **Unreleased**, the 
 section is the latest shipped version. Entries are grouped by **Highlights**, **Changes**, and
 **Fixes** (plus docs/other sections when needed).
 
-### I cant access docs.openclaw.ai SSL error What now
+### I cant access docs.coderclaw.ai SSL error What now
 
-Some Comcast/Xfinity connections incorrectly block `docs.openclaw.ai` via Xfinity
-Advanced Security. Disable it or allowlist `docs.openclaw.ai`, then retry. More
+Some Comcast/Xfinity connections incorrectly block `docs.coderclaw.ai` via Xfinity
+Advanced Security. Disable it or allowlist `docs.coderclaw.ai`, then retry. More
 detail: [Troubleshooting](/help/troubleshooting#docsopenclawai-shows-an-ssl-error-comcastxfinity).
 Please help us unblock it by reporting here: [https://spa.xfinity.com/check_url_status](https://spa.xfinity.com/check_url_status).
 
@@ -557,7 +557,7 @@ Set-PSDebug -Trace 0
 
 More options: [Installer flags](/install/installer).
 
-### Windows install says git not found or openclaw not recognized
+### Windows install says git not found or coderclaw not recognized
 
 Two common Windows issues:
 
@@ -566,7 +566,7 @@ Two common Windows issues:
 - Install **Git for Windows** and make sure `git` is on your PATH.
 - Close and reopen PowerShell, then re-run the installer.
 
-**2) openclaw is not recognized after install**
+**2) coderclaw is not recognized after install**
 
 - Your npm global bin folder is not on PATH.
 - Check the path:
@@ -731,7 +731,7 @@ See [OAuth](/concepts/oauth), [Model providers](/concepts/model-providers), and 
 
 ### How do I set up Gemini CLI OAuth
 
-Gemini CLI uses a **plugin auth flow**, not a client id or secret in `openclaw.json`.
+Gemini CLI uses a **plugin auth flow**, not a client id or secret in `coderclaw.json`.
 
 Steps:
 
@@ -1009,11 +1009,11 @@ Showcase: [https://openclaw.ai/showcase](https://openclaw.ai/showcase)
 
 ### How do I customize skills without keeping the repo dirty
 
-Use managed overrides instead of editing the repo copy. Put your changes in `~/.coderclaw/skills/<name>/SKILL.md` (or add a folder via `skills.load.extraDirs` in `~/.coderclaw/openclaw.json`). Precedence is `<workspace>/skills` > `~/.coderclaw/skills` > bundled, so managed overrides win without touching git. Only upstream-worthy edits should live in the repo and go out as PRs.
+Use managed overrides instead of editing the repo copy. Put your changes in `~/.coderclaw/skills/<name>/SKILL.md` (or add a folder via `skills.load.extraDirs` in `~/.coderclaw/coderclaw.json`). Precedence is `<workspace>/skills` > `~/.coderclaw/skills` > bundled, so managed overrides win without touching git. Only upstream-worthy edits should live in the repo and go out as PRs.
 
 ### Can I load skills from a custom folder
 
-Yes. Add extra directories via `skills.load.extraDirs` in `~/.coderclaw/openclaw.json` (lowest precedence). Default precedence remains: `<workspace>/skills` → `~/.coderclaw/skills` → bundled → `skills.load.extraDirs`. `clawhub` installs into `./skills` by default, which OpenClaw treats as `<workspace>/skills`.
+Yes. Add extra directories via `skills.load.extraDirs` in `~/.coderclaw/coderclaw.json` (lowest precedence). Default precedence remains: `<workspace>/skills` → `~/.coderclaw/skills` → bundled → `skills.load.extraDirs`. `clawhub` installs into `./skills` by default, which OpenClaw treats as `<workspace>/skills`.
 
 ### How can I use different models for different tasks
 
@@ -1045,7 +1045,7 @@ scheduled jobs will not run.
 
 Checklist:
 
-- Confirm cron is enabled (`cron.enabled`) and `OPENCLAW_SKIP_CRON` is not set.
+- Confirm cron is enabled (`cron.enabled`) and `CODERCLAW_SKIP_CRON` is not set.
 - Check the Gateway is running 24/7 (no sleep/restarts).
 - Verify timezone settings for the job (`--tz` vs host timezone).
 
@@ -1086,7 +1086,7 @@ Docs: [Cron jobs](/automation/cron-jobs), [Cron vs Heartbeat](/automation/cron-v
 
 ### Can I run Apple macOS-only skills from Linux?
 
-Not directly. macOS skills are gated by `metadata.openclaw.os` plus required binaries, and skills only appear in the system prompt when they are eligible on the **Gateway host**. On Linux, `darwin`-only skills (like `apple-notes`, `apple-reminders`, `things-mac`) will not load unless you override the gating.
+Not directly. macOS skills are gated by `metadata.coderclaw.os` plus required binaries, and skills only appear in the system prompt when they are eligible on the **Gateway host**. On Linux, `darwin`-only skills (like `apple-notes`, `apple-reminders`, `things-mac`) will not load unless you override the gating.
 
 You have three supported patterns:
 
@@ -1114,7 +1114,7 @@ Keep the Gateway on Linux, but make the required CLI binaries resolve to SSH wra
    ---
    name: apple-notes
    description: Manage Apple Notes via the memo CLI on macOS.
-   metadata: { "openclaw": { "os": ["darwin", "linux"], "requires": { "bins": ["memo"] } } }
+   metadata: { "coderclaw": { "os": ["darwin", "linux"], "requires": { "bins": ["memo"] } } }
    ---
    ```
 
@@ -1151,8 +1151,8 @@ ClawHub installs into `./skills` under your current directory (or falls back to 
 Use the built-in installer, then load the unpacked extension in Chrome:
 
 ```bash
-openclaw browser extension install
-openclaw browser extension path
+coderclaw browser extension install
+coderclaw browser extension path
 ```
 
 Then Chrome → `chrome://extensions` → enable "Developer mode" → "Load unpacked" → pick that folder.
@@ -1174,8 +1174,8 @@ Yes. See [Sandboxing](/gateway/sandboxing). For Docker-specific setup (full gate
 The default image is security-first and runs as the `node` user, so it does not
 include system packages, Homebrew, or bundled browsers. For a fuller setup:
 
-- Persist `/home/node` with `OPENCLAW_HOME_VOLUME` so caches survive.
-- Bake system deps into the image with `OPENCLAW_DOCKER_APT_PACKAGES`.
+- Persist `/home/node` with `CODERCLAW_HOME_VOLUME` so caches survive.
+- Bake system deps into the image with `CODERCLAW_DOCKER_APT_PACKAGES`.
 - Install Playwright browsers via the bundled CLI:
   `node /app/node_modules/playwright-core/cli.js install chromium`
 - Set `PLAYWRIGHT_BROWSERS_PATH` and ensure the path is persisted.
@@ -1265,18 +1265,18 @@ Related: [Agent workspace](/concepts/agent-workspace), [Memory](/concepts/memory
 
 ### Where does OpenClaw store its data
 
-Everything lives under `$OPENCLAW_STATE_DIR` (default: `~/.coderclaw`):
+Everything lives under `$CODERCLAW_STATE_DIR` (default: `~/.coderclaw`):
 
 | Path                                                            | Purpose                                                      |
 | --------------------------------------------------------------- | ------------------------------------------------------------ |
-| `$OPENCLAW_STATE_DIR/openclaw.json`                             | Main config (JSON5)                                          |
-| `$OPENCLAW_STATE_DIR/credentials/oauth.json`                    | Legacy OAuth import (copied into auth profiles on first use) |
-| `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Auth profiles (OAuth + API keys)                             |
-| `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | Runtime auth cache (managed automatically)                   |
-| `$OPENCLAW_STATE_DIR/credentials/`                              | Provider state (e.g. `whatsapp/<accountId>/creds.json`)      |
-| `$OPENCLAW_STATE_DIR/agents/`                                   | Per-agent state (agentDir + sessions)                        |
-| `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                | Conversation history & state (per agent)                     |
-| `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | Session metadata (per agent)                                 |
+| `$CODERCLAW_STATE_DIR/coderclaw.json`                             | Main config (JSON5)                                          |
+| `$CODERCLAW_STATE_DIR/credentials/oauth.json`                    | Legacy OAuth import (copied into auth profiles on first use) |
+| `$CODERCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Auth profiles (OAuth + API keys)                             |
+| `$CODERCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | Runtime auth cache (managed automatically)                   |
+| `$CODERCLAW_STATE_DIR/credentials/`                              | Provider state (e.g. `whatsapp/<accountId>/creds.json`)      |
+| `$CODERCLAW_STATE_DIR/agents/`                                   | Per-agent state (agentDir + sessions)                        |
+| `$CODERCLAW_STATE_DIR/agents/<agentId>/sessions/`                | Conversation history & state (per agent)                     |
+| `$CODERCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | Session metadata (per agent)                                 |
 
 Legacy single-agent path: `~/.coderclaw/agent/*` (migrated by `coderclaw doctor`).
 
@@ -1354,17 +1354,17 @@ Session state is owned by the **gateway host**. If you're in remote mode, the se
 
 ### What format is the config Where is it
 
-OpenClaw reads an optional **JSON5** config from `$OPENCLAW_CONFIG_PATH` (default: `~/.coderclaw/openclaw.json`):
+OpenClaw reads an optional **JSON5** config from `$CODERCLAW_CONFIG_PATH` (default: `~/.coderclaw/coderclaw.json`):
 
 ```
-$OPENCLAW_CONFIG_PATH
+$CODERCLAW_CONFIG_PATH
 ```
 
 If the file is missing, it uses safe-ish defaults (including a default workspace of `~/.coderclaw/workspace`).
 
 ### I set gatewaybind lan or tailnet and now nothing listens the UI says unauthorized
 
-Non-loopback binds **require auth**. Configure `gateway.auth.mode` + `gateway.auth.token` (or use `OPENCLAW_GATEWAY_TOKEN`).
+Non-loopback binds **require auth**. Configure `gateway.auth.mode` + `gateway.auth.token` (or use `CODERCLAW_GATEWAY_TOKEN`).
 
 ```json5
 {
@@ -1602,7 +1602,7 @@ else is removed.
 
 Recover:
 
-- Restore from backup (git or a copied `~/.coderclaw/openclaw.json`).
+- Restore from backup (git or a copied `~/.coderclaw/coderclaw.json`).
 - If you have no backup, re-run `coderclaw doctor` and reconfigure channels/models.
 - If this was unexpected, file a bug and include your last known config or any backup.
 - A local coding agent can often reconstruct a working config from logs or history.
@@ -1677,7 +1677,7 @@ Docs: [Gateway protocol](/gateway/protocol), [Discovery](/gateway/discovery), [m
 OpenClaw reads env vars from the parent process (shell, launchd/systemd, CI, etc.) and additionally loads:
 
 - `.env` from the current working directory
-- a global fallback `.env` from `~/.coderclaw/.env` (aka `$OPENCLAW_STATE_DIR/.env`)
+- a global fallback `.env` from `~/.coderclaw/.env` (aka `$CODERCLAW_STATE_DIR/.env`)
 
 Neither `.env` file overrides existing env vars.
 
@@ -1713,7 +1713,7 @@ Two common fixes:
 ```
 
 This runs your login shell and imports only missing expected keys (never overrides). Env var equivalents:
-`OPENCLAW_LOAD_SHELL_ENV=1`, `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`.
+`CODERCLAW_LOAD_SHELL_ENV=1`, `CODERCLAW_SHELL_ENV_TIMEOUT_MS=15000`.
 
 ### I set COPILOTGITHUBTOKEN but models status shows Shell env off Why
 
@@ -1810,7 +1810,7 @@ coderclaw onboard --install-daemon
 Notes:
 
 - The onboarding wizard also offers **Reset** if it sees an existing config. See [Wizard](/start/wizard).
-- If you used profiles (`--profile` / `OPENCLAW_PROFILE`), reset each state dir (defaults are `~/.openclaw-<profile>`).
+- If you used profiles (`--profile` / `CODERCLAW_PROFILE`), reset each state dir (defaults are `~/.openclaw-<profile>`).
 - Dev reset: `coderclaw gateway --dev --reset` (dev-only; wipes dev config + credentials + sessions + workspace).
 
 ### Im getting context too large errors how do I reset or compact
@@ -2006,7 +2006,7 @@ Safe options:
 - `/model` in chat (quick, per-session)
 - `coderclaw models set ...` (updates just model config)
 - `coderclaw configure --section model` (interactive)
-- edit `agents.defaults.model` in `~/.coderclaw/openclaw.json`
+- edit `agents.defaults.model` in `~/.coderclaw/coderclaw.json`
 
 Avoid `config.apply` with a partial object unless you intend to replace the whole config.
 If you did overwrite config, restore from backup or re-run `coderclaw doctor` to repair.
@@ -2353,7 +2353,7 @@ The wizard explicitly supports Anthropic setup-token and OpenAI Codex OAuth and 
 Precedence:
 
 ```
---port > OPENCLAW_GATEWAY_PORT > gateway.port > default 18789
+--port > CODERCLAW_GATEWAY_PORT > gateway.port > default 18789
 ```
 
 ### Why does coderclaw gateway status say Runtime running but RPC probe failed
@@ -2368,7 +2368,7 @@ Use `coderclaw gateway status` and trust these lines:
 
 ### Why does coderclaw gateway status show Config cli and Config service different
 
-You're editing one config file while the service is running another (often a `--profile` / `OPENCLAW_STATE_DIR` mismatch).
+You're editing one config file while the service is running another (often a `--profile` / `CODERCLAW_STATE_DIR` mismatch).
 
 Fix:
 
@@ -2419,7 +2419,7 @@ Fix:
 - Fastest: `coderclaw dashboard` (prints + copies the dashboard URL, tries to open; shows SSH hint if headless).
 - If you don't have a token yet: `coderclaw doctor --generate-gateway-token`.
 - If remote, tunnel first: `ssh -N -L 18789:127.0.0.1:18789 user@host` then open `http://127.0.0.1:18789/`.
-- Set `gateway.auth.token` (or `OPENCLAW_GATEWAY_TOKEN`) on the gateway host.
+- Set `gateway.auth.token` (or `CODERCLAW_GATEWAY_TOKEN`) on the gateway host.
 - In the Control UI settings, paste the same token.
 - Still stuck? Run `coderclaw status --all` and follow [Troubleshooting](/gateway/troubleshooting). See [Dashboard](/web/dashboard) for auth details.
 
@@ -2440,14 +2440,14 @@ Usually no - one Gateway can run multiple messaging channels and agents. Use mul
 
 Yes, but you must isolate:
 
-- `OPENCLAW_CONFIG_PATH` (per-instance config)
-- `OPENCLAW_STATE_DIR` (per-instance state)
+- `CODERCLAW_CONFIG_PATH` (per-instance config)
+- `CODERCLAW_STATE_DIR` (per-instance state)
 - `agents.defaults.workspace` (workspace isolation)
 - `gateway.port` (unique ports)
 
 Quick setup (recommended):
 
-- Use `openclaw --profile <name> …` per instance (auto-creates `~/.openclaw-<name>`).
+- Use `openclaw --profile <name> …` per instance (auto-creates `~/.coderclaw-<name>`).
 - Set a unique `gateway.port` in each profile config (or pass `--port` for manual runs).
 - Install a per-profile service: `openclaw --profile <name> gateway install`.
 
@@ -2487,7 +2487,7 @@ Protocol details: [Gateway protocol](/gateway/protocol).
 File logs (structured):
 
 ```
-/tmp/openclaw/openclaw-YYYY-MM-DD.log
+/tmp/coderclaw/coderclaw-YYYY-MM-DD.log
 ```
 
 You can set a stable path via `logging.file`. File log level is controlled by `logging.level`. Console verbosity is controlled by `--verbose` and `logging.consoleLevel`.
@@ -2500,7 +2500,7 @@ coderclaw logs --follow
 
 Service/supervisor logs (when the gateway runs via launchd/systemd):
 
-- macOS: `$OPENCLAW_STATE_DIR/logs/gateway.log` and `gateway.err.log` (default: `~/.coderclaw/logs/...`; profiles use `~/.openclaw-<profile>/logs/...`)
+- macOS: `$CODERCLAW_STATE_DIR/logs/gateway.log` and `gateway.err.log` (default: `~/.coderclaw/logs/...`; profiles use `~/.openclaw-<profile>/logs/...`)
 - Linux: `journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`
 - Windows: `schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST`
 

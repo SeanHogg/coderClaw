@@ -111,7 +111,7 @@ describe("promptDefaultModel", () => {
       includeManual: false,
       includeVllm: true,
       ignoreAllowlist: true,
-      agentDir: "/tmp/openclaw-agent",
+      agentDir: "/tmp/coderclaw-agent",
     });
 
     expect(upsertAuthProfileWithLock).toHaveBeenCalledWith(

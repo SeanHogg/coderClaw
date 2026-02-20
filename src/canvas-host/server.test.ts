@@ -62,7 +62,7 @@ describe("canvas host", () => {
   };
 
   beforeAll(async () => {
-    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-canvas-fixtures-"));
+    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-canvas-fixtures-"));
   });
 
   afterAll(async () => {

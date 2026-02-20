@@ -39,11 +39,11 @@ x-i18n:
 ## CLI 工作流程（支持无头模式）
 
 ```bash
-openclaw nodes pending
-openclaw nodes approve <requestId>
-openclaw nodes reject <requestId>
-openclaw nodes status
-openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
+coderclaw nodes pending
+coderclaw nodes approve <requestId>
+coderclaw nodes reject <requestId>
+coderclaw nodes status
+coderclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 ```
 
 `nodes status` 显示已配对/已连接的节点及其功能。
@@ -85,7 +85,7 @@ openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 - `~/.openclaw/nodes/paired.json`
 - `~/.openclaw/nodes/pending.json`
 
-如果你覆盖了 `OPENCLAW_STATE_DIR`，`nodes/` 文件夹会随之移动。
+如果你覆盖了 `CODERCLAW_STATE_DIR`，`nodes/` 文件夹会随之移动。
 
 安全注意事项：
 

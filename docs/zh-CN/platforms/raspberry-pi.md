@@ -125,7 +125,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 ### 选项 B：可修改安装（用于调试）
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
+git clone https://github.com/SeanHogg/coderClaw.git
 cd openclaw
 npm install
 npm run build
@@ -137,7 +137,7 @@ npm link
 ## 7) 运行新手引导
 
 ```bash
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 按照向导操作：
@@ -151,13 +151,13 @@ openclaw onboard --install-daemon
 
 ```bash
 # 检查状态
-openclaw status
+coderclaw status
 
 # 检查服务
 sudo systemctl status openclaw
 
 # 查看日志
-journalctl -u openclaw -f
+journalctl -u coderclaw -f
 ```
 
 ## 9) 访问仪表板
@@ -180,7 +180,7 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up
 
 # 更新配置
-openclaw config set gateway.bind tailnet
+coderclaw config set gateway.bind tailnet
 sudo systemctl restart openclaw
 ```
 
@@ -311,10 +311,10 @@ free -h
 
 ```bash
 # 检查日志
-journalctl -u openclaw --no-pager -n 100
+journalctl -u coderclaw --no-pager -n 100
 
 # 常见修复：重新构建
-cd ~/openclaw  # 如果使用可修改安装
+cd ~/coderclaw  # 如果使用可修改安装
 npm run build
 sudo systemctl restart openclaw
 ```

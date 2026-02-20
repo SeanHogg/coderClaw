@@ -9,7 +9,7 @@ title: "Configuration"
 
 # Configuration
 
-OpenClaw reads an optional <Tooltip tip="JSON5 supports comments and trailing commas">**JSON5**</Tooltip> config from `~/.coderclaw/openclaw.json`.
+OpenClaw reads an optional <Tooltip tip="JSON5 supports comments and trailing commas">**JSON5**</Tooltip> config from `~/.coderclaw/coderclaw.json`.
 
 If the file is missing, OpenClaw uses safe defaults. Common reasons to add a config:
 
@@ -26,7 +26,7 @@ See the [full reference](/gateway/configuration-reference) for every available f
 ## Minimal config
 
 ```json5
-// ~/.coderclaw/openclaw.json
+// ~/.coderclaw/coderclaw.json
 {
   agents: { defaults: { workspace: "~/.coderclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
@@ -54,7 +54,7 @@ See the [full reference](/gateway/configuration-reference) for every available f
     The Control UI renders a form from the config schema, with a **Raw JSON** editor as an escape hatch.
   </Tab>
   <Tab title="Direct edit">
-    Edit `~/.coderclaw/openclaw.json` directly. The Gateway watches the file and applies changes automatically (see [hot reload](#config-hot-reload)).
+    Edit `~/.coderclaw/coderclaw.json` directly. The Gateway watches the file and applies changes automatically (see [hot reload](#config-hot-reload)).
   </Tab>
 </Tabs>
 
@@ -308,7 +308,7 @@ When validation fails:
     Use `$include` to organize large configs:
 
     ```json5
-    // ~/.coderclaw/openclaw.json
+    // ~/.coderclaw/coderclaw.json
     {
       gateway: { port: 18789 },
       agents: { $include: "./agents.json5" },
@@ -330,7 +330,7 @@ When validation fails:
 
 ## Config hot reload
 
-The Gateway watches `~/.coderclaw/openclaw.json` and applies changes automatically — no manual restart needed for most settings.
+The Gateway watches `~/.coderclaw/coderclaw.json` and applies changes automatically — no manual restart needed for most settings.
 
 ### Reload modes
 
@@ -449,7 +449,7 @@ Neither file overrides existing env vars. You can also set inline env vars in co
 }
 ```
 
-Env var equivalent: `OPENCLAW_LOAD_SHELL_ENV=1`
+Env var equivalent: `CODERCLAW_LOAD_SHELL_ENV=1`
 </Accordion>
 
 <Accordion title="Env var substitution in config values">
@@ -457,7 +457,7 @@ Env var equivalent: `OPENCLAW_LOAD_SHELL_ENV=1`
 
 ```json5
 {
-  gateway: { auth: { token: "${OPENCLAW_GATEWAY_TOKEN}" } },
+  gateway: { auth: { token: "${CODERCLAW_GATEWAY_TOKEN}" } },
   models: { providers: { custom: { apiKey: "${CUSTOM_API_KEY}" } } },
 }
 ```

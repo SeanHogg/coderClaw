@@ -12,7 +12,7 @@ This guide migrates a OpenClaw Gateway from one machine to another **without red
 
 The migration is simple conceptually:
 
-- Copy the **state directory** (`$OPENCLAW_STATE_DIR`, default: `~/.coderclaw/`) — this includes config, auth, sessions, and channel state.
+- Copy the **state directory** (`$CODERCLAW_STATE_DIR`, default: `~/.coderclaw/`) — this includes config, auth, sessions, and channel state.
 - Copy your **workspace** (`~/.coderclaw/workspace/` by default) — this includes your agent files (memory, prompts, etc.).
 
 But there are common footguns around **profiles**, **permissions**, and **partial copies**.
@@ -28,7 +28,7 @@ Most installs use the default:
 But it may be different if you use:
 
 - `--profile <name>` (often becomes `~/.openclaw-<profile>/`)
-- `OPENCLAW_STATE_DIR=/some/path`
+- `CODERCLAW_STATE_DIR=/some/path`
 
 If you’re not sure, run on the **old** machine:
 
@@ -36,7 +36,7 @@ If you’re not sure, run on the **old** machine:
 coderclaw status
 ```
 
-Look for mentions of `OPENCLAW_STATE_DIR` / profile in the output. If you run multiple gateways, repeat for each profile.
+Look for mentions of `CODERCLAW_STATE_DIR` / profile in the output. If you run multiple gateways, repeat for each profile.
 
 ### 2) Identify your workspace
 
@@ -51,7 +51,7 @@ Your workspace is where files like `MEMORY.md`, `USER.md`, and `memory/*.md` liv
 
 If you copy **both** the state dir and workspace, you keep:
 
-- Gateway configuration (`openclaw.json`)
+- Gateway configuration (`coderclaw.json`)
 - Auth profiles / API keys / OAuth tokens
 - Session history + agent state
 - Channel state (e.g. WhatsApp login/session)
@@ -63,7 +63,7 @@ If you copy **only** the workspace (e.g., via Git), you do **not** preserve:
 - credentials
 - channel logins
 
-Those live under `$OPENCLAW_STATE_DIR`.
+Those live under `$CODERCLAW_STATE_DIR`.
 
 ## Migration steps (recommended)
 
@@ -82,7 +82,7 @@ coderclaw gateway stop
 cd ~
 tar -czf openclaw-state.tgz .openclaw
 
-tar -czf openclaw-workspace.tgz .openclaw/workspace
+tar -czf coderclaw-workspace.tgz .openclaw/workspace
 ```
 
 If you have multiple profiles/state dirs (e.g. `~/.coderclaw-main`, `~/.coderclaw-work`), archive each.
@@ -99,7 +99,7 @@ At this stage, it’s OK if onboarding creates a fresh `~/.coderclaw/` — you w
 
 Copy **both**:
 
-- `$OPENCLAW_STATE_DIR` (default `~/.coderclaw/`)
+- `$CODERCLAW_STATE_DIR` (default `~/.coderclaw/`)
 - your workspace (default `~/.coderclaw/workspace/`)
 
 Common approaches:
@@ -134,7 +134,7 @@ coderclaw status
 
 ### Footgun: profile / state-dir mismatch
 
-If you ran the old gateway with a profile (or `OPENCLAW_STATE_DIR`), and the new gateway uses a different one, you’ll see symptoms like:
+If you ran the old gateway with a profile (or `CODERCLAW_STATE_DIR`), and the new gateway uses a different one, you’ll see symptoms like:
 
 - config changes not taking effect
 - channels missing / logged out
@@ -146,14 +146,14 @@ Fix: run the gateway/service using the **same** profile/state dir you migrated, 
 coderclaw doctor
 ```
 
-### Footgun: copying only `openclaw.json`
+### Footgun: copying only `coderclaw.json`
 
-`openclaw.json` is not enough. Many providers store state under:
+`coderclaw.json` is not enough. Many providers store state under:
 
-- `$OPENCLAW_STATE_DIR/credentials/`
-- `$OPENCLAW_STATE_DIR/agents/<agentId>/...`
+- `$CODERCLAW_STATE_DIR/credentials/`
+- `$CODERCLAW_STATE_DIR/agents/<agentId>/...`
 
-Always migrate the entire `$OPENCLAW_STATE_DIR` folder.
+Always migrate the entire `$CODERCLAW_STATE_DIR` folder.
 
 ### Footgun: permissions / ownership
 
@@ -170,7 +170,7 @@ If you’re in remote mode, migrate the **gateway host**.
 
 ### Footgun: secrets in backups
 
-`$OPENCLAW_STATE_DIR` contains secrets (API keys, OAuth tokens, WhatsApp creds). Treat backups like production secrets:
+`$CODERCLAW_STATE_DIR` contains secrets (API keys, OAuth tokens, WhatsApp creds). Treat backups like production secrets:
 
 - store encrypted
 - avoid sharing over insecure channels

@@ -14,16 +14,16 @@ x-i18n:
 
 # 安全性 🔒
 
-## 快速检查：`openclaw security audit`
+## 快速检查：`coderclaw security audit`
 
 另请参阅：[形式化验证（安全模型）](/security/formal-verification/)
 
 定期运行此命令（尤其是在更改配置或暴露网络接口之后）：
 
 ```bash
-openclaw security audit
-openclaw security audit --deep
-openclaw security audit --fix
+coderclaw security audit
+coderclaw security audit --deep
+coderclaw security audit --fix
 ```
 
 它会标记常见的安全隐患（Gateway 网关认证暴露、浏览器控制暴露、提权白名单、文件系统权限）。
@@ -85,7 +85,7 @@ OpenClaw 既是产品也是实验：你正在将前沿模型的行为连接到�
 
 仅用于紧急情况，`gateway.controlUi.dangerouslyDisableDeviceAuth` 会完全禁用设备身份检查。这是严重的安全性降级；除非你正在主动调试并能快速恢复，否则请保持关闭。
 
-`openclaw security audit` 会在启用此设置时发出警告。
+`coderclaw security audit` 会在启用此设置时发出警告。
 
 ## 反向代理配置
 
@@ -99,7 +99,7 @@ gateway:
     - "127.0.0.1" # 如果你的代理运行在 localhost
   auth:
     mode: password
-    password: ${OPENCLAW_GATEWAY_PASSWORD}
+    password: ${CODERCLAW_GATEWAY_PASSWORD}
 ```
 
 配置 `trustedProxies` 后，Gateway 网关将使用 `X-Forwarded-For` 头来确定真实客户端 IP 以进行本地客户端检测。确保你的代理覆盖（而不是追加）传入的 `X-Forwarded-For` 头以防止欺骗。
@@ -164,8 +164,8 @@ OpenClaw 的立场：
 - 优先使用显式的 `plugins.allow` 白名单。
 - 在启用之前审查插件配置。
 - 在插件更改后重启 Gateway 网关。
-- 如果你从 npm 安装插件（`openclaw plugins install <npm-spec>`），将其视为运行不受信任的代码：
-  - 安装路径是 `~/.openclaw/extensions/<pluginId>/`（或 `$OPENCLAW_STATE_DIR/extensions/<pluginId>/`）。
+- 如果你从 npm 安装插件（`coderclaw plugins install <npm-spec>`），将其视为运行不受信任的代码：
+  - 安装路径是 `~/.openclaw/extensions/<pluginId>/`（或 `$CODERCLAW_STATE_DIR/extensions/<pluginId>/`）。
   - OpenClaw 使用 `npm pack` 然后在该目录中运行 `npm install --omit=dev`（npm 生命周期脚本可以在安装期间执行代码）。
   - 优先使用固定的精确版本（`@scope/pkg@1.2.3`），并在启用之前检查磁盘上解压的代码。
 
@@ -183,8 +183,8 @@ OpenClaw 的立场：
 通过 CLI 批准：
 
 ```bash
-openclaw pairing list <channel>
-openclaw pairing approve <channel> <code>
+coderclaw pairing list <channel>
+coderclaw pairing approve <channel> <code>
 ```
 
 详情 + 磁盘上的文件：[配对](/channels/pairing)
@@ -285,7 +285,7 @@ OpenClaw 有两个独立的"谁可以触发我？"层：
    - 检查 Gateway 网关日志和最近的会话/记录中是否有意外的工具调用。
    - 审查 `extensions/` 并移除任何你不完全信任的内容。
 4. **重新运行审计**
-   - `openclaw security audit --deep` 并确认报告是干净的。
+   - `coderclaw security audit --deep` 并确认报告是干净的。
 
 ## 教训（来之不易）
 
@@ -309,17 +309,17 @@ OpenClaw 有两个独立的"谁可以触发我？"层：
 
 在 Gateway 网关主机上保持配置 + 状态私有：
 
-- `~/.openclaw/openclaw.json`：`600`（仅用户读/写）
+- `~/.openclaw/coderclaw.json`：`600`（仅用户读/写）
 - `~/.openclaw`：`700`（仅用户）
 
-`openclaw doctor` 可以警告并提供收紧这些权限的选项。
+`coderclaw doctor` 可以警告并提供收紧这些权限的选项。
 
 ### 0.4）网络暴露（绑定 + 端口 + 防火墙）
 
 Gateway 网关在单个端口上复用 **WebSocket + HTTP**：
 
 - 默认：`18789`
-- 配置/标志/环境变量：`gateway.port`、`--port`、`OPENCLAW_GATEWAY_PORT`
+- 配置/标志/环境变量：`gateway.port`、`--port`、`CODERCLAW_GATEWAY_PORT`
 
 绑定模式控制 Gateway 网关在哪里监听：
 
@@ -334,7 +334,7 @@ Gateway 网关在单个端口上复用 **WebSocket + HTTP**：
 
 ### 0.4.1）mDNS/Bonjour 发现（信息泄露）
 
-Gateway 网关通过 mDNS（端口 5353 上的 `_openclaw-gw._tcp`）广播其存在以用于本地设备发现。在完整模式下，这包括可能暴露运营详情的 TXT 记录：
+Gateway 网关通过 mDNS（端口 5353 上的 `_coderclaw-gw._tcp`）广播其存在以用于本地设备发现。在完整模式下，这包括可能暴露运营详情的 TXT 记录：
 
 - `cliPath`：CLI 二进制文件的完整文件系统路径（揭示用户名和安装位置）
 - `sshPort`：宣传主机上的 SSH 可用性
@@ -374,7 +374,7 @@ Gateway 网关通过 mDNS（端口 5353 上的 `_openclaw-gw._tcp`）广播其�
    }
    ```
 
-4. **环境变量**（替代方案）：设置 `OPENCLAW_DISABLE_BONJOUR=1` 以在不更改配置的情况下禁用 mDNS。
+4. **环境变量**（替代方案）：设置 `CODERCLAW_DISABLE_BONJOUR=1` 以在不更改配置的情况下禁用 mDNS。
 
 在最小模式下，Gateway 网关仍然广播足够的设备发现信息（`role`、`gatewayPort`、`transport`），但省略 `cliPath` 和 `sshPort`。需要 CLI 路径信息的应用可以通过经过认证的 WebSocket 连接获取它。
 
@@ -394,7 +394,7 @@ Gateway 网关认证**默认是必需的**。如果没有配置令牌/密码，G
 }
 ```
 
-Doctor 可以为你生成一个：`openclaw doctor --generate-gateway-token`。
+Doctor 可以为你生成一个：`coderclaw doctor --generate-gateway-token`。
 
 注意：`gateway.remote.token` **仅**用于远程 CLI 调用；它不保护本地 WS 访问。
 可选：使用 `wss://` 时用 `gateway.remote.tlsFingerprint` 固定远程 TLS。
@@ -407,11 +407,11 @@ Doctor 可以为你生成一个：`openclaw doctor --generate-gateway-token`。
 认证模式：
 
 - `gateway.auth.mode: "token"`：共享承载令牌（推荐用于大多数设置）。
-- `gateway.auth.mode: "password"`：密码认证（优先通过环境变量设置：`OPENCLAW_GATEWAY_PASSWORD`）。
+- `gateway.auth.mode: "password"`：密码认证（优先通过环境变量设置：`CODERCLAW_GATEWAY_PASSWORD`）。
 
 轮换清单（令牌/密码）：
 
-1. 生成/设置一个新的秘密（`gateway.auth.token` 或 `OPENCLAW_GATEWAY_PASSWORD`）。
+1. 生成/设置一个新的秘密（`gateway.auth.token` 或 `CODERCLAW_GATEWAY_PASSWORD`）。
 2. 重启 Gateway 网关（或者如果 macOS 应用监督 Gateway 网关，重启 macOS 应用）。
 3. 更新任何远程客户端（调用 Gateway 网关的机器上的 `gateway.remote.token` / `.password`）。
 4. 验证你不能再用旧凭证连接。
@@ -446,9 +446,9 @@ Doctor 可以为你生成一个：`openclaw doctor --generate-gateway-token`。
 
 ### 0.7）磁盘上的秘密（什么是敏感的）
 
-假设 `~/.openclaw/`（或 `$OPENCLAW_STATE_DIR/`）下的任何内容都可能包含秘密或私有数据：
+假设 `~/.openclaw/`（或 `$CODERCLAW_STATE_DIR/`）下的任何内容都可能包含秘密或私有数据：
 
-- `openclaw.json`：配置可能包含令牌（Gateway 网关、远程 Gateway 网关）、提供商设置和白名单。
+- `coderclaw.json`：配置可能包含令牌（Gateway 网关、远程 Gateway 网关）、提供商设置和白名单。
 - `credentials/**`：渠道凭证（例如：WhatsApp 凭证）、配对白名单、旧版 OAuth 导入。
 - `agents/<agentId>/agent/auth-profiles.json`：API 密钥 + OAuth 令牌（从旧版 `credentials/oauth.json` 导入）。
 - `agents/<agentId>/sessions/**`：会话记录（`*.jsonl`）+ 路由元数据（`sessions.json`），可能包含私人消息和工具输出。
@@ -472,7 +472,7 @@ Doctor 可以为你生成一个：`openclaw doctor --generate-gateway-token`。
 
 - 保持工具摘要脱敏开启（`logging.redactSensitive: "tools"`；默认）。
 - 通过 `logging.redactPatterns` 为你的环境添加自定义模式（令牌、主机名、内部 URL）。
-- 共享诊断信息时，优先使用 `openclaw status --all`（可粘贴，秘密已脱敏）而不是原始日志。
+- 共享诊断信息时，优先使用 `coderclaw status --all`（可粘贴，秘密已脱敏）而不是原始日志。
 - 如果你不需要长期保留，清理旧的会话记录和日志文件。
 
 详情：[日志记录](/gateway/logging)
@@ -698,13 +698,13 @@ Doctor 可以为你生成一个：`openclaw doctor --generate-gateway-token`。
 
 ### 遏制
 
-1. **停止它：** 停止 macOS 应用（如果它监督 Gateway 网关）或终止你的 `openclaw gateway` 进程。
+1. **停止它：** 停止 macOS 应用（如果它监督 Gateway 网关）或终止你的 `coderclaw gateway` 进程。
 2. **关闭暴露：** 设置 `gateway.bind: "loopback"`（或禁用 Tailscale Funnel/Serve）直到你了解发生了什么。
 3. **冻结访问：** 将有风险的私信/群组切换到 `dmPolicy: "disabled"` / 要求提及，并移除你可能有的 `"*"` 允许所有条目。
 
 ### 轮换（如果秘密泄露则假设被入侵）
 
-1. 轮换 Gateway 网关认证（`gateway.auth.token` / `OPENCLAW_GATEWAY_PASSWORD`）并重启。
+1. 轮换 Gateway 网关认证（`gateway.auth.token` / `CODERCLAW_GATEWAY_PASSWORD`）并重启。
 2. 轮换任何可以调用 Gateway 网关的机器上的远程客户端秘密（`gateway.remote.token` / `.password`）。
 3. 轮换提供商/API 凭证（WhatsApp 凭证、Slack/Discord 令牌、`auth-profiles.json` 中的模型/API 密钥）。
 

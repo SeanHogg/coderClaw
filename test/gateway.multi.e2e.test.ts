@@ -96,7 +96,7 @@ const spawnGatewayInstance = async (name: string): Promise<GatewayInstance> => {
   const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), `openclaw-e2e-${name}-`));
   const configDir = path.join(homeDir, ".openclaw");
   await fs.mkdir(configDir, { recursive: true });
-  const configPath = path.join(configDir, "openclaw.json");
+  const configPath = path.join(configDir, "coderclaw.json");
   const stateDir = path.join(configDir, "state");
   const config = {
     gateway: { port, auth: { mode: "token", token: gatewayToken } },
@@ -125,13 +125,13 @@ const spawnGatewayInstance = async (name: string): Promise<GatewayInstance> => {
         env: {
           ...process.env,
           HOME: homeDir,
-          OPENCLAW_CONFIG_PATH: configPath,
-          OPENCLAW_STATE_DIR: stateDir,
-          OPENCLAW_GATEWAY_TOKEN: "",
-          OPENCLAW_GATEWAY_PASSWORD: "",
-          OPENCLAW_SKIP_CHANNELS: "1",
-          OPENCLAW_SKIP_BROWSER_CONTROL_SERVER: "1",
-          OPENCLAW_SKIP_CANVAS_HOST: "1",
+          CODERCLAW_CONFIG_PATH: configPath,
+          CODERCLAW_STATE_DIR: stateDir,
+          CODERCLAW_GATEWAY_TOKEN: "",
+          CODERCLAW_GATEWAY_PASSWORD: "",
+          CODERCLAW_SKIP_CHANNELS: "1",
+          CODERCLAW_SKIP_BROWSER_CONTROL_SERVER: "1",
+          CODERCLAW_SKIP_CANVAS_HOST: "1",
         },
         stdio: ["ignore", "pipe", "pipe"],
       },

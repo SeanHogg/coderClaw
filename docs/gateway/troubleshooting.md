@@ -109,7 +109,7 @@ Look for:
 
 Common signatures:
 
-- `Gateway start blocked: set gateway.mode=local` → local gateway mode is not enabled. Fix: set `gateway.mode="local"` in your config (or run `coderclaw configure`). If you are running OpenClaw via Podman using the dedicated `openclaw` user, the config lives at `~openclaw/.openclaw/openclaw.json`.
+- `Gateway start blocked: set gateway.mode=local` → local gateway mode is not enabled. Fix: set `gateway.mode="local"` in your config (or run `coderclaw configure`). If you are running OpenClaw via Podman using the dedicated `openclaw` user, the config lives at `~openclaw/.openclaw/coderclaw.json`.
 - `refusing to bind gateway ... without auth` → non-loopback bind without token/password.
 - `another gateway instance is already listening` / `EADDRINUSE` → port conflict.
 
@@ -158,7 +158,7 @@ If cron or heartbeat did not run or did not deliver, verify scheduler state firs
 coderclaw cron status
 coderclaw cron list
 coderclaw cron runs --id <jobId> --limit 20
-openclaw system heartbeat last
+coderclaw system heartbeat last
 coderclaw logs --follow
 ```
 
@@ -217,9 +217,9 @@ Related:
 Use this when browser tool actions fail even though the gateway itself is healthy.
 
 ```bash
-openclaw browser status
-openclaw browser start --browser-profile openclaw
-openclaw browser profiles
+coderclaw browser status
+coderclaw browser start --browser-profile openclaw
+coderclaw browser profiles
 coderclaw logs --follow
 coderclaw doctor
 ```

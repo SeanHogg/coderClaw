@@ -34,7 +34,7 @@ x-i18n:
 ### 选项 A：从 npm 安装
 
 ```bash
-openclaw plugins install @openclaw/zalouser
+coderclaw plugins install @openclaw/zalouser
 ```
 
 之后重启 Gateway 网关。
@@ -42,7 +42,7 @@ openclaw plugins install @openclaw/zalouser
 ### 选项 B：从本地文件夹安装（开发）
 
 ```bash
-openclaw plugins install ./extensions/zalouser
+coderclaw plugins install ./extensions/zalouser
 cd ./extensions/zalouser && pnpm install
 ```
 
@@ -74,11 +74,11 @@ zca --version
 ## CLI
 
 ```bash
-openclaw channels login --channel zalouser
-openclaw channels logout --channel zalouser
-openclaw channels status --probe
-openclaw message send --channel zalouser --target <threadId> --message "Hello from OpenClaw"
-openclaw directory peers list --channel zalouser --query "name"
+coderclaw channels login --channel zalouser
+coderclaw channels logout --channel zalouser
+coderclaw channels status --probe
+coderclaw message send --channel zalouser --target <threadId> --message "Hello from OpenClaw"
+coderclaw directory peers list --channel zalouser --query "name"
 ```
 
 ## 智能体工具

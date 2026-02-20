@@ -77,13 +77,13 @@ apt install -y nodejs
 curl -fsSL https://openclaw.ai/install.sh | bash
 
 # Verify
-openclaw --version
+coderclaw --version
 ```
 
 ## 4) 运行新手引导
 
 ```bash
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 向导将引导你完成：
@@ -97,7 +97,7 @@ openclaw onboard --install-daemon
 
 ```bash
 # Check status
-openclaw status
+coderclaw status
 
 # Check service
 systemctl --user status openclaw-gateway.service
@@ -127,8 +127,8 @@ curl -fsSL https://tailscale.com/install.sh | sh
 tailscale up
 
 # Configure Gateway to use Tailscale Serve
-openclaw config set gateway.tailscale.mode serve
-openclaw gateway restart
+coderclaw config set gateway.tailscale.mode serve
+coderclaw gateway restart
 ```
 
 打开：`https://<magicdns>/`
@@ -141,8 +141,8 @@ openclaw gateway restart
 **选项 C：Tailnet 绑定（不使用 Serve）**
 
 ```bash
-openclaw config set gateway.bind tailnet
-openclaw gateway restart
+coderclaw config set gateway.bind tailnet
+coderclaw gateway restart
 ```
 
 打开：`http://<tailscale-ip>:18789`（需要令牌）。
@@ -152,14 +152,14 @@ openclaw gateway restart
 ### Telegram
 
 ```bash
-openclaw pairing list telegram
-openclaw pairing approve telegram <CODE>
+coderclaw pairing list telegram
+coderclaw pairing approve telegram <CODE>
 ```
 
 ### WhatsApp
 
 ```bash
-openclaw channels login whatsapp
+coderclaw channels login whatsapp
 # Scan QR code
 ```
 
@@ -237,9 +237,9 @@ Oracle Cloud 提供 **Always Free** ARM 实例，比这里任何付费选项都�
 ### Gateway 网关无法启动
 
 ```bash
-openclaw gateway status
-openclaw doctor --non-interactive
-journalctl -u openclaw --no-pager -n 50
+coderclaw gateway status
+coderclaw doctor --non-interactive
+journalctl -u coderclaw --no-pager -n 50
 ```
 
 ### 端口已被使用

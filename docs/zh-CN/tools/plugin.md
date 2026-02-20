@@ -26,13 +26,13 @@ x-i18n:
 1. 查看已加载的内容：
 
 ```bash
-openclaw plugins list
+coderclaw plugins list
 ```
 
 2. 安装官方插件（例如：Voice Call）：
 
 ```bash
-openclaw plugins install @openclaw/voice-call
+coderclaw plugins install @openclaw/voice-call
 ```
 
 3. 重启 Gateway 网关，然后在 `plugins.entries.<id>.config` 下配置。
@@ -110,9 +110,9 @@ OpenClaw 按顺序扫描：
 
 - `<openclaw>/extensions/*`
 
-捆绑插件必须通过 `plugins.entries.<id>.enabled` 或 `openclaw plugins enable <id>` 显式启用。已安装的插件默认启用，但可以用相同方式禁用。
+捆绑插件必须通过 `plugins.entries.<id>.enabled` 或 `coderclaw plugins enable <id>` 显式启用。已安装的插件默认启用，但可以用相同方式禁用。
 
-每个插件必须在其根目录中包含 `openclaw.plugin.json` 文件。如果路径指向文件，则插件根目录是文件的目录，必须包含清单。
+每个插件必须在其根目录中包含 `coderclaw.plugin.json` 文件。如果路径指向文件，则插件根目录是文件的目录，必须包含清单。
 
 如果多个插件解析到相同的 id，上述顺序中的第一个匹配项获胜，较低优先级的副本被忽略。
 
@@ -123,7 +123,7 @@ OpenClaw 按顺序扫描：
 ```json
 {
   "name": "my-pack",
-  "openclaw": {
+  "coderclaw": {
     "extensions": ["./src/safety.ts", "./src/tools.ts"]
   }
 }
@@ -142,7 +142,7 @@ OpenClaw 按顺序扫描：
 ```json
 {
   "name": "@openclaw/nextcloud-talk",
-  "openclaw": {
+  "coderclaw": {
     "extensions": ["./index.ts"],
     "channel": {
       "id": "nextcloud-talk",
@@ -169,7 +169,7 @@ OpenClaw 还可以合并**外部渠道目录**（例如，MPM 注册表导出）
 - `~/.openclaw/mpm/catalog.json`
 - `~/.openclaw/plugins/catalog.json`
 
-或将 `OPENCLAW_PLUGIN_CATALOG_PATHS`（或 `OPENCLAW_MPM_CATALOG_PATHS`）指向一个或多个 JSON 文件（逗号/分号/`PATH` 分隔）。每个文件应包含 `{ "entries": [ { "name": "@scope/pkg", "openclaw": { "channel": {...}, "install": {...} } } ] }`。
+或将 `CODERCLAW_PLUGIN_CATALOG_PATHS`（或 `CODERCLAW_MPM_CATALOG_PATHS`）指向一个或多个 JSON 文件（逗号/分号/`PATH` 分隔）。每个文件应包含 `{ "entries": [ { "name": "@scope/pkg", "coderclaw": { "channel": {...}, "install": {...} } } ] }`。
 
 ## 插件 ID
 
@@ -210,7 +210,7 @@ OpenClaw 还可以合并**外部渠道目录**（例如，MPM 注册表导出）
 
 - `entries`、`allow`、`deny` 或 `slots` 中的未知插件 id 是**错误**。
 - 未知的 `channels.<id>` 键是**错误**，除非插件清单声明了渠道 id。
-- 插件配置使用嵌入在 `openclaw.plugin.json`（`configSchema`）中的 JSON Schema 进行验证。
+- 插件配置使用嵌入在 `coderclaw.plugin.json`（`configSchema`）中的 JSON Schema 进行验证。
 - 如果插件被禁用，其配置会保留并发出**警告**。
 
 ## 插件槽位（独占类别）
@@ -264,24 +264,24 @@ OpenClaw 在运行时根据发现的插件增强 `uiHints`：
 ## CLI
 
 ```bash
-openclaw plugins list
-openclaw plugins info <id>
-openclaw plugins install <path>                 # copy a local file/dir into ~/.openclaw/extensions/<id>
-openclaw plugins install ./extensions/voice-call # relative path ok
-openclaw plugins install ./plugin.tgz           # install from a local tarball
-openclaw plugins install ./plugin.zip           # install from a local zip
-openclaw plugins install -l ./extensions/voice-call # link (no copy) for dev
-openclaw plugins install @openclaw/voice-call # install from npm
-openclaw plugins update <id>
-openclaw plugins update --all
-openclaw plugins enable <id>
-openclaw plugins disable <id>
-openclaw plugins doctor
+coderclaw plugins list
+coderclaw plugins info <id>
+coderclaw plugins install <path>                 # copy a local file/dir into ~/.openclaw/extensions/<id>
+coderclaw plugins install ./extensions/voice-call # relative path ok
+coderclaw plugins install ./plugin.tgz           # install from a local tarball
+coderclaw plugins install ./plugin.zip           # install from a local zip
+coderclaw plugins install -l ./extensions/voice-call # link (no copy) for dev
+coderclaw plugins install @openclaw/voice-call # install from npm
+coderclaw plugins update <id>
+coderclaw plugins update --all
+coderclaw plugins enable <id>
+coderclaw plugins disable <id>
+coderclaw plugins doctor
 ```
 
 `plugins update` 仅适用于在 `plugins.installs` 下跟踪的 npm 安装。
 
-插件也可以注册自己的顶级命令（例如：`openclaw voicecall`）。
+插件也可以注册自己的顶级命令（例如：`coderclaw voicecall`）。
 
 ## 插件 API（概述）
 
@@ -297,7 +297,7 @@ openclaw plugins doctor
 ### 示例
 
 ```
-import { registerPluginHooksFromDir } from "openclaw/plugin-sdk";
+import { registerPluginHooksFromDir } from "coderclaw/plugin-sdk";
 
 export default function register(api) {
   registerPluginHooksFromDir(api, "./hooks");
@@ -308,8 +308,8 @@ export default function register(api) {
 
 - 钩子目录遵循正常的钩子结构（`HOOK.md` + `handler.ts`）。
 - 钩子资格规则仍然适用（操作系统/二进制文件/环境/配置要求）。
-- 插件管理的钩子在 `openclaw hooks list` 中显示为 `plugin:<id>`。
-- 你不能通过 `openclaw hooks` 启用/禁用插件管理的钩子；而是启用/禁用插件。
+- 插件管理的钩子在 `coderclaw hooks list` 中显示为 `plugin:<id>`。
+- 你不能通过 `coderclaw hooks` 启用/禁用插件管理的钩子；而是启用/禁用插件。
 
 ## 提供商插件（模型认证）
 
@@ -317,7 +317,7 @@ export default function register(api) {
 
 通过 `api.registerProvider(...)` 注册提供商。每个提供商暴露一个或多个认证方法（OAuth、API 密钥、设备码等）。这些方法驱动：
 
-- `openclaw models auth login --provider <id> [--method <id>]`
+- `coderclaw models auth login --provider <id> [--method <id>]`
 
 示例：
 
@@ -606,7 +606,7 @@ export default function (api) {
 
 - 插件 `package.json` 必须包含带有一个或多个入口文件的 `openclaw.extensions`。
 - 入口文件可以是 `.js` 或 `.ts`（jiti 在运行时加载 TS）。
-- `openclaw plugins install <npm-spec>` 使用 `npm pack`，提取到 `~/.openclaw/extensions/<id>/`，并在配置中启用它。
+- `coderclaw plugins install <npm-spec>` 使用 `npm pack`，提取到 `~/.openclaw/extensions/<id>/`，并在配置中启用它。
 - 配置键稳定性：作用域包被规范化为 `plugins.entries.*` 的**无作用域** id。
 
 ## 示例插件：Voice Call
@@ -615,7 +615,7 @@ export default function (api) {
 
 - 源码：`extensions/voice-call`
 - Skills：`skills/voice-call`
-- CLI：`openclaw voicecall start|status`
+- CLI：`coderclaw voicecall start|status`
 - 工具：`voice_call`
 - RPC：`voicecall.start`、`voicecall.status`
 - 配置（twilio）：`provider: "twilio"` + `twilio.accountSid/authToken/from`（可选 `statusCallbackUrl`、`twimlUrl`）

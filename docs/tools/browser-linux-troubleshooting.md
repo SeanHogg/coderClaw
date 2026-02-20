@@ -11,7 +11,7 @@ title: "Browser Troubleshooting"
 OpenClaw's browser control server fails to launch Chrome/Brave/Edge/Chromium with the error:
 
 ```
-{"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
+{"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"coderclaw\"."}
 ```
 
 ### Root Cause
@@ -37,7 +37,7 @@ sudo dpkg -i google-chrome-stable_current_amd64.deb
 sudo apt --fix-broken install -y  # if there are dependency errors
 ```
 
-Then update your OpenClaw config (`~/.coderclaw/openclaw.json`):
+Then update your OpenClaw config (`~/.coderclaw/coderclaw.json`):
 
 ```json
 {
@@ -79,13 +79,13 @@ chromium-browser --headless --no-sandbox --disable-gpu \
 3. Optionally create a systemd user service to auto-start Chrome:
 
 ```ini
-# ~/.config/systemd/user/openclaw-browser.service
+# ~/.config/systemd/user/coderclaw-browser.service
 [Unit]
 Description=OpenClaw Browser (Chrome CDP)
 After=network.target
 
 [Service]
-ExecStart=/snap/bin/chromium --headless --no-sandbox --disable-gpu --remote-debugging-port=18800 --user-data-dir=%h/.openclaw/browser/openclaw/user-data about:blank
+ExecStart=/snap/bin/chromium --headless --no-sandbox --disable-gpu --remote-debugging-port=18800 --user-data-dir=%h/.coderclaw/browser/coderclaw/user-data about:blank
 Restart=on-failure
 RestartSec=5
 
@@ -93,7 +93,7 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-Enable with: `systemctl --user enable --now openclaw-browser.service`
+Enable with: `systemctl --user enable --now coderclaw-browser.service`
 
 ### Verifying the Browser Works
 
@@ -128,12 +128,12 @@ browser extension to be attached to a live tab.
 
 Fix options:
 
-1. **Use the managed browser:** `openclaw browser start --browser-profile openclaw`
-   (or set `browser.defaultProfile: "openclaw"`).
+1. **Use the managed browser:** `coderclaw browser start --browser-profile openclaw`
+   (or set `browser.defaultProfile: "coderclaw"`).
 2. **Use the extension relay:** install the extension, open a tab, and click the
    OpenClaw extension icon to attach it.
 
 Notes:
 
 - The `chrome` profile uses your **system default Chromium browser** when possible.
-- Local `openclaw` profiles auto-assign `cdpPort`/`cdpUrl`; only set those for remote CDP.
+- Local `coderclaw` profiles auto-assign `cdpPort`/`cdpUrl`; only set those for remote CDP.

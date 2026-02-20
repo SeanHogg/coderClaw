@@ -38,8 +38,8 @@ let ensureOpenClawCliOnPath: typeof import("./path-env.js").ensureOpenClawCliOnP
 describe("ensureOpenClawCliOnPath", () => {
   const envKeys = [
     "PATH",
-    "OPENCLAW_PATH_BOOTSTRAPPED",
-    "OPENCLAW_ALLOW_PROJECT_LOCAL_BIN",
+    "CODERCLAW_PATH_BOOTSTRAPPED",
+    "CODERCLAW_ALLOW_PROJECT_LOCAL_BIN",
     "MISE_DATA_DIR",
     "HOMEBREW_PREFIX",
     "HOMEBREW_BREW_FILE",
@@ -73,7 +73,7 @@ describe("ensureOpenClawCliOnPath", () => {
   });
 
   it("prepends the bundled app bin dir when a sibling openclaw exists", () => {
-    const tmp = abs("/tmp/openclaw-path/case-bundled");
+    const tmp = abs("/tmp/coderclaw-path/case-bundled");
     const appBinDir = path.join(tmp, "AppBin");
     const cliPath = path.join(appBinDir, "openclaw");
     setDir(tmp);
@@ -81,7 +81,7 @@ describe("ensureOpenClawCliOnPath", () => {
     setExe(cliPath);
 
     process.env.PATH = "/usr/bin";
-    delete process.env.OPENCLAW_PATH_BOOTSTRAPPED;
+    delete process.env.CODERCLAW_PATH_BOOTSTRAPPED;
 
     ensureOpenClawCliOnPath({
       execPath: cliPath,
@@ -96,7 +96,7 @@ describe("ensureOpenClawCliOnPath", () => {
 
   it("is idempotent", () => {
     process.env.PATH = "/bin";
-    process.env.OPENCLAW_PATH_BOOTSTRAPPED = "1";
+    process.env.CODERCLAW_PATH_BOOTSTRAPPED = "1";
     ensureOpenClawCliOnPath({
       execPath: "/tmp/does-not-matter",
       cwd: "/tmp",
@@ -107,7 +107,7 @@ describe("ensureOpenClawCliOnPath", () => {
   });
 
   it("prepends mise shims when available", () => {
-    const tmp = abs("/tmp/openclaw-path/case-mise");
+    const tmp = abs("/tmp/coderclaw-path/case-mise");
     const appBinDir = path.join(tmp, "AppBin");
     const appCli = path.join(appBinDir, "openclaw");
     setDir(tmp);
@@ -121,7 +121,7 @@ describe("ensureOpenClawCliOnPath", () => {
 
     process.env.MISE_DATA_DIR = miseDataDir;
     process.env.PATH = "/usr/bin";
-    delete process.env.OPENCLAW_PATH_BOOTSTRAPPED;
+    delete process.env.CODERCLAW_PATH_BOOTSTRAPPED;
 
     ensureOpenClawCliOnPath({
       execPath: appCli,
@@ -139,7 +139,7 @@ describe("ensureOpenClawCliOnPath", () => {
   });
 
   it("only appends project-local node_modules/.bin when explicitly enabled", () => {
-    const tmp = abs("/tmp/openclaw-path/case-project-local");
+    const tmp = abs("/tmp/coderclaw-path/case-project-local");
     const appBinDir = path.join(tmp, "AppBin");
     const appCli = path.join(appBinDir, "openclaw");
     setDir(tmp);
@@ -153,7 +153,7 @@ describe("ensureOpenClawCliOnPath", () => {
     setExe(localCli);
 
     process.env.PATH = "/usr/bin";
-    delete process.env.OPENCLAW_PATH_BOOTSTRAPPED;
+    delete process.env.CODERCLAW_PATH_BOOTSTRAPPED;
 
     ensureOpenClawCliOnPath({
       execPath: appCli,
@@ -165,7 +165,7 @@ describe("ensureOpenClawCliOnPath", () => {
     expect(withoutOptIn.includes(localBinDir)).toBe(false);
 
     process.env.PATH = "/usr/bin";
-    delete process.env.OPENCLAW_PATH_BOOTSTRAPPED;
+    delete process.env.CODERCLAW_PATH_BOOTSTRAPPED;
 
     ensureOpenClawCliOnPath({
       execPath: appCli,
@@ -182,7 +182,7 @@ describe("ensureOpenClawCliOnPath", () => {
   });
 
   it("prepends Linuxbrew dirs when present", () => {
-    const tmp = abs("/tmp/openclaw-path/case-linuxbrew");
+    const tmp = abs("/tmp/coderclaw-path/case-linuxbrew");
     const execDir = path.join(tmp, "exec");
     setDir(tmp);
     setDir(execDir);
@@ -195,7 +195,7 @@ describe("ensureOpenClawCliOnPath", () => {
     setDir(linuxbrewSbin);
 
     process.env.PATH = "/usr/bin";
-    delete process.env.OPENCLAW_PATH_BOOTSTRAPPED;
+    delete process.env.CODERCLAW_PATH_BOOTSTRAPPED;
     delete process.env.HOMEBREW_PREFIX;
     delete process.env.HOMEBREW_BREW_FILE;
     delete process.env.XDG_BIN_HOME;

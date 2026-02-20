@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-IMAGE_NAME="openclaw-plugins-e2e"
+IMAGE_NAME="coderclaw-plugins-e2e"
 
 echo "Building Docker image..."
 docker build -t "$IMAGE_NAME" -f "$ROOT_DIR/scripts/e2e/Dockerfile" "$ROOT_DIR"
@@ -11,17 +11,17 @@ echo "Running plugins Docker E2E..."
 	docker run --rm -t "$IMAGE_NAME" bash -lc '
 	  set -euo pipefail
 	  if [ -f dist/index.mjs ]; then
-	    OPENCLAW_ENTRY="dist/index.mjs"
+	    CODERCLAW_ENTRY="dist/index.mjs"
 	  elif [ -f dist/index.js ]; then
-	    OPENCLAW_ENTRY="dist/index.js"
+	    CODERCLAW_ENTRY="dist/index.js"
 	  else
 	    echo "Missing dist/index.(m)js (build output):"
 	    ls -la dist || true
 	    exit 1
 	  fi
-	  export OPENCLAW_ENTRY
+	  export CODERCLAW_ENTRY
 
-	  home_dir=$(mktemp -d "/tmp/openclaw-plugins-e2e.XXXXXX")
+	  home_dir=$(mktemp -d "/tmp/coderclaw-plugins-e2e.XXXXXX")
 	  export HOME="$home_dir"
   mkdir -p "$HOME/.openclaw/extensions/demo-plugin"
 
@@ -48,7 +48,7 @@ JS
 }
 JSON
 
-	  node "$OPENCLAW_ENTRY" plugins list --json > /tmp/plugins.json
+	  node "$CODERCLAW_ENTRY" plugins list --json > /tmp/plugins.json
 
   node - <<'"'"'NODE'"'"'
 const fs = require("node:fs");
@@ -109,8 +109,8 @@ JS
 JSON
   tar -czf /tmp/demo-plugin-tgz.tgz -C "$pack_dir" package
 
-	  node "$OPENCLAW_ENTRY" plugins install /tmp/demo-plugin-tgz.tgz
-	  node "$OPENCLAW_ENTRY" plugins list --json > /tmp/plugins2.json
+	  node "$CODERCLAW_ENTRY" plugins install /tmp/demo-plugin-tgz.tgz
+	  node "$CODERCLAW_ENTRY" plugins list --json > /tmp/plugins2.json
 
   node - <<'"'"'NODE'"'"'
 const fs = require("node:fs");
@@ -155,8 +155,8 @@ JS
 }
 JSON
 
-	  node "$OPENCLAW_ENTRY" plugins install "$dir_plugin"
-	  node "$OPENCLAW_ENTRY" plugins list --json > /tmp/plugins3.json
+	  node "$CODERCLAW_ENTRY" plugins install "$dir_plugin"
+	  node "$CODERCLAW_ENTRY" plugins list --json > /tmp/plugins3.json
 
   node - <<'"'"'NODE'"'"'
 const fs = require("node:fs");
@@ -202,8 +202,8 @@ JS
 }
 JSON
 
-	  node "$OPENCLAW_ENTRY" plugins install "file:$file_pack_dir/package"
-	  node "$OPENCLAW_ENTRY" plugins list --json > /tmp/plugins4.json
+	  node "$CODERCLAW_ENTRY" plugins install "file:$file_pack_dir/package"
+	  node "$CODERCLAW_ENTRY" plugins list --json > /tmp/plugins4.json
 
   node - <<'"'"'NODE'"'"'
 const fs = require("node:fs");

@@ -223,7 +223,7 @@ You can observe compaction and session state via:
 
 - `/status` (in any chat session)
 - `coderclaw status` (CLI)
-- `openclaw sessions` / `sessions --json`
+- `coderclaw sessions` / `sessions --json`
 - Verbose mode: `🧹 Auto-compaction complete` + compaction count
 
 ---

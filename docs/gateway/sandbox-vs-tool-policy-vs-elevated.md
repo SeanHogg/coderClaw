@@ -18,10 +18,10 @@ OpenClaw has three related (but different) controls:
 Use the inspector to see what OpenClaw is _actually_ doing:
 
 ```bash
-openclaw sandbox explain
-openclaw sandbox explain --session agent:main:main
-openclaw sandbox explain --agent work
-openclaw sandbox explain --json
+coderclaw sandbox explain
+coderclaw sandbox explain --session agent:main:main
+coderclaw sandbox explain --agent work
+coderclaw sandbox explain --json
 ```
 
 It prints:
@@ -93,7 +93,7 @@ Available groups:
 - `group:automation`: `cron`, `gateway`
 - `group:messaging`: `message`
 - `group:nodes`: `nodes`
-- `group:openclaw`: all built-in OpenClaw tools (excludes provider plugins)
+- `group:coderclaw`: all built-in CoderClaw tools (excludes provider plugins)
 
 ## Elevated: exec-only “run on host”
 

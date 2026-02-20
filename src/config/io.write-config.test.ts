@@ -16,7 +16,7 @@ describe("config io write", () => {
     env?: NodeJS.ProcessEnv;
     logger?: { warn: (msg: string) => void; error: (msg: string) => void };
   }) {
-    const configPath = path.join(params.home, ".coderclaw", "openclaw.json");
+    const configPath = path.join(params.home, ".coderclaw", "coderclaw.json");
     await fs.mkdir(path.dirname(configPath), { recursive: true });
     await fs.writeFile(configPath, JSON.stringify(params.initialConfig, null, 2), "utf-8");
 
@@ -179,7 +179,7 @@ describe("config io write", () => {
 
   it("keeps env refs in arrays when appending entries", async () => {
     await withTempHome("openclaw-config-io-", async (home) => {
-      const configPath = path.join(home, ".coderclaw", "openclaw.json");
+      const configPath = path.join(home, ".coderclaw", "coderclaw.json");
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.writeFile(
         configPath,
@@ -330,9 +330,9 @@ describe("config io write", () => {
         initialConfig: { gateway: { mode: "local" } },
         gatewayPatch: { bind: "loopback" },
         env: {
-          OPENCLAW_WATCH_MODE: "1",
-          OPENCLAW_WATCH_SESSION: "watch-session-1",
-          OPENCLAW_WATCH_COMMAND: "gateway --force",
+          CODERCLAW_WATCH_MODE: "1",
+          CODERCLAW_WATCH_SESSION: "watch-session-1",
+          CODERCLAW_WATCH_COMMAND: "gateway --force",
         } as NodeJS.ProcessEnv,
       });
       expect(last.watchMode).toBe(true);

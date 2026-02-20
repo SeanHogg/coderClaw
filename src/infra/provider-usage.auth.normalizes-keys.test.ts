@@ -9,7 +9,7 @@ describe("resolveProviderAuths key normalization", () => {
   let suiteCase = 0;
 
   beforeAll(async () => {
-    suiteRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-provider-auth-suite-"));
+    suiteRoot = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-provider-auth-suite-"));
   });
 
   afterAll(async () => {
@@ -33,8 +33,8 @@ describe("resolveProviderAuths key normalization", () => {
       "USERPROFILE",
       "HOMEDRIVE",
       "HOMEPATH",
-      "OPENCLAW_HOME",
-      "OPENCLAW_STATE_DIR",
+      "CODERCLAW_HOME",
+      "CODERCLAW_STATE_DIR",
       ...Object.keys(env),
     ]);
     const snapshot: Record<string, string | undefined> = {};
@@ -44,8 +44,8 @@ describe("resolveProviderAuths key normalization", () => {
 
     process.env.HOME = base;
     process.env.USERPROFILE = base;
-    delete process.env.OPENCLAW_HOME;
-    process.env.OPENCLAW_STATE_DIR = path.join(base, ".coderclaw");
+    delete process.env.CODERCLAW_HOME;
+    process.env.CODERCLAW_STATE_DIR = path.join(base, ".coderclaw");
     for (const [key, value] of Object.entries(env)) {
       if (value === undefined) {
         delete process.env[key];

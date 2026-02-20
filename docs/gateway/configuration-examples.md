@@ -22,7 +22,7 @@ Examples below are aligned with the current config schema. For the exhaustive re
 }
 ```
 
-Save to `~/.coderclaw/openclaw.json` and you can DM the bot from that number.
+Save to `~/.coderclaw/coderclaw.json` and you can DM the bot from that number.
 
 ### Recommended starter
 
@@ -287,7 +287,7 @@ Save to `~/.coderclaw/openclaw.json` and you can DM the bot from that number.
         perSession: true,
         workspaceRoot: "~/.coderclaw/sandboxes",
         docker: {
-          image: "openclaw-sandbox:bookworm-slim",
+          image: "coderclaw-sandbox:bookworm-slim",
           workdir: "/workspace",
           readOnlyRoot: true,
           tmpfs: ["/tmp", "/var/tmp", "/run"],
@@ -405,7 +405,7 @@ Save to `~/.coderclaw/openclaw.json` and you can DM the bot from that number.
     mode: "local",
     port: 18789,
     bind: "loopback",
-    controlUi: { enabled: true, basePath: "/openclaw" },
+    controlUi: { enabled: true, basePath: "/coderclaw" },
     auth: {
       mode: "token",
       token: "gateway-token",

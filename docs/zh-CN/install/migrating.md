@@ -19,7 +19,7 @@ x-i18n:
 
 迁移在概念上很简单：
 
-- 复制**状态目录**（`$OPENCLAW_STATE_DIR`，默认：`~/.openclaw/`）— 这包括配置、认证、会话和渠道状态。
+- 复制**状态目录**（`$CODERCLAW_STATE_DIR`，默认：`~/.openclaw/`）— 这包括配置、认证、会话和渠道状态。
 - 复制你的**工作区**（默认 `~/.openclaw/workspace/`）— 这包括你的智能体文件（记忆、提示等）。
 
 但在**配置文件**、**权限**和**部分复制**方面有常见的陷阱。
@@ -35,15 +35,15 @@ x-i18n:
 但如果你使用以下方式，可能会不同：
 
 - `--profile <name>`（通常变成 `~/.openclaw-<profile>/`）
-- `OPENCLAW_STATE_DIR=/some/path`
+- `CODERCLAW_STATE_DIR=/some/path`
 
 如果你不确定，在**旧**机器上运行：
 
 ```bash
-openclaw status
+coderclaw status
 ```
 
-在输出中查找 `OPENCLAW_STATE_DIR` / profile 的提及。如果你运行多个 Gateway 网关，对每个配置文件重复此操作。
+在输出中查找 `CODERCLAW_STATE_DIR` / profile 的提及。如果你运行多个 Gateway 网关，对每个配置文件重复此操作。
 
 ### 2）确定你的工作区
 
@@ -58,7 +58,7 @@ openclaw status
 
 如果你复制**两者**——状态目录和工作区，你将保留：
 
-- Gateway 网关配置（`openclaw.json`）
+- Gateway 网关配置（`coderclaw.json`）
 - 认证配置文件 / API 密钥 / OAuth 令牌
 - 会话历史 + 智能体状态
 - 渠道状态（例如 WhatsApp 登录/会话）
@@ -70,7 +70,7 @@ openclaw status
 - 凭证
 - 渠道登录
 
-这些存储在 `$OPENCLAW_STATE_DIR` 下。
+这些存储在 `$CODERCLAW_STATE_DIR` 下。
 
 ## 迁移步骤（推荐）
 
@@ -79,7 +79,7 @@ openclaw status
 在**旧**机器上，首先停止 Gateway 网关，这样文件不会在复制过程中发生变化：
 
 ```bash
-openclaw gateway stop
+coderclaw gateway stop
 ```
 
 （可选但推荐）归档状态目录和工作区：
@@ -89,7 +89,7 @@ openclaw gateway stop
 cd ~
 tar -czf openclaw-state.tgz .openclaw
 
-tar -czf openclaw-workspace.tgz .openclaw/workspace
+tar -czf coderclaw-workspace.tgz .openclaw/workspace
 ```
 
 如果你有多个配置文件/状态目录（例如 `~/.openclaw-main`、`~/.openclaw-work`），分别归档每个。
@@ -106,7 +106,7 @@ tar -czf openclaw-workspace.tgz .openclaw/workspace
 
 复制**两者**：
 
-- `$OPENCLAW_STATE_DIR`（默认 `~/.openclaw/`）
+- `$CODERCLAW_STATE_DIR`（默认 `~/.openclaw/`）
 - 你的工作区（默认 `~/.openclaw/workspace/`）
 
 常见方法：
@@ -125,7 +125,7 @@ tar -czf openclaw-workspace.tgz .openclaw/workspace
 在**新**机器上：
 
 ```bash
-openclaw doctor
+coderclaw doctor
 ```
 
 Doctor 是"安全可靠"的命令。它修复服务、应用配置迁移，并警告不匹配问题。
@@ -133,15 +133,15 @@ Doctor 是"安全可靠"的命令。它修复服务、应用配置迁移，并�
 然后：
 
 ```bash
-openclaw gateway restart
-openclaw status
+coderclaw gateway restart
+coderclaw status
 ```
 
 ## 常见陷阱（以及如何避免）
 
 ### 陷阱：配置文件/状态目录不匹配
 
-如果你在旧 Gateway 网关上使用了配置文件（或 `OPENCLAW_STATE_DIR`），而新 Gateway 网关使用了不同的配置，你会看到如下症状：
+如果你在旧 Gateway 网关上使用了配置文件（或 `CODERCLAW_STATE_DIR`），而新 Gateway 网关使用了不同的配置，你会看到如下症状：
 
 - 配置更改不生效
 - 渠道丢失/已登出
@@ -150,17 +150,17 @@ openclaw status
 修复：使用你迁移的**相同**配置文件/状态目录运行 Gateway 网关/服务，然后重新运行：
 
 ```bash
-openclaw doctor
+coderclaw doctor
 ```
 
-### 陷阱：只复制 `openclaw.json`
+### 陷阱：只复制 `coderclaw.json`
 
-`openclaw.json` 是不够的。许多提供商在以下位置存储状态：
+`coderclaw.json` 是不够的。许多提供商在以下位置存储状态：
 
-- `$OPENCLAW_STATE_DIR/credentials/`
-- `$OPENCLAW_STATE_DIR/agents/<agentId>/...`
+- `$CODERCLAW_STATE_DIR/credentials/`
+- `$CODERCLAW_STATE_DIR/agents/<agentId>/...`
 
-始终迁移整个 `$OPENCLAW_STATE_DIR` 文件夹。
+始终迁移整个 `$CODERCLAW_STATE_DIR` 文件夹。
 
 ### 陷阱：权限/所有权
 
@@ -177,7 +177,7 @@ openclaw doctor
 
 ### 陷阱：备份中的密钥
 
-`$OPENCLAW_STATE_DIR` 包含密钥（API 密钥、OAuth 令牌、WhatsApp 凭证）。将备份视为生产密钥：
+`$CODERCLAW_STATE_DIR` 包含密钥（API 密钥、OAuth 令牌、WhatsApp 凭证）。将备份视为生产密钥：
 
 - 加密存储
 - 避免通过不安全的渠道共享
@@ -187,7 +187,7 @@ openclaw doctor
 
 在新机器上，确认：
 
-- `openclaw status` 显示 Gateway 网关正在运行
+- `coderclaw status` 显示 Gateway 网关正在运行
 - 你的渠道仍然连接（例如 WhatsApp 不需要重新配对）
 - 仪表板打开并显示现有会话
 - 你的工作区文件（记忆、配置）存在

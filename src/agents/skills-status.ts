@@ -189,7 +189,7 @@ function buildSkillStatus(
   const bundled =
     bundledNames && bundledNames.size > 0
       ? bundledNames.has(entry.skill.name)
-      : entry.skill.source === "openclaw-bundled";
+      : entry.skill.source === "coderclaw-bundled";
 
   const requirementStatus = evaluateEntryMetadataRequirementsForCurrentPlatform({
     always,

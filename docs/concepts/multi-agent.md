@@ -39,8 +39,8 @@ reach other host locations unless sandboxing is enabled. See
 
 ## Paths (quick map)
 
-- Config: `~/.coderclaw/openclaw.json` (or `OPENCLAW_CONFIG_PATH`)
-- State dir: `~/.coderclaw` (or `OPENCLAW_STATE_DIR`)
+- Config: `~/.coderclaw/coderclaw.json` (or `CODERCLAW_CONFIG_PATH`)
+- State dir: `~/.coderclaw` (or `CODERCLAW_STATE_DIR`)
 - Workspace: `~/.coderclaw/workspace` (or `~/.coderclaw/workspace-<agentId>`)
 - Agent dir: `~/.coderclaw/agents/<agentId>/agent` (or `agents.list[].agentDir`)
 - Sessions: `~/.coderclaw/agents/<agentId>/sessions`
@@ -51,7 +51,7 @@ If you do nothing, CoderClaw runs a single agent:
 
 - `agentId` defaults to **`main`**.
 - Sessions are keyed as `agent:main:<mainKey>`.
-- Workspace defaults to `~/.coderclaw/workspace` (or `~/.coderclaw/workspace-<profile>` when `OPENCLAW_PROFILE` is set).
+- Workspace defaults to `~/.coderclaw/workspace` (or `~/.coderclaw/workspace-<profile>` when `CODERCLAW_PROFILE` is set).
 - State defaults to `~/.coderclaw/agents/main/agent`.
 
 ## Agent helper
@@ -297,7 +297,7 @@ coderclaw channels login --channel whatsapp --account personal
 coderclaw channels login --channel whatsapp --account biz
 ```
 
-`~/.coderclaw/openclaw.json` (JSON5):
+`~/.coderclaw/coderclaw.json` (JSON5):
 
 ```js
 {

@@ -15,8 +15,8 @@ describe("buildCleanupPlan", () => {
     };
     const plan = buildCleanupPlan({
       cfg: cfg as unknown as OpenClawConfig,
-      stateDir: path.join(tmpRoot, "openclaw-state"),
-      configPath: path.join(tmpRoot, "openclaw-state", "openclaw.json"),
+      stateDir: path.join(tmpRoot, "coderclaw-state"),
+      configPath: path.join(tmpRoot, "coderclaw-state", "coderclaw.json"),
       oauthDir: path.join(tmpRoot, "openclaw-oauth"),
     });
 

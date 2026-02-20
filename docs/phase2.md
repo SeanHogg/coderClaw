@@ -75,7 +75,7 @@ Transport adapters implement the communication layer without assumptions about p
 Example usage:
 
 ```typescript
-import { CoderClawRuntime, LocalTransportAdapter } from "openclaw/transport";
+import { CoderClawRuntime, LocalTransportAdapter } from "coderclaw/transport";
 
 // Create runtime with local adapter
 const adapter = new LocalTransportAdapter(context);
@@ -342,7 +342,7 @@ Skills can be distributed team-wide:
 
 ```bash
 # Install team skill
-openclaw skill install team/security-scanner --registry team-registry
+coderclaw skill install team/security-scanner --registry team-registry
 ```
 
 ### Team-Wide Policy Enforcement
@@ -361,7 +361,7 @@ organizationPolicy:
 ```yaml
 # .github/workflows/ai-review.yml
 - name: Run AI Code Review
-  uses: openclaw/action@v2
+  uses: coderclaw/action@v2
   with:
     task: "Review pull request"
     agent: "code-reviewer"

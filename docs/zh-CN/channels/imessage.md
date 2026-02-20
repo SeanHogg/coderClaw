@@ -156,7 +156,7 @@ exec ssh -T gateway-host imsg "$@"
 ```
 ┌──────────────────────────────┐          SSH (imsg rpc)          ┌──────────────────────────┐
 │ Gateway host (Linux/VM)      │──────────────────────────────────▶│ Mac with Messages + imsg │
-│ - openclaw gateway           │          SCP (attachments)        │ - Messages signed in     │
+│ - coderclaw gateway           │          SCP (attachments)        │ - Messages signed in     │
 │ - channels.imessage.cliPath  │◀──────────────────────────────────│ - Remote Login enabled   │
 └──────────────────────────────┘                                   └──────────────────────────┘
               ▲
@@ -194,7 +194,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
 - 使用 SSH 密钥使 `ssh bot@mac-mini.tailnet-1234.ts.net` 无需提示即可工作。
 - `remoteHost` 应与 SSH 目标匹配，以便 SCP 可以获取附件。
 
-多账户支持：使用 `channels.imessage.accounts` 配置每个账户及可选的 `name`。参见 [`gateway/configuration`](/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts) 了解共享模式。不要提交 `~/.openclaw/openclaw.json`（它通常包含令牌）。
+多账户支持：使用 `channels.imessage.accounts` 配置每个账户及可选的 `name`。参见 [`gateway/configuration`](/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts) 了解共享模式。不要提交 `~/.openclaw/coderclaw.json`（它通常包含令牌）。
 
 ## 访问控制（私信 + 群组）
 
@@ -203,8 +203,8 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
 - 默认：`channels.imessage.dmPolicy = "pairing"`。
 - 未知发送者会收到配对码；消息在批准前会被忽略（配对码在 1 小时后过期）。
 - 批准方式：
-  - `openclaw pairing list imessage`
-  - `openclaw pairing approve imessage <CODE>`
+  - `coderclaw pairing list imessage`
+  - `coderclaw pairing approve imessage <CODE>`
 - 配对是 iMessage 私信的默认令牌交换方式。详情：[配对](/channels/pairing)
 
 群组：

@@ -233,7 +233,7 @@ describe("resolveOpenClawMetadata", () => {
     const content = `---
 name: session-memory
 description: "Save session context to memory when /new command is issued"
-homepage: https://docs.openclaw.ai/automation/hooks#session-memory
+homepage: https://docs.coderclaw.ai/automation/hooks#session-memory
 metadata:
   {
     "openclaw":
@@ -254,11 +254,11 @@ metadata:
     expect(frontmatter.metadata).toBeDefined();
 
     const openclaw = resolveOpenClawMetadata(frontmatter);
-    expect(openclaw).toBeDefined();
-    expect(openclaw?.emoji).toBe("💾");
-    expect(openclaw?.events).toEqual(["command:new"]);
-    expect(openclaw?.requires?.config).toEqual(["workspace.dir"]);
-    expect(openclaw?.install?.[0].kind).toBe("bundled");
+    expect(coderclaw).toBeDefined();
+    expect(coderclaw?.emoji).toBe("💾");
+    expect(coderclaw?.events).toEqual(["command:new"]);
+    expect(coderclaw?.requires?.config).toEqual(["workspace.dir"]);
+    expect(coderclaw?.install?.[0].kind).toBe("bundled");
   });
 
   it("parses YAML metadata map", () => {
@@ -273,8 +273,8 @@ metadata:
 `;
     const frontmatter = parseFrontmatter(content);
     const openclaw = resolveOpenClawMetadata(frontmatter);
-    expect(openclaw?.emoji).toBe("disk");
-    expect(openclaw?.events).toEqual(["command:new"]);
+    expect(coderclaw?.emoji).toBe("disk");
+    expect(coderclaw?.events).toEqual(["command:new"]);
   });
 });
 

@@ -3,11 +3,11 @@ import process from "node:process";
 import type { GatewayLockHandle } from "../infra/gateway-lock.js";
 import { restartGatewayProcessWithFreshPid } from "../infra/process-respawn.js";
 
-declare const __OPENCLAW_VERSION__: string | undefined;
+declare const __CODERCLAW_VERSION__: string | undefined;
 
 const BUNDLED_VERSION =
-  (typeof __OPENCLAW_VERSION__ === "string" && __OPENCLAW_VERSION__) ||
-  process.env.OPENCLAW_BUNDLED_VERSION ||
+  (typeof __CODERCLAW_VERSION__ === "string" && __CODERCLAW_VERSION__) ||
+  process.env.CODERCLAW_BUNDLED_VERSION ||
   "0.0.0";
 
 function argValue(args: string[], flag: string): string | undefined {
@@ -84,7 +84,7 @@ async function main() {
   const cfg = loadConfig();
   const portRaw =
     argValue(args, "--port") ??
-    process.env.OPENCLAW_GATEWAY_PORT ??
+    process.env.CODERCLAW_GATEWAY_PORT ??
     process.env.CLAWDBOT_GATEWAY_PORT ??
     (typeof cfg.gateway?.port === "number" ? String(cfg.gateway.port) : "") ??
     "18789";
@@ -96,7 +96,7 @@ async function main() {
 
   const bindRaw =
     argValue(args, "--bind") ??
-    process.env.OPENCLAW_GATEWAY_BIND ??
+    process.env.CODERCLAW_GATEWAY_BIND ??
     process.env.CLAWDBOT_GATEWAY_BIND ??
     cfg.gateway?.bind ??
     "loopback";
@@ -115,7 +115,7 @@ async function main() {
 
   const token = argValue(args, "--token");
   if (token) {
-    process.env.OPENCLAW_GATEWAY_TOKEN = token;
+    process.env.CODERCLAW_GATEWAY_TOKEN = token;
   }
 
   let server: Awaited<ReturnType<typeof startGatewayServer>> | null = null;
@@ -194,7 +194,7 @@ async function main() {
                 `gateway: full process restart failed (${respawn.detail ?? "unknown error"}); falling back to in-process restart`,
               );
             } else {
-              defaultRuntime.log("gateway: restart mode in-process restart (OPENCLAW_NO_RESPAWN)");
+              defaultRuntime.log("gateway: restart mode in-process restart (CODERCLAW_NO_RESPAWN)");
             }
             shuttingDown = false;
             restartResolver?.();

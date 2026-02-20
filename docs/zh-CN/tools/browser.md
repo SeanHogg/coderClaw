@@ -1,7 +1,7 @@
 ---
 read_when:
   - 添加智能体控制的浏览器自动化
-  - 调试 openclaw 干扰你自己 Chrome 的问题
+  - 调试 coderclaw 干扰你自己 Chrome 的问题
   - 在 macOS 应用中实现浏览器设置和生命周期管理
 summary: 集成浏览器控制服务 + 操作命令
 title: 浏览器（OpenClaw 托管）
@@ -38,10 +38,10 @@ OpenClaw 可以运行一个由智能体控制的**专用 Chrome/Brave/Edge/Chrom
 ## 快速开始
 
 ```bash
-openclaw browser --browser-profile openclaw status
-openclaw browser --browser-profile openclaw start
-openclaw browser --browser-profile openclaw open https://example.com
-openclaw browser --browser-profile openclaw snapshot
+coderclaw browser --browser-profile coderclaw status
+coderclaw browser --browser-profile coderclaw start
+coderclaw browser --browser-profile coderclaw open https://example.com
+coderclaw browser --browser-profile coderclaw snapshot
 ```
 
 如果出现"Browser disabled"，请在配置中启用它（见下文）并重启 Gateway 网关。
@@ -51,11 +51,11 @@ openclaw browser --browser-profile openclaw snapshot
 - `openclaw`：托管的隔离浏览器（无需扩展）。
 - `chrome`：到你**系统浏览器**的扩展中继（需要将 OpenClaw 扩展附加到标签页）。
 
-如果你希望默认使用托管模式，请设置 `browser.defaultProfile: "openclaw"`。
+如果你希望默认使用托管模式，请设置 `browser.defaultProfile: "coderclaw"`。
 
 ## 配置
 
-浏览器设置位于 `~/.openclaw/openclaw.json`。
+浏览器设置位于 `~/.openclaw/coderclaw.json`。
 
 ```json5
 {
@@ -82,13 +82,13 @@ openclaw browser --browser-profile openclaw snapshot
 注意事项：
 
 - 浏览器控制服务绑定到 loopback 上的端口，该端口从 `gateway.port` 派生（默认：`18791`，即 gateway + 2）。中继使用下一个端口（`18792`）。
-- 如果你覆盖了 Gateway 网关端口（`gateway.port` 或 `OPENCLAW_GATEWAY_PORT`），派生的浏览器端口会相应调整以保持在同一"系列"中。
+- 如果你覆盖了 Gateway 网关端口（`gateway.port` 或 `CODERCLAW_GATEWAY_PORT`），派生的浏览器端口会相应调整以保持在同一"系列"中。
 - 未设置时，`cdpUrl` 默认为中继端口。
 - `remoteCdpTimeoutMs` 适用于远程（非 loopback）CDP 可达性检查。
 - `remoteCdpHandshakeTimeoutMs` 适用于远程 CDP WebSocket 可达性检查。
 - `attachOnly: true` 表示"永不启动本地浏览器；仅在浏览器已运行时附加"。
 - `color` + 每个配置文件的 `color` 为浏览器 UI 着色，以便你能看到哪个配置文件处于活动状态。
-- 默认配置文件是 `chrome`（扩展中继）。使用 `defaultProfile: "openclaw"` 来使用托管浏览器。
+- 默认配置文件是 `chrome`（扩展中继）。使用 `defaultProfile: "coderclaw"` 来使用托管浏览器。
 - 自动检测顺序：如果系统默认浏览器是基于 Chromium 的则使用它；否则 Chrome → Brave → Edge → Chromium → Chrome Canary。
 - 本地 `openclaw` 配置文件会自动分配 `cdpPort`/`cdpUrl` — 仅为远程 CDP 设置这些。
 
@@ -99,7 +99,7 @@ openclaw browser --browser-profile openclaw snapshot
 CLI 示例：
 
 ```bash
-openclaw config set browser.executablePath "/usr/bin/google-chrome"
+coderclaw config set browser.executablePath "/usr/bin/google-chrome"
 ```
 
 ```json5
@@ -236,22 +236,22 @@ Chrome 扩展中继接管需要主机浏览器控制，因此要么：
 1. 加载扩展（开发/未打包）：
 
 ```bash
-openclaw browser extension install
+coderclaw browser extension install
 ```
 
 - Chrome → `chrome://extensions` → 启用"开发者模式"
-- "加载已解压的扩展程序" → 选择 `openclaw browser extension path` 打印的目录
+- "加载已解压的扩展程序" → 选择 `coderclaw browser extension path` 打印的目录
 - 固定扩展，然后在你想要控制的标签页上点击它（徽章显示 `ON`）。
 
 2. 使用它：
 
-- CLI：`openclaw browser --browser-profile chrome tabs`
+- CLI：`coderclaw browser --browser-profile chrome tabs`
 - 智能体工具：`browser` 配合 `profile="chrome"`
 
 可选：如果你想要不同的名称或中继端口，创建你自己的配置文件：
 
 ```bash
-openclaw browser create-profile \
+coderclaw browser create-profile \
   --name my-chrome \
   --driver extension \
   --cdp-url http://127.0.0.1:18792 \
@@ -308,7 +308,7 @@ openclaw browser create-profile \
 
 ### Playwright 要求
 
-某些功能（navigate/act/AI 快照/角色快照、元素截图、PDF）需要 Playwright。如果未安装 Playwright，这些端点会返回明确的 501 错误。ARIA 快照和基本截图对于 openclaw 托管的 Chrome 仍然有效。对于 Chrome 扩展中继驱动程序，ARIA 快照和截图需要 Playwright。
+某些功能（navigate/act/AI 快照/角色快照、元素截图、PDF）需要 Playwright。如果未安装 Playwright，这些端点会返回明确的 501 错误。ARIA 快照和基本截图对于 coderclaw 托管的 Chrome 仍然有效。对于 Chrome 扩展中继驱动程序，ARIA 快照和截图需要 Playwright。
 
 如果你看到 `Playwright is not available in this gateway build`，请安装完整的 Playwright 包（不是 `playwright-core`）并重启 Gateway 网关，或者重新安装带浏览器支持的 OpenClaw。
 
@@ -321,7 +321,7 @@ docker compose run --rm openclaw-cli \
   node /app/node_modules/playwright-core/cli.js install chromium
 ```
 
-要持久化浏览器下载，设置 `PLAYWRIGHT_BROWSERS_PATH`（例如 `/home/node/.cache/ms-playwright`）并确保 `/home/node` 通过 `OPENCLAW_HOME_VOLUME` 或绑定挂载持久化。参见 [Docker](/install/docker)。
+要持久化浏览器下载，设置 `PLAYWRIGHT_BROWSERS_PATH`（例如 `/home/node/.cache/ms-playwright`）并确保 `/home/node` 通过 `CODERCLAW_HOME_VOLUME` 或绑定挂载持久化。参见 [Docker](/install/docker)。
 
 ## 工作原理（内部）
 
@@ -341,79 +341,79 @@ docker compose run --rm openclaw-cli \
 
 基础操作：
 
-- `openclaw browser status`
-- `openclaw browser start`
-- `openclaw browser stop`
-- `openclaw browser tabs`
-- `openclaw browser tab`
-- `openclaw browser tab new`
-- `openclaw browser tab select 2`
-- `openclaw browser tab close 2`
-- `openclaw browser open https://example.com`
-- `openclaw browser focus abcd1234`
-- `openclaw browser close abcd1234`
+- `coderclaw browser status`
+- `coderclaw browser start`
+- `coderclaw browser stop`
+- `coderclaw browser tabs`
+- `coderclaw browser tab`
+- `coderclaw browser tab new`
+- `coderclaw browser tab select 2`
+- `coderclaw browser tab close 2`
+- `coderclaw browser open https://example.com`
+- `coderclaw browser focus abcd1234`
+- `coderclaw browser close abcd1234`
 
 检查：
 
-- `openclaw browser screenshot`
-- `openclaw browser screenshot --full-page`
-- `openclaw browser screenshot --ref 12`
-- `openclaw browser screenshot --ref e12`
-- `openclaw browser snapshot`
-- `openclaw browser snapshot --format aria --limit 200`
-- `openclaw browser snapshot --interactive --compact --depth 6`
-- `openclaw browser snapshot --efficient`
-- `openclaw browser snapshot --labels`
-- `openclaw browser snapshot --selector "#main" --interactive`
-- `openclaw browser snapshot --frame "iframe#main" --interactive`
-- `openclaw browser console --level error`
-- `openclaw browser errors --clear`
-- `openclaw browser requests --filter api --clear`
-- `openclaw browser pdf`
-- `openclaw browser responsebody "**/api" --max-chars 5000`
+- `coderclaw browser screenshot`
+- `coderclaw browser screenshot --full-page`
+- `coderclaw browser screenshot --ref 12`
+- `coderclaw browser screenshot --ref e12`
+- `coderclaw browser snapshot`
+- `coderclaw browser snapshot --format aria --limit 200`
+- `coderclaw browser snapshot --interactive --compact --depth 6`
+- `coderclaw browser snapshot --efficient`
+- `coderclaw browser snapshot --labels`
+- `coderclaw browser snapshot --selector "#main" --interactive`
+- `coderclaw browser snapshot --frame "iframe#main" --interactive`
+- `coderclaw browser console --level error`
+- `coderclaw browser errors --clear`
+- `coderclaw browser requests --filter api --clear`
+- `coderclaw browser pdf`
+- `coderclaw browser responsebody "**/api" --max-chars 5000`
 
 操作：
 
-- `openclaw browser navigate https://example.com`
-- `openclaw browser resize 1280 720`
-- `openclaw browser click 12 --double`
-- `openclaw browser click e12 --double`
-- `openclaw browser type 23 "hello" --submit`
-- `openclaw browser press Enter`
-- `openclaw browser hover 44`
-- `openclaw browser scrollintoview e12`
-- `openclaw browser drag 10 11`
-- `openclaw browser select 9 OptionA OptionB`
-- `openclaw browser download e12 /tmp/report.pdf`
-- `openclaw browser waitfordownload /tmp/report.pdf`
-- `openclaw browser upload /tmp/file.pdf`
-- `openclaw browser fill --fields '[{"ref":"1","type":"text","value":"Ada"}]'`
-- `openclaw browser dialog --accept`
-- `openclaw browser wait --text "Done"`
-- `openclaw browser wait "#main" --url "**/dash" --load networkidle --fn "window.ready===true"`
-- `openclaw browser evaluate --fn '(el) => el.textContent' --ref 7`
-- `openclaw browser highlight e12`
-- `openclaw browser trace start`
-- `openclaw browser trace stop`
+- `coderclaw browser navigate https://example.com`
+- `coderclaw browser resize 1280 720`
+- `coderclaw browser click 12 --double`
+- `coderclaw browser click e12 --double`
+- `coderclaw browser type 23 "hello" --submit`
+- `coderclaw browser press Enter`
+- `coderclaw browser hover 44`
+- `coderclaw browser scrollintoview e12`
+- `coderclaw browser drag 10 11`
+- `coderclaw browser select 9 OptionA OptionB`
+- `coderclaw browser download e12 /tmp/report.pdf`
+- `coderclaw browser waitfordownload /tmp/report.pdf`
+- `coderclaw browser upload /tmp/file.pdf`
+- `coderclaw browser fill --fields '[{"ref":"1","type":"text","value":"Ada"}]'`
+- `coderclaw browser dialog --accept`
+- `coderclaw browser wait --text "Done"`
+- `coderclaw browser wait "#main" --url "**/dash" --load networkidle --fn "window.ready===true"`
+- `coderclaw browser evaluate --fn '(el) => el.textContent' --ref 7`
+- `coderclaw browser highlight e12`
+- `coderclaw browser trace start`
+- `coderclaw browser trace stop`
 
 状态：
 
-- `openclaw browser cookies`
-- `openclaw browser cookies set session abc123 --url "https://example.com"`
-- `openclaw browser cookies clear`
-- `openclaw browser storage local get`
-- `openclaw browser storage local set theme dark`
-- `openclaw browser storage session clear`
-- `openclaw browser set offline on`
-- `openclaw browser set headers --json '{"X-Debug":"1"}'`
-- `openclaw browser set credentials user pass`
-- `openclaw browser set credentials --clear`
-- `openclaw browser set geo 37.7749 -122.4194 --origin "https://example.com"`
-- `openclaw browser set geo --clear`
-- `openclaw browser set media dark`
-- `openclaw browser set timezone America/New_York`
-- `openclaw browser set locale en-US`
-- `openclaw browser set device "iPhone 14"`
+- `coderclaw browser cookies`
+- `coderclaw browser cookies set session abc123 --url "https://example.com"`
+- `coderclaw browser cookies clear`
+- `coderclaw browser storage local get`
+- `coderclaw browser storage local set theme dark`
+- `coderclaw browser storage session clear`
+- `coderclaw browser set offline on`
+- `coderclaw browser set headers --json '{"X-Debug":"1"}'`
+- `coderclaw browser set credentials user pass`
+- `coderclaw browser set credentials --clear`
+- `coderclaw browser set geo 37.7749 -122.4194 --origin "https://example.com"`
+- `coderclaw browser set geo --clear`
+- `coderclaw browser set media dark`
+- `coderclaw browser set timezone America/New_York`
+- `coderclaw browser set locale en-US`
+- `coderclaw browser set device "iPhone 14"`
 
 注意事项：
 
@@ -435,14 +435,14 @@ docker compose run --rm openclaw-cli \
 
 OpenClaw 支持两种"快照"风格：
 
-- **AI 快照（数字 ref）**：`openclaw browser snapshot`（默认；`--format ai`）
+- **AI 快照（数字 ref）**：`coderclaw browser snapshot`（默认；`--format ai`）
   - 输出：包含数字 ref 的文本快照。
-  - 操作：`openclaw browser click 12`、`openclaw browser type 23 "hello"`。
+  - 操作：`coderclaw browser click 12`、`coderclaw browser type 23 "hello"`。
   - 内部通过 Playwright 的 `aria-ref` 解析 ref。
 
-- **角色快照（角色 ref 如 `e12`）**：`openclaw browser snapshot --interactive`（或 `--compact`、`--depth`、`--selector`、`--frame`）
+- **角色快照（角色 ref 如 `e12`）**：`coderclaw browser snapshot --interactive`（或 `--compact`、`--depth`、`--selector`、`--frame`）
   - 输出：带有 `[ref=e12]`（和可选的 `[nth=1]`）的基于角色的列表/树。
-  - 操作：`openclaw browser click e12`、`openclaw browser highlight e12`。
+  - 操作：`coderclaw browser click e12`、`coderclaw browser highlight e12`。
   - 内部通过 `getByRole(...)`（加上重复项的 `nth()`）解析 ref。
   - 添加 `--labels` 可包含带有叠加 `e12` 标签的视口截图。
 
@@ -456,18 +456,18 @@ ref 行为：
 你可以等待的不仅仅是时间/文本：
 
 - 等待 URL（Playwright 支持通配符）：
-  - `openclaw browser wait --url "**/dash"`
+  - `coderclaw browser wait --url "**/dash"`
 - 等待加载状态：
-  - `openclaw browser wait --load networkidle`
+  - `coderclaw browser wait --load networkidle`
 - 等待 JS 断言：
-  - `openclaw browser wait --fn "window.ready===true"`
+  - `coderclaw browser wait --fn "window.ready===true"`
 - 等待选择器变得可见：
-  - `openclaw browser wait "#main"`
+  - `coderclaw browser wait "#main"`
 
 这些可以组合使用：
 
 ```bash
-openclaw browser wait "#main" \
+coderclaw browser wait "#main" \
   --url "**/dash" \
   --load networkidle \
   --fn "window.ready===true" \
@@ -478,16 +478,16 @@ openclaw browser wait "#main" \
 
 当操作失败时（例如"not visible"、"strict mode violation"、"covered"）：
 
-1. `openclaw browser snapshot --interactive`
+1. `coderclaw browser snapshot --interactive`
 2. 使用 `click <ref>` / `type <ref>`（在交互模式下优先使用角色 ref）
-3. 如果仍然失败：`openclaw browser highlight <ref>` 查看 Playwright 定位的目标
+3. 如果仍然失败：`coderclaw browser highlight <ref>` 查看 Playwright 定位的目标
 4. 如果页面行为异常：
-   - `openclaw browser errors --clear`
-   - `openclaw browser requests --filter api --clear`
+   - `coderclaw browser errors --clear`
+   - `coderclaw browser requests --filter api --clear`
 5. 深度调试：录制 trace：
-   - `openclaw browser trace start`
+   - `coderclaw browser trace start`
    - 重现问题
-   - `openclaw browser trace stop`（打印 `TRACE:<path>`）
+   - `coderclaw browser trace stop`（打印 `TRACE:<path>`）
 
 ## JSON 输出
 
@@ -496,10 +496,10 @@ openclaw browser wait "#main" \
 示例：
 
 ```bash
-openclaw browser status --json
-openclaw browser snapshot --interactive --json
-openclaw browser requests --filter api --json
-openclaw browser cookies --json
+coderclaw browser status --json
+coderclaw browser snapshot --interactive --json
+coderclaw browser requests --filter api --json
+coderclaw browser cookies --json
 ```
 
 JSON 格式的角色快照包含 `refs` 加上一个小的 `stats` 块（lines/chars/refs/interactive），以便工具可以推断负载大小和密度。
@@ -522,8 +522,8 @@ JSON 格式的角色快照包含 `refs` 加上一个小的 `stats` 块（lines/c
 
 ## 安全与隐私
 
-- openclaw 浏览器配置文件可能包含已登录的会话；请将其视为敏感信息。
-- `browser act kind=evaluate` / `openclaw browser evaluate` 和 `wait --fn` 在页面上下文中执行任意 JavaScript。提示注入可能会操纵它。如果不需要，请使用 `browser.evaluateEnabled=false` 禁用它。
+- coderclaw 浏览器配置文件可能包含已登录的会话；请将其视为敏感信息。
+- `browser act kind=evaluate` / `coderclaw browser evaluate` 和 `wait --fn` 在页面上下文中执行任意 JavaScript。提示注入可能会操纵它。如果不需要，请使用 `browser.evaluateEnabled=false` 禁用它。
 - 有关登录和反机器人注意事项（X/Twitter 等），请参阅 [浏览器登录 + X/Twitter 发帖](/tools/browser-login)。
 - 保持 Gateway 网关/节点主机私有（仅限 loopback 或 tailnet）。
 - 远程 CDP 端点功能强大；请通过隧道保护它们。

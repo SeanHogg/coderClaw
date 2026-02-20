@@ -22,19 +22,19 @@ x-i18n:
 ## 用法
 
 ```bash
-openclaw acp
+coderclaw acp
 
 # Remote Gateway
-openclaw acp --url wss://gateway-host:18789 --token <token>
+coderclaw acp --url wss://gateway-host:18789 --token <token>
 
 # Attach to an existing session key
-openclaw acp --session agent:main:main
+coderclaw acp --session agent:main:main
 
 # Attach by label (must already exist)
-openclaw acp --session-label "support inbox"
+coderclaw acp --session-label "support inbox"
 
 # Reset the session key before the first prompt
-openclaw acp --session agent:main:main --reset-session
+coderclaw acp --session agent:main:main --reset-session
 ```
 
 ## ACP 客户端（调试）
@@ -43,13 +43,13 @@ openclaw acp --session agent:main:main --reset-session
 它会启动 ACP 桥接器并让你交互式输入提示。
 
 ```bash
-openclaw acp client
+coderclaw acp client
 
 # Point the spawned bridge at a remote Gateway
-openclaw acp client --server-args --url wss://gateway-host:18789 --token <token>
+coderclaw acp client --server-args --url wss://gateway-host:18789 --token <token>
 
-# Override the server command (default: openclaw)
-openclaw acp client --server "node" --server-args openclaw.mjs acp --url ws://127.0.0.1:19001
+# Override the server command (default: coderclaw)
+coderclaw acp client --server "node" --server-args coderclaw.mjs acp --url ws://127.0.0.1:19001
 ```
 
 ## 如何使用
@@ -58,19 +58,19 @@ openclaw acp client --server "node" --server-args openclaw.mjs acp --url ws://12
 
 1. 确保 Gateway 网关正在运行（本地或远程）。
 2. 配置 Gateway 网关目标（配置或标志）。
-3. 将你的 IDE 配置为通过 stdio 运行 `openclaw acp`。
+3. 将你的 IDE 配置为通过 stdio 运行 `coderclaw acp`。
 
 示例配置（持久化）：
 
 ```bash
-openclaw config set gateway.remote.url wss://gateway-host:18789
-openclaw config set gateway.remote.token <token>
+coderclaw config set gateway.remote.url wss://gateway-host:18789
+coderclaw config set gateway.remote.token <token>
 ```
 
 示例直接运行（不写入配置）：
 
 ```bash
-openclaw acp --url wss://gateway-host:18789 --token <token>
+coderclaw acp --url wss://gateway-host:18789 --token <token>
 ```
 
 ## 选择智能体
@@ -80,9 +80,9 @@ ACP 不直接选择智能体。它通过 Gateway 网关会话键进行路由。
 使用智能体作用域的会话键来定位特定智能体：
 
 ```bash
-openclaw acp --session agent:main:main
-openclaw acp --session agent:design:main
-openclaw acp --session agent:qa:bug-123
+coderclaw acp --session agent:main:main
+coderclaw acp --session agent:design:main
+coderclaw acp --session agent:qa:bug-123
 ```
 
 每个 ACP 会话映射到单个 Gateway 网关会话键。一个智能体可以有多个会话；除非你覆盖键或标签，否则 ACP 默认使用隔离的 `acp:<uuid>` 会话。
@@ -96,7 +96,7 @@ openclaw acp --session agent:qa:bug-123
   "agent_servers": {
     "OpenClaw ACP": {
       "type": "custom",
-      "command": "openclaw",
+      "command": "coderclaw",
       "args": ["acp"],
       "env": {}
     }
@@ -111,7 +111,7 @@ openclaw acp --session agent:qa:bug-123
   "agent_servers": {
     "OpenClaw ACP": {
       "type": "custom",
-      "command": "openclaw",
+      "command": "coderclaw",
       "args": [
         "acp",
         "--url",

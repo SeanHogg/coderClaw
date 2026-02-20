@@ -7,17 +7,17 @@ title: "Security"
 
 # Security 🔒
 
-## Quick check: `openclaw security audit`
+## Quick check: `coderclaw security audit`
 
 See also: [Formal Verification (Security Models)](/security/formal-verification/)
 
 Run this regularly (especially after changing config or exposing network surfaces):
 
 ```bash
-openclaw security audit
-openclaw security audit --deep
-openclaw security audit --fix
-openclaw security audit --json
+coderclaw security audit
+coderclaw security audit --deep
+coderclaw security audit --fix
+coderclaw security audit --json
 ```
 
 It flags common footguns (Gateway auth exposure, browser control exposure, elevated allowlists, filesystem permissions).
@@ -110,7 +110,7 @@ High-signal `checkId` values you will most likely see in real deployments (not e
 | `checkId`                                    | Severity      | Why it matters                                           | Primary fix key/path                             | Auto-fix |
 | -------------------------------------------- | ------------- | -------------------------------------------------------- | ------------------------------------------------ | -------- |
 | `fs.state_dir.perms_world_writable`          | critical      | Other users/processes can modify full OpenClaw state     | filesystem perms on `~/.coderclaw`               | yes      |
-| `fs.config.perms_writable`                   | critical      | Others can change auth/tool policy/config                | filesystem perms on `~/.coderclaw/openclaw.json` | yes      |
+| `fs.config.perms_writable`                   | critical      | Others can change auth/tool policy/config                | filesystem perms on `~/.coderclaw/coderclaw.json` | yes      |
 | `fs.config.perms_world_readable`             | critical      | Config can expose tokens/settings                        | filesystem perms on config file                  | yes      |
 | `gateway.bind_no_auth`                       | critical      | Remote bind without shared secret                        | `gateway.bind`, `gateway.auth.*`                 | no       |
 | `gateway.loopback_no_auth`                   | critical      | Reverse-proxied loopback may become unauthenticated      | `gateway.auth.*`, proxy setup                    | no       |
@@ -138,7 +138,7 @@ For break-glass scenarios only, `gateway.controlUi.dangerouslyDisableDeviceAuth`
 disables device identity checks entirely. This is a severe security downgrade;
 keep it off unless you are actively debugging and can revert quickly.
 
-`openclaw security audit` warns when this setting is enabled.
+`coderclaw security audit` warns when this setting is enabled.
 
 ## Reverse Proxy Configuration
 
@@ -152,7 +152,7 @@ gateway:
     - "127.0.0.1" # if your proxy runs on localhost
   auth:
     mode: password
-    password: ${OPENCLAW_GATEWAY_PASSWORD}
+    password: ${CODERCLAW_GATEWAY_PASSWORD}
 ```
 
 When `trustedProxies` is configured, the Gateway will use `X-Forwarded-For` headers to determine the real client IP for local client detection. Make sure your proxy overwrites (not appends to) incoming `X-Forwarded-For` headers to prevent spoofing.
@@ -245,7 +245,7 @@ Plugins run **in-process** with the Gateway. Treat them as trusted code:
 - Review plugin config before enabling.
 - Restart the Gateway after plugin changes.
 - If you install plugins from npm (`coderclaw plugins install <npm-spec>`), treat it like running untrusted code:
-  - The install path is `~/.coderclaw/extensions/<pluginId>/` (or `$OPENCLAW_STATE_DIR/extensions/<pluginId>/`).
+  - The install path is `~/.coderclaw/extensions/<pluginId>/` (or `$CODERCLAW_STATE_DIR/extensions/<pluginId>/`).
   - OpenClaw uses `npm pack` and then runs `npm install --omit=dev` in that directory (npm lifecycle scripts can execute code during install).
   - Prefer pinned, exact versions (`@scope/pkg@1.2.3`), and inspect the unpacked code on disk before enabling.
 
@@ -389,7 +389,7 @@ Guidance:
 
 Keep config + state private on the gateway host:
 
-- `~/.coderclaw/openclaw.json`: `600` (user read/write only)
+- `~/.coderclaw/coderclaw.json`: `600` (user read/write only)
 - `~/.coderclaw`: `700` (user only)
 
 `coderclaw doctor` can warn and offer to tighten these permissions.
@@ -399,12 +399,12 @@ Keep config + state private on the gateway host:
 The Gateway multiplexes **WebSocket + HTTP** on a single port:
 
 - Default: `18789`
-- Config/flags/env: `gateway.port`, `--port`, `OPENCLAW_GATEWAY_PORT`
+- Config/flags/env: `gateway.port`, `--port`, `CODERCLAW_GATEWAY_PORT`
 
 This HTTP surface includes the Control UI and the canvas host:
 
 - Control UI (SPA assets) (default base path `/`)
-- Canvas host: `/__openclaw__/canvas/` and `/__openclaw__/a2ui/` (arbitrary HTML/JS; treat as untrusted content)
+- Canvas host: `/__coderclaw__/canvas/` and `/__coderclaw__/a2ui/` (arbitrary HTML/JS; treat as untrusted content)
 
 If you load canvas content in a normal browser, treat it like any other untrusted web page:
 
@@ -424,7 +424,7 @@ Rules of thumb:
 
 ### 0.4.1) mDNS/Bonjour discovery (information disclosure)
 
-The Gateway broadcasts its presence via mDNS (`_openclaw-gw._tcp` on port 5353) for local device discovery. In full mode, this includes TXT records that may expose operational details:
+The Gateway broadcasts its presence via mDNS (`_coderclaw-gw._tcp` on port 5353) for local device discovery. In full mode, this includes TXT records that may expose operational details:
 
 - `cliPath`: full filesystem path to the CLI binary (reveals username and install location)
 - `sshPort`: advertises SSH availability on the host
@@ -464,7 +464,7 @@ The Gateway broadcasts its presence via mDNS (`_openclaw-gw._tcp` on port 5353) 
    }
    ```
 
-4. **Environment variable** (alternative): set `OPENCLAW_DISABLE_BONJOUR=1` to disable mDNS without config changes.
+4. **Environment variable** (alternative): set `CODERCLAW_DISABLE_BONJOUR=1` to disable mDNS without config changes.
 
 In minimal mode, the Gateway still broadcasts enough for device discovery (`role`, `gatewayPort`, `transport`) but omits `cliPath` and `sshPort`. Apps that need CLI path information can fetch it via the authenticated WebSocket connection instead.
 
@@ -502,12 +502,12 @@ Local device pairing:
 Auth modes:
 
 - `gateway.auth.mode: "token"`: shared bearer token (recommended for most setups).
-- `gateway.auth.mode: "password"`: password auth (prefer setting via env: `OPENCLAW_GATEWAY_PASSWORD`).
+- `gateway.auth.mode: "password"`: password auth (prefer setting via env: `CODERCLAW_GATEWAY_PASSWORD`).
 - `gateway.auth.mode: "trusted-proxy"`: trust an identity-aware reverse proxy to authenticate users and pass identity via headers (see [Trusted Proxy Auth](/gateway/trusted-proxy-auth)).
 
 Rotation checklist (token/password):
 
-1. Generate/set a new secret (`gateway.auth.token` or `OPENCLAW_GATEWAY_PASSWORD`).
+1. Generate/set a new secret (`gateway.auth.token` or `CODERCLAW_GATEWAY_PASSWORD`).
 2. Restart the Gateway (or restart the macOS app if it supervises the Gateway).
 3. Update any remote clients (`gateway.remote.token` / `.password` on machines that call into the Gateway).
 4. Verify you can no longer connect with the old credentials.
@@ -552,9 +552,9 @@ Avoid:
 
 ### 0.7) Secrets on disk (what’s sensitive)
 
-Assume anything under `~/.coderclaw/` (or `$OPENCLAW_STATE_DIR/`) may contain secrets or private data:
+Assume anything under `~/.coderclaw/` (or `$CODERCLAW_STATE_DIR/`) may contain secrets or private data:
 
-- `openclaw.json`: config may include tokens (gateway, remote gateway), provider settings, and allowlists.
+- `coderclaw.json`: config may include tokens (gateway, remote gateway), provider settings, and allowlists.
 - `credentials/**`: channel credentials (example: WhatsApp creds), pairing allowlists, legacy OAuth imports.
 - `agents/<agentId>/agent/auth-profiles.json`: API keys + OAuth tokens (imported from legacy `credentials/oauth.json`).
 - `agents/<agentId>/sessions/**`: session transcripts (`*.jsonl`) + routing metadata (`sessions.json`) that can contain private messages and tool output.
@@ -826,16 +826,16 @@ If your AI does something bad:
 
 ### Rotate (assume compromise if secrets leaked)
 
-1. Rotate Gateway auth (`gateway.auth.token` / `OPENCLAW_GATEWAY_PASSWORD`) and restart.
+1. Rotate Gateway auth (`gateway.auth.token` / `CODERCLAW_GATEWAY_PASSWORD`) and restart.
 2. Rotate remote client secrets (`gateway.remote.token` / `.password`) on any machine that can call the Gateway.
 3. Rotate provider/API credentials (WhatsApp creds, Slack/Discord tokens, model/API keys in `auth-profiles.json`).
 
 ### Audit
 
-1. Check Gateway logs: `/tmp/openclaw/openclaw-YYYY-MM-DD.log` (or `logging.file`).
+1. Check Gateway logs: `/tmp/coderclaw/coderclaw-YYYY-MM-DD.log` (or `logging.file`).
 2. Review the relevant transcript(s): `~/.coderclaw/agents/<agentId>/sessions/*.jsonl`.
 3. Review recent config changes (anything that could have widened access: `gateway.bind`, `gateway.auth`, dm/group policies, `tools.elevated`, plugin changes).
-4. Re-run `openclaw security audit --deep` and confirm critical findings are resolved.
+4. Re-run `coderclaw security audit --deep` and confirm critical findings are resolved.
 
 ### Collect for a report
 

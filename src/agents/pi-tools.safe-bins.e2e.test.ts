@@ -6,10 +6,10 @@ import type { OpenClawConfig } from "../config/config.js";
 import type { ExecApprovalsResolved } from "../infra/exec-approvals.js";
 import { captureEnv } from "../test-utils/env.js";
 
-const bundledPluginsDirSnapshot = captureEnv(["OPENCLAW_BUNDLED_PLUGINS_DIR"]);
+const bundledPluginsDirSnapshot = captureEnv(["CODERCLAW_BUNDLED_PLUGINS_DIR"]);
 
 beforeAll(() => {
-  process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = path.join(
+  process.env.CODERCLAW_BUNDLED_PLUGINS_DIR = path.join(
     os.tmpdir(),
     "openclaw-test-no-bundled-extensions",
   );
@@ -74,7 +74,7 @@ describe("createOpenClawCodingTools safeBins", () => {
     }
 
     const { createOpenClawCodingTools } = await import("./pi-tools.js");
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-safe-bins-"));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "coderclaw-safe-bins-"));
     const cfg: OpenClawConfig = {
       tools: {
         exec: {
@@ -96,10 +96,10 @@ describe("createOpenClawCodingTools safeBins", () => {
     expect(execTool).toBeDefined();
 
     const marker = `safe-bins-${Date.now()}`;
-    const envSnapshot = captureEnv(["OPENCLAW_SHELL_ENV_TIMEOUT_MS"]);
+    const envSnapshot = captureEnv(["CODERCLAW_SHELL_ENV_TIMEOUT_MS"]);
     const result = await (async () => {
       try {
-        process.env.OPENCLAW_SHELL_ENV_TIMEOUT_MS = "1000";
+        process.env.CODERCLAW_SHELL_ENV_TIMEOUT_MS = "1000";
         return await execTool!.execute("call1", {
           command: `echo ${marker}`,
           workdir: tmpDir,
@@ -121,7 +121,7 @@ describe("createOpenClawCodingTools safeBins", () => {
     }
 
     const { createOpenClawCodingTools } = await import("./pi-tools.js");
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-safe-bins-expand-"));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "coderclaw-safe-bins-expand-"));
 
     const secret = `TOP_SECRET_${Date.now()}`;
     fs.writeFileSync(path.join(tmpDir, "secret.txt"), `${secret}\n`, "utf8");

@@ -133,7 +133,7 @@ describe("image tool implicit imageModel config", () => {
   });
 
   it("stays disabled without auth when no pairing is possible", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
     const cfg: OpenClawConfig = {
       agents: { defaults: { model: { primary: "openai/gpt-5.2" } } },
     };
@@ -142,7 +142,7 @@ describe("image tool implicit imageModel config", () => {
   });
 
   it("pairs minimax primary with MiniMax-VL-01 (and fallbacks) when auth exists", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
     vi.stubEnv("MINIMAX_API_KEY", "minimax-test");
     vi.stubEnv("OPENAI_API_KEY", "openai-test");
     vi.stubEnv("ANTHROPIC_API_KEY", "anthropic-test");
@@ -157,7 +157,7 @@ describe("image tool implicit imageModel config", () => {
   });
 
   it("pairs zai primary with glm-4.6v (and fallbacks) when auth exists", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
     vi.stubEnv("ZAI_API_KEY", "zai-test");
     vi.stubEnv("OPENAI_API_KEY", "openai-test");
     vi.stubEnv("ANTHROPIC_API_KEY", "anthropic-test");
@@ -172,7 +172,7 @@ describe("image tool implicit imageModel config", () => {
   });
 
   it("pairs a custom provider when it declares an image-capable model", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
     await writeAuthProfiles(agentDir, {
       version: 1,
       profiles: {
@@ -200,7 +200,7 @@ describe("image tool implicit imageModel config", () => {
   });
 
   it("prefers explicit agents.defaults.imageModel", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
     const cfg: OpenClawConfig = {
       agents: {
         defaults: {
@@ -219,7 +219,7 @@ describe("image tool implicit imageModel config", () => {
     // because images are auto-injected into prompts. The tool description is
     // adjusted via modelHasVision to discourage redundant usage.
     vi.stubEnv("OPENAI_API_KEY", "test-key");
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
     const cfg: OpenClawConfig = {
       agents: {
         defaults: {
@@ -246,7 +246,7 @@ describe("image tool implicit imageModel config", () => {
   });
 
   it("exposes an Anthropic-safe image schema without union keywords", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
     try {
       const cfg = createMinimaxImageConfig();
       const tool = createImageTool({ config: cfg, agentDir });
@@ -276,7 +276,7 @@ describe("image tool implicit imageModel config", () => {
   });
 
   it("keeps an Anthropic-safe image schema snapshot", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
     try {
       const cfg = createMinimaxImageConfig();
       const tool = createImageTool({ config: cfg, agentDir });
@@ -308,7 +308,7 @@ describe("image tool implicit imageModel config", () => {
   it("allows workspace images outside default local media roots", async () => {
     await withTempWorkspacePng(async ({ workspaceDir, imagePath }) => {
       const fetch = stubMinimaxOkFetch();
-      const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+      const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
       try {
         const cfg = createMinimaxImageConfig();
 
@@ -342,7 +342,7 @@ describe("image tool implicit imageModel config", () => {
   it("allows workspace images via createOpenClawCodingTools default workspace root", async () => {
     await withTempWorkspacePng(async ({ imagePath }) => {
       const fetch = stubMinimaxOkFetch();
-      const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-"));
+      const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-"));
       try {
         const cfg = createMinimaxImageConfig();
 
@@ -363,7 +363,7 @@ describe("image tool implicit imageModel config", () => {
   });
 
   it("sandboxes image paths like the read tool", async () => {
-    const stateDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-sandbox-"));
+    const stateDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-sandbox-"));
     const agentDir = path.join(stateDir, "agent");
     const sandboxRoot = path.join(stateDir, "sandbox");
     await fs.mkdir(agentDir, { recursive: true });
@@ -391,7 +391,7 @@ describe("image tool implicit imageModel config", () => {
   });
 
   it("rewrites inbound absolute paths into sandbox media/inbound", async () => {
-    const stateDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-image-sandbox-"));
+    const stateDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-image-sandbox-"));
     const agentDir = path.join(stateDir, "agent");
     const sandboxRoot = path.join(stateDir, "sandbox");
     await fs.mkdir(agentDir, { recursive: true });
@@ -490,7 +490,7 @@ describe("image tool MiniMax VLM routing", () => {
     });
     global.fetch = withFetchPreconnect(fetch);
 
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-minimax-vlm-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-minimax-vlm-"));
     vi.stubEnv("MINIMAX_API_KEY", "minimax-test");
     const cfg: OpenClawConfig = {
       agents: { defaults: { model: { primary: "minimax/MiniMax-M2.1" } } },

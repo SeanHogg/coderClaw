@@ -35,31 +35,31 @@ describe("schtasks runtime parsing", () => {
 });
 
 describe("resolveTaskScriptPath", () => {
-  it("uses default path when OPENCLAW_PROFILE is unset", () => {
+  it("uses default path when CODERCLAW_PROFILE is unset", () => {
     const env = { USERPROFILE: "C:\\Users\\test" };
     expect(resolveTaskScriptPath(env)).toBe(
       path.join("C:\\Users\\test", ".coderclaw", "gateway.cmd"),
     );
   });
 
-  it("uses profile-specific path when OPENCLAW_PROFILE is set to a custom value", () => {
-    const env = { USERPROFILE: "C:\\Users\\test", OPENCLAW_PROFILE: "jbphoenix" };
+  it("uses profile-specific path when CODERCLAW_PROFILE is set to a custom value", () => {
+    const env = { USERPROFILE: "C:\\Users\\test", CODERCLAW_PROFILE: "jbphoenix" };
     expect(resolveTaskScriptPath(env)).toBe(
       path.join("C:\\Users\\test", ".coderclaw-jbphoenix", "gateway.cmd"),
     );
   });
 
-  it("prefers OPENCLAW_STATE_DIR over profile-derived defaults", () => {
+  it("prefers CODERCLAW_STATE_DIR over profile-derived defaults", () => {
     const env = {
       USERPROFILE: "C:\\Users\\test",
-      OPENCLAW_PROFILE: "rescue",
-      OPENCLAW_STATE_DIR: "C:\\State\\openclaw",
+      CODERCLAW_PROFILE: "rescue",
+      CODERCLAW_STATE_DIR: "C:\\State\\openclaw",
     };
     expect(resolveTaskScriptPath(env)).toBe(path.join("C:\\State\\openclaw", "gateway.cmd"));
   });
 
   it("falls back to HOME when USERPROFILE is not set", () => {
-    const env = { HOME: "/home/test", OPENCLAW_PROFILE: "default" };
+    const env = { HOME: "/home/test", CODERCLAW_PROFILE: "default" };
     expect(resolveTaskScriptPath(env)).toBe(path.join("/home/test", ".coderclaw", "gateway.cmd"));
   });
 });
@@ -74,12 +74,12 @@ describe("readScheduledTaskCommand", () => {
     },
     run: (env: Record<string, string | undefined>) => Promise<void>,
   ) {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-schtasks-test-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-schtasks-test-"));
     try {
       const extraEnv = typeof options.env === "function" ? options.env(tmpDir) : options.env;
       const env = {
         USERPROFILE: tmpDir,
-        OPENCLAW_PROFILE: "default",
+        CODERCLAW_PROFILE: "default",
         ...extraEnv,
       };
       if (options.scriptLines) {
@@ -133,7 +133,7 @@ describe("readScheduledTaskCommand", () => {
           "rem OpenClaw Gateway",
           "cd /d C:\\Projects\\openclaw",
           "set NODE_ENV=production",
-          "set OPENCLAW_PORT=18789",
+          "set CODERCLAW_PORT=18789",
           "node gateway.js --verbose",
         ],
       },
@@ -144,7 +144,7 @@ describe("readScheduledTaskCommand", () => {
           workingDirectory: "C:\\Projects\\openclaw",
           environment: {
             NODE_ENV: "production",
-            OPENCLAW_PORT: "18789",
+            CODERCLAW_PORT: "18789",
           },
         });
       },
@@ -197,10 +197,10 @@ describe("readScheduledTaskCommand", () => {
     );
   });
 
-  it("reads script from OPENCLAW_STATE_DIR override", async () => {
+  it("reads script from CODERCLAW_STATE_DIR override", async () => {
     await withScheduledTaskScript(
       {
-        env: (tmpDir) => ({ OPENCLAW_STATE_DIR: path.join(tmpDir, "custom-state") }),
+        env: (tmpDir) => ({ CODERCLAW_STATE_DIR: path.join(tmpDir, "custom-state") }),
         scriptLines: ["@echo off", "node gateway.js --from-state-dir"],
       },
       async (env) => {

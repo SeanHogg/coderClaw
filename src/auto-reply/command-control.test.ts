@@ -505,12 +505,12 @@ describe("control command parsing", () => {
   it("ignores telegram commands addressed to other bots", () => {
     expect(
       hasControlCommand("/help@otherbot", undefined, {
-        botUsername: "openclaw",
+        botUsername: "coderclaw",
       }),
     ).toBe(false);
     expect(
       hasControlCommand("/help@openclaw", undefined, {
-        botUsername: "openclaw",
+        botUsername: "coderclaw",
       }),
     ).toBe(true);
   });

@@ -42,7 +42,7 @@ Plist 位置（每用户）：
 管理者：
 
 - macOS 应用在本地模式下拥有 LaunchAgent 的安装/更新权限。
-- CLI 也可以安装它：`openclaw gateway install`。
+- CLI 也可以安装它：`coderclaw gateway install`。
 
 行为：
 
@@ -61,15 +61,15 @@ macOS 应用会检查 Gateway 网关版本与其自身版本是否匹配。如�
 ## 冒烟测试
 
 ```bash
-openclaw --version
+coderclaw --version
 
-OPENCLAW_SKIP_CHANNELS=1 \
-OPENCLAW_SKIP_CANVAS_HOST=1 \
-openclaw gateway --port 18999 --bind loopback
+CODERCLAW_SKIP_CHANNELS=1 \
+CODERCLAW_SKIP_CANVAS_HOST=1 \
+coderclaw gateway --port 18999 --bind loopback
 ```
 
 然后：
 
 ```bash
-openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
+coderclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ```

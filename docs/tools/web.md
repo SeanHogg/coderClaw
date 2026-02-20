@@ -81,11 +81,11 @@ current limits and pricing.
 ### Where to set the key (recommended)
 
 **Recommended:** run `coderclaw configure --section web`. It stores the key in
-`~/.coderclaw/openclaw.json` under `tools.web.search.apiKey`.
+`~/.coderclaw/coderclaw.json` under `tools.web.search.apiKey`.
 
 **Environment alternative:** set `BRAVE_API_KEY` in the Gateway process
 environment. For a gateway install, put it in `~/.coderclaw/.env` (or your
-service environment). See [Env vars](/help/faq#how-does-openclaw-load-environment-variables).
+service environment). See [Env vars](/help/faq#how-does-coderclaw-load-environment-variables).
 
 ## Using Perplexity (direct or via OpenRouter)
 

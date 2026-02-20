@@ -17,7 +17,7 @@ Last updated: 2026-01-01
 
 ## TL;DR
 
-- **Tailoring lives outside the repo:** `~/.coderclaw/workspace` (workspace) + `~/.coderclaw/openclaw.json` (config).
+- **Tailoring lives outside the repo:** `~/.coderclaw/workspace` (workspace) + `~/.coderclaw/coderclaw.json` (config).
 - **Stable workflow:** install the macOS app; let it run the bundled Gateway.
 - **Bleeding edge workflow:** run the Gateway yourself via `pnpm gateway:watch`, then let the macOS app attach in Local mode.
 
@@ -31,7 +31,7 @@ Last updated: 2026-01-01
 
 If you want “100% tailored to me” _and_ easy updates, keep your customization in:
 
-- **Config:** `~/.coderclaw/openclaw.json` (JSON/JSON5-ish)
+- **Config:** `~/.coderclaw/coderclaw.json` (JSON/JSON5-ish)
 - **Workspace:** `~/.coderclaw/workspace` (skills, prompts, memories; make it a private git repo)
 
 Bootstrap once:
@@ -53,7 +53,7 @@ If you don’t have a global install yet, run it via `pnpm coderclaw setup`.
 After `pnpm build`, you can run the packaged CLI directly:
 
 ```bash
-node openclaw.mjs gateway --port 18789 --verbose
+node coderclaw.mjs gateway --port 18789 --verbose
 ```
 
 ## Stable workflow (macOS app first)

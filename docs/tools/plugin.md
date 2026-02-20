@@ -100,8 +100,8 @@ OpenClaw scans, in order:
 
 2. Workspace extensions
 
-- `<workspace>/.openclaw/extensions/*.ts`
-- `<workspace>/.openclaw/extensions/*/index.ts`
+- `<workspace>/.coderclaw/extensions/*.ts`
+- `<workspace>/.coderclaw/extensions/*/index.ts`
 
 3. Global extensions
 
@@ -110,13 +110,13 @@ OpenClaw scans, in order:
 
 4. Bundled extensions (shipped with OpenClaw, **disabled by default**)
 
-- `<openclaw>/extensions/*`
+- `<coderclaw>/extensions/*`
 
 Bundled plugins must be enabled explicitly via `plugins.entries.<id>.enabled`
 or `coderclaw plugins enable <id>`. Installed plugins are enabled by default,
 but can be disabled the same way.
 
-Each plugin must include a `openclaw.plugin.json` file in its root. If a path
+Each plugin must include a `coderclaw.plugin.json` file in its root. If a path
 points at a file, the plugin root is the file's directory and must contain the
 manifest.
 
@@ -125,12 +125,12 @@ wins and lower-precedence copies are ignored.
 
 ### Package packs
 
-A plugin directory may include a `package.json` with `openclaw.extensions`:
+A plugin directory may include a `package.json` with `coderclaw.extensions`:
 
 ```json
 {
   "name": "my-pack",
-  "openclaw": {
+  "coderclaw": {
     "extensions": ["./src/safety.ts", "./src/tools.ts"]
   }
 }
@@ -148,15 +148,15 @@ trees "pure JS/TS" and avoid packages that require `postinstall` builds.
 
 ### Channel catalog metadata
 
-Channel plugins can advertise onboarding metadata via `openclaw.channel` and
-install hints via `openclaw.install`. This keeps the core catalog data-free.
+Channel plugins can advertise onboarding metadata via `coderclaw.channel` and
+install hints via `coderclaw.install`. This keeps the core catalog data-free.
 
 Example:
 
 ```json
 {
   "name": "@openclaw/nextcloud-talk",
-  "openclaw": {
+  "coderclaw": {
     "extensions": ["./index.ts"],
     "channel": {
       "id": "nextcloud-talk",
@@ -184,9 +184,9 @@ registry export). Drop a JSON file at one of:
 - `~/.coderclaw/mpm/catalog.json`
 - `~/.coderclaw/plugins/catalog.json`
 
-Or point `OPENCLAW_PLUGIN_CATALOG_PATHS` (or `OPENCLAW_MPM_CATALOG_PATHS`) at
+Or point `CODERCLAW_PLUGIN_CATALOG_PATHS` (or `CODERCLAW_MPM_CATALOG_PATHS`) at
 one or more JSON files (comma/semicolon/`PATH`-delimited). Each file should
-contain `{ "entries": [ { "name": "@scope/pkg", "openclaw": { "channel": {...}, "install": {...} } } ] }`.
+contain `{ "entries": [ { "name": "@scope/pkg", "coderclaw": { "channel": {...}, "install": {...} } } ] }`.
 
 ## Plugin IDs
 
@@ -230,7 +230,7 @@ Validation rules (strict):
 - Unknown `channels.<id>` keys are **errors** unless a plugin manifest declares
   the channel id.
 - Plugin config is validated using the JSON Schema embedded in
-  `openclaw.plugin.json` (`configSchema`).
+  `coderclaw.plugin.json` (`configSchema`).
 - If a plugin is disabled, its config is preserved and a **warning** is emitted.
 
 ## Plugin slots (exclusive categories)
@@ -304,7 +304,7 @@ coderclaw plugins doctor
 
 `plugins update` only works for npm installs tracked under `plugins.installs`.
 
-Plugins may also register their own top‑level commands (example: `openclaw voicecall`).
+Plugins may also register their own top‑level commands (example: `coderclaw voicecall`).
 
 ## Plugin API (overview)
 
@@ -321,7 +321,7 @@ event-driven automation without a separate hook pack install.
 ### Example
 
 ```
-import { registerPluginHooksFromDir } from "openclaw/plugin-sdk";
+import { registerPluginHooksFromDir } from "coderclaw/plugin-sdk";
 
 export default function register(api) {
   registerPluginHooksFromDir(api, "./hooks");
@@ -632,12 +632,12 @@ it’s present in your workspace/managed skills locations.
 
 Recommended packaging:
 
-- Main package: `openclaw` (this repo)
+- Main package: `coderclaw` (this repo)
 - Plugins: separate npm packages under `@openclaw/*` (example: `@openclaw/voice-call`)
 
 Publishing contract:
 
-- Plugin `package.json` must include `openclaw.extensions` with one or more entry files.
+- Plugin `package.json` must include `coderclaw.extensions` with one or more entry files.
 - Entry files can be `.js` or `.ts` (jiti loads TS at runtime).
 - `coderclaw plugins install <npm-spec>` uses `npm pack`, extracts into `~/.coderclaw/extensions/<id>/`, and enables it in config.
 - Config key stability: scoped packages are normalized to the **unscoped** id for `plugins.entries.*`.
@@ -648,7 +648,7 @@ This repo includes a voice‑call plugin (Twilio or log fallback):
 
 - Source: `extensions/voice-call`
 - Skill: `skills/voice-call`
-- CLI: `openclaw voicecall start|status`
+- CLI: `coderclaw voicecall start|status`
 - Tool: `voice_call`
 - RPC: `voicecall.start`, `voicecall.status`
 - Config (twilio): `provider: "twilio"` + `twilio.accountSid/authToken/from` (optional `statusCallbackUrl`, `twimlUrl`)
@@ -669,4 +669,4 @@ Plugins run in-process with the Gateway. Treat them as trusted code:
 Plugins can (and should) ship tests:
 
 - In-repo plugins can keep Vitest tests under `src/**` (example: `src/plugins/voice-call.plugin.test.ts`).
-- Separately published plugins should run their own CI (lint/build/test) and validate `openclaw.extensions` points at the built entrypoint (`dist/index.js`).
+- Separately published plugins should run their own CI (lint/build/test) and validate `coderclaw.extensions` points at the built entrypoint (`dist/index.js`).

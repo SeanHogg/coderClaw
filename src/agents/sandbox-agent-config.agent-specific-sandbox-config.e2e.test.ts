@@ -242,7 +242,7 @@ describe("Agent-specific sandbox config", () => {
         list: [
           {
             id: "work",
-            workspace: "~/openclaw-work",
+            workspace: "~/coderclaw-work",
             sandbox: {
               mode: "all",
               scope: "agent",
@@ -277,7 +277,7 @@ describe("Agent-specific sandbox config", () => {
         list: [
           {
             id: "work",
-            workspace: "~/openclaw-work",
+            workspace: "~/coderclaw-work",
             sandbox: {
               mode: "all",
               scope: "shared",
@@ -314,7 +314,7 @@ describe("Agent-specific sandbox config", () => {
         list: [
           {
             id: "work",
-            workspace: "~/openclaw-work",
+            workspace: "~/coderclaw-work",
             sandbox: {
               mode: "all",
               scope: "agent",
@@ -404,7 +404,7 @@ describe("Agent-specific sandbox config", () => {
         list: [
           {
             id: "work",
-            workspace: "~/openclaw-work",
+            workspace: "~/coderclaw-work",
             sandbox: {
               mode: "all",
               scope: "agent",

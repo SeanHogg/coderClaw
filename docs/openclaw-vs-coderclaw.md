@@ -226,7 +226,7 @@ CoderClaw is for teams that need:
 
 Both projects are **MIT licensed** and **free to use**.
 
-- OpenClaw: [github.com/openclaw/openclaw](https://github.com/SeanHogg/coderClaw)
+- OpenClaw: [github.com/SeanHogg/coderClaw](https://github.com/SeanHogg/coderClaw)
 - CoderClaw: [github.com/SeanHogg/coderClaw](https://github.com/SeanHogg/coderClaw)
 
 ## Getting Started
@@ -239,7 +239,7 @@ coderclaw onboard --install-daemon
 coderclaw gateway --port 18789
 ```
 
-Documentation: [docs.openclaw.ai](https://docs.openclaw.ai)
+Documentation: [docs.coderclaw.ai](https://docs.coderclaw.ai)
 
 ### Starting with CoderClaw
 
@@ -304,4 +304,4 @@ Both are excellent projects. Choose based on your requirements:
 
 ---
 
-_This guide is maintained by the CoderClaw project. For OpenClaw-specific questions, see [docs.openclaw.ai](https://docs.openclaw.ai)._
+_This guide is maintained by the CoderClaw project. For OpenClaw-specific questions, see [docs.coderclaw.ai](https://docs.coderclaw.ai)._

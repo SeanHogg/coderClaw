@@ -108,7 +108,7 @@ src/agents/
 ├── sandbox.ts                     # Sandbox context resolution
 ├── sandbox/                       # Sandbox subsystem
 ├── channel-tools.ts               # Channel-specific tool injection
-├── openclaw-tools.ts              # OpenClaw-specific tools
+├── coderclaw-tools.ts              # OpenClaw-specific tools
 ├── bash-tools.ts                  # exec/process tools
 ├── apply-patch.ts                 # apply_patch tool (OpenAI)
 ├── tools/                         # Individual tool implementations
@@ -142,7 +142,7 @@ const result = await runEmbeddedPiAgent({
   sessionKey: "main:whatsapp:+1234567890",
   sessionFile: "/path/to/session.jsonl",
   workspaceDir: "/path/to/workspace",
-  config: openclawConfig,
+  config: coderclawConfig,
   prompt: "Hello, how are you?",
   provider: "anthropic",
   model: "claude-sonnet-4-20250514",
@@ -516,7 +516,7 @@ This provides the interactive terminal experience similar to pi's native mode.
 | Invocation      | `pi` command / RPC      | SDK via `createAgentSession()`                                                                  |
 | Tools           | Default coding tools    | Custom OpenClaw tool suite                                                                      |
 | System prompt   | AGENTS.md + prompts     | Dynamic per-channel/context                                                                     |
-| Session storage | `~/.pi/agent/sessions/` | `~/.coderclaw/agents/<agentId>/sessions/` (or `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
+| Session storage | `~/.pi/agent/sessions/` | `~/.coderclaw/agents/<agentId>/sessions/` (or `$CODERCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
 | Auth            | Single credential       | Multi-profile with rotation                                                                     |
 | Extensions      | Loaded from disk        | Programmatic + disk paths                                                                       |
 | Event handling  | TUI rendering           | Callback-based (onBlockReply, etc.)                                                             |
@@ -603,10 +603,10 @@ All existing tests that cover the pi integration and its extensions:
 - `src/agents/pi-settings.test.ts`
 - `src/agents/pi-tool-definition-adapter.test.ts`
 - `src/agents/pi-tools-agent-config.test.ts`
-- `src/agents/pi-tools.create-openclaw-coding-tools.adds-claude-style-aliases-schemas-without-dropping-b.test.ts`
-- `src/agents/pi-tools.create-openclaw-coding-tools.adds-claude-style-aliases-schemas-without-dropping-d.test.ts`
-- `src/agents/pi-tools.create-openclaw-coding-tools.adds-claude-style-aliases-schemas-without-dropping-f.test.ts`
-- `src/agents/pi-tools.create-openclaw-coding-tools.adds-claude-style-aliases-schemas-without-dropping.test.ts`
+- `src/agents/pi-tools.create-coderclaw-coding-tools.adds-claude-style-aliases-schemas-without-dropping-b.test.ts`
+- `src/agents/pi-tools.create-coderclaw-coding-tools.adds-claude-style-aliases-schemas-without-dropping-d.test.ts`
+- `src/agents/pi-tools.create-coderclaw-coding-tools.adds-claude-style-aliases-schemas-without-dropping-f.test.ts`
+- `src/agents/pi-tools.create-coderclaw-coding-tools.adds-claude-style-aliases-schemas-without-dropping.test.ts`
 - `src/agents/pi-tools.policy.test.ts`
 - `src/agents/pi-tools.safe-bins.test.ts`
 - `src/agents/pi-tools.workspace-paths.test.ts`

@@ -4,7 +4,7 @@ description: Generate or edit images via Gemini 3 Pro Image (Nano Banana Pro).
 homepage: https://ai.google.dev/
 metadata:
   {
-    "openclaw":
+    "coderclaw":
       {
         "emoji": "🍌",
         "requires": { "bins": ["uv"], "env": ["GEMINI_API_KEY"] },
@@ -48,7 +48,7 @@ uv run {baseDir}/scripts/generate_image.py --prompt "combine these into one scen
 API key
 
 - `GEMINI_API_KEY` env var
-- Or set `skills."nano-banana-pro".apiKey` / `skills."nano-banana-pro".env.GEMINI_API_KEY` in `~/.openclaw/openclaw.json`
+- Or set `skills."nano-banana-pro".apiKey` / `skills."nano-banana-pro".env.GEMINI_API_KEY` in `~/.openclaw/coderclaw.json`
 
 Notes
 

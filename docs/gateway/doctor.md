@@ -53,7 +53,7 @@ Scan system services for extra gateway installs (launchd/systemd/schtasks).
 If you want to review changes before writing, open the config file first:
 
 ```bash
-cat ~/.coderclaw/openclaw.json
+cat ~/.coderclaw/coderclaw.json
 ```
 
 ## What it does (summary)
@@ -68,7 +68,7 @@ cat ~/.coderclaw/openclaw.json
 - State integrity and permissions checks (sessions, transcripts, state dir).
 - Config file permission checks (chmod 600) when running locally.
 - Model auth health: checks OAuth expiry, can refresh expiring tokens, and reports auth-profile cooldown/disabled states.
-- Extra workspace dir detection (`~/openclaw`).
+- Extra workspace dir detection (`~/coderclaw`).
 - Sandbox image repair when sandboxing is enabled.
 - Legacy service migration and extra gateway detection.
 - Gateway runtime checks (service installed but not running; cached launchd label).
@@ -104,7 +104,7 @@ Doctor will:
 
 - Explain which legacy keys were found.
 - Show the migration it applied.
-- Rewrite `~/.coderclaw/openclaw.json` with the updated schema.
+- Rewrite `~/.coderclaw/coderclaw.json` with the updated schema.
 
 The Gateway also auto-runs doctor migrations on startup when it detects a
 legacy config format, so stale configs are repaired without manual intervention.
@@ -169,11 +169,11 @@ Doctor checks:
 - **Main session “1-line JSONL”**: flags when the main transcript has only one
   line (history is not accumulating).
 - **Multiple state dirs**: warns when multiple `~/.coderclaw` folders exist across
-  home directories or when `OPENCLAW_STATE_DIR` points elsewhere (history can
+  home directories or when `CODERCLAW_STATE_DIR` points elsewhere (history can
   split between installs).
 - **Remote mode reminder**: if `gateway.mode=remote`, doctor reminds you to run
   it on the remote host (the state lives there).
-- **Config file permissions**: warns if `~/.coderclaw/openclaw.json` is
+- **Config file permissions**: warns if `~/.coderclaw/coderclaw.json` is
   group/world readable and offers to tighten to `600`.
 
 ### 5) Model auth health (OAuth expiry)

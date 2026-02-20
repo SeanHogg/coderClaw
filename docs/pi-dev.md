@@ -51,11 +51,11 @@ For tool call behavior, prompt for a `read` or `exec` action so you can see tool
 
 ## Clean Slate Reset
 
-State lives under the OpenClaw state directory. Default is `~/.coderclaw`. If `OPENCLAW_STATE_DIR` is set, use that directory instead.
+State lives under the OpenClaw state directory. Default is `~/.coderclaw`. If `CODERCLAW_STATE_DIR` is set, use that directory instead.
 
 To reset everything:
 
-- `openclaw.json` for config
+- `coderclaw.json` for config
 - `credentials/` for auth profiles and tokens
 - `agents/<agentId>/sessions/` for agent session history
 - `agents/<agentId>/sessions.json` for the session index
@@ -66,5 +66,5 @@ If you only want to reset sessions, delete `agents/<agentId>/sessions/` and `age
 
 ## References
 
-- [https://docs.openclaw.ai/testing](https://docs.openclaw.ai/testing)
-- [https://docs.openclaw.ai/start/getting-started](https://docs.openclaw.ai/start/getting-started)
+- [https://docs.coderclaw.ai/testing](https://docs.coderclaw.ai/testing)
+- [https://docs.coderclaw.ai/start/getting-started](https://docs.coderclaw.ai/start/getting-started)

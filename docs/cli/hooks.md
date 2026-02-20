@@ -87,10 +87,10 @@ coderclaw hooks info session-memory
 Save session context to memory when /new command is issued
 
 Details:
-  Source: openclaw-bundled
-  Path: /path/to/openclaw/hooks/bundled/session-memory/HOOK.md
-  Handler: /path/to/openclaw/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.openclaw.ai/automation/hooks#session-memory
+  Source: coderclaw-bundled
+  Path: /path/to/coderclaw/hooks/bundled/session-memory/HOOK.md
+  Handler: /path/to/coderclaw/hooks/bundled/session-memory/handler.ts
+  Homepage: https://docs.coderclaw.ai/automation/hooks#session-memory
   Events: command:new
 
 Requirements:

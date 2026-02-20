@@ -18,7 +18,7 @@ describe("doctor command", () => {
           list: [
             {
               id: "work",
-              workspace: "~/openclaw-work",
+              workspace: "~/coderclaw-work",
               sandbox: {
                 mode: "all",
                 scope: "shared",

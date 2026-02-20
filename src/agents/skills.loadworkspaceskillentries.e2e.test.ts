@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { loadWorkspaceSkillEntries } from "./skills.js";
 
 async function setupWorkspaceWithProsePlugin() {
-  const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-"));
+  const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-"));
   const managedDir = path.join(workspaceDir, ".managed");
   const bundledDir = path.join(workspaceDir, ".bundled");
   const pluginRoot = path.join(workspaceDir, ".coderclaw", "extensions", "open-prose");
@@ -36,7 +36,7 @@ async function setupWorkspaceWithProsePlugin() {
 
 describe("loadWorkspaceSkillEntries", () => {
   it("handles an empty managed skills dir without throwing", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-"));
     const managedDir = path.join(workspaceDir, ".managed");
     await fs.mkdir(managedDir, { recursive: true });
 

@@ -224,7 +224,7 @@ function loadHookEntries(
   const bundledHooks = bundledHooksDir
     ? loadHooksFromDir({
         dir: bundledHooksDir,
-        source: "openclaw-bundled",
+        source: "coderclaw-bundled",
       })
     : [];
   const extraHooks = extraDirs.flatMap((dir) => {

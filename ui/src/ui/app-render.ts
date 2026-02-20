@@ -176,7 +176,7 @@ export function renderApp(state: AppViewState) {
           <div class="nav-group__items">
             <a
               class="nav-item nav-item--external"
-              href="https://docs.openclaw.ai"
+              href="https://docs.coderclaw.ai"
               target="_blank"
               rel="noreferrer"
               title="${t("common.docs")} (opens in new tab)"

@@ -23,7 +23,7 @@ coderclaw update --channel dev
 coderclaw update --tag beta
 coderclaw update --no-restart
 coderclaw update --json
-openclaw --update
+coderclaw --update
 ```
 
 ## Options
@@ -62,7 +62,7 @@ offers to create one.
 When you switch channels explicitly (`--channel ...`), OpenClaw also keeps the
 install method aligned:
 
-- `dev` → ensures a git checkout (default: `~/openclaw`, override with `OPENCLAW_GIT_DIR`),
+- `dev` → ensures a git checkout (default: `~/coderclaw`, override with `CODERCLAW_GIT_DIR`),
   updates it, and installs the global CLI from that checkout.
 - `stable`/`beta` → installs from npm using the matching dist-tag.
 

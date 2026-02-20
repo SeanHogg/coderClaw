@@ -378,7 +378,7 @@ Webhook behavior:
 Disable cron entirely:
 
 - `cron.enabled: false` (config)
-- `OPENCLAW_SKIP_CRON=1` (env)
+- `CODERCLAW_SKIP_CRON=1` (env)
 
 ## CLI quickstart
 
@@ -504,20 +504,20 @@ coderclaw cron runs --id <jobId> --limit 50
 Immediate system event without creating a job:
 
 ```bash
-openclaw system event --mode now --text "Next heartbeat: check battery."
+coderclaw system event --mode now --text "Next heartbeat: check battery."
 ```
 
 ## Gateway API surface
 
 - `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`
 - `cron.run` (force or due), `cron.runs`
-  For immediate system events without a job, use [`openclaw system event`](/cli/system).
+  For immediate system events without a job, use [`coderclaw system event`](/cli/system).
 
 ## Troubleshooting
 
 ### “Nothing runs”
 
-- Check cron is enabled: `cron.enabled` and `OPENCLAW_SKIP_CRON`.
+- Check cron is enabled: `cron.enabled` and `CODERCLAW_SKIP_CRON`.
 - Check the Gateway is running continuously (cron runs inside the Gateway process).
 - For `cron` schedules: confirm timezone (`--tz`) vs the host timezone.
 

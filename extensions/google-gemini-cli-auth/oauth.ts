@@ -4,9 +4,9 @@ import { createServer } from "node:http";
 import { delimiter, dirname, join } from "node:path";
 import { isWSL2Sync } from "openclaw/plugin-sdk";
 
-const CLIENT_ID_KEYS = ["OPENCLAW_GEMINI_OAUTH_CLIENT_ID", "GEMINI_CLI_OAUTH_CLIENT_ID"];
+const CLIENT_ID_KEYS = ["CODERCLAW_GEMINI_OAUTH_CLIENT_ID", "GEMINI_CLI_OAUTH_CLIENT_ID"];
 const CLIENT_SECRET_KEYS = [
-  "OPENCLAW_GEMINI_OAUTH_CLIENT_SECRET",
+  "CODERCLAW_GEMINI_OAUTH_CLIENT_SECRET",
   "GEMINI_CLI_OAUTH_CLIENT_SECRET",
 ];
 const REDIRECT_URI = "http://localhost:8085/oauth2callback";

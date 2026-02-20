@@ -45,9 +45,9 @@ Once you have SSH access to a macOS VM, continue at step 6 below.
 ## Quick path (Lume, experienced users)
 
 1. Install Lume
-2. `lume create openclaw --os macos --ipsw latest`
+2. `lume create coderclaw --os macos --ipsw latest`
 3. Complete Setup Assistant, enable Remote Login (SSH)
-4. `lume run openclaw --no-display`
+4. `lume run coderclaw --no-display`
 5. SSH in, install OpenClaw, configure channels
 6. Done
 
@@ -87,7 +87,7 @@ Docs: [Lume Installation](https://cua.ai/docs/lume/guide/getting-started/install
 ## 2) Create the macOS VM
 
 ```bash
-lume create openclaw --os macos --ipsw latest
+lume create coderclaw --os macos --ipsw latest
 ```
 
 This downloads macOS and creates the VM. A VNC window opens automatically.
@@ -150,7 +150,7 @@ Follow the onboarding prompts to set up your model provider (Anthropic, OpenAI, 
 Edit the config file:
 
 ```bash
-nano ~/.coderclaw/openclaw.json
+nano ~/.coderclaw/coderclaw.json
 ```
 
 Add your channels:
@@ -183,7 +183,7 @@ Stop the VM and restart without display:
 
 ```bash
 lume stop openclaw
-lume run openclaw --no-display
+lume run coderclaw --no-display
 ```
 
 The VM runs in the background. OpenClaw's daemon keeps the gateway running.
@@ -233,15 +233,15 @@ Before customizing further, snapshot your clean state:
 
 ```bash
 lume stop openclaw
-lume clone openclaw openclaw-golden
+lume clone coderclaw openclaw-golden
 ```
 
 Reset anytime:
 
 ```bash
-lume stop openclaw && lume delete openclaw
+lume stop coderclaw && lume delete openclaw
 lume clone openclaw-golden openclaw
-lume run openclaw --no-display
+lume run coderclaw --no-display
 ```
 
 ---

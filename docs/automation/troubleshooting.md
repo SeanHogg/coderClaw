@@ -26,7 +26,7 @@ Then run automation checks:
 ```bash
 coderclaw cron status
 coderclaw cron list
-openclaw system heartbeat last
+coderclaw system heartbeat last
 ```
 
 ## Cron not firing
@@ -74,7 +74,7 @@ Common signatures:
 ## Heartbeat suppressed or skipped
 
 ```bash
-openclaw system heartbeat last
+coderclaw system heartbeat last
 coderclaw logs --follow
 coderclaw config get agents.defaults.heartbeat
 coderclaw channels status --probe

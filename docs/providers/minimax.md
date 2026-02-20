@@ -122,7 +122,7 @@ Configure via CLI:
 We have seen strong results with MiniMax M2.1 on powerful hardware (e.g. a
 desktop/server) using LM Studio's local server.
 
-Configure manually via `openclaw.json`:
+Configure manually via `coderclaw.json`:
 
 ```json5
 {

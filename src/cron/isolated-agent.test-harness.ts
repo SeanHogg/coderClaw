@@ -42,7 +42,7 @@ export function makeCfg(
     agents: {
       defaults: {
         model: "anthropic/claude-opus-4-5",
-        workspace: path.join(home, "openclaw"),
+        workspace: path.join(home, "coderclaw"),
       },
     },
     session: { store: storePath, mainKey: "main" },

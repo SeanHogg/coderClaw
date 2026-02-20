@@ -190,7 +190,7 @@ Gateway 网关将这些视为**声明**并强制执行服务器端允许列表�
 
 ## 认证
 
-- 如果设置了 `OPENCLAW_GATEWAY_TOKEN`（或 `--token`），`connect.params.auth.token`
+- 如果设置了 `CODERCLAW_GATEWAY_TOKEN`（或 `--token`），`connect.params.auth.token`
   必须匹配，否则套接字将被关闭。
 - 配对后，Gateway 网关会颁发一个作用于连接角色 + 作用域的**设备令牌**。它在 `hello-ok.auth.deviceToken` 中返回，
   客户端应将其持久化以供将来连接使用。

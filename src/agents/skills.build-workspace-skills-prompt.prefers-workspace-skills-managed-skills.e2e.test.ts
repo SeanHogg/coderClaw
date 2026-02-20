@@ -7,7 +7,7 @@ import { buildWorkspaceSkillsPrompt } from "./skills.js";
 
 describe("buildWorkspaceSkillsPrompt", () => {
   it("prefers workspace skills over managed skills", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-"));
     const managedDir = path.join(workspaceDir, ".managed");
     const bundledDir = path.join(workspaceDir, ".bundled");
     const managedSkillDir = path.join(managedDir, "demo-skill");
@@ -44,7 +44,7 @@ describe("buildWorkspaceSkillsPrompt", () => {
     expect(prompt).not.toContain(path.join(bundledSkillDir, "SKILL.md"));
   });
   it("gates by bins, config, and always", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-"));
     const skillsDir = path.join(workspaceDir, "skills");
     const binDir = path.join(workspaceDir, "bin");
     const originalPath = process.env.PATH;
@@ -113,7 +113,7 @@ describe("buildWorkspaceSkillsPrompt", () => {
     }
   });
   it("uses skillKey for config lookups", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-"));
     const skillDir = path.join(workspaceDir, "skills", "alias-skill");
     await writeSkill({
       dir: skillDir,

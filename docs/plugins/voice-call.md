@@ -23,7 +23,7 @@ Quick mental model:
 - Install plugin
 - Restart Gateway
 - Configure under `plugins.entries.voice-call.config`
-- Use `openclaw voicecall ...` or the `voice_call` tool
+- Use `coderclaw voicecall ...` or the `voice_call` tool
 
 ## Where it runs (local vs remote)
 
@@ -290,13 +290,13 @@ Auto-responses use the agent system. Tune with:
 ## CLI
 
 ```bash
-openclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
-openclaw voicecall continue --call-id <id> --message "Any questions?"
-openclaw voicecall speak --call-id <id> --message "One moment"
-openclaw voicecall end --call-id <id>
-openclaw voicecall status --call-id <id>
-openclaw voicecall tail
-openclaw voicecall expose --mode funnel
+coderclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
+coderclaw voicecall continue --call-id <id> --message "Any questions?"
+coderclaw voicecall speak --call-id <id> --message "One moment"
+coderclaw voicecall end --call-id <id>
+coderclaw voicecall status --call-id <id>
+coderclaw voicecall tail
+coderclaw voicecall expose --mode funnel
 ```
 
 ## Agent tool

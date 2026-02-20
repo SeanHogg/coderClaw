@@ -31,4 +31,4 @@ How to see whether the linked channel is healthy from the menu bar app.
 
 ## When in doubt
 
-- You can still use the CLI flow in [Gateway health](/gateway/health) (`coderclaw status`, `coderclaw status --deep`, `coderclaw health --json`) and tail `/tmp/openclaw/openclaw-*.log` for `web-heartbeat` / `web-reconnect`.
+- You can still use the CLI flow in [Gateway health](/gateway/health) (`coderclaw status`, `coderclaw status --deep`, `coderclaw health --json`) and tail `/tmp/coderclaw/coderclaw-*.log` for `web-heartbeat` / `web-reconnect`.

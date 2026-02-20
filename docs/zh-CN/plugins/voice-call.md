@@ -29,7 +29,7 @@ x-i18n:
 - 安装插件
 - 重启 Gateway 网关
 - 在 `plugins.entries.voice-call.config` 下配置
-- 使用 `openclaw voicecall ...` 或 `voice_call` 工具
+- 使用 `coderclaw voicecall ...` 或 `voice_call` 工具
 
 ## 运行位置（本地 vs 远程）
 
@@ -42,7 +42,7 @@ Voice Call 插件运行在 **Gateway 网关进程内部**。
 ### 选项 A：从 npm 安装（推荐）
 
 ```bash
-openclaw plugins install @openclaw/voice-call
+coderclaw plugins install @openclaw/voice-call
 ```
 
 之后重启 Gateway 网关。
@@ -50,7 +50,7 @@ openclaw plugins install @openclaw/voice-call
 ### 选项 B：从本地文件夹安装（开发，不复制）
 
 ```bash
-openclaw plugins install ./extensions/voice-call
+coderclaw plugins install ./extensions/voice-call
 cd ./extensions/voice-call && pnpm install
 ```
 
@@ -218,13 +218,13 @@ Voice Call 使用核心 `messages.tts` 配置（OpenAI 或 ElevenLabs）进行�
 ## CLI
 
 ```bash
-openclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
-openclaw voicecall continue --call-id <id> --message "Any questions?"
-openclaw voicecall speak --call-id <id> --message "One moment"
-openclaw voicecall end --call-id <id>
-openclaw voicecall status --call-id <id>
-openclaw voicecall tail
-openclaw voicecall expose --mode funnel
+coderclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
+coderclaw voicecall continue --call-id <id> --message "Any questions?"
+coderclaw voicecall speak --call-id <id> --message "One moment"
+coderclaw voicecall end --call-id <id>
+coderclaw voicecall status --call-id <id>
+coderclaw voicecall tail
+coderclaw voicecall expose --mode funnel
 ```
 
 ## 智能体工具

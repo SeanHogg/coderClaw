@@ -76,14 +76,14 @@ If the user grants read-only permission, run the OS-appropriate checks by defaul
 
 ### 2) Run OpenClaw security audits (read-only)
 
-As part of the default read-only checks, run `openclaw security audit --deep`. Only offer alternatives if the user requests them:
+As part of the default read-only checks, run `coderclaw security audit --deep`. Only offer alternatives if the user requests them:
 
-1. `openclaw security audit` (faster, non-probing)
-2. `openclaw security audit --json` (structured output)
+1. `coderclaw security audit` (faster, non-probing)
+2. `coderclaw security audit --json` (structured output)
 
 Offer to apply OpenClaw safe defaults (numbered):
 
-1. `openclaw security audit --fix`
+1. `coderclaw security audit --fix`
 
 Be explicit that `--fix` only tightens OpenClaw defaults and file permissions. It does not change host firewall, SSH, or OS update policies.
 
@@ -91,7 +91,7 @@ If browser control is enabled, recommend that 2FA be enabled on all important ac
 
 ### 3) Check OpenClaw version/update status (read-only)
 
-As part of the default read-only checks, run `openclaw update status`.
+As part of the default read-only checks, run `coderclaw update status`.
 
 Report the current channel and whether an update is available.
 
@@ -170,9 +170,9 @@ If unsure, ask.
 
 After OpenClaw install or first hardening pass, run at least one baseline audit and version check:
 
-- `openclaw security audit`
-- `openclaw security audit --deep`
-- `openclaw update status`
+- `coderclaw security audit`
+- `coderclaw security audit --deep`
+- `coderclaw update status`
 
 Ongoing monitoring is recommended. Use the OpenClaw cron tool/CLI to schedule periodic audits (Gateway scheduler). Do not create scheduled tasks without explicit approval. Store outputs in a user-approved location and avoid secrets in logs.
 When scheduling headless cron runs, include a note in the output that instructs the user to call `healthcheck` so issues can be fixed.
@@ -181,35 +181,35 @@ When scheduling headless cron runs, include a note in the output that instructs 
 
 After any audit or hardening pass, explicitly offer scheduling and require a direct response. Use a short prompt like (numbered):
 
-1. “Do you want me to schedule periodic audits (e.g., daily/weekly) via `openclaw cron add`?”
+1. “Do you want me to schedule periodic audits (e.g., daily/weekly) via `coderclaw cron add`?”
 
 If the user says yes, ask for:
 
 - cadence (daily/weekly), preferred time window, and output location
-- whether to also schedule `openclaw update status`
+- whether to also schedule `coderclaw update status`
 
 Use a stable cron job name so updates are deterministic. Prefer exact names:
 
 - `healthcheck:security-audit`
 - `healthcheck:update-status`
 
-Before creating, `openclaw cron list` and match on exact `name`. If found, `openclaw cron edit <id> ...`.
-If not found, `openclaw cron add --name <name> ...`.
+Before creating, `coderclaw cron list` and match on exact `name`. If found, `coderclaw cron edit <id> ...`.
+If not found, `coderclaw cron add --name <name> ...`.
 
 Also offer a periodic version check so the user can decide when to update (numbered):
 
-1. `openclaw update status` (preferred for source checkouts and channels)
-2. `npm view openclaw version` (published npm version)
+1. `coderclaw update status` (preferred for source checkouts and channels)
+2. `npm view coderclaw version` (published npm version)
 
 ## OpenClaw command accuracy
 
 Use only supported commands and flags:
 
-- `openclaw security audit [--deep] [--fix] [--json]`
-- `openclaw status` / `openclaw status --deep`
-- `openclaw health --json`
-- `openclaw update status`
-- `openclaw cron add|list|runs|run`
+- `coderclaw security audit [--deep] [--fix] [--json]`
+- `coderclaw status` / `coderclaw status --deep`
+- `coderclaw health --json`
+- `coderclaw update status`
+- `coderclaw cron add|list|runs|run`
 
 Do not invent CLI flags or imply OpenClaw enforces host firewall/SSH policies.
 

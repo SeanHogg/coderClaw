@@ -29,7 +29,7 @@ x-i18n:
 }
 ```
 
-保存到 `~/.openclaw/openclaw.json`，你就可以从该号码私信机器人了。
+保存到 `~/.openclaw/coderclaw.json`，你就可以从该号码私信机器人了。
 
 ### 推荐的入门配置
 
@@ -284,7 +284,7 @@ x-i18n:
         perSession: true,
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
-          image: "openclaw-sandbox:bookworm-slim",
+          image: "coderclaw-sandbox:bookworm-slim",
           workdir: "/workspace",
           readOnlyRoot: true,
           tmpfs: ["/tmp", "/var/tmp", "/run"],
@@ -398,7 +398,7 @@ x-i18n:
     mode: "local",
     port: 18789,
     bind: "loopback",
-    controlUi: { enabled: true, basePath: "/openclaw" },
+    controlUi: { enabled: true, basePath: "/coderclaw" },
     auth: {
       mode: "token",
       token: "gateway-token",

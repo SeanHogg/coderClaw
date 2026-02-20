@@ -3,10 +3,10 @@ import os from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, vi } from "vitest";
 
-const chromeUserDataDir = { dir: "/tmp/openclaw" };
+const chromeUserDataDir = { dir: "/tmp/coderclaw" };
 
 beforeAll(async () => {
-  chromeUserDataDir.dir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-chrome-user-data-"));
+  chromeUserDataDir.dir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-chrome-user-data-"));
 });
 
 afterAll(async () => {

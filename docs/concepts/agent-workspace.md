@@ -24,9 +24,9 @@ inside a sandbox workspace under `~/.coderclaw/sandboxes`, not your host workspa
 ## Default location
 
 - Default: `~/.coderclaw/workspace`
-- If `OPENCLAW_PROFILE` is set and not `"default"`, the default becomes
+- If `CODERCLAW_PROFILE` is set and not `"default"`, the default becomes
   `~/.coderclaw/workspace-<profile>`.
-- Override in `~/.coderclaw/openclaw.json`:
+- Override in `~/.coderclaw/coderclaw.json`:
 
 ```json5
 {
@@ -48,12 +48,12 @@ file creation:
 
 ## Extra workspace folders
 
-Older installs may have created `~/openclaw`. Keeping multiple workspace
+Older installs may have created `~/coderclaw`. Keeping multiple workspace
 directories around can cause confusing auth or state drift, because only one
 workspace is active at a time.
 
 **Recommendation:** keep a single active workspace. If you no longer use the
-extra folders, archive or move them to Trash (for example `trash ~/openclaw`).
+extra folders, archive or move them to Trash (for example `trash ~/coderclaw`).
 If you intentionally keep multiple workspaces, make sure
 `agents.defaults.workspace` points to the active one.
 
@@ -125,7 +125,7 @@ files.
 
 These live under `~/.coderclaw/` and should NOT be committed to the workspace repo:
 
-- `~/.coderclaw/openclaw.json` (config)
+- `~/.coderclaw/coderclaw.json` (config)
 - `~/.coderclaw/credentials/` (OAuth tokens, API keys)
 - `~/.coderclaw/agents/<agentId>/sessions/` (session transcripts + metadata)
 - `~/.coderclaw/skills/` (managed skills)
@@ -172,7 +172,7 @@ Option B: GitHub CLI (`gh`)
 
 ```bash
 gh auth login
-gh repo create openclaw-workspace --private --source . --remote origin --push
+gh repo create coderclaw-workspace --private --source . --remote origin --push
 ```
 
 Option C: GitLab web UI
@@ -221,7 +221,7 @@ Suggested `.gitignore` starter:
 ## Moving the workspace to a new machine
 
 1. Clone the repo to the desired path (default `~/.coderclaw/workspace`).
-2. Set `agents.defaults.workspace` to that path in `~/.coderclaw/openclaw.json`.
+2. Set `agents.defaults.workspace` to that path in `~/.coderclaw/coderclaw.json`.
 3. Run `coderclaw setup --workspace <path>` to seed any missing files.
 4. If you need sessions, copy `~/.coderclaw/agents/<agentId>/sessions/` from the
    old machine separately.
