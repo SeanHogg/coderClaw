@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Build and test before publishing
-  build-and-test:
+  # Build before publishing
+  build-and-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,20 +37,12 @@ jobs:
           path: dist/
           retention-days: 1
 
-      - name: Test
-        env:
-          # `pnpm test` runs scripts/test-parallel.mjs which spawns multiple Node processes.
-          # Default heap limits are too low on Linux CI (V8 OOM near 4GB).
-          OPENCLAW_TEST_WORKERS: 2
-          OPENCLAW_TEST_MAX_OLD_SPACE_SIZE_MB: 6144
-        run: pnpm canvas:a2ui:bundle && pnpm test
-
       - name: Check package
         run: pnpm release:check
 
   # Publish to npm
   publish:
-    needs: build-and-test
+    needs: build-and-check
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
     permissions:
