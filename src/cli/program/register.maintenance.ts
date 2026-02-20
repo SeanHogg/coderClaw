@@ -7,6 +7,7 @@ import { defaultRuntime } from "../../runtime.js";
 import { formatDocsLink } from "../../terminal/links.js";
 import { theme } from "../../terminal/theme.js";
 import { runCommandWithRuntime } from "../cli-utils.js";
+import { runDaemonStop } from "../daemon-cli.js";
 
 export function registerMaintenanceCommands(program: Command) {
   program
@@ -108,6 +109,21 @@ export function registerMaintenanceCommands(program: Command) {
           nonInteractive: Boolean(opts.nonInteractive),
           dryRun: Boolean(opts.dryRun),
         });
+      });
+    });
+
+  program
+    .command("stop")
+    .description("Stop the running gateway service (launchd/systemd/schtasks)")
+    .addHelpText(
+      "after",
+      () =>
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/gateway", "docs.coderclaw.ai/cli/gateway")}\n`,
+    )
+    .option("--json", "Output JSON", false)
+    .action(async (opts) => {
+      await runCommandWithRuntime(defaultRuntime, async () => {
+        await runDaemonStop({ json: Boolean(opts.json) });
       });
     });
 }

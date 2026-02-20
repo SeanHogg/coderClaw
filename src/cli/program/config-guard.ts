@@ -6,7 +6,7 @@ import { shortenHomePath } from "../../utils.js";
 import { shouldMigrateStateFromPath } from "../argv.js";
 import { formatCliCommand } from "../command-format.js";
 
-const ALLOWED_INVALID_COMMANDS = new Set(["doctor", "logs", "health", "help", "status"]);
+const ALLOWED_INVALID_COMMANDS = new Set(["doctor", "logs", "health", "help", "status", "stop"]);
 const ALLOWED_INVALID_GATEWAY_SUBCOMMANDS = new Set([
   "status",
   "probe",
