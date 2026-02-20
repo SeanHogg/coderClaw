@@ -525,7 +525,7 @@ export function registerMemoryCli(program: Command) {
           ["openclaw memory index --force", "Force a full reindex."],
           ['openclaw memory search --query "deployment notes"', "Search indexed memory entries."],
           ["openclaw memory status --json", "Output machine-readable JSON."],
-        ])}\n\n${theme.muted("Docs:")} ${formatDocsLink("/cli/memory", "docs.openclaw.ai/cli/memory")}\n`,
+        ])}\n\n${theme.muted("Docs:")} ${formatDocsLink("/cli/memory", "docs.coderclaw.ai/cli/memory")}\n`,
     );
 
   memory

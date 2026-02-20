@@ -536,7 +536,7 @@ export async function runGatewayUpdate(opts: UpdateRunnerOptions = {}): Promise<
       }
 
       const manager = await detectPackageManager(gitRoot);
-      const preflightRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-update-preflight-"));
+      const preflightRoot = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-update-preflight-"));
       const worktreeDir = path.join(preflightRoot, "worktree");
       const worktreeStep = await runStep(
         step(
@@ -776,7 +776,7 @@ export async function runGatewayUpdate(opts: UpdateRunnerOptions = {}): Promise<
     // schema changes between versions, preventing a startup validation crash.
     const doctorArgv = [process.execPath, doctorEntry, "doctor", "--non-interactive", "--fix"];
     const doctorStep = await runStep(
-      step("openclaw doctor", doctorArgv, gitRoot, { OPENCLAW_UPDATE_IN_PROGRESS: "1" }),
+      step("openclaw doctor", doctorArgv, gitRoot, { CODERCLAW_UPDATE_IN_PROGRESS: "1" }),
     );
     steps.push(doctorStep);
 

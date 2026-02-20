@@ -22,7 +22,7 @@ Availability: internal preview. The iOS app is not publicly distributed yet.
 - Gateway running on another device (macOS, Linux, or Windows via WSL2).
 - Network path:
   - Same LAN via Bonjour, **or**
-  - Tailnet via unicast DNS-SD (example domain: `openclaw.internal.`), **or**
+  - Tailnet via unicast DNS-SD (example domain: `coderclaw.internal.`), **or**
   - Manual host/port (fallback).
 
 ## Quick start (pair + connect)
@@ -53,11 +53,11 @@ coderclaw gateway call node.list --params "{}"
 
 ### Bonjour (LAN)
 
-The Gateway advertises `_openclaw-gw._tcp` on `local.`. The iOS app lists these automatically.
+The Gateway advertises `_coderclaw-gw._tcp` on `local.`. The iOS app lists these automatically.
 
 ### Tailnet (cross-network)
 
-If mDNS is blocked, use a unicast DNS-SD zone (choose a domain; example: `openclaw.internal.`) and Tailscale split DNS.
+If mDNS is blocked, use a unicast DNS-SD zone (choose a domain; example: `coderclaw.internal.`) and Tailscale split DNS.
 See [Bonjour](/gateway/bonjour) for the CoreDNS example.
 
 ### Manual host/port
@@ -69,12 +69,12 @@ In Settings, enable **Manual Host** and enter the gateway host + port (default `
 The iOS node renders a WKWebView canvas. Use `node.invoke` to drive it:
 
 ```bash
-coderclaw nodes invoke --node "iOS Node" --command canvas.navigate --params '{"url":"http://<gateway-host>:18789/__openclaw__/canvas/"}'
+coderclaw nodes invoke --node "iOS Node" --command canvas.navigate --params '{"url":"http://<gateway-host>:18789/__coderclaw__/canvas/"}'
 ```
 
 Notes:
 
-- The Gateway canvas host serves `/__openclaw__/canvas/` and `/__openclaw__/a2ui/`.
+- The Gateway canvas host serves `/__coderclaw__/canvas/` and `/__coderclaw__/a2ui/`.
 - It is served from the Gateway HTTP server (same port as `gateway.port`, default `18789`).
 - The iOS node auto-navigates to A2UI on connect when a canvas host URL is advertised.
 - Return to the built-in scaffold with `canvas.navigate` and `{"url":""}`.

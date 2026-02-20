@@ -30,7 +30,7 @@ x-i18n:
 
 ## 配置示例（WhatsApp）
 
-在 `~/.openclaw/openclaw.json` 中添加 `groupChat` 块，以便在 WhatsApp 剥离文本正文中的可视 `@` 时，显示名称提及仍能正常工作：
+在 `~/.openclaw/coderclaw.json` 中添加 `groupChat` 块，以便在 WhatsApp 剥离文本正文中的可视 `@` 时，显示名称提及仍能正常工作：
 
 ```json5
 {

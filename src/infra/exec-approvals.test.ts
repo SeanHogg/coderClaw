@@ -33,7 +33,7 @@ function makePathEnv(binDir: string): NodeJS.ProcessEnv {
 }
 
 function makeTempDir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-exec-approvals-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "coderclaw-exec-approvals-"));
 }
 
 describe("exec approvals allowlist matching", () => {
@@ -115,9 +115,9 @@ describe("mergeExecApprovalsSocketDefaults", () => {
 describe("resolve exec approvals defaults", () => {
   it("expands home-prefixed default file and socket paths", () => {
     const dir = makeTempDir();
-    const prevOpenClawHome = process.env.OPENCLAW_HOME;
+    const prevOpenClawHome = process.env.CODERCLAW_HOME;
     try {
-      process.env.OPENCLAW_HOME = dir;
+      process.env.CODERCLAW_HOME = dir;
       expect(path.normalize(resolveExecApprovalsPath())).toBe(
         path.normalize(path.join(dir, ".coderclaw", "exec-approvals.json")),
       );
@@ -126,9 +126,9 @@ describe("resolve exec approvals defaults", () => {
       );
     } finally {
       if (prevOpenClawHome === undefined) {
-        delete process.env.OPENCLAW_HOME;
+        delete process.env.CODERCLAW_HOME;
       } else {
-        process.env.OPENCLAW_HOME = prevOpenClawHome;
+        process.env.CODERCLAW_HOME = prevOpenClawHome;
       }
     }
   });
@@ -623,10 +623,10 @@ describe("exec approvals policy helpers", () => {
 describe("exec approvals wildcard agent", () => {
   it("merges wildcard allowlist entries with agent entries", () => {
     const dir = makeTempDir();
-    const prevOpenClawHome = process.env.OPENCLAW_HOME;
+    const prevOpenClawHome = process.env.CODERCLAW_HOME;
 
     try {
-      process.env.OPENCLAW_HOME = dir;
+      process.env.CODERCLAW_HOME = dir;
       const approvalsPath = path.join(dir, ".coderclaw", "exec-approvals.json");
       fs.mkdirSync(path.dirname(approvalsPath), { recursive: true });
       fs.writeFileSync(
@@ -651,9 +651,9 @@ describe("exec approvals wildcard agent", () => {
       ]);
     } finally {
       if (prevOpenClawHome === undefined) {
-        delete process.env.OPENCLAW_HOME;
+        delete process.env.CODERCLAW_HOME;
       } else {
-        process.env.OPENCLAW_HOME = prevOpenClawHome;
+        process.env.CODERCLAW_HOME = prevOpenClawHome;
       }
     }
   });

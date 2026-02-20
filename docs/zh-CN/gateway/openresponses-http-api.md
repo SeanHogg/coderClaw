@@ -22,7 +22,7 @@ OpenClaw 的 Gateway 网关可以提供兼容 OpenResponses 的 `POST /v1/respon
 - `POST /v1/responses`
 - 与 Gateway 网关相同的端口（WS + HTTP 多路复用）：`http://<gateway-host>:<port>/v1/responses`
 
-底层实现中，请求作为正常的 Gateway 网关智能体运行执行（与 `openclaw agent` 相同的代码路径），因此路由/权限/配置与你的 Gateway 网关一致。
+底层实现中，请求作为正常的 Gateway 网关智能体运行执行（与 `coderclaw agent` 相同的代码路径），因此路由/权限/配置与你的 Gateway 网关一致。
 
 ## 认证
 
@@ -32,8 +32,8 @@ OpenClaw 的 Gateway 网关可以提供兼容 OpenResponses 的 `POST /v1/respon
 
 说明：
 
-- 当 `gateway.auth.mode="token"` 时，使用 `gateway.auth.token`（或 `OPENCLAW_GATEWAY_TOKEN`）。
-- 当 `gateway.auth.mode="password"` 时，使用 `gateway.auth.password`（或 `OPENCLAW_GATEWAY_PASSWORD`）。
+- 当 `gateway.auth.mode="token"` 时，使用 `gateway.auth.token`（或 `CODERCLAW_GATEWAY_TOKEN`）。
+- 当 `gateway.auth.mode="password"` 时，使用 `gateway.auth.password`（或 `CODERCLAW_GATEWAY_PASSWORD`）。
 
 ## 选择智能体
 

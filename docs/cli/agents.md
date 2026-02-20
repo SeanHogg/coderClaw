@@ -20,7 +20,7 @@ Related:
 coderclaw agents list
 coderclaw agents add work --workspace ~/.coderclaw/workspace-work
 coderclaw agents set-identity --workspace ~/.coderclaw/workspace --from-identity
-coderclaw agents set-identity --agent main --avatar avatars/openclaw.png
+coderclaw agents set-identity --agent main --avatar avatars/coderclaw.png
 coderclaw agents delete work
 ```
 
@@ -51,7 +51,7 @@ coderclaw agents set-identity --workspace ~/.coderclaw/workspace --from-identity
 Override fields explicitly:
 
 ```bash
-coderclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/openclaw.png
+coderclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/coderclaw.png
 ```
 
 Config sample:
@@ -66,7 +66,7 @@ Config sample:
           name: "OpenClaw",
           theme: "space lobster",
           emoji: "🦞",
-          avatar: "avatars/openclaw.png",
+          avatar: "avatars/coderclaw.png",
         },
       },
     ],

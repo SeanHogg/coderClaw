@@ -9,7 +9,7 @@ import { resolveUserPath } from "../utils.js";
 
 /**
  * Check whether memory search has a usable embedding provider.
- * Runs as part of `openclaw doctor` — config-only, no network calls.
+ * Runs as part of `coderclaw doctor` — config-only, no network calls.
  */
 export async function noteMemorySearchHealth(cfg: OpenClawConfig): Promise<void> {
   const agentId = resolveDefaultAgentId(cfg);
@@ -34,9 +34,9 @@ export async function noteMemorySearchHealth(cfg: OpenClawConfig): Promise<void>
           "",
           "Fix (pick one):",
           `- Install node-llama-cpp and set a local model path in config`,
-          `- Switch to a remote provider: ${formatCliCommand("openclaw config set agents.defaults.memorySearch.provider openai")}`,
+          `- Switch to a remote provider: ${formatCliCommand("coderclaw config set agents.defaults.memorySearch.provider openai")}`,
           "",
-          `Verify: ${formatCliCommand("openclaw memory status --deep")}`,
+          `Verify: ${formatCliCommand("coderclaw memory status --deep")}`,
         ].join("\n"),
         "Memory search",
       );
@@ -54,10 +54,10 @@ export async function noteMemorySearchHealth(cfg: OpenClawConfig): Promise<void>
         "",
         "Fix (pick one):",
         `- Set ${envVar} in your environment`,
-        `- Add credentials: ${formatCliCommand(`openclaw auth add --provider ${resolved.provider}`)}`,
-        `- To disable: ${formatCliCommand("openclaw config set agents.defaults.memorySearch.enabled false")}`,
+        `- Add credentials: ${formatCliCommand(`coderclaw auth add --provider ${resolved.provider}`)}`,
+        `- To disable: ${formatCliCommand("coderclaw config set agents.defaults.memorySearch.enabled false")}`,
         "",
-        `Verify: ${formatCliCommand("openclaw memory status --deep")}`,
+        `Verify: ${formatCliCommand("coderclaw memory status --deep")}`,
       ].join("\n"),
       "Memory search",
     );
@@ -81,11 +81,11 @@ export async function noteMemorySearchHealth(cfg: OpenClawConfig): Promise<void>
       "",
       "Fix (pick one):",
       "- Set OPENAI_API_KEY or GEMINI_API_KEY in your environment",
-      `- Add credentials: ${formatCliCommand("openclaw auth add --provider openai")}`,
+      `- Add credentials: ${formatCliCommand("coderclaw auth add --provider openai")}`,
       `- For local embeddings: configure agents.defaults.memorySearch.provider and local model path`,
-      `- To disable: ${formatCliCommand("openclaw config set agents.defaults.memorySearch.enabled false")}`,
+      `- To disable: ${formatCliCommand("coderclaw config set agents.defaults.memorySearch.enabled false")}`,
       "",
-      `Verify: ${formatCliCommand("openclaw memory status --deep")}`,
+      `Verify: ${formatCliCommand("coderclaw memory status --deep")}`,
     ].join("\n"),
     "Memory search",
   );

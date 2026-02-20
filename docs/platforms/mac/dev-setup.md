@@ -41,7 +41,7 @@ For dev run modes, signing flags, and Team ID troubleshooting, see the macOS app
 
 ## 3. Install the CLI
 
-The macOS app expects a global `openclaw` CLI install to manage background tasks.
+The macOS app expects a global `coderclaw` CLI install to manage background tasks.
 
 **To install it (recommended):**
 

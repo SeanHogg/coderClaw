@@ -487,7 +487,7 @@ Runbook: [iOS connect](https://docs.coderclaw.ai/platforms/ios).
 
 ## Configuration
 
-Minimal `~/.coderclaw/openclaw.json` (model + defaults):
+Minimal `~/.coderclaw/coderclaw.json` (model + defaults):
 
 ```json5
 {

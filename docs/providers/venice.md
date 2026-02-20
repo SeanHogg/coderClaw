@@ -79,7 +79,7 @@ coderclaw onboard --non-interactive \
 ### 3. Verify Setup
 
 ```bash
-openclaw chat --model venice/llama-3.3-70b "Hello, are you working?"
+coderclaw chat --model venice/llama-3.3-70b "Hello, are you working?"
 ```
 
 ## Model Selection
@@ -195,19 +195,19 @@ Venice uses a credit-based system. Check [venice.ai/pricing](https://venice.ai/p
 
 ```bash
 # Use default private model
-openclaw chat --model venice/llama-3.3-70b
+coderclaw chat --model venice/llama-3.3-70b
 
 # Use Claude via Venice (anonymized)
-openclaw chat --model venice/claude-opus-45
+coderclaw chat --model venice/claude-opus-45
 
 # Use uncensored model
-openclaw chat --model venice/venice-uncensored
+coderclaw chat --model venice/venice-uncensored
 
 # Use vision model with image
-openclaw chat --model venice/qwen3-vl-235b-a22b
+coderclaw chat --model venice/qwen3-vl-235b-a22b
 
 # Use coding model
-openclaw chat --model venice/qwen3-coder-480b-a35b-instruct
+coderclaw chat --model venice/qwen3-coder-480b-a35b-instruct
 ```
 
 ## Troubleshooting

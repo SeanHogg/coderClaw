@@ -199,7 +199,7 @@ Use `accountId` to target a specific account on multi-account channels like Tele
 - `includeReasoning`: when enabled, also deliver the separate `Reasoning:` message when available (same shape as `/reasoning on`).
 - `session`: optional session key for heartbeat runs.
   - `main` (default): agent main session.
-  - Explicit session key (copy from `openclaw sessions --json` or the [sessions CLI](/cli/sessions)).
+  - Explicit session key (copy from `coderclaw sessions --json` or the [sessions CLI](/cli/sessions)).
   - Session key formats: see [Sessions](/concepts/session) and [Groups](/channels/groups).
 - `target`:
   - `last` (default): deliver to the last used external channel.
@@ -336,7 +336,7 @@ Safety note: don’t put secrets (API keys, phone numbers, private tokens) into
 You can enqueue a system event and trigger an immediate heartbeat with:
 
 ```bash
-openclaw system event --text "Check for urgent follow-ups" --mode now
+coderclaw system event --text "Check for urgent follow-ups" --mode now
 ```
 
 If multiple agents have `heartbeat` configured, a manual wake runs each of those

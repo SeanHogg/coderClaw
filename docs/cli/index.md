@@ -1,5 +1,5 @@
 ---
-summary: "OpenClaw CLI reference for `openclaw` commands, subcommands, and options"
+summary: "CoderClaw CLI reference for `coderclaw` commands, subcommands, and options"
 read_when:
   - Adding or modifying CLI commands or options
   - Documenting new command surfaces
@@ -55,7 +55,7 @@ This page describes the current CLI behavior. If commands change, update this do
 ## Global flags
 
 - `--dev`: isolate state under `~/.coderclaw-dev` and shift default ports.
-- `--profile <name>`: isolate state under `~/.openclaw-<name>`.
+- `--profile <name>`: isolate state under `~/.coderclaw-<name>`.
 - `--no-color`: disable ANSI colors.
 - `--update`: shorthand for `coderclaw update` (source installs only).
 - `-V`, `--version`, `-v`: print version and exit.
@@ -86,7 +86,7 @@ Palette source of truth: `src/terminal/palette.ts` (aka “lobster seam”).
 ## Command tree
 
 ```
-openclaw [--dev] [--profile <name>] <command>
+coderclaw [--dev] [--profile <name>] <command>
   setup
   onboard
   configure
@@ -237,13 +237,13 @@ openclaw [--dev] [--profile <name>] <command>
   tui
 ```
 
-Note: plugins can add additional top-level commands (for example `openclaw voicecall`).
+Note: plugins can add additional top-level commands (for example `coderclaw voicecall`).
 
 ## Security
 
-- `openclaw security audit` — audit config + local state for common security foot-guns.
-- `openclaw security audit --deep` — best-effort live Gateway probe.
-- `openclaw security audit --fix` — tighten safe defaults and chmod state/config.
+- `coderclaw security audit` — audit config + local state for common security foot-guns.
+- `coderclaw security audit --deep` — best-effort live Gateway probe.
+- `coderclaw security audit --fix` — tighten safe defaults and chmod state/config.
 
 ## Plugins
 
@@ -967,7 +967,7 @@ Location:
 
 ## Browser
 
-Browser control CLI (dedicated Chrome/Brave/Edge/Chromium). See [`openclaw browser`](/cli/browser) and the [Browser tool](/tools/browser).
+Browser control CLI (dedicated Chrome/Brave/Edge/Chromium). See [`coderclaw browser`](/cli/browser) and the [Browser tool](/tools/browser).
 
 Common options:
 

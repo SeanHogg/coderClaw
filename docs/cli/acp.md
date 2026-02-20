@@ -42,8 +42,8 @@ coderclaw acp client
 # Point the spawned bridge at a remote Gateway
 coderclaw acp client --server-args --url wss://gateway-host:18789 --token <token>
 
-# Override the server command (default: openclaw)
-coderclaw acp client --server "node" --server-args openclaw.mjs acp --url ws://127.0.0.1:19001
+# Override the server command (default: coderclaw)
+coderclaw acp client --server "node" --server-args coderclaw.mjs acp --url ws://127.0.0.1:19001
 ```
 
 ## How to use this
@@ -93,7 +93,7 @@ Add a custom ACP agent in `~/.config/zed/settings.json` (or use Zed’s Settings
   "agent_servers": {
     "OpenClaw ACP": {
       "type": "custom",
-      "command": "openclaw",
+      "command": "coderclaw",
       "args": ["acp"],
       "env": {}
     }
@@ -108,7 +108,7 @@ To target a specific Gateway or agent:
   "agent_servers": {
     "OpenClaw ACP": {
       "type": "custom",
-      "command": "openclaw",
+      "command": "coderclaw",
       "args": [
         "acp",
         "--url",
@@ -164,7 +164,7 @@ Learn more about session keys at [/concepts/session](/concepts/session).
 ### `acp client` options
 
 - `--cwd <dir>`: working directory for the ACP session.
-- `--server <command>`: ACP server command (default: `openclaw`).
+- `--server <command>`: ACP server command (default: `coderclaw`).
 - `--server-args <args...>`: extra arguments passed to the ACP server.
 - `--server-verbose`: enable verbose logging on the ACP server.
 - `--verbose, -v`: verbose client logging.

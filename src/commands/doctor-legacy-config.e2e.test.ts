@@ -23,16 +23,16 @@ describe("normalizeLegacyConfigValues", () => {
   };
 
   beforeEach(() => {
-    previousOauthDir = process.env.OPENCLAW_OAUTH_DIR;
-    tempOauthDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-oauth-"));
-    process.env.OPENCLAW_OAUTH_DIR = tempOauthDir;
+    previousOauthDir = process.env.CODERCLAW_OAUTH_DIR;
+    tempOauthDir = fs.mkdtempSync(path.join(os.tmpdir(), "coderclaw-oauth-"));
+    process.env.CODERCLAW_OAUTH_DIR = tempOauthDir;
   });
 
   afterEach(() => {
     if (previousOauthDir === undefined) {
-      delete process.env.OPENCLAW_OAUTH_DIR;
+      delete process.env.CODERCLAW_OAUTH_DIR;
     } else {
-      process.env.OPENCLAW_OAUTH_DIR = previousOauthDir;
+      process.env.CODERCLAW_OAUTH_DIR = previousOauthDir;
     }
     if (tempOauthDir) {
       fs.rmSync(tempOauthDir, { recursive: true, force: true });
@@ -87,7 +87,7 @@ describe("normalizeLegacyConfigValues", () => {
   });
 
   it("copies legacy ack reaction when authDir override exists", () => {
-    const customDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-wa-auth-"));
+    const customDir = fs.mkdtempSync(path.join(os.tmpdir(), "coderclaw-wa-auth-"));
     try {
       writeCreds(customDir);
 

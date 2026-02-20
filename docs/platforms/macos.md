@@ -35,7 +35,7 @@ capabilities to the agent as a node.
 ## Launchd control
 
 The app manages a per‑user LaunchAgent labeled `bot.molt.gateway`
-(or `bot.molt.<profile>` when using `--profile`/`OPENCLAW_PROFILE`; legacy `com.openclaw.*` still unloads).
+(or `bot.molt.<profile>` when using `--profile`/`CODERCLAW_PROFILE`; legacy `com.coderclaw.*` still unloads).
 
 ```bash
 launchctl kickstart -k gui/$UID/bot.molt.gateway
@@ -108,14 +108,14 @@ Notes:
 
 ## Deep links
 
-The app registers the `openclaw://` URL scheme for local actions.
+The app registers the `coderclaw://` URL scheme for local actions.
 
-### `openclaw://agent`
+### `coderclaw://agent`
 
 Triggers a Gateway `agent` request.
 
 ```bash
-open 'openclaw://agent?message=Hello%20from%20deep%20link'
+open 'coderclaw://agent?message=Hello%20from%20deep%20link'
 ```
 
 Query parameters:

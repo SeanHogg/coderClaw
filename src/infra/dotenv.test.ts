@@ -34,11 +34,11 @@ async function withIsolatedEnvAndCwd(run: () => Promise<void>) {
 describe("loadDotEnv", () => {
   it("loads ~/.coderclaw/.env as fallback without overriding CWD .env", async () => {
     await withIsolatedEnvAndCwd(async () => {
-      const base = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-dotenv-test-"));
+      const base = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-dotenv-test-"));
       const cwdDir = path.join(base, "cwd");
       const stateDir = path.join(base, "state");
 
-      process.env.OPENCLAW_STATE_DIR = stateDir;
+      process.env.CODERCLAW_STATE_DIR = stateDir;
 
       await writeEnvFile(path.join(stateDir, ".env"), "FOO=from-global\nBAR=1\n");
       await writeEnvFile(path.join(cwdDir, ".env"), "FOO=from-cwd\n");
@@ -56,11 +56,11 @@ describe("loadDotEnv", () => {
 
   it("does not override an already-set env var from the shell", async () => {
     await withIsolatedEnvAndCwd(async () => {
-      const base = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-dotenv-test-"));
+      const base = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-dotenv-test-"));
       const cwdDir = path.join(base, "cwd");
       const stateDir = path.join(base, "state");
 
-      process.env.OPENCLAW_STATE_DIR = stateDir;
+      process.env.CODERCLAW_STATE_DIR = stateDir;
       process.env.FOO = "from-shell";
 
       await writeEnvFile(path.join(stateDir, ".env"), "FOO=from-global\n");

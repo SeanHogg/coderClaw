@@ -12,8 +12,8 @@ Most setups should use one Gateway because a single Gateway can handle multiple 
 
 ## Isolation checklist (required)
 
-- `OPENCLAW_CONFIG_PATH` — per-instance config file
-- `OPENCLAW_STATE_DIR` — per-instance sessions, creds, caches
+- `CODERCLAW_CONFIG_PATH` — per-instance config file
+- `CODERCLAW_STATE_DIR` — per-instance sessions, creds, caches
 - `agents.defaults.workspace` — per-instance workspace root
 - `gateway.port` (or `--port`) — unique per instance
 - Derived ports (browser/canvas) must not overlap
@@ -22,23 +22,23 @@ If these are shared, you will hit config races and port conflicts.
 
 ## Recommended: profiles (`--profile`)
 
-Profiles auto-scope `OPENCLAW_STATE_DIR` + `OPENCLAW_CONFIG_PATH` and suffix service names.
+Profiles auto-scope `CODERCLAW_STATE_DIR` + `CODERCLAW_CONFIG_PATH` and suffix service names.
 
 ```bash
 # main
-openclaw --profile main setup
-openclaw --profile main gateway --port 18789
+coderclaw --profile main setup
+coderclaw --profile main gateway --port 18789
 
 # rescue
-openclaw --profile rescue setup
-openclaw --profile rescue gateway --port 19001
+coderclaw --profile rescue setup
+coderclaw --profile rescue gateway --port 19001
 ```
 
 Per-profile services:
 
 ```bash
-openclaw --profile main gateway install
-openclaw --profile rescue gateway install
+coderclaw --profile main gateway install
+coderclaw --profile rescue gateway install
 ```
 
 ## Rescue-bot guide
@@ -63,7 +63,7 @@ coderclaw onboard
 coderclaw gateway install
 
 # Rescue bot (isolated profile + ports)
-openclaw --profile rescue onboard
+coderclaw --profile rescue onboard
 # Notes:
 # - workspace name will be postfixed with -rescue per default
 # - Port should be at least 18789 + 20 Ports,
@@ -71,12 +71,12 @@ openclaw --profile rescue onboard
 # - rest of the onboarding is the same as normal
 
 # To install the service (if not happened automatically during onboarding)
-openclaw --profile rescue gateway install
+coderclaw --profile rescue gateway install
 ```
 
 ## Port mapping (derived)
 
-Base port = `gateway.port` (or `OPENCLAW_GATEWAY_PORT` / `--port`).
+Base port = `gateway.port` (or `CODERCLAW_GATEWAY_PORT` / `--port`).
 
 - browser control service port = base + 2 (loopback only)
 - canvas host is served on the Gateway HTTP server (same port as `gateway.port`)
@@ -94,19 +94,19 @@ If you override any of these in config or env, you must keep them unique per ins
 ## Manual env example
 
 ```bash
-OPENCLAW_CONFIG_PATH=~/.coderclaw/main.json \
-OPENCLAW_STATE_DIR=~/.coderclaw-main \
+CODERCLAW_CONFIG_PATH=~/.coderclaw/main.json \
+CODERCLAW_STATE_DIR=~/.coderclaw-main \
 coderclaw gateway --port 18789
 
-OPENCLAW_CONFIG_PATH=~/.coderclaw/rescue.json \
-OPENCLAW_STATE_DIR=~/.coderclaw-rescue \
+CODERCLAW_CONFIG_PATH=~/.coderclaw/rescue.json \
+CODERCLAW_STATE_DIR=~/.coderclaw-rescue \
 coderclaw gateway --port 19001
 ```
 
 ## Quick checks
 
 ```bash
-openclaw --profile main status
-openclaw --profile rescue status
-openclaw --profile rescue browser status
+coderclaw --profile main status
+coderclaw --profile rescue status
+coderclaw --profile rescue browser status
 ```

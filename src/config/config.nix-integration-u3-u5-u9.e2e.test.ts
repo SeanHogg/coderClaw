@@ -18,82 +18,82 @@ function envWith(overrides: Record<string, string | undefined>): NodeJS.ProcessE
 
 function loadConfigForHome(home: string) {
   return createConfigIO({
-    env: envWith({ OPENCLAW_HOME: home }),
+    env: envWith({ CODERCLAW_HOME: home }),
     homedir: () => home,
   }).loadConfig();
 }
 
 describe("Nix integration (U3, U5, U9)", () => {
   describe("U3: isNixMode env var detection", () => {
-    it("isNixMode is false when OPENCLAW_NIX_MODE is not set", () => {
-      expect(resolveIsNixMode(envWith({ OPENCLAW_NIX_MODE: undefined }))).toBe(false);
+    it("isNixMode is false when CODERCLAW_NIX_MODE is not set", () => {
+      expect(resolveIsNixMode(envWith({ CODERCLAW_NIX_MODE: undefined }))).toBe(false);
     });
 
-    it("isNixMode is false when OPENCLAW_NIX_MODE is empty", () => {
-      expect(resolveIsNixMode(envWith({ OPENCLAW_NIX_MODE: "" }))).toBe(false);
+    it("isNixMode is false when CODERCLAW_NIX_MODE is empty", () => {
+      expect(resolveIsNixMode(envWith({ CODERCLAW_NIX_MODE: "" }))).toBe(false);
     });
 
-    it("isNixMode is false when OPENCLAW_NIX_MODE is not '1'", () => {
-      expect(resolveIsNixMode(envWith({ OPENCLAW_NIX_MODE: "true" }))).toBe(false);
+    it("isNixMode is false when CODERCLAW_NIX_MODE is not '1'", () => {
+      expect(resolveIsNixMode(envWith({ CODERCLAW_NIX_MODE: "true" }))).toBe(false);
     });
 
-    it("isNixMode is true when OPENCLAW_NIX_MODE=1", () => {
-      expect(resolveIsNixMode(envWith({ OPENCLAW_NIX_MODE: "1" }))).toBe(true);
+    it("isNixMode is true when CODERCLAW_NIX_MODE=1", () => {
+      expect(resolveIsNixMode(envWith({ CODERCLAW_NIX_MODE: "1" }))).toBe(true);
     });
   });
 
   describe("U5: CONFIG_PATH and STATE_DIR env var overrides", () => {
     it("STATE_DIR defaults to ~/.coderclaw when env not set", () => {
-      expect(resolveStateDir(envWith({ OPENCLAW_STATE_DIR: undefined }))).toMatch(/\.coderclaw$/);
+      expect(resolveStateDir(envWith({ CODERCLAW_STATE_DIR: undefined }))).toMatch(/\.coderclaw$/);
     });
 
-    it("STATE_DIR respects OPENCLAW_STATE_DIR override", () => {
-      expect(resolveStateDir(envWith({ OPENCLAW_STATE_DIR: "/custom/state/dir" }))).toBe(
+    it("STATE_DIR respects CODERCLAW_STATE_DIR override", () => {
+      expect(resolveStateDir(envWith({ CODERCLAW_STATE_DIR: "/custom/state/dir" }))).toBe(
         path.resolve("/custom/state/dir"),
       );
     });
 
-    it("STATE_DIR respects OPENCLAW_HOME when state override is unset", () => {
+    it("STATE_DIR respects CODERCLAW_HOME when state override is unset", () => {
       const customHome = path.join(path.sep, "custom", "home");
       expect(
-        resolveStateDir(envWith({ OPENCLAW_HOME: customHome, OPENCLAW_STATE_DIR: undefined })),
+        resolveStateDir(envWith({ CODERCLAW_HOME: customHome, CODERCLAW_STATE_DIR: undefined })),
       ).toBe(path.join(path.resolve(customHome), ".coderclaw"));
     });
 
-    it("CONFIG_PATH defaults to OPENCLAW_HOME/.coderclaw/openclaw.json", () => {
+    it("CONFIG_PATH defaults to CODERCLAW_HOME/.coderclaw/coderclaw.json", () => {
       const customHome = path.join(path.sep, "custom", "home");
       expect(
         resolveConfigPathCandidate(
           envWith({
-            OPENCLAW_HOME: customHome,
-            OPENCLAW_CONFIG_PATH: undefined,
-            OPENCLAW_STATE_DIR: undefined,
+            CODERCLAW_HOME: customHome,
+            CODERCLAW_CONFIG_PATH: undefined,
+            CODERCLAW_STATE_DIR: undefined,
           }),
         ),
-      ).toBe(path.join(path.resolve(customHome), ".coderclaw", "openclaw.json"));
+      ).toBe(path.join(path.resolve(customHome), ".coderclaw", "coderclaw.json"));
     });
 
-    it("CONFIG_PATH defaults to ~/.coderclaw/openclaw.json when env not set", () => {
+    it("CONFIG_PATH defaults to ~/.coderclaw/coderclaw.json when env not set", () => {
       expect(
         resolveConfigPathCandidate(
-          envWith({ OPENCLAW_CONFIG_PATH: undefined, OPENCLAW_STATE_DIR: undefined }),
+          envWith({ CODERCLAW_CONFIG_PATH: undefined, CODERCLAW_STATE_DIR: undefined }),
         ),
       ).toMatch(/\.coderclaw[\\/]openclaw\.json$/);
     });
 
-    it("CONFIG_PATH respects OPENCLAW_CONFIG_PATH override", () => {
+    it("CONFIG_PATH respects CODERCLAW_CONFIG_PATH override", () => {
       expect(
         resolveConfigPathCandidate(
-          envWith({ OPENCLAW_CONFIG_PATH: "/nix/store/abc/openclaw.json" }),
+          envWith({ CODERCLAW_CONFIG_PATH: "/nix/store/abc/coderclaw.json" }),
         ),
-      ).toBe(path.resolve("/nix/store/abc/openclaw.json"));
+      ).toBe(path.resolve("/nix/store/abc/coderclaw.json"));
     });
 
-    it("CONFIG_PATH expands ~ in OPENCLAW_CONFIG_PATH override", async () => {
+    it("CONFIG_PATH expands ~ in CODERCLAW_CONFIG_PATH override", async () => {
       await withTempHome(async (home) => {
         expect(
           resolveConfigPathCandidate(
-            envWith({ OPENCLAW_HOME: home, OPENCLAW_CONFIG_PATH: "~/.coderclaw/custom.json" }),
+            envWith({ CODERCLAW_HOME: home, CODERCLAW_CONFIG_PATH: "~/.coderclaw/custom.json" }),
             () => home,
           ),
         ).toBe(path.join(home, ".coderclaw", "custom.json"));
@@ -101,8 +101,8 @@ describe("Nix integration (U3, U5, U9)", () => {
     });
 
     it("CONFIG_PATH uses STATE_DIR when only state dir is overridden", () => {
-      expect(resolveConfigPathCandidate(envWith({ OPENCLAW_STATE_DIR: "/custom/state" }))).toBe(
-        path.join(path.resolve("/custom/state"), "openclaw.json"),
+      expect(resolveConfigPathCandidate(envWith({ CODERCLAW_STATE_DIR: "/custom/state" }))).toBe(
+        path.join(path.resolve("/custom/state"), "coderclaw.json"),
       );
     });
   });
@@ -132,7 +132,7 @@ describe("Nix integration (U3, U5, U9)", () => {
           "utf-8",
         );
         await fs.writeFile(
-          path.join(configDir, "openclaw.json"),
+          path.join(configDir, "coderclaw.json"),
           JSON.stringify(
             {
               plugins: {
@@ -185,16 +185,16 @@ describe("Nix integration (U3, U5, U9)", () => {
 
   describe("U6: gateway port resolution", () => {
     it("uses default when env and config are unset", () => {
-      expect(resolveGatewayPort({}, envWith({ OPENCLAW_GATEWAY_PORT: undefined }))).toBe(
+      expect(resolveGatewayPort({}, envWith({ CODERCLAW_GATEWAY_PORT: undefined }))).toBe(
         DEFAULT_GATEWAY_PORT,
       );
     });
 
-    it("prefers OPENCLAW_GATEWAY_PORT over config", () => {
+    it("prefers CODERCLAW_GATEWAY_PORT over config", () => {
       expect(
         resolveGatewayPort(
           { gateway: { port: 19002 } },
-          envWith({ OPENCLAW_GATEWAY_PORT: "19001" }),
+          envWith({ CODERCLAW_GATEWAY_PORT: "19001" }),
         ),
       ).toBe(19001);
     });
@@ -203,7 +203,7 @@ describe("Nix integration (U3, U5, U9)", () => {
       expect(
         resolveGatewayPort(
           { gateway: { port: 19003 } },
-          envWith({ OPENCLAW_GATEWAY_PORT: "nope" }),
+          envWith({ CODERCLAW_GATEWAY_PORT: "nope" }),
         ),
       ).toBe(19003);
     });
@@ -215,7 +215,7 @@ describe("Nix integration (U3, U5, U9)", () => {
         const configDir = path.join(home, ".coderclaw");
         await fs.mkdir(configDir, { recursive: true });
         await fs.writeFile(
-          path.join(configDir, "openclaw.json"),
+          path.join(configDir, "coderclaw.json"),
           JSON.stringify({
             channels: { telegram: { botToken: "123:ABC" } },
           }),
@@ -233,7 +233,7 @@ describe("Nix integration (U3, U5, U9)", () => {
         const configDir = path.join(home, ".coderclaw");
         await fs.mkdir(configDir, { recursive: true });
         await fs.writeFile(
-          path.join(configDir, "openclaw.json"),
+          path.join(configDir, "coderclaw.json"),
           JSON.stringify({
             channels: { telegram: { tokenFile: "/run/agenix/telegram-token" } },
           }),
@@ -251,7 +251,7 @@ describe("Nix integration (U3, U5, U9)", () => {
         const configDir = path.join(home, ".coderclaw");
         await fs.mkdir(configDir, { recursive: true });
         await fs.writeFile(
-          path.join(configDir, "openclaw.json"),
+          path.join(configDir, "coderclaw.json"),
           JSON.stringify({
             channels: {
               telegram: {

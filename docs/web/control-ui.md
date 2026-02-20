@@ -11,7 +11,7 @@ title: "Control UI"
 The Control UI is a small **Vite + Lit** single-page app served by the Gateway:
 
 - default: `http://<host>:18789/`
-- optional prefix: set `gateway.controlUi.basePath` (e.g. `/openclaw`)
+- optional prefix: set `gateway.controlUi.basePath` (e.g. `/coderclaw`)
 
 It speaks **directly to the Gateway WebSocket** on the same port.
 
@@ -71,7 +71,7 @@ you revoke it with `coderclaw devices revoke --device <id> --role <role>`. See
 - Skills: status, enable/disable, install, API key updates (`skills.*`)
 - Nodes: list + caps (`node.list`)
 - Exec approvals: edit gateway or node allowlists + ask policy for `exec host=gateway/node` (`exec.approvals.*`)
-- Config: view/edit `~/.coderclaw/openclaw.json` (`config.get`, `config.set`)
+- Config: view/edit `~/.coderclaw/coderclaw.json` (`config.get`, `config.set`)
 - Config: apply + restart with validation (`config.apply`) and wake the last active session
 - Config writes include a base-hash guard to prevent clobbering concurrent edits
 - Config schema + form rendering (`config.schema`, including plugin + channel schemas); Raw JSON editor remains available
@@ -176,7 +176,7 @@ pnpm ui:build # auto-installs UI deps on first run
 Optional absolute base (when you want fixed asset URLs):
 
 ```bash
-OPENCLAW_CONTROL_UI_BASE_PATH=/openclaw/ pnpm ui:build
+CODERCLAW_CONTROL_UI_BASE_PATH=/coderclaw/ pnpm ui:build
 ```
 
 For local development (separate dev server):

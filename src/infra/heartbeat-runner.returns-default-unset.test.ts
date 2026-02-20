@@ -97,7 +97,7 @@ beforeAll(async () => {
   ]);
   setActivePluginRegistry(testRegistry);
 
-  fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-heartbeat-suite-"));
+  fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-heartbeat-suite-"));
 });
 
 beforeEach(() => {

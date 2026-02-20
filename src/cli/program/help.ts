@@ -52,7 +52,7 @@ export function configureProgramHelp(program: Command, ctx: ProgramContext) {
     )
     .option(
       "--profile <name>",
-      "Use a named profile (isolates OPENCLAW_STATE_DIR/OPENCLAW_CONFIG_PATH under ~/.coderclaw-<name>)",
+      "Use a named profile (isolates CODERCLAW_STATE_DIR/CODERCLAW_CONFIG_PATH under ~/.coderclaw-<name>)",
     );
 
   program.option("--no-color", "Disable ANSI colors", false);
@@ -123,7 +123,7 @@ export function configureProgramHelp(program: Command, ctx: ProgramContext) {
     if (command !== program) {
       return "";
     }
-    const docs = formatDocsLink("/cli", "docs.openclaw.ai/cli");
+    const docs = formatDocsLink("/cli", "docs.coderclaw.ai/cli");
     return `\n${theme.heading("Examples:")}\n${fmtExamples}\n\n${theme.muted("Docs:")} ${docs}\n`;
   });
 }

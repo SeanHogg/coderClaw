@@ -70,7 +70,7 @@ apt install -y nodejs
 curl -fsSL https://openclaw.ai/install.sh | bash
 
 # Verify
-openclaw --version
+coderclaw --version
 ```
 
 ## 4) Run Onboarding
@@ -93,10 +93,10 @@ The wizard will walk you through:
 coderclaw status
 
 # Check service
-systemctl --user status openclaw-gateway.service
+systemctl --user status coderclaw-gateway.service
 
 # View logs
-journalctl --user -u openclaw-gateway.service -f
+journalctl --user -u coderclaw-gateway.service -f
 ```
 
 ## 6) Access the Dashboard
@@ -232,7 +232,7 @@ For the full setup guide, see [Oracle Cloud](/platforms/oracle). For signup tips
 ```bash
 coderclaw gateway status
 coderclaw doctor --non-interactive
-journalctl -u openclaw --no-pager -n 50
+journalctl -u coderclaw --no-pager -n 50
 ```
 
 ### Port already in use

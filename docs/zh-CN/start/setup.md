@@ -19,7 +19,7 @@ x-i18n:
 
 ## 太长不看
 
-- **个性化设置存放在仓库之外：** `~/.openclaw/workspace`（工作区）+ `~/.openclaw/openclaw.json`（配置）。
+- **个性化设置存放在仓库之外：** `~/.openclaw/workspace`（工作区）+ `~/.openclaw/coderclaw.json`（配置）。
 - **稳定工作流：** 安装 macOS 应用；让它运行内置的 Gateway 网关。
 - **前沿工作流：** 通过 `pnpm gateway:watch` 自己运行 Gateway 网关，然后让 macOS 应用以本地模式连接。
 
@@ -33,22 +33,22 @@ x-i18n:
 
 如果你想要"100% 为我定制"*并且*易于更新，将你的自定义内容保存在：
 
-- **配置：** `~/.openclaw/openclaw.json`（JSON/JSON5 格式）
+- **配置：** `~/.openclaw/coderclaw.json`（JSON/JSON5 格式）
 - **工作区：** `~/.openclaw/workspace`（Skills、提示、记忆；将其设为私有 git 仓库）
 
 引导一次：
 
 ```bash
-openclaw setup
+coderclaw setup
 ```
 
 在此仓库内部，使用本地 CLI 入口：
 
 ```bash
-openclaw setup
+coderclaw setup
 ```
 
-如果你还没有全局安装，通过 `pnpm openclaw setup` 运行它。
+如果你还没有全局安装，通过 `pnpm coderclaw setup` 运行它。
 
 ## 稳定工作流（macOS 应用优先）
 
@@ -58,18 +58,18 @@ openclaw setup
 4. 链接表面（示例：WhatsApp）：
 
 ```bash
-openclaw channels login
+coderclaw channels login
 ```
 
 5. 完整性检查：
 
 ```bash
-openclaw health
+coderclaw health
 ```
 
 如果你的构建版本中没有新手引导：
 
-- 运行 `openclaw setup`，然后 `openclaw channels login`，然后手动启动 Gateway 网关（`openclaw gateway`）。
+- 运行 `coderclaw setup`，然后 `coderclaw channels login`，然后手动启动 Gateway 网关（`coderclaw gateway`）。
 
 ## 前沿工作流（在终端中运行 Gateway 网关）
 
@@ -105,7 +105,7 @@ pnpm gateway:watch
 - 或通过 CLI：
 
 ```bash
-openclaw health
+coderclaw health
 ```
 
 ### 常见陷阱

@@ -33,11 +33,11 @@ describe("resolveAssistantIdentity avatar normalization", () => {
     const cfg: OpenClawConfig = {
       ui: {
         assistant: {
-          avatar: "avatars/openclaw.png",
+          avatar: "avatars/coderclaw.png",
         },
       },
     };
 
-    expect(resolveAssistantIdentity({ cfg, workspaceDir: "" }).avatar).toBe("avatars/openclaw.png");
+    expect(resolveAssistantIdentity({ cfg, workspaceDir: "" }).avatar).toBe("avatars/coderclaw.png");
   });
 });

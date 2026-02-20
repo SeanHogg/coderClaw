@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { resolveOpenClawPackageRoot } from "../infra/openclaw-root.js";
+import { resolveCoderClawPackageRoot } from "../infra/coderclaw-root.js";
 
 export async function resolveOpenClawDocsPath(params: {
   workspaceDir?: string;
@@ -16,7 +16,7 @@ export async function resolveOpenClawDocsPath(params: {
     }
   }
 
-  const packageRoot = await resolveOpenClawPackageRoot({
+  const packageRoot = await resolveCoderClawPackageRoot({
     cwd: params.cwd,
     argv1: params.argv1,
     moduleUrl: params.moduleUrl,

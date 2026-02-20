@@ -27,7 +27,7 @@ x-i18n:
   - [卡在 "wake up my friend" / 新手引导无法启动，怎么办？](#it-is-stuck-on-wake-up-my-friend-onboarding-will-not-hatch-what-now)
   - [能否将我的设置迁移到新机器（Mac mini）而不重新进行新手引导？](#can-i-migrate-my-setup-to-a-new-machine-mac-mini-without-redoing-onboarding)
   - [在哪里查看最新版本的更新内容？](#where-do-i-see-whats-new-in-the-latest-version)
-  - [无法访问 docs.openclaw.ai（SSL 错误），怎么办？](#i-cant-access-docsopenclawai-ssl-error-what-now)
+  - [无法访问 docs.coderclaw.ai（SSL 错误），怎么办？](#i-cant-access-docsopenclawai-ssl-error-what-now)
   - [stable 和 beta 有什么区别？](#whats-the-difference-between-stable-and-beta)
 - [如何安装 beta 版本，beta 和 dev 有什么区别？](#how-do-i-install-the-beta-version-and-whats-the-difference-between-beta-and-dev)
   - [如何试用最新代码？](#how-do-i-try-the-latest-bits)
@@ -167,8 +167,8 @@ x-i18n:
   - [OAuth 与 API 密钥：有什么区别？](#oauth-vs-api-key-whats-the-difference)
 - [Gateway 网关：端口、“已在运行”和远程模式](#gateway-ports-already-running-and-remote-mode)
   - [Gateway 网关使用什么端口？](#what-port-does-the-gateway-use)
-  - [为什么 `openclaw gateway status` 显示 `Runtime: running` 但 `RPC probe: failed`？](#why-does-openclaw-gateway-status-say-runtime-running-but-rpc-probe-failed)
-  - [为什么 `openclaw gateway status` 显示 `Config (cli)` 和 `Config (service)` 不同？](#why-does-openclaw-gateway-status-show-config-cli-and-config-service-different)
+  - [为什么 `coderclaw gateway status` 显示 `Runtime: running` 但 `RPC probe: failed`？](#why-does-openclaw-gateway-status-say-runtime-running-but-rpc-probe-failed)
+  - [为什么 `coderclaw gateway status` 显示 `Config (cli)` 和 `Config (service)` 不同？](#why-does-openclaw-gateway-status-show-config-cli-and-config-service-different)
   - ["another gateway instance is already listening"是什么意思？](#what-does-another-gateway-instance-is-already-listening-mean)
   - [如何以远程模式运行 OpenClaw（客户端连接到其他位置的 Gateway 网关）？](#how-do-i-run-openclaw-in-remote-mode-client-connects-to-a-gateway-elsewhere)
   - [控制 UI 显示"unauthorized"（或持续重连），怎么办？](#the-control-ui-says-unauthorized-or-keeps-reconnecting-what-now)
@@ -184,7 +184,7 @@ x-i18n:
   - [Telegram setMyCommands 因网络错误失败，应该检查什么？](#telegram-setmycommands-fails-with-network-errors-what-should-i-check)
   - [TUI 没有输出，应该检查什么？](#tui-shows-no-output-what-should-i-check)
   - [如何完全停止然后启动 Gateway 网关？](#how-do-i-completely-stop-then-start-the-gateway)
-  - [通俗解释：`openclaw gateway restart` 与 `openclaw gateway`](#eli5-openclaw-gateway-restart-vs-openclaw-gateway)
+  - [通俗解释：`coderclaw gateway restart` 与 `coderclaw gateway`](#eli5-openclaw-gateway-restart-vs-openclaw-gateway)
   - [出现故障时获取更多详情的最快方法是什么？](#whats-the-fastest-way-to-get-more-details-when-something-fails)
 - [媒体与附件](#media-attachments)
   - [我的 Skills 生成了图片/PDF，但什么都没发送](#my-skill-generated-an-imagepdf-but-nothing-was-sent)
@@ -207,7 +207,7 @@ x-i18n:
 1. **快速状态（首先检查）**
 
    ```bash
-   openclaw status
+   coderclaw status
    ```
 
    快速本地摘要：操作系统 + 更新、Gateway 网关/服务可达性、智能体/会话、提供商配置 + 运行时问题（Gateway 网关可达时）。
@@ -215,7 +215,7 @@ x-i18n:
 2. **可粘贴的报告（可安全分享）**
 
    ```bash
-   openclaw status --all
+   coderclaw status --all
    ```
 
    只读诊断，附带日志尾部（令牌已脱敏）。
@@ -223,7 +223,7 @@ x-i18n:
 3. **守护进程 + 端口状态**
 
    ```bash
-   openclaw gateway status
+   coderclaw gateway status
    ```
 
    显示 supervisor 运行状态与 RPC 可达性、探测目标 URL，以及服务可能使用的配置。
@@ -231,7 +231,7 @@ x-i18n:
 4. **深度探测**
 
    ```bash
-   openclaw status --deep
+   coderclaw status --deep
    ```
 
    运行 Gateway 网关健康检查 + 提供商探测（需要可达的 Gateway 网关）。参阅[健康检查](/gateway/health)。
@@ -239,7 +239,7 @@ x-i18n:
 5. **跟踪最新日志**
 
    ```bash
-   openclaw logs --follow
+   coderclaw logs --follow
    ```
 
    如果 RPC 不可用，回退到：
@@ -253,15 +253,15 @@ x-i18n:
 6. **运行 doctor（修复）**
 
    ```bash
-   openclaw doctor
+   coderclaw doctor
    ```
 
    修复/迁移配置/状态 + 运行健康检查。参阅 [Doctor](/gateway/doctor)。
 
 7. **Gateway 网关快照**
    ```bash
-   openclaw health --json
-   openclaw health --verbose   # 出错时显示目标 URL + 配置路径
+   coderclaw health --json
+   coderclaw health --verbose   # 出错时显示目标 URL + 配置路径
    ```
    向运行中的 Gateway 网关请求完整快照（仅 WS）。参阅[健康检查](/gateway/health)。
 
@@ -285,25 +285,25 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
 提示：要求智能体**计划并监督**修复（逐步进行），然后只执行必要的命令。这样改动较小，更容易审查。
 
 如果你发现了真正的 bug 或修复方案，请提交 GitHub issue 或发送 PR：
-https://github.com/openclaw/openclaw/issues
-https://github.com/openclaw/openclaw/pulls
+https://github.com/SeanHogg/coderClaw/issues
+https://github.com/SeanHogg/coderClaw/pulls
 
 从以下命令开始（在寻求帮助时分享输出）：
 
 ```bash
-openclaw status
-openclaw models status
-openclaw doctor
+coderclaw status
+coderclaw models status
+coderclaw doctor
 ```
 
 它们的作用：
 
-- `openclaw status`：Gateway 网关/智能体健康状况 + 基本配置的快速快照。
-- `openclaw models status`：检查提供商认证 + 模型可用性。
-- `openclaw doctor`：验证并修复常见的配置/状态问题。
+- `coderclaw status`：Gateway 网关/智能体健康状况 + 基本配置的快速快照。
+- `coderclaw models status`：检查提供商认证 + 模型可用性。
+- `coderclaw doctor`：验证并修复常见的配置/状态问题。
 
-其他有用的 CLI 检查：`openclaw status --all`、`openclaw logs --follow`、
-`openclaw gateway status`、`openclaw health --verbose`。
+其他有用的 CLI 检查：`coderclaw status --all`、`coderclaw logs --follow`、
+`coderclaw gateway status`、`coderclaw health --verbose`。
 
 快速调试流程：[出问题后的最初六十秒](#first-60-seconds-if-somethings-broken)。
 安装文档：[安装](/install)、[安装程序标志](/install/installer)、[更新](/install/updating)。
@@ -314,7 +314,7 @@ openclaw doctor
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 向导还可以自动构建 UI 资源。新手引导后，通常在端口 **18789** 上运行 Gateway 网关。
@@ -322,15 +322,15 @@ openclaw onboard --install-daemon
 从源码安装（贡献者/开发者）：
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
+git clone https://github.com/SeanHogg/coderClaw.git
 cd openclaw
 pnpm install
 pnpm build
 pnpm ui:build # 首次运行时自动安装 UI 依赖
-openclaw onboard
+coderclaw onboard
 ```
 
-如果你还没有全局安装，通过 `pnpm openclaw onboard` 运行。
+如果你还没有全局安装，通过 `pnpm coderclaw onboard` 运行。
 
 ### 新手引导后如何打开仪表板
 
@@ -341,14 +341,14 @@ openclaw onboard
 **本地（同一台机器）：**
 
 - 打开 `http://127.0.0.1:18789/`。
-- 如果要求认证，运行 `openclaw dashboard` 并使用带令牌的链接（`?token=...`）。
-- 令牌与 `gateway.auth.token`（或 `OPENCLAW_GATEWAY_TOKEN`）的值相同，UI 在首次加载后会存储它。
+- 如果要求认证，运行 `coderclaw dashboard` 并使用带令牌的链接（`?token=...`）。
+- 令牌与 `gateway.auth.token`（或 `CODERCLAW_GATEWAY_TOKEN`）的值相同，UI 在首次加载后会存储它。
 
 **非本地环境：**
 
-- **Tailscale Serve**（推荐）：保持绑定 loopback，运行 `openclaw gateway --tailscale serve`，打开 `https://<magicdns>/`。如果 `gateway.auth.allowTailscale` 为 `true`，身份标头满足认证要求（无需令牌）。
-- **Tailnet 绑定**：运行 `openclaw gateway --bind tailnet --token "<token>"`，打开 `http://<tailscale-ip>:18789/`，在仪表板设置中粘贴令牌。
-- **SSH 隧道**：`ssh -N -L 18789:127.0.0.1:18789 user@host`，然后从 `openclaw dashboard` 打开 `http://127.0.0.1:18789/?token=...`。
+- **Tailscale Serve**（推荐）：保持绑定 loopback，运行 `coderclaw gateway --tailscale serve`，打开 `https://<magicdns>/`。如果 `gateway.auth.allowTailscale` 为 `true`，身份标头满足认证要求（无需令牌）。
+- **Tailnet 绑定**：运行 `coderclaw gateway --bind tailnet --token "<token>"`，打开 `http://<tailscale-ip>:18789/`，在仪表板设置中粘贴令牌。
+- **SSH 隧道**：`ssh -N -L 18789:127.0.0.1:18789 user@host`，然后从 `coderclaw dashboard` 打开 `http://127.0.0.1:18789/?token=...`。
 
 参阅[仪表板](/web/dashboard)和 [Web 界面](/web)了解绑定模式和认证详情。
 
@@ -382,21 +382,21 @@ Node **>= 22** 是必需的。推荐使用 `pnpm`。**不推荐**使用 Bun 运�
 1. 重启 Gateway 网关：
 
 ```bash
-openclaw gateway restart
+coderclaw gateway restart
 ```
 
 2. 检查状态和认证：
 
 ```bash
-openclaw status
-openclaw models status
-openclaw logs --follow
+coderclaw status
+coderclaw models status
+coderclaw logs --follow
 ```
 
 3. 如果仍然挂起，运行：
 
 ```bash
-openclaw doctor
+coderclaw doctor
 ```
 
 如果 Gateway 网关在远程，确保隧道/Tailscale 连接正常，且 UI 指向正确的 Gateway 网关。参阅[远程访问](/gateway/remote)。
@@ -406,9 +406,9 @@ openclaw doctor
 可以。复制**状态目录**和**工作区**，然后运行一次 Doctor。只要你同时复制**两个**位置，就能保持你的机器人“完全一样”（记忆、会话历史、认证和渠道状态）：
 
 1. 在新机器上安装 OpenClaw。
-2. 从旧机器复制 `$OPENCLAW_STATE_DIR`（默认：`~/.openclaw`）。
+2. 从旧机器复制 `$CODERCLAW_STATE_DIR`（默认：`~/.openclaw`）。
 3. 复制你的工作区（默认：`~/.openclaw/workspace`）。
-4. 运行 `openclaw doctor` 并重启 Gateway 网关服务。
+4. 运行 `coderclaw doctor` 并重启 Gateway 网关服务。
 
 这会保留配置、认证配置文件、WhatsApp 凭据、会话和记忆。如果你处于远程模式，请记住 Gateway 网关主机拥有会话存储和工作区。
 
@@ -421,17 +421,17 @@ openclaw doctor
 ### 在哪里查看最新版本的更新内容
 
 查看 GitHub 变更日志：
-https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md
+https://github.com/SeanHogg/coderClaw/blob/main/CHANGELOG.md
 
 最新条目在顶部。如果顶部部分标记为 **Unreleased**，则下一个带日期的部分是最新发布版本。条目按**亮点**、**变更**和**修复**分组（需要时还有文档/其他部分）。
 
-### 无法访问 docs.openclaw.ai（SSL 错误），怎么办
+### 无法访问 docs.coderclaw.ai（SSL 错误），怎么办
 
-一些 Comcast/Xfinity 连接通过 Xfinity Advanced Security 错误地拦截了 `docs.openclaw.ai`。禁用该功能或将 `docs.openclaw.ai` 加入白名单，然后重试。更多详情：[故障排除](/help/troubleshooting#docsopenclawai-shows-an-ssl-error-comcastxfinity)。
+一些 Comcast/Xfinity 连接通过 Xfinity Advanced Security 错误地拦截了 `docs.coderclaw.ai`。禁用该功能或将 `docs.coderclaw.ai` 加入白名单，然后重试。更多详情：[故障排除](/help/troubleshooting#docsopenclawai-shows-an-ssl-error-comcastxfinity)。
 请帮助我们在此处报告以解除封锁：https://spa.xfinity.com/check_url_status。
 
 如果仍然无法访问该网站，文档在 GitHub 上有镜像：
-https://github.com/openclaw/openclaw/tree/main/docs
+https://github.com/SeanHogg/coderClaw/tree/main/docs
 
 ### stable 和 beta 有什么区别
 
@@ -443,7 +443,7 @@ https://github.com/openclaw/openclaw/tree/main/docs
 我们将构建发布到 **beta**，测试后，一旦构建稳定，就会**将同一版本提升为 `latest`**。这就是为什么 beta 和 stable 可以指向**相同版本**。
 
 查看变更：
-https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md
+https://github.com/SeanHogg/coderClaw/blob/main/CHANGELOG.md
 
 ### 如何安装 beta 版本，beta 和 dev 有什么区别
 
@@ -481,7 +481,7 @@ https://openclaw.ai/install.ps1
 1. **Dev 渠道（git checkout）：**
 
 ```bash
-openclaw update --channel dev
+coderclaw update --channel dev
 ```
 
 这会切换到 `main` 分支并从源码更新。
@@ -497,7 +497,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
 如果你更喜欢手动克隆，使用：
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
+git clone https://github.com/SeanHogg/coderClaw.git
 cd openclaw
 pnpm install
 pnpm build
@@ -537,7 +537,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --ve
 - 安装 **Git for Windows** 并确保 `git` 在你的 PATH 中。
 - 关闭并重新打开 PowerShell，然后重新运行安装程序。
 
-**2) openclaw is not recognized（安装后）**
+**2) coderclaw is not recognized（安装后）**
 
 - 你的 npm 全局 bin 文件夹不在 PATH 中。
 - 检查路径：
@@ -598,25 +598,25 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
 使用 CLI：
 
 ```bash
-openclaw update
-openclaw update status
-openclaw update --channel stable|beta|dev
-openclaw update --tag <dist-tag|version>
-openclaw update --no-restart
+coderclaw update
+coderclaw update status
+coderclaw update --channel stable|beta|dev
+coderclaw update --tag <dist-tag|version>
+coderclaw update --no-restart
 ```
 
 如果必须从智能体自动化：
 
 ```bash
-openclaw update --yes --no-restart
-openclaw gateway restart
+coderclaw update --yes --no-restart
+coderclaw gateway restart
 ```
 
 文档：[更新](/cli/update)、[更新指南](/install/updating)。
 
 ### 新手引导向导具体做了什么
 
-`openclaw onboard` 是推荐的设置路径。在**本地模式**下，它引导你完成：
+`coderclaw onboard` 是推荐的设置路径。在**本地模式**下，它引导你完成：
 
 - **模型/认证设置**（推荐使用 Anthropic **setup-token** 进行 Claude 订阅，支持 OpenAI Codex OAuth，API 密钥可选，支持 LM Studio 本地模型）
 - **工作区**位置 + 引导文件
@@ -642,7 +642,7 @@ Claude Pro/Max 订阅**不包含 API 密钥**，因此这是订阅账户的正�
 
 ### Anthropic setup-token 认证如何工作
 
-`claude setup-token` 通过 Claude Code CLI 生成一个**令牌字符串**（在 Web 控制台中不可用）。你可以在**任何机器**上运行它。在向导中选择 **Anthropic token (paste setup-token)** 或使用 `openclaw models auth paste-token --provider anthropic` 粘贴。令牌作为 **anthropic** 提供商的认证配置文件存储，像 API 密钥一样使用（无自动刷新）。更多详情：[OAuth](/concepts/oauth)。
+`claude setup-token` 通过 Claude Code CLI 生成一个**令牌字符串**（在 Web 控制台中不可用）。你可以在**任何机器**上运行它。在向导中选择 **Anthropic token (paste setup-token)** 或使用 `coderclaw models auth paste-token --provider anthropic` 粘贴。令牌作为 **anthropic** 提供商的认证配置文件存储，像 API 密钥一样使用（无自动刷新）。更多详情：[OAuth](/concepts/oauth)。
 
 ### 在哪里获取 Anthropic setup-token
 
@@ -652,7 +652,7 @@ Claude Pro/Max 订阅**不包含 API 密钥**，因此这是订阅账户的正�
 claude setup-token
 ```
 
-复制它打印的令牌，然后在向导中选择 **Anthropic token (paste setup-token)**。如果你想在 Gateway 网关主机上运行，使用 `openclaw models auth setup-token --provider anthropic`。如果你在其他地方运行了 `claude setup-token`，在 Gateway 网关主机上使用 `openclaw models auth paste-token --provider anthropic` 粘贴。参阅 [Anthropic](/providers/anthropic)。
+复制它打印的令牌，然后在向导中选择 **Anthropic token (paste setup-token)**。如果你想在 Gateway 网关主机上运行，使用 `coderclaw models auth setup-token --provider anthropic`。如果你在其他地方运行了 `claude setup-token`，在 Gateway 网关主机上使用 `coderclaw models auth paste-token --provider anthropic` 粘贴。参阅 [Anthropic](/providers/anthropic)。
 
 ### 是否支持 Claude 订阅认证（Claude Pro/Max）
 
@@ -683,12 +683,12 @@ OpenClaw 通过 OAuth（ChatGPT 登录）支持 **OpenAI Code (Codex)**。向导
 
 ### 如何设置 Gemini CLI OAuth
 
-Gemini CLI 使用**插件认证流程**，而不是 `openclaw.json` 中的 client id 或 secret。
+Gemini CLI 使用**插件认证流程**，而不是 `coderclaw.json` 中的 client id 或 secret。
 
 步骤：
 
-1. 启用插件：`openclaw plugins enable google-gemini-cli-auth`
-2. 登录：`openclaw models auth login --provider google-gemini-cli --set-default`
+1. 启用插件：`coderclaw plugins enable google-gemini-cli-auth`
+2. 登录：`coderclaw models auth login --provider google-gemini-cli --set-default`
 
 这会在 Gateway 网关主机上将 OAuth 令牌存储为认证配置文件。详情：[模型提供商](/concepts/model-providers)。
 
@@ -728,7 +728,7 @@ Gemini CLI 使用**插件认证流程**，而不是 `openclaw.json` 中的 clien
 
 - Gateway 网关在 Mac mini 上（常开）。
 - MacBook Pro 运行 macOS 应用或节点主机并配对到 Gateway 网关。
-- 使用 `openclaw nodes status` / `openclaw nodes list` 查看它。
+- 使用 `coderclaw nodes status` / `coderclaw nodes list` 查看它。
 
 文档：[节点](/nodes)、[节点 CLI](/cli/nodes)。
 
@@ -745,7 +745,7 @@ Bun **不推荐**。我们观察到运行时 bug，特别是在 WhatsApp 和 Tel
 
 更安全的方式（无需第三方机器人）：
 
-- 给你的机器人发私信，然后运行 `openclaw logs --follow` 并读取 `from.id`。
+- 给你的机器人发私信，然后运行 `coderclaw logs --follow` 并读取 `from.id`。
 
 官方 Bot API：
 
@@ -795,20 +795,20 @@ brew install <formula>
 从 npm → git：
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
+git clone https://github.com/SeanHogg/coderClaw.git
 cd openclaw
 pnpm install
 pnpm build
-openclaw doctor
-openclaw gateway restart
+coderclaw doctor
+coderclaw gateway restart
 ```
 
 从 git → npm：
 
 ```bash
 npm install -g openclaw@latest
-openclaw doctor
-openclaw gateway restart
+coderclaw doctor
+coderclaw gateway restart
 ```
 
 Doctor 会检测 Gateway 网关服务入口点不匹配，并提供重写服务配置以匹配当前安装的选项（在自动化中使用 `--repair`）。
@@ -934,11 +934,11 @@ OpenClaw 是一个**个人助手**和协调层，不是 IDE 替代品。使用 C
 
 ### 如何自定义 Skills 而不弄脏仓库
 
-使用托管覆盖而不是编辑仓库副本。将你的更改放在 `~/.openclaw/skills/<name>/SKILL.md`（或通过 `~/.openclaw/openclaw.json` 中的 `skills.load.extraDirs` 添加文件夹）。优先级是 `<workspace>/skills` > `~/.openclaw/skills` > 内置，所以托管覆盖优先生效而不会修改 git。只有值得上游合并的编辑才应该放在仓库中并作为 PR 提交。
+使用托管覆盖而不是编辑仓库副本。将你的更改放在 `~/.openclaw/skills/<name>/SKILL.md`（或通过 `~/.openclaw/coderclaw.json` 中的 `skills.load.extraDirs` 添加文件夹）。优先级是 `<workspace>/skills` > `~/.openclaw/skills` > 内置，所以托管覆盖优先生效而不会修改 git。只有值得上游合并的编辑才应该放在仓库中并作为 PR 提交。
 
 ### 可以从自定义文件夹加载 Skills 吗
 
-可以。通过 `~/.openclaw/openclaw.json` 中的 `skills.load.extraDirs` 添加额外目录（最低优先级）。默认优先级保持不变：`<workspace>/skills` → `~/.openclaw/skills` → 内置 → `skills.load.extraDirs`。`clawhub` 默认安装到 `./skills`，OpenClaw 将其视为 `<workspace>/skills`。
+可以。通过 `~/.openclaw/coderclaw.json` 中的 `skills.load.extraDirs` 添加额外目录（最低优先级）。默认优先级保持不变：`<workspace>/skills` → `~/.openclaw/skills` → 内置 → `skills.load.extraDirs`。`clawhub` 默认安装到 `./skills`，OpenClaw 将其视为 `<workspace>/skills`。
 
 ### 如何为不同任务使用不同模型
 
@@ -967,15 +967,15 @@ OpenClaw 是一个**个人助手**和协调层，不是 IDE 替代品。使用 C
 
 检查清单：
 
-- 确认 cron 已启用（`cron.enabled`）且未设置 `OPENCLAW_SKIP_CRON`。
+- 确认 cron 已启用（`cron.enabled`）且未设置 `CODERCLAW_SKIP_CRON`。
 - 检查 Gateway 网关是否 24/7 运行（无休眠/重启）。
 - 验证任务的时区设置（`--tz` 与主机时区）。
 
 调试：
 
 ```bash
-openclaw cron run <jobId> --force
-openclaw cron runs --id <jobId> --limit 50
+coderclaw cron run <jobId> --force
+coderclaw cron runs --id <jobId> --limit 50
 ```
 
 文档：[定时任务](/automation/cron-jobs)、[定时任务 vs 心跳](/automation/cron-vs-heartbeat)。
@@ -1008,7 +1008,7 @@ pnpm add -g clawhub
 
 **能否从 Linux 运行仅限 Apple/macOS 的 Skills**
 
-不能直接运行。macOS Skills 受 `metadata.openclaw.os` 和所需二进制文件限制，Skills 只有在 **Gateway 网关主机**上符合条件时才会出现在系统提示中。在 Linux 上，`darwin` 专用 Skills（如 `apple-notes`、`apple-reminders`、`things-mac`）不会加载，除非你覆盖限制。
+不能直接运行。macOS Skills 受 `metadata.coderclaw.os` 和所需二进制文件限制，Skills 只有在 **Gateway 网关主机**上符合条件时才会出现在系统提示中。在 Linux 上，`darwin` 专用 Skills（如 `apple-notes`、`apple-reminders`、`things-mac`）不会加载，除非你覆盖限制。
 
 你有三种支持的模式：
 
@@ -1033,7 +1033,7 @@ pnpm add -g clawhub
    ---
    name: imsg
    description: iMessage/SMS CLI for listing chats, history, watch, and sending.
-   metadata: { "openclaw": { "os": ["darwin", "linux"], "requires": { "bins": ["imsg"] } } }
+   metadata: { "coderclaw": { "os": ["darwin", "linux"], "requires": { "bins": ["imsg"] } } }
    ---
    ```
 4. 开始新会话以刷新 Skills 快照。
@@ -1070,8 +1070,8 @@ ClawHub 安装到当前目录下的 `./skills`（或回退到你配置的 OpenCl
 使用内置安装程序，然后在 Chrome 中加载未打包的扩展：
 
 ```bash
-openclaw browser extension install
-openclaw browser extension path
+coderclaw browser extension install
+coderclaw browser extension path
 ```
 
 然后 Chrome → `chrome://extensions` → 启用“开发者模式” → “加载已解压的扩展程序” → 选择该文件夹。
@@ -1147,20 +1147,20 @@ OpenClaw 还会运行**静默的预压缩记忆刷新**，以提醒模型在自�
 
 ### OpenClaw 将数据存储在哪里
 
-所有内容位于 `$OPENCLAW_STATE_DIR`（默认：`~/.openclaw`）下：
+所有内容位于 `$CODERCLAW_STATE_DIR`（默认：`~/.openclaw`）下：
 
 | 路径                                                            | 用途                                                 |
 | --------------------------------------------------------------- | ---------------------------------------------------- |
-| `$OPENCLAW_STATE_DIR/openclaw.json`                             | 主配置（JSON5）                                      |
-| `$OPENCLAW_STATE_DIR/credentials/oauth.json`                    | 旧版 OAuth 导入（首次使用时复制到认证配置文件）      |
-| `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | 认证配置文件（OAuth + API 密钥）                     |
-| `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | 运行时认证缓存（自动管理）                           |
-| `$OPENCLAW_STATE_DIR/credentials/`                              | 提供商状态（例如 `whatsapp/<accountId>/creds.json`） |
-| `$OPENCLAW_STATE_DIR/agents/`                                   | 按智能体的状态（agentDir + 会话）                    |
-| `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                | 对话历史和状态（按智能体）                           |
-| `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | 会话元数据（按智能体）                               |
+| `$CODERCLAW_STATE_DIR/coderclaw.json`                             | 主配置（JSON5）                                      |
+| `$CODERCLAW_STATE_DIR/credentials/oauth.json`                    | 旧版 OAuth 导入（首次使用时复制到认证配置文件）      |
+| `$CODERCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | 认证配置文件（OAuth + API 密钥）                     |
+| `$CODERCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | 运行时认证缓存（自动管理）                           |
+| `$CODERCLAW_STATE_DIR/credentials/`                              | 提供商状态（例如 `whatsapp/<accountId>/creds.json`） |
+| `$CODERCLAW_STATE_DIR/agents/`                                   | 按智能体的状态（agentDir + 会话）                    |
+| `$CODERCLAW_STATE_DIR/agents/<agentId>/sessions/`                | 对话历史和状态（按智能体）                           |
+| `$CODERCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | 会话元数据（按智能体）                               |
 
-旧版单智能体路径：`~/.openclaw/agent/*`（通过 `openclaw doctor` 迁移）。
+旧版单智能体路径：`~/.openclaw/agent/*`（通过 `coderclaw doctor` 迁移）。
 
 你的**工作区**（AGENTS.md、记忆文件、Skills 等）是独立的，通过 `agents.defaults.workspace` 配置（默认：`~/.openclaw/workspace`）。
 
@@ -1222,17 +1222,17 @@ OpenClaw 还会运行**静默的预压缩记忆刷新**，以提醒模型在自�
 
 ### 配置文件是什么格式？在哪里
 
-OpenClaw 从 `$OPENCLAW_CONFIG_PATH`（默认：`~/.openclaw/openclaw.json`）读取可选的 **JSON5** 配置：
+OpenClaw 从 `$CODERCLAW_CONFIG_PATH`（默认：`~/.openclaw/coderclaw.json`）读取可选的 **JSON5** 配置：
 
 ```
-$OPENCLAW_CONFIG_PATH
+$CODERCLAW_CONFIG_PATH
 ```
 
 如果文件不存在，使用安全的默认值（包括默认工作区 `~/.openclaw/workspace`）。
 
 ### 我设置了 gateway.bind: "lan"（或 "tailnet"），现在什么都监听不了 / UI 显示未授权
 
-非 local loopback 绑定**需要认证**。配置 `gateway.auth.mode` + `gateway.auth.token`（或使用 `OPENCLAW_GATEWAY_TOKEN`）。
+非 local loopback 绑定**需要认证**。配置 `gateway.auth.mode` + `gateway.auth.token`（或使用 `CODERCLAW_GATEWAY_TOKEN`）。
 
 ```json5
 {
@@ -1255,7 +1255,7 @@ $OPENCLAW_CONFIG_PATH
 
 向导默认生成 Gateway 网关令牌（即使在 local loopback 上），因此**本地 WS 客户端必须认证**。这阻止了其他本地进程调用 Gateway 网关。在控制 UI 设置（或你的客户端配置）中粘贴令牌以连接。
 
-如果你**确实**想要开放 local loopback，从配置中移除 `gateway.auth`。Doctor 可以随时为你生成令牌：`openclaw doctor --generate-gateway-token`。
+如果你**确实**想要开放 local loopback，从配置中移除 `gateway.auth`。Doctor 可以随时为你生成令牌：`coderclaw doctor --generate-gateway-token`。
 
 ### 更改配置后需要重启吗
 
@@ -1266,7 +1266,7 @@ Gateway 网关监视配置文件并支持热重载：
 
 ### 如何启用网络搜索（和网页抓取）
 
-`web_fetch` 无需 API 密钥即可工作。`web_search` 需要 Brave Search API 密钥。**推荐：** 运行 `openclaw configure --section web` 将其存储在 `tools.web.search.apiKey` 中。环境变量替代方案：为 Gateway 网关进程设置 `BRAVE_API_KEY`。
+`web_fetch` 无需 API 密钥即可工作。`web_search` 需要 Brave Search API 密钥。**推荐：** 运行 `coderclaw configure --section web` 将其存储在 `tools.web.search.apiKey` 中。环境变量替代方案：为 Gateway 网关进程设置 `BRAVE_API_KEY`。
 
 ```json5
 {
@@ -1299,15 +1299,15 @@ Gateway 网关监视配置文件并支持热重载：
 
 恢复：
 
-- 从备份恢复（git 或复制的 `~/.openclaw/openclaw.json`）。
-- 如果没有备份，重新运行 `openclaw doctor` 并重新配置渠道/模型。
+- 从备份恢复（git 或复制的 `~/.openclaw/coderclaw.json`）。
+- 如果没有备份，重新运行 `coderclaw doctor` 并重新配置渠道/模型。
 - 如果这是意外情况，提交 bug 并附上你最后已知的配置或任何备份。
 - 本地编码智能体通常可以从日志或历史中重建工作配置。
 
 避免方法：
 
-- 对小更改使用 `openclaw config set`。
-- 对交互式编辑使用 `openclaw configure`。
+- 对小更改使用 `coderclaw config set`。
+- 对交互式编辑使用 `coderclaw configure`。
 
 文档：[Config](/cli/config)、[Configure](/cli/configure)、[Doctor](/gateway/doctor)。
 
@@ -1372,8 +1372,8 @@ Telegram → Gateway 网关 → 智能体 → `node.*` → 节点 → Gateway �
 4. 在本地打开 macOS 应用并以**远程 over SSH** 模式连接（或直接 tailnet），使其可以注册为节点。
 5. 在 Gateway 网关上批准节点：
    ```bash
-   openclaw nodes pending
-   openclaw nodes approve <requestId>
+   coderclaw nodes pending
+   coderclaw nodes approve <requestId>
    ```
 
 不需要单独的 TCP 桥接；节点通过 Gateway 网关 WebSocket 连接。
@@ -1386,9 +1386,9 @@ Telegram → Gateway 网关 → 智能体 → `node.*` → 节点 → Gateway �
 
 检查基础项：
 
-- Gateway 网关正在运行：`openclaw gateway status`
-- Gateway 网关健康：`openclaw status`
-- 渠道健康：`openclaw channels status`
+- Gateway 网关正在运行：`coderclaw gateway status`
+- Gateway 网关健康：`coderclaw status`
+- 渠道健康：`coderclaw channels status`
 
 然后验证认证和路由：
 
@@ -1404,12 +1404,12 @@ Telegram → Gateway 网关 → 智能体 → `node.*` → 节点 → Gateway �
 
 **最简单：** 使用两个机器人都能访问的普通聊天渠道（Telegram/Slack/WhatsApp）。让机器人 A 给机器人 B 发消息，然后让机器人 B 正常回复。
 
-**CLI 桥接（通用）：** 运行一个脚本调用另一个 Gateway 网关，使用 `openclaw agent --message ... --deliver`，定向到另一个机器人监听的聊天。如果一个机器人在远程 VPS 上，通过 SSH/Tailscale 将你的 CLI 指向该远程 Gateway 网关（参阅[远程访问](/gateway/remote)）。
+**CLI 桥接（通用）：** 运行一个脚本调用另一个 Gateway 网关，使用 `coderclaw agent --message ... --deliver`，定向到另一个机器人监听的聊天。如果一个机器人在远程 VPS 上，通过 SSH/Tailscale 将你的 CLI 指向该远程 Gateway 网关（参阅[远程访问](/gateway/remote)）。
 
 示例模式（从能到达目标 Gateway 网关的机器上运行）：
 
 ```bash
-openclaw agent --message "Hello from local bot" --deliver --channel telegram --reply-to <chat-id>
+coderclaw agent --message "Hello from local bot" --deliver --channel telegram --reply-to <chat-id>
 ```
 
 提示：添加护栏防止两个机器人无限循环（仅提及、渠道允许列表或“不回复机器人消息”规则）。
@@ -1484,7 +1484,7 @@ SSH 对临时 shell 访问很好，但节点对于持续的智能体工作流和
 如果你想要无 SSH 的控制 UI，在 VPS 上使用 Tailscale Serve：
 
 ```bash
-openclaw gateway --tailscale serve
+coderclaw gateway --tailscale serve
 ```
 
 这保持 Gateway 网关绑定到 local loopback 并通过 Tailscale 暴露 HTTPS。参阅 [Tailscale](/gateway/tailscale)。
@@ -1499,8 +1499,8 @@ Serve 暴露 **Gateway 网关控制 UI + WS**。节点通过同一个 Gateway �
 2. **使用 macOS 应用的远程模式**（SSH 目标可以是 tailnet 主机名）。应用会隧道 Gateway 网关端口并作为节点连接。
 3. **在 Gateway 网关上批准节点**：
    ```bash
-   openclaw nodes pending
-   openclaw nodes approve <requestId>
+   coderclaw nodes pending
+   coderclaw nodes approve <requestId>
    ```
 
 文档：[Gateway 网关协议](/gateway/protocol)、[发现](/gateway/discovery)、[macOS 远程模式](/platforms/mac/remote)。
@@ -1512,7 +1512,7 @@ Serve 暴露 **Gateway 网关控制 UI + WS**。节点通过同一个 Gateway �
 OpenClaw 从父进程（shell、launchd/systemd、CI 等）读取环境变量，并额外加载：
 
 - 当前工作目录下的 `.env`
-- `~/.openclaw/.env`（即 `$OPENCLAW_STATE_DIR/.env`）的全局回退 `.env`
+- `~/.openclaw/.env`（即 `$CODERCLAW_STATE_DIR/.env`）的全局回退 `.env`
 
 两个 `.env` 文件都不会覆盖已有的环境变量。
 
@@ -1548,11 +1548,11 @@ OpenClaw 从父进程（shell、launchd/systemd、CI 等）读取环境变量，
 ```
 
 这会运行你的登录 shell 并仅导入缺失的预期键名（从不覆盖）。环境变量等效项：
-`OPENCLAW_LOAD_SHELL_ENV=1`、`OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`。
+`CODERCLAW_LOAD_SHELL_ENV=1`、`CODERCLAW_SHELL_ENV_TIMEOUT_MS=15000`。
 
 ### 我设置了 COPILOT_GITHUB_TOKEN，但 models status 显示"Shell env: off"，为什么
 
-`openclaw models status` 报告的是 **shell 环境导入**是否启用。"Shell env: off"**不**意味着你的环境变量缺失——它只意味着 OpenClaw 不会自动加载你的登录 shell。
+`coderclaw models status` 报告的是 **shell 环境导入**是否启用。"Shell env: off"**不**意味着你的环境变量缺失——它只意味着 OpenClaw 不会自动加载你的登录 shell。
 
 如果 Gateway 网关作为服务（launchd/systemd）运行，它不会继承你的 shell 环境。通过以下方式之一修复：
 
@@ -1566,7 +1566,7 @@ OpenClaw 从父进程（shell、launchd/systemd、CI 等）读取环境变量，
 然后重启 Gateway 网关并重新检查：
 
 ```bash
-openclaw models status
+coderclaw models status
 ```
 
 Copilot 令牌从 `COPILOT_GITHUB_TOKEN` 读取（也支持 `GH_TOKEN` / `GITHUB_TOKEN`）。
@@ -1615,26 +1615,26 @@ Copilot 令牌从 `COPILOT_GITHUB_TOKEN` 读取（也支持 `GH_TOKEN` / `GITHUB
 使用重置命令：
 
 ```bash
-openclaw reset
+coderclaw reset
 ```
 
 非交互式完整重置：
 
 ```bash
-openclaw reset --scope full --yes --non-interactive
+coderclaw reset --scope full --yes --non-interactive
 ```
 
 然后重新运行新手引导：
 
 ```bash
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 注意：
 
 - 新手引导向导在看到现有配置时也提供**重置**选项。参阅[向导](/start/wizard)。
-- 如果你使用了配置文件（`--profile` / `OPENCLAW_PROFILE`），重置每个状态目录（默认为 `~/.openclaw-<profile>`）。
-- 开发重置：`openclaw gateway --dev --reset`（仅限开发；清除开发配置 + 凭据 + 会话 + 工作区）。
+- 如果你使用了配置文件（`--profile` / `CODERCLAW_PROFILE`），重置每个状态目录（默认为 `~/.openclaw-<profile>`）。
+- 开发重置：`coderclaw gateway --dev --reset`（仅限开发；清除开发配置 + 凭据 + 会话 + 工作区）。
 
 ### 我遇到了 context too large 错误——如何重置或压缩
 
@@ -1710,7 +1710,7 @@ openclaw onboard --install-daemon
 方法 1（最快）：跟踪日志并在群组中发送测试消息：
 
 ```bash
-openclaw logs --follow --json
+coderclaw logs --follow --json
 ```
 
 查找以 `@g.us` 结尾的 `chatId`（或 `from`），如：
@@ -1719,7 +1719,7 @@ openclaw logs --follow --json
 方法 2（如果已配置/加入允许列表）：从配置中列出群组：
 
 ```bash
-openclaw directory groups list --channel whatsapp
+coderclaw directory groups list --channel whatsapp
 ```
 
 文档：[WhatsApp](/channels/whatsapp)、[目录](/cli/directory)、[日志](/cli/logs)。
@@ -1749,7 +1749,7 @@ openclaw directory groups list --channel whatsapp
 
 - 每个智能体保持一个**活跃**工作区（`agents.defaults.workspace`）。
 - 如果磁盘增长，修剪旧会话（删除 JSONL 或存储条目）。
-- 使用 `openclaw doctor` 发现无用的工作区和配置文件不匹配。
+- 使用 `coderclaw doctor` 发现无用的工作区和配置文件不匹配。
 
 ### 可以同时运行多个机器人或聊天（Slack）吗？应该如何设置
 
@@ -1812,11 +1812,11 @@ MiniMax M2.1 有自己的文档：[MiniMax](/providers/minimax) 和
 安全选项：
 
 - 聊天中的 `/model`（快速，按会话）
-- `openclaw models set ...`（只更新模型配置）
-- `openclaw configure --section models`（交互式）
-- 编辑 `~/.openclaw/openclaw.json` 中的 `agents.defaults.model`
+- `coderclaw models set ...`（只更新模型配置）
+- `coderclaw configure --section models`（交互式）
+- 编辑 `~/.openclaw/coderclaw.json` 中的 `agents.defaults.model`
 
-避免使用部分对象执行 `config.apply`，除非你打算替换整个配置。如果你确实覆盖了配置，从备份恢复或重新运行 `openclaw doctor` 来修复。
+避免使用部分对象执行 `config.apply`，除非你打算替换整个配置。如果你确实覆盖了配置，从备份恢复或重新运行 `coderclaw doctor` 来修复。
 
 文档：[模型](/concepts/models)、[Configure](/cli/configure)、[Config](/cli/config)、[Doctor](/gateway/doctor)。
 
@@ -1899,7 +1899,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 3. 使用精确的模型 ID（区分大小写）：`minimax/MiniMax-M2.1` 或 `minimax/MiniMax-M2.1-lightning`。
 4. 运行：
    ```bash
-   openclaw models list
+   coderclaw models list
    ```
    并从列表中选择（或在聊天中使用 `/model list`）。
 
@@ -2016,7 +2016,7 @@ Z.AI（GLM 模型）：
 
 修复选项：
 
-- 运行 `openclaw agents add <id>` 并在向导中配置认证。
+- 运行 `coderclaw agents add <id>` 并在向导中配置认证。
 - 或从主智能体的 `agentDir` 复制 `auth-profiles.json` 到新智能体的 `agentDir`。
 
 **不要**在智能体之间重用 `agentDir`；这会导致认证/会话冲突。
@@ -2044,26 +2044,26 @@ No credentials found for profile "anthropic:default"
 
 - **确认认证配置文件的位置**（新路径 vs 旧路径）
   - 当前：`~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-  - 旧版：`~/.openclaw/agent/*`（通过 `openclaw doctor` 迁移）
+  - 旧版：`~/.openclaw/agent/*`（通过 `coderclaw doctor` 迁移）
 - **确认环境变量被 Gateway 网关加载**
   - 如果你在 shell 中设置了 `ANTHROPIC_API_KEY` 但通过 systemd/launchd 运行 Gateway 网关，它可能不会继承。将其放在 `~/.openclaw/.env` 中或启用 `env.shellEnv`。
 - **确保你编辑的是正确的智能体**
   - 多智能体设置意味着可能有多个 `auth-profiles.json` 文件。
 - **完整性检查模型/认证状态**
-  - 使用 `openclaw models status` 查看已配置的模型以及提供商是否已认证。
+  - 使用 `coderclaw models status` 查看已配置的模型以及提供商是否已认证。
 
 **No credentials found for profile "anthropic" 的修复清单**
 
 这意味着运行固定到 Anthropic 认证配置文件，但 Gateway 网关在其认证存储中找不到它。
 
 - **使用 setup-token**
-  - 运行 `claude setup-token`，然后用 `openclaw models auth setup-token --provider anthropic` 粘贴。
-  - 如果令牌在另一台机器上创建，使用 `openclaw models auth paste-token --provider anthropic`。
+  - 运行 `claude setup-token`，然后用 `coderclaw models auth setup-token --provider anthropic` 粘贴。
+  - 如果令牌在另一台机器上创建，使用 `coderclaw models auth paste-token --provider anthropic`。
 - **如果你想使用 API 密钥**
   - 在 **Gateway 网关主机**上将 `ANTHROPIC_API_KEY` 放入 `~/.openclaw/.env`。
   - 清除任何强制缺失配置文件的固定顺序：
     ```bash
-    openclaw models auth order clear --provider anthropic
+    coderclaw models auth order clear --provider anthropic
     ```
 - **确认你在 Gateway 网关主机上运行命令**
   - 在远程模式下，认证配置文件位于 Gateway 网关机器上，而不是你的笔记本上。
@@ -2104,28 +2104,28 @@ OpenClaw 使用提供商前缀的 ID，如：
 
 可以。配置支持配置文件的可选元数据和按提供商的排序（`auth.order.<provider>`）。这**不**存储密钥；它将 ID 映射到 provider/mode 并设置轮换顺序。
 
-如果某个配置文件处于短期**冷却**（速率限制/超时/认证失败）或较长的**禁用**状态（计费/额度不足），OpenClaw 可能会临时跳过它。要检查这一点，运行 `openclaw models status --json` 并查看 `auth.unusableProfiles`。调优：`auth.cooldowns.billingBackoffHours*`。
+如果某个配置文件处于短期**冷却**（速率限制/超时/认证失败）或较长的**禁用**状态（计费/额度不足），OpenClaw 可能会临时跳过它。要检查这一点，运行 `coderclaw models status --json` 并查看 `auth.unusableProfiles`。调优：`auth.cooldowns.billingBackoffHours*`。
 
 你也可以通过 CLI 设置**按智能体**的顺序覆盖（存储在该智能体的 `auth-profiles.json` 中）：
 
 ```bash
 # 默认为配置的默认智能体（省略 --agent）
-openclaw models auth order get --provider anthropic
+coderclaw models auth order get --provider anthropic
 
 # 将轮换锁定到单个配置文件（只尝试这一个）
-openclaw models auth order set --provider anthropic anthropic:default
+coderclaw models auth order set --provider anthropic anthropic:default
 
 # 或设置明确的顺序（提供商内回退）
-openclaw models auth order set --provider anthropic anthropic:work anthropic:default
+coderclaw models auth order set --provider anthropic anthropic:work anthropic:default
 
 # 清除覆盖（回退到配置 auth.order / 轮换）
-openclaw models auth order clear --provider anthropic
+coderclaw models auth order clear --provider anthropic
 ```
 
 要针对特定智能体：
 
 ```bash
-openclaw models auth order set --provider anthropic --agent main anthropic:default
+coderclaw models auth order set --provider anthropic --agent main anthropic:default
 ```
 
 ### OAuth 与 API 密钥：有什么区别
@@ -2146,27 +2146,27 @@ OpenClaw 两者都支持：
 优先级：
 
 ```
---port > OPENCLAW_GATEWAY_PORT > gateway.port > 默认 18789
+--port > CODERCLAW_GATEWAY_PORT > gateway.port > 默认 18789
 ```
 
-### 为什么 openclaw gateway status 显示 Runtime: running 但 RPC probe: failed
+### 为什么 coderclaw gateway status 显示 Runtime: running 但 RPC probe: failed
 
 因为"running"是 **supervisor** 的视角（launchd/systemd/schtasks）。RPC 探测是 CLI 实际连接到 Gateway 网关 WebSocket 并调用 `status`。
 
-使用 `openclaw gateway status` 并关注这些行：
+使用 `coderclaw gateway status` 并关注这些行：
 
 - `Probe target:`（探测实际使用的 URL）
 - `Listening:`（端口上实际绑定的内容）
 - `Last gateway error:`（进程存活但端口未监听时的常见根因）
 
-### 为什么 openclaw gateway status 显示 Config (cli) 和 Config (service) 不同
+### 为什么 coderclaw gateway status 显示 Config (cli) 和 Config (service) 不同
 
-你正在编辑一个配置文件，而服务运行的是另一个（通常是 `--profile` / `OPENCLAW_STATE_DIR` 不匹配）。
+你正在编辑一个配置文件，而服务运行的是另一个（通常是 `--profile` / `CODERCLAW_STATE_DIR` 不匹配）。
 
 修复：
 
 ```bash
-openclaw gateway install --force
+coderclaw gateway install --force
 ```
 
 从你希望服务使用的相同 `--profile` / 环境运行该命令。
@@ -2175,7 +2175,7 @@ openclaw gateway install --force
 
 OpenClaw 通过在启动时立即绑定 WebSocket 监听器来强制运行时锁（默认 `ws://127.0.0.1:18789`）。如果绑定因 `EADDRINUSE` 失败，它会抛出 `GatewayLockError` 表示另一个实例已在监听。
 
-修复：停止另一个实例，释放端口，或使用 `openclaw gateway --port <port>` 运行。
+修复：停止另一个实例，释放端口，或使用 `coderclaw gateway --port <port>` 运行。
 
 ### 如何以远程模式运行 OpenClaw（客户端连接到其他位置的 Gateway 网关）
 
@@ -2196,7 +2196,7 @@ OpenClaw 通过在启动时立即绑定 WebSocket 监听器来强制运行时锁
 
 注意：
 
-- `openclaw gateway` 仅在 `gateway.mode` 为 `local` 时启动（或你传递覆盖标志）。
+- `coderclaw gateway` 仅在 `gateway.mode` 为 `local` 时启动（或你传递覆盖标志）。
 - macOS 应用监视配置文件，当这些值更改时实时切换模式。
 
 ### 控制 UI 显示"unauthorized"或持续重连，怎么办
@@ -2210,12 +2210,12 @@ OpenClaw 通过在启动时立即绑定 WebSocket 监听器来强制运行时锁
 
 修复：
 
-- 最快：`openclaw dashboard`（打印 + 复制带令牌的链接，尝试打开；如果无头则显示 SSH 提示）。
-- 如果你还没有令牌：`openclaw doctor --generate-gateway-token`。
+- 最快：`coderclaw dashboard`（打印 + 复制带令牌的链接，尝试打开；如果无头则显示 SSH 提示）。
+- 如果你还没有令牌：`coderclaw doctor --generate-gateway-token`。
 - 如果是远程，先建隧道：`ssh -N -L 18789:127.0.0.1:18789 user@host` 然后打开 `http://127.0.0.1:18789/?token=...`。
-- 在 Gateway 网关主机上设置 `gateway.auth.token`（或 `OPENCLAW_GATEWAY_TOKEN`）。
+- 在 Gateway 网关主机上设置 `gateway.auth.token`（或 `CODERCLAW_GATEWAY_TOKEN`）。
 - 在控制 UI 设置中粘贴相同的令牌（或使用一次性 `?token=...` 链接刷新）。
-- 仍然卡住？运行 `openclaw status --all` 并按[故障排除](/gateway/troubleshooting)操作。参阅[仪表板](/web/dashboard)了解认证详情。
+- 仍然卡住？运行 `coderclaw status --all` 并按[故障排除](/gateway/troubleshooting)操作。参阅[仪表板](/web/dashboard)了解认证详情。
 
 ### 我设置了 gateway.bind: "tailnet" 但无法绑定 / 什么都没监听
 
@@ -2234,14 +2234,14 @@ OpenClaw 通过在启动时立即绑定 WebSocket 监听器来强制运行时锁
 
 可以，但你必须隔离：
 
-- `OPENCLAW_CONFIG_PATH`（每实例配置）
-- `OPENCLAW_STATE_DIR`（每实例状态）
+- `CODERCLAW_CONFIG_PATH`（每实例配置）
+- `CODERCLAW_STATE_DIR`（每实例状态）
 - `agents.defaults.workspace`（工作区隔离）
 - `gateway.port`（唯一端口）
 
 快速设置（推荐）：
 
-- 每实例使用 `openclaw --profile <name> …`（自动创建 `~/.openclaw-<name>`）。
+- 每实例使用 `openclaw --profile <name> …`（自动创建 `~/.coderclaw-<name>`）。
 - 在每个配置文件配置中设置唯一的 `gateway.port`（或手动运行时传 `--port`）。
 - 安装每配置文件的服务：`openclaw --profile <name> gateway install`。
 
@@ -2267,7 +2267,7 @@ Gateway 网关是一个 **WebSocket 服务器**，它期望第一条消息是 `c
 如果你使用 CLI 或 TUI，URL 应该类似：
 
 ```
-openclaw tui --url ws://<host>:18789 --token <token>
+coderclaw tui --url ws://<host>:18789 --token <token>
 ```
 
 协议详情：[Gateway 网关协议](/gateway/protocol)。
@@ -2287,12 +2287,12 @@ openclaw tui --url ws://<host>:18789 --token <token>
 最快的日志跟踪：
 
 ```bash
-openclaw logs --follow
+coderclaw logs --follow
 ```
 
 服务/supervisor 日志（当 Gateway 网关通过 launchd/systemd 运行时）：
 
-- macOS：`$OPENCLAW_STATE_DIR/logs/gateway.log` 和 `gateway.err.log`（默认：`~/.openclaw/logs/...`；配置文件使用 `~/.openclaw-<profile>/logs/...`）
+- macOS：`$CODERCLAW_STATE_DIR/logs/gateway.log` 和 `gateway.err.log`（默认：`~/.openclaw/logs/...`；配置文件使用 `~/.openclaw-<profile>/logs/...`）
 - Linux：`journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`
 - Windows：`schtasks /Query /TN "OpenClaw Gateway 网关 (<profile>)" /V /FO LIST`
 
@@ -2303,11 +2303,11 @@ openclaw logs --follow
 使用 Gateway 网关辅助命令：
 
 ```bash
-openclaw gateway status
-openclaw gateway restart
+coderclaw gateway status
+coderclaw gateway restart
 ```
 
-如果你手动运行 Gateway 网关，`openclaw gateway --force` 可以回收端口。参阅 [Gateway 网关](/gateway)。
+如果你手动运行 Gateway 网关，`coderclaw gateway --force` 可以回收端口。参阅 [Gateway 网关](/gateway)。
 
 ### 我在 Windows 上关闭了终端——如何重启 OpenClaw
 
@@ -2319,14 +2319,14 @@ openclaw gateway restart
 
 ```powershell
 wsl
-openclaw gateway status
-openclaw gateway restart
+coderclaw gateway status
+coderclaw gateway restart
 ```
 
 如果你从未安装服务，在前台启动：
 
 ```bash
-openclaw gateway run
+coderclaw gateway run
 ```
 
 **2) 原生 Windows（不推荐）：** Gateway 网关直接在 Windows 中运行。
@@ -2334,14 +2334,14 @@ openclaw gateway run
 打开 PowerShell 并运行：
 
 ```powershell
-openclaw gateway status
-openclaw gateway restart
+coderclaw gateway status
+coderclaw gateway restart
 ```
 
 如果你手动运行（无服务），使用：
 
 ```powershell
-openclaw gateway run
+coderclaw gateway run
 ```
 
 文档：[Windows (WSL2)](/platforms/windows)、[Gateway 网关服务运维手册](/gateway)。
@@ -2351,10 +2351,10 @@ openclaw gateway run
 从快速健康扫描开始：
 
 ```bash
-openclaw status
-openclaw models status
-openclaw channels status
-openclaw logs --follow
+coderclaw status
+coderclaw models status
+coderclaw channels status
+coderclaw logs --follow
 ```
 
 常见原因：
@@ -2371,15 +2371,15 @@ openclaw logs --follow
 
 这通常意味着 UI 丢失了 WebSocket 连接。检查：
 
-1. Gateway 网关在运行吗？`openclaw gateway status`
-2. Gateway 网关健康吗？`openclaw status`
-3. UI 有正确的令牌吗？`openclaw dashboard`
+1. Gateway 网关在运行吗？`coderclaw gateway status`
+2. Gateway 网关健康吗？`coderclaw status`
+3. UI 有正确的令牌吗？`coderclaw dashboard`
 4. 如果是远程，隧道/Tailscale 链接正常吗？
 
 然后跟踪日志：
 
 ```bash
-openclaw logs --follow
+coderclaw logs --follow
 ```
 
 文档：[仪表板](/web/dashboard)、[远程访问](/gateway/remote)、[故障排除](/gateway/troubleshooting)。
@@ -2389,8 +2389,8 @@ openclaw logs --follow
 从日志和渠道状态开始：
 
 ```bash
-openclaw channels status
-openclaw channels logs --channel telegram
+coderclaw channels status
+coderclaw channels logs --channel telegram
 ```
 
 如果你在 VPS 上或代理后面，确认出站 HTTPS 被允许且 DNS 正常工作。
@@ -2403,9 +2403,9 @@ openclaw channels logs --channel telegram
 首先确认 Gateway 网关可达且智能体可以运行：
 
 ```bash
-openclaw status
-openclaw models status
-openclaw logs --follow
+coderclaw status
+coderclaw models status
+coderclaw logs --follow
 ```
 
 在 TUI 中，使用 `/status` 查看当前状态。如果你期望在聊天渠道中收到回复，确保投递已启用（`/deliver on`）。
@@ -2415,8 +2415,8 @@ openclaw logs --follow
 ### 如何完全停止然后启动 Gateway 网关如果你安装了服务：
 
 ```bash
-openclaw gateway stop
-openclaw gateway start
+coderclaw gateway stop
+coderclaw gateway start
 ```
 
 这会停止/启动**受监管的服务**（macOS 上的 launchd，Linux 上的 systemd）。
@@ -2425,17 +2425,17 @@ openclaw gateway start
 如果你在前台运行，用 Ctrl‑C 停止，然后：
 
 ```bash
-openclaw gateway run
+coderclaw gateway run
 ```
 
 文档：[Gateway 网关服务运维手册](/gateway)。
 
-### 通俗解释：openclaw gateway restart 与 openclaw gateway
+### 通俗解释：openclaw gateway restart 与 coderclaw gateway
 
-- `openclaw gateway restart`：重启**后台服务**（launchd/systemd）。
-- `openclaw gateway`：在这个终端会话中**前台**运行 Gateway 网关。
+- `coderclaw gateway restart`：重启**后台服务**（launchd/systemd）。
+- `coderclaw gateway`：在这个终端会话中**前台**运行 Gateway 网关。
 
-如果你安装了服务，使用 Gateway 网关命令。想要一次性前台运行时使用 `openclaw gateway`。
+如果你安装了服务，使用 Gateway 网关命令。想要一次性前台运行时使用 `coderclaw gateway`。
 
 ### 出现故障时获取更多详情的最快方法是什么
 
@@ -2450,7 +2450,7 @@ openclaw gateway run
 CLI 发送：
 
 ```bash
-openclaw message send --target +15555550123 --message "Here you go" --media /path/to/file.png
+coderclaw message send --target +15555550123 --message "Here you go" --media /path/to/file.png
 ```
 
 还要检查：
@@ -2468,11 +2468,11 @@ openclaw message send --target +15555550123 --message "Here you go" --media /pat
 
 - 支持私信的渠道上的默认行为是**配对**：
   - 未知发送者会收到配对码；机器人不处理他们的消息。
-  - 批准方式：`openclaw pairing approve <channel> <code>`
-  - 每个渠道的待处理请求上限为 **3 个**；如果没收到代码，检查 `openclaw pairing list <channel>`。
+  - 批准方式：`coderclaw pairing approve <channel> <code>`
+  - 每个渠道的待处理请求上限为 **3 个**；如果没收到代码，检查 `coderclaw pairing list <channel>`。
 - 公开开放私信需要明确选择加入（`dmPolicy: "open"` 且允许列表 `"*"`）。
 
-运行 `openclaw doctor` 以发现有风险的私信策略。
+运行 `coderclaw doctor` 以发现有风险的私信策略。
 
 ### 提示注入只对公开机器人有影响吗
 
@@ -2515,7 +2515,7 @@ openclaw message send --target +15555550123 --message "Here you go" --media /pat
 检查待处理请求：
 
 ```bash
-openclaw pairing list telegram
+coderclaw pairing list telegram
 ```
 
 如果你想立即获得访问权限，将你的发送者 ID 加入允许列表或为该账户设置 `dmPolicy: "open"`。
@@ -2527,13 +2527,13 @@ openclaw pairing list telegram
 批准配对：
 
 ```bash
-openclaw pairing approve whatsapp <code>
+coderclaw pairing approve whatsapp <code>
 ```
 
 列出待处理请求：
 
 ```bash
-openclaw pairing list whatsapp
+coderclaw pairing list whatsapp
 ```
 
 向导电话号码提示：它用于设置你的**允许列表/所有者**，以便你自己的私信被允许。它不用于自动发送。如果你在个人 WhatsApp 号码上运行，使用该号码并启用 `channels.whatsapp.selfChatMode`。
@@ -2625,4 +2625,4 @@ OpenClaw 默认阻止**跨提供商**消息。如果工具调用绑定到 Telegr
 
 ---
 
-仍然卡住？在 [Discord](https://discord.com/invite/clawd) 中提问或发起 [GitHub 讨论](https://github.com/openclaw/openclaw/discussions)。
+仍然卡住？在 [Discord](https://discord.com/invite/clawd) 中提问或发起 [GitHub 讨论](https://github.com/SeanHogg/coderClaw/discussions)。

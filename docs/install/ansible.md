@@ -16,10 +16,10 @@ The recommended way to deploy OpenClaw to production servers is via **[openclaw-
 One-command install:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/SeanHogg/coderClaw-ansible/main/install.sh | bash
 ```
 
-> **📦 Full guide: [github.com/openclaw/openclaw-ansible](https://github.com/SeanHogg/coderClaw-ansible)**
+> **📦 Full guide: [github.com/SeanHogg/coderClaw-ansible](https://github.com/SeanHogg/coderClaw-ansible)**
 >
 > The openclaw-ansible repo is the source of truth for Ansible deployment. This page is a quick overview.
 
@@ -54,7 +54,7 @@ Note: The gateway runs **directly on the host** (not in Docker), but agent sandb
 
 ## Post-Install Setup
 
-After installation completes, switch to the openclaw user:
+After installation completes, switch to the coderclaw user:
 
 ```bash
 sudo -i -u openclaw
@@ -74,12 +74,12 @@ The post-install script will guide you through:
 sudo systemctl status openclaw
 
 # View live logs
-sudo journalctl -u openclaw -f
+sudo journalctl -u coderclaw -f
 
 # Restart gateway
 sudo systemctl restart openclaw
 
-# Provider login (run as openclaw user)
+# Provider login (run as coderclaw user)
 sudo -i -u openclaw
 coderclaw channels login
 ```
@@ -158,14 +158,14 @@ If you're locked out:
 
 ```bash
 # Check logs
-sudo journalctl -u openclaw -n 100
+sudo journalctl -u coderclaw -n 100
 
 # Verify permissions
 sudo ls -la /opt/openclaw
 
 # Test manual start
 sudo -i -u openclaw
-cd ~/openclaw
+cd ~/coderclaw
 pnpm start
 ```
 
@@ -176,11 +176,11 @@ pnpm start
 sudo systemctl status docker
 
 # Check sandbox image
-sudo docker images | grep openclaw-sandbox
+sudo docker images | grep coderclaw-sandbox
 
 # Build sandbox image if missing
 cd /opt/openclaw/openclaw
-sudo -u openclaw ./scripts/sandbox-setup.sh
+sudo -u coderclaw ./scripts/sandbox-setup.sh
 ```
 
 ### Provider login fails

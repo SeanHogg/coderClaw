@@ -1,11 +1,11 @@
 ---
 title: "Configuration Reference"
-description: "Complete field-by-field reference for ~/.coderclaw/openclaw.json"
+description: "Complete field-by-field reference for ~/.coderclaw/coderclaw.json"
 ---
 
 # Configuration Reference
 
-Every field available in `~/.coderclaw/openclaw.json`. For a task-oriented overview, see [Configuration](/gateway/configuration).
+Every field available in `~/.coderclaw/coderclaw.json`. For a task-oriented overview, see [Configuration](/gateway/configuration).
 
 Config format is **JSON5** (comments + trailing commas allowed). All fields are optional — OpenClaw uses safe defaults when omitted.
 
@@ -536,7 +536,7 @@ Include your own number in `allowFrom` to enable self-chat mode (ignores native 
 - Override per channel: `channels.discord.commands.native` (bool or `"auto"`). `false` clears previously registered commands.
 - `channels.telegram.customCommands` adds extra Telegram bot menu entries.
 - `bash: true` enables `! <cmd>` for host shell. Requires `tools.elevated.enabled` and sender in `tools.elevated.allowFrom.<channel>`.
-- `config: true` enables `/config` (reads/writes `openclaw.json`).
+- `config: true` enables `/config` (reads/writes `coderclaw.json`).
 - `channels.<provider>.configWrites` gates config mutations per channel (default: true).
 - `allowFrom` is per-provider. When set, it is the **only** authorization source (channel allowlists/pairing and `useAccessGroups` are ignored).
 - `useAccessGroups: false` allows commands to bypass access-group policies when `allowFrom` is not set.
@@ -867,8 +867,8 @@ Optional **Docker sandboxing** for the embedded agent. See [Sandboxing](/gateway
         workspaceAccess: "none", // none | ro | rw
         workspaceRoot: "~/.coderclaw/sandboxes",
         docker: {
-          image: "openclaw-sandbox:bookworm-slim",
-          containerPrefix: "openclaw-sbx-",
+          image: "coderclaw-sandbox:bookworm-slim",
+          containerPrefix: "coderclaw-sbx-",
           workdir: "/workspace",
           readOnlyRoot: true,
           tmpfs: ["/tmp", "/var/tmp", "/run"],
@@ -886,14 +886,14 @@ Optional **Docker sandboxing** for the embedded agent. See [Sandboxing](/gateway
             nproc: 256,
           },
           seccompProfile: "/path/to/seccomp.json",
-          apparmorProfile: "openclaw-sandbox",
+          apparmorProfile: "coderclaw-sandbox",
           dns: ["1.1.1.1", "8.8.8.8"],
           extraHosts: ["internal.service:10.0.0.5"],
           binds: ["/home/user/source:/source:rw"],
         },
         browser: {
           enabled: false,
-          image: "openclaw-sandbox-browser:bookworm-slim",
+          image: "coderclaw-sandbox-browser:bookworm-slim",
           cdpPort: 9222,
           vncPort: 5900,
           noVncPort: 6080,
@@ -1635,7 +1635,7 @@ OpenClaw uses the pi-coding-agent model catalog. Add custom providers via `model
 ```
 
 - Use `authHeader: true` + `headers` for custom auth needs.
-- Override agent config root with `OPENCLAW_AGENT_DIR` (or `PI_CODING_AGENT_DIR`).
+- Override agent config root with `CODERCLAW_AGENT_DIR` (or `PI_CODING_AGENT_DIR`).
 
 ### Provider examples
 
@@ -1911,7 +1911,7 @@ See [Local Models](/gateway/local-models). TL;DR: run MiniMax M2.1 via LM Studio
 }
 ```
 
-- Loaded from `~/.coderclaw/extensions`, `<workspace>/.openclaw/extensions`, plus `plugins.load.paths`.
+- Loaded from `~/.coderclaw/extensions`, `<workspace>/.coderclaw/extensions`, plus `plugins.load.paths`.
 - **Config changes require a gateway restart.**
 - `allow`: optional allowlist (only listed plugins load). `deny` wins.
 
@@ -1928,7 +1928,7 @@ See [Plugins](/tools/plugin).
     evaluateEnabled: true,
     defaultProfile: "chrome",
     profiles: {
-      openclaw: { cdpPort: 18800, color: "#FF4500" },
+      coderclaw: { cdpPort: 18800, color: "#FF4500" },
       work: { cdpPort: 18801, color: "#0066CC" },
       remote: { cdpUrl: "http://10.0.0.42:9222", color: "#00AA00" },
     },
@@ -1978,7 +1978,7 @@ See [Plugins](/tools/plugin).
     auth: {
       mode: "token", // token | password | trusted-proxy
       token: "your-token",
-      // password: "your-password", // or OPENCLAW_GATEWAY_PASSWORD
+      // password: "your-password", // or CODERCLAW_GATEWAY_PASSWORD
       // trustedProxy: { userHeader: "x-forwarded-user" }, // for mode=trusted-proxy; see /gateway/trusted-proxy-auth
       allowTailscale: true,
       rateLimit: {
@@ -1994,7 +1994,7 @@ See [Plugins](/tools/plugin).
     },
     controlUi: {
       enabled: true,
-      basePath: "/openclaw",
+      basePath: "/coderclaw",
       // root: "dist/control-ui",
       // allowInsecureAuth: false,
       // dangerouslyDisableDeviceAuth: false,
@@ -2019,7 +2019,7 @@ See [Plugins](/tools/plugin).
 <Accordion title="Gateway field details">
 
 - `mode`: `local` (run gateway) or `remote` (connect to remote gateway). Gateway refuses to start unless `local`.
-- `port`: single multiplexed port for WS + HTTP. Precedence: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`.
+- `port`: single multiplexed port for WS + HTTP. Precedence: `--port` > `CODERCLAW_GATEWAY_PORT` > `gateway.port` > `18789`.
 - `bind`: `auto`, `loopback` (default), `lan` (`0.0.0.0`), `tailnet` (Tailscale IP only), or `custom`.
 - **Auth**: required by default. Non-loopback binds require a shared token/password. Onboarding wizard generates a token by default.
 - `auth.mode: "trusted-proxy"`: delegate auth to an identity-aware reverse proxy and trust identity headers from `gateway.trustedProxies` (see [Trusted Proxy Auth](/gateway/trusted-proxy-auth)).
@@ -2049,12 +2049,12 @@ See [Plugins](/tools/plugin).
 Run multiple gateways on one host with unique ports and state dirs:
 
 ```bash
-OPENCLAW_CONFIG_PATH=~/.coderclaw/a.json \
-OPENCLAW_STATE_DIR=~/.coderclaw-a \
+CODERCLAW_CONFIG_PATH=~/.coderclaw/a.json \
+CODERCLAW_STATE_DIR=~/.coderclaw-a \
 coderclaw gateway --port 19001
 ```
 
-Convenience flags: `--dev` (uses `~/.coderclaw-dev` + port `19001`), `--profile <name>` (uses `~/.openclaw-<name>`).
+Convenience flags: `--dev` (uses `~/.coderclaw-dev` + port `19001`), `--profile <name>` (uses `~/.coderclaw-<name>`).
 
 See [Multiple Gateways](/gateway/multiple-gateways).
 
@@ -2093,7 +2093,7 @@ See [Multiple Gateways](/gateway/multiple-gateways).
 }
 ```
 
-Auth: `Authorization: Bearer <token>` or `x-openclaw-token: <token>`.
+Auth: `Authorization: Bearer <token>` or `x-coderclaw-token: <token>`.
 
 **Endpoints:**
 
@@ -2142,7 +2142,7 @@ Auth: `Authorization: Bearer <token>` or `x-openclaw-token: <token>`.
 }
 ```
 
-- Gateway auto-starts `gog gmail watch serve` on boot when configured. Set `OPENCLAW_SKIP_GMAIL_WATCHER=1` to disable.
+- Gateway auto-starts `gog gmail watch serve` on boot when configured. Set `CODERCLAW_SKIP_GMAIL_WATCHER=1` to disable.
 - Don't run a separate `gog gmail watch serve` alongside the Gateway.
 
 ---
@@ -2154,20 +2154,20 @@ Auth: `Authorization: Bearer <token>` or `x-openclaw-token: <token>`.
   canvasHost: {
     root: "~/.coderclaw/workspace/canvas",
     liveReload: true,
-    // enabled: false, // or OPENCLAW_SKIP_CANVAS_HOST=1
+    // enabled: false, // or CODERCLAW_SKIP_CANVAS_HOST=1
   },
 }
 ```
 
 - Serves agent-editable HTML/CSS/JS and A2UI over HTTP under the Gateway port:
-  - `http://<gateway-host>:<gateway.port>/__openclaw__/canvas/`
-  - `http://<gateway-host>:<gateway.port>/__openclaw__/a2ui/`
+  - `http://<gateway-host>:<gateway.port>/__coderclaw__/canvas/`
+  - `http://<gateway-host>:<gateway.port>/__coderclaw__/a2ui/`
 - Local-only: keep `gateway.bind: "loopback"` (default).
 - Non-loopback binds: canvas routes require Gateway auth (token/password/trusted-proxy), same as other Gateway HTTP surfaces.
 - Node WebViews typically don't send auth headers; after a node is paired and connected, the Gateway allows a private-IP fallback so the node can load canvas/A2UI without leaking secrets into URLs.
 - Injects live-reload client into served HTML.
 - Auto-creates starter `index.html` when empty.
-- Also serves A2UI at `/__openclaw__/a2ui/`.
+- Also serves A2UI at `/__coderclaw__/a2ui/`.
 - Changes require a gateway restart.
 - Disable live reload for large directories or `EMFILE` errors.
 
@@ -2189,7 +2189,7 @@ Auth: `Authorization: Bearer <token>` or `x-openclaw-token: <token>`.
 
 - `minimal` (default): omit `cliPath` + `sshPort` from TXT records.
 - `full`: include `cliPath` + `sshPort`.
-- Hostname defaults to `openclaw`. Override with `OPENCLAW_MDNS_HOSTNAME`.
+- Hostname defaults to `openclaw`. Override with `CODERCLAW_MDNS_HOSTNAME`.
 
 ### Wide-area (DNS-SD)
 
@@ -2238,7 +2238,7 @@ Reference env vars in any config string with `${VAR_NAME}`:
 ```json5
 {
   gateway: {
-    auth: { token: "${OPENCLAW_GATEWAY_TOKEN}" },
+    auth: { token: "${CODERCLAW_GATEWAY_TOKEN}" },
   },
 }
 ```
@@ -2287,7 +2287,7 @@ Reference env vars in any config string with `${VAR_NAME}`:
 }
 ```
 
-- Default log file: `/tmp/openclaw/openclaw-YYYY-MM-DD.log`.
+- Default log file: `/tmp/coderclaw/coderclaw-YYYY-MM-DD.log`.
 - Set `logging.file` for a stable path.
 - `consoleLevel` bumps to `debug` when `--verbose`.
 
@@ -2419,7 +2419,7 @@ Template placeholders expanded in `tools.media.*.models[].args`:
 Split config into multiple files:
 
 ```json5
-// ~/.coderclaw/openclaw.json
+// ~/.coderclaw/coderclaw.json
 {
   gateway: { port: 18789 },
   agents: { $include: "./agents.json5" },

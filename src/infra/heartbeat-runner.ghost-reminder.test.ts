@@ -121,7 +121,7 @@ describe("Ghost reminder bug (issue #13317)", () => {
   };
 
   it("does not use CRON_EVENT_PROMPT when only a HEARTBEAT_OK event is present", async () => {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-ghost-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-ghost-"));
     const sendTelegram = vi.fn().mockResolvedValue({
       messageId: "m1",
       chatId: "155462274",
@@ -181,7 +181,7 @@ describe("Ghost reminder bug (issue #13317)", () => {
   });
 
   it("uses CRON_EVENT_PROMPT for tagged cron events on interval wake", async () => {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-cron-interval-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-cron-interval-"));
     const sendTelegram = vi.fn().mockResolvedValue({
       messageId: "m1",
       chatId: "155462274",

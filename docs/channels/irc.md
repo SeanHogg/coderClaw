@@ -8,7 +8,7 @@ IRC ships as an extension plugin, but it is configured in the main config under 
 
 ## Quick start
 
-1. Enable IRC config in `~/.coderclaw/openclaw.json`.
+1. Enable IRC config in `~/.coderclaw/coderclaw.json`.
 2. Set at least:
 
 ```json

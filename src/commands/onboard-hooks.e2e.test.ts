@@ -54,7 +54,7 @@ describe("onboard-hooks", () => {
     eligible: boolean,
   ) => ({
     ...params,
-    source: "openclaw-bundled" as const,
+    source: "coderclaw-bundled" as const,
     pluginId: undefined,
     homepage: undefined,
     always: false,

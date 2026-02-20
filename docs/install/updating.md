@@ -39,7 +39,7 @@ Notes:
 - Know how you installed: **global** (npm/pnpm) vs **from source** (git clone).
 - Know how your Gateway is running: **foreground terminal** vs **supervised service** (launchd/systemd).
 - Snapshot your tailoring:
-  - Config: `~/.coderclaw/openclaw.json`
+  - Config: `~/.coderclaw/coderclaw.json`
   - Credentials: `~/.coderclaw/credentials/`
   - Workspace: `~/.coderclaw/workspace`
 
@@ -135,7 +135,7 @@ coderclaw health
 
 Notes:
 
-- `pnpm build` matters when you run the packaged `openclaw` binary ([`openclaw.mjs`](https://github.com/SeanHogg/coderClaw/blob/main/openclaw.mjs)) or use Node to run `dist/`.
+- `pnpm build` matters when you run the packaged `openclaw` binary ([`coderclaw.mjs`](https://github.com/SeanHogg/coderClaw/blob/main/coderclaw.mjs)) or use Node to run `dist/`.
 - If you run from a repo checkout without a global install, use `pnpm coderclaw ...` for CLI commands.
 - If you run directly from TypeScript (`pnpm coderclaw ...`), a rebuild is usually unnecessary, but **config migrations still apply** → run doctor.
 - Switching between global and git installs is easy: install the other flavor, then run `coderclaw doctor` so the gateway service entrypoint is rewritten to the current install.
@@ -191,7 +191,7 @@ npm i -g openclaw@<version>
 pnpm add -g coderclaw@<version>
 ```
 
-Tip: to see the current published version, run `npm view openclaw version`.
+Tip: to see the current published version, run `npm view coderclaw version`.
 
 Then restart + re-run doctor:
 

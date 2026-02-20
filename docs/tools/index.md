@@ -2,19 +2,19 @@
 summary: "Agent tool surface for OpenClaw (browser, canvas, nodes, message, cron) replacing legacy `openclaw-*` skills"
 read_when:
   - Adding or modifying agent tools
-  - Retiring or changing `openclaw-*` skills
+  - Retiring or changing `coderclaw-*` skills
 title: "Tools"
 ---
 
 # Tools (OpenClaw)
 
 OpenClaw exposes **first-class agent tools** for browser, canvas, nodes, and cron.
-These replace the old `openclaw-*` skills: the tools are typed, no shelling,
+These replace the old `coderclaw-*` skills: the tools are typed, no shelling,
 and the agent should rely on them directly.
 
 ## Disabling tools
 
-You can globally allow/deny tools via `tools.allow` / `tools.deny` in `openclaw.json`
+You can globally allow/deny tools via `tools.allow` / `tools.deny` in `coderclaw.json`
 (deny wins). This prevents disallowed tools from being sent to model providers.
 
 ```json5
@@ -151,7 +151,7 @@ Available groups:
 - `group:automation`: `cron`, `gateway`
 - `group:messaging`: `message`
 - `group:nodes`: `nodes`
-- `group:openclaw`: all built-in OpenClaw tools (excludes provider plugins)
+- `group:coderclaw`: all built-in CoderClaw tools (excludes provider plugins)
 
 Example (allow only file tools + browser):
 

@@ -147,10 +147,10 @@ Follow the wizard:
 coderclaw status
 
 # Check service
-sudo systemctl status openclaw
+sudo systemctl status coderclaw
 
 # View logs
-journalctl -u openclaw -f
+journalctl -u coderclaw -f
 ```
 
 ## 9) Access the Dashboard
@@ -174,7 +174,7 @@ sudo tailscale up
 
 # Update config
 coderclaw config set gateway.bind tailnet
-sudo systemctl restart openclaw
+sudo systemctl restart coderclaw
 ```
 
 ---
@@ -271,13 +271,13 @@ The onboarding wizard sets this up, but to verify:
 
 ```bash
 # Check service is enabled
-sudo systemctl is-enabled openclaw
+sudo systemctl is-enabled coderclaw
 
 # Enable if not
-sudo systemctl enable openclaw
+sudo systemctl enable coderclaw
 
 # Start on boot
-sudo systemctl start openclaw
+sudo systemctl start coderclaw
 ```
 
 ---
@@ -304,12 +304,12 @@ free -h
 
 ```bash
 # Check logs
-journalctl -u openclaw --no-pager -n 100
+journalctl -u coderclaw --no-pager -n 100
 
 # Common fix: rebuild
-cd ~/openclaw  # if using hackable install
+cd ~/coderclaw  # if using hackable install
 npm run build
-sudo systemctl restart openclaw
+sudo systemctl restart coderclaw
 ```
 
 ### ARM Binary Issues

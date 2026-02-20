@@ -10,7 +10,7 @@ describe("config identity defaults", () => {
     const configDir = path.join(home, ".coderclaw");
     await fs.mkdir(configDir, { recursive: true });
     await fs.writeFile(
-      path.join(configDir, "openclaw.json"),
+      path.join(configDir, "coderclaw.json"),
       JSON.stringify(config, null, 2),
       "utf-8",
     );
@@ -69,7 +69,7 @@ describe("config identity defaults", () => {
                 theme: "space lobster",
                 emoji: "🦞",
               },
-              groupChat: { mentionPatterns: ["@openclaw"] },
+              groupChat: { mentionPatterns: ["@coderclaw"] },
             },
           ],
         },
@@ -79,7 +79,7 @@ describe("config identity defaults", () => {
       });
 
       expect(cfg.messages?.responsePrefix).toBe("✅");
-      expect(cfg.agents?.list?.[0]?.groupChat?.mentionPatterns).toEqual(["@openclaw"]);
+      expect(cfg.agents?.list?.[0]?.groupChat?.mentionPatterns).toEqual(["@coderclaw"]);
     });
   });
 

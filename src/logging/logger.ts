@@ -3,13 +3,13 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { Logger as TsLogger } from "tslog";
 import type { OpenClawConfig } from "../config/types.js";
-import { resolvePreferredOpenClawTmpDir } from "../infra/tmp-openclaw-dir.js";
+import { resolvePreferredCoderClawTmpDir } from "../infra/tmp-coderclaw-dir.js";
 import { readLoggingConfig } from "./config.js";
 import type { ConsoleStyle } from "./console.js";
 import { type LogLevel, levelToMinLevel, normalizeLogLevel } from "./levels.js";
 import { loggingState } from "./state.js";
 
-export const DEFAULT_LOG_DIR = resolvePreferredOpenClawTmpDir();
+export const DEFAULT_LOG_DIR = resolvePreferredCoderClawTmpDir();
 export const DEFAULT_LOG_FILE = path.join(DEFAULT_LOG_DIR, "openclaw.log"); // legacy single-file path
 
 const LOG_PREFIX = "openclaw";
@@ -64,7 +64,7 @@ function resolveSettings(): ResolvedSettings {
     }
   }
   const defaultLevel =
-    process.env.VITEST === "true" && process.env.OPENCLAW_TEST_FILE_LOG !== "1" ? "silent" : "info";
+    process.env.VITEST === "true" && process.env.CODERCLAW_TEST_FILE_LOG !== "1" ? "silent" : "info";
   const level = normalizeLogLevel(cfg?.level, defaultLevel);
   const file = cfg?.file ?? defaultRollingPathForToday();
   return { level, file };
@@ -95,7 +95,7 @@ function buildLogger(settings: ResolvedSettings): TsLogger<LogObj> {
     pruneOldRollingLogs(path.dirname(settings.file));
   }
   const logger = new TsLogger<LogObj>({
-    name: "openclaw",
+    name: "coderclaw",
     minLevel: levelToMinLevel(settings.level),
     type: "hidden", // no ansi formatting
   });

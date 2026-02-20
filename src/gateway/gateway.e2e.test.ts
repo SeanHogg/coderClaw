@@ -29,27 +29,27 @@ describe("gateway e2e", () => {
     async () => {
       const prev = {
         home: process.env.HOME,
-        configPath: process.env.OPENCLAW_CONFIG_PATH,
-        token: process.env.OPENCLAW_GATEWAY_TOKEN,
-        skipChannels: process.env.OPENCLAW_SKIP_CHANNELS,
-        skipGmail: process.env.OPENCLAW_SKIP_GMAIL_WATCHER,
-        skipCron: process.env.OPENCLAW_SKIP_CRON,
-        skipCanvas: process.env.OPENCLAW_SKIP_CANVAS_HOST,
-        skipBrowser: process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER,
+        configPath: process.env.CODERCLAW_CONFIG_PATH,
+        token: process.env.CODERCLAW_GATEWAY_TOKEN,
+        skipChannels: process.env.CODERCLAW_SKIP_CHANNELS,
+        skipGmail: process.env.CODERCLAW_SKIP_GMAIL_WATCHER,
+        skipCron: process.env.CODERCLAW_SKIP_CRON,
+        skipCanvas: process.env.CODERCLAW_SKIP_CANVAS_HOST,
+        skipBrowser: process.env.CODERCLAW_SKIP_BROWSER_CONTROL_SERVER,
       };
 
       const { baseUrl: openaiBaseUrl, restore } = installOpenAiResponsesMock();
 
-      const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-gw-mock-home-"));
+      const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-gw-mock-home-"));
       process.env.HOME = tempHome;
-      process.env.OPENCLAW_SKIP_CHANNELS = "1";
-      process.env.OPENCLAW_SKIP_GMAIL_WATCHER = "1";
-      process.env.OPENCLAW_SKIP_CRON = "1";
-      process.env.OPENCLAW_SKIP_CANVAS_HOST = "1";
-      process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER = "1";
+      process.env.CODERCLAW_SKIP_CHANNELS = "1";
+      process.env.CODERCLAW_SKIP_GMAIL_WATCHER = "1";
+      process.env.CODERCLAW_SKIP_CRON = "1";
+      process.env.CODERCLAW_SKIP_CANVAS_HOST = "1";
+      process.env.CODERCLAW_SKIP_BROWSER_CONTROL_SERVER = "1";
 
       const token = `test-${randomUUID()}`;
-      process.env.OPENCLAW_GATEWAY_TOKEN = token;
+      process.env.CODERCLAW_GATEWAY_TOKEN = token;
 
       const workspaceDir = path.join(tempHome, "openclaw");
       await fs.mkdir(workspaceDir, { recursive: true });
@@ -61,7 +61,7 @@ describe("gateway e2e", () => {
 
       const configDir = path.join(tempHome, ".coderclaw");
       await fs.mkdir(configDir, { recursive: true });
-      const configPath = path.join(configDir, "openclaw.json");
+      const configPath = path.join(configDir, "coderclaw.json");
 
       const cfg = {
         agents: { defaults: { workspace: workspaceDir } },
@@ -116,13 +116,13 @@ describe("gateway e2e", () => {
         await fs.rm(tempHome, { recursive: true, force: true });
         restore();
         process.env.HOME = prev.home;
-        process.env.OPENCLAW_CONFIG_PATH = prev.configPath;
-        process.env.OPENCLAW_GATEWAY_TOKEN = prev.token;
-        process.env.OPENCLAW_SKIP_CHANNELS = prev.skipChannels;
-        process.env.OPENCLAW_SKIP_GMAIL_WATCHER = prev.skipGmail;
-        process.env.OPENCLAW_SKIP_CRON = prev.skipCron;
-        process.env.OPENCLAW_SKIP_CANVAS_HOST = prev.skipCanvas;
-        process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER = prev.skipBrowser;
+        process.env.CODERCLAW_CONFIG_PATH = prev.configPath;
+        process.env.CODERCLAW_GATEWAY_TOKEN = prev.token;
+        process.env.CODERCLAW_SKIP_CHANNELS = prev.skipChannels;
+        process.env.CODERCLAW_SKIP_GMAIL_WATCHER = prev.skipGmail;
+        process.env.CODERCLAW_SKIP_CRON = prev.skipCron;
+        process.env.CODERCLAW_SKIP_CANVAS_HOST = prev.skipCanvas;
+        process.env.CODERCLAW_SKIP_BROWSER_CONTROL_SERVER = prev.skipBrowser;
       }
     },
   );
@@ -130,27 +130,27 @@ describe("gateway e2e", () => {
   it("runs wizard over ws and writes auth token config", { timeout: 90_000 }, async () => {
     const prev = {
       home: process.env.HOME,
-      stateDir: process.env.OPENCLAW_STATE_DIR,
-      configPath: process.env.OPENCLAW_CONFIG_PATH,
-      token: process.env.OPENCLAW_GATEWAY_TOKEN,
-      skipChannels: process.env.OPENCLAW_SKIP_CHANNELS,
-      skipGmail: process.env.OPENCLAW_SKIP_GMAIL_WATCHER,
-      skipCron: process.env.OPENCLAW_SKIP_CRON,
-      skipCanvas: process.env.OPENCLAW_SKIP_CANVAS_HOST,
-      skipBrowser: process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER,
+      stateDir: process.env.CODERCLAW_STATE_DIR,
+      configPath: process.env.CODERCLAW_CONFIG_PATH,
+      token: process.env.CODERCLAW_GATEWAY_TOKEN,
+      skipChannels: process.env.CODERCLAW_SKIP_CHANNELS,
+      skipGmail: process.env.CODERCLAW_SKIP_GMAIL_WATCHER,
+      skipCron: process.env.CODERCLAW_SKIP_CRON,
+      skipCanvas: process.env.CODERCLAW_SKIP_CANVAS_HOST,
+      skipBrowser: process.env.CODERCLAW_SKIP_BROWSER_CONTROL_SERVER,
     };
 
-    process.env.OPENCLAW_SKIP_CHANNELS = "1";
-    process.env.OPENCLAW_SKIP_GMAIL_WATCHER = "1";
-    process.env.OPENCLAW_SKIP_CRON = "1";
-    process.env.OPENCLAW_SKIP_CANVAS_HOST = "1";
-    process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER = "1";
-    delete process.env.OPENCLAW_GATEWAY_TOKEN;
+    process.env.CODERCLAW_SKIP_CHANNELS = "1";
+    process.env.CODERCLAW_SKIP_GMAIL_WATCHER = "1";
+    process.env.CODERCLAW_SKIP_CRON = "1";
+    process.env.CODERCLAW_SKIP_CANVAS_HOST = "1";
+    process.env.CODERCLAW_SKIP_BROWSER_CONTROL_SERVER = "1";
+    delete process.env.CODERCLAW_GATEWAY_TOKEN;
 
-    const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-wizard-home-"));
+    const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-wizard-home-"));
     process.env.HOME = tempHome;
-    delete process.env.OPENCLAW_STATE_DIR;
-    delete process.env.OPENCLAW_CONFIG_PATH;
+    delete process.env.CODERCLAW_STATE_DIR;
+    delete process.env.CODERCLAW_CONFIG_PATH;
 
     const wizardToken = `wiz-${randomUUID()}`;
     const port = await getFreeGatewayPort();
@@ -242,14 +242,14 @@ describe("gateway e2e", () => {
       await server2.close({ reason: "wizard auth verify" });
       await fs.rm(tempHome, { recursive: true, force: true });
       process.env.HOME = prev.home;
-      process.env.OPENCLAW_STATE_DIR = prev.stateDir;
-      process.env.OPENCLAW_CONFIG_PATH = prev.configPath;
-      process.env.OPENCLAW_GATEWAY_TOKEN = prev.token;
-      process.env.OPENCLAW_SKIP_CHANNELS = prev.skipChannels;
-      process.env.OPENCLAW_SKIP_GMAIL_WATCHER = prev.skipGmail;
-      process.env.OPENCLAW_SKIP_CRON = prev.skipCron;
-      process.env.OPENCLAW_SKIP_CANVAS_HOST = prev.skipCanvas;
-      process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER = prev.skipBrowser;
+      process.env.CODERCLAW_STATE_DIR = prev.stateDir;
+      process.env.CODERCLAW_CONFIG_PATH = prev.configPath;
+      process.env.CODERCLAW_GATEWAY_TOKEN = prev.token;
+      process.env.CODERCLAW_SKIP_CHANNELS = prev.skipChannels;
+      process.env.CODERCLAW_SKIP_GMAIL_WATCHER = prev.skipGmail;
+      process.env.CODERCLAW_SKIP_CRON = prev.skipCron;
+      process.env.CODERCLAW_SKIP_CANVAS_HOST = prev.skipCanvas;
+      process.env.CODERCLAW_SKIP_BROWSER_CONTROL_SERVER = prev.skipBrowser;
     }
   });
 });

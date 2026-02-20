@@ -63,7 +63,7 @@ when no OpenAI or ElevenLabs API keys are available.
 
 ## Config
 
-TTS config lives under `messages.tts` in `openclaw.json`.
+TTS config lives under `messages.tts` in `coderclaw.json`.
 Full schema is in [Gateway configuration](/gateway/configuration).
 
 ### Minimal config (enable + provider)
@@ -294,7 +294,7 @@ Optional allowlist (disable specific overrides while keeping tags enabled):
 ## Per-user preferences
 
 Slash commands write local overrides to `prefsPath` (default:
-`~/.coderclaw/settings/tts.json`, override with `OPENCLAW_TTS_PREFS` or
+`~/.coderclaw/settings/tts.json`, override with `CODERCLAW_TTS_PREFS` or
 `messages.tts.prefsPath`).
 
 Stored fields:

@@ -10,13 +10,13 @@ title: "Gateway on macOS"
 # Gateway on macOS (external launchd)
 
 OpenClaw.app no longer bundles Node/Bun or the Gateway runtime. The macOS app
-expects an **external** `openclaw` CLI install, does not spawn the Gateway as a
+expects an **external** `coderclaw` CLI install, does not spawn the Gateway as a
 child process, and manages a per‑user launchd service to keep the Gateway
 running (or attaches to an existing local Gateway if one is already running).
 
 ## Install the CLI (required for local mode)
 
-You need Node 22+ on the Mac, then install `openclaw` globally:
+You need Node 22+ on the Mac, then install `coderclaw` globally:
 
 ```bash
 npm install -g coderclaw@<version>
@@ -49,7 +49,7 @@ Behavior:
 
 Logging:
 
-- launchd stdout/err: `/tmp/openclaw/openclaw-gateway.log`
+- launchd stdout/err: `/tmp/coderclaw/coderclaw-gateway.log`
 
 ## Version compatibility
 
@@ -59,10 +59,10 @@ incompatible, update the global CLI to match the app version.
 ## Smoke check
 
 ```bash
-openclaw --version
+coderclaw --version
 
-OPENCLAW_SKIP_CHANNELS=1 \
-OPENCLAW_SKIP_CANVAS_HOST=1 \
+CODERCLAW_SKIP_CHANNELS=1 \
+CODERCLAW_SKIP_CANVAS_HOST=1 \
 coderclaw gateway --port 18999 --bind loopback
 ```
 

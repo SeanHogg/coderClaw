@@ -8,7 +8,7 @@ title: "setup"
 
 # `coderclaw setup`
 
-Initialize `~/.coderclaw/openclaw.json` and the agent workspace.
+Initialize `~/.coderclaw/coderclaw.json` and the agent workspace.
 
 Related:
 

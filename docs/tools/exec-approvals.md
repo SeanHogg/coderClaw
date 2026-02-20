@@ -22,7 +22,7 @@ resolved by the **ask fallback** (default: deny).
 
 Exec approvals are enforced locally on the execution host:
 
-- **gateway host** → `openclaw` process on the gateway machine
+- **gateway host** → `coderclaw` process on the gateway machine
 - **node host** → node runner (macOS companion app or headless node host)
 
 macOS split:

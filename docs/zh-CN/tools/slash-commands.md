@@ -60,7 +60,7 @@ x-i18n:
   - 设置 `channels.discord.commands.nativeSkills`、`channels.telegram.commands.nativeSkills` 或 `channels.slack.commands.nativeSkills` 以按提供商覆盖（布尔值或 `"auto"`）。
 - `commands.bash`（默认 `false`）启用 `! <cmd>` 来运行主机 shell 命令（`/bash <cmd>` 是别名；需要 `tools.elevated` 白名单）。
 - `commands.bashForegroundMs`（默认 `2000`）控制 bash 切换到后台模式之前等待多长时间（`0` 立即后台运行）。
-- `commands.config`（默认 `false`）启用 `/config`（读写 `openclaw.json`）。
+- `commands.config`（默认 `false`）启用 `/config`（读写 `coderclaw.json`）。
 - `commands.debug`（默认 `false`）启用 `/debug`（仅运行时覆盖）。
 - `commands.useAccessGroups`（默认 `true`）对命令强制执行白名单/策略。
 
@@ -110,7 +110,7 @@ x-i18n:
 
 - 命令接受命令和参数之间的可选 `:`（例如 `/think: high`、`/send: on`、`/help:`）。
 - `/new <model>` 接受模型别名、`provider/model` 或提供商名称（模糊匹配）；如果没有匹配，文本被视为消息正文。
-- 要获取完整的提供商使用量分解，使用 `openclaw status --usage`。
+- 要获取完整的提供商使用量分解，使用 `coderclaw status --usage`。
 - `/allowlist add|remove` 需要 `commands.config=true` 并遵循渠道 `configWrites`。
 - `/usage` 控制每响应使用量页脚；`/usage cost` 从 OpenClaw 会话日志打印本地成本摘要。
 - `/restart` 默认禁用；设置 `commands.restart: true` 启用它。
@@ -164,7 +164,7 @@ x-i18n:
 
 ```
 /debug show
-/debug set messages.responsePrefix="[openclaw]"
+/debug set messages.responsePrefix="[coderclaw]"
 /debug set channels.whatsapp.allowFrom=["+1555","+4477"]
 /debug unset messages.responsePrefix
 /debug reset
@@ -172,12 +172,12 @@ x-i18n:
 
 注意事项：
 
-- 覆盖立即应用于新的配置读取，但**不会**写入 `openclaw.json`。
+- 覆盖立即应用于新的配置读取，但**不会**写入 `coderclaw.json`。
 - 使用 `/debug reset` 清除所有覆盖并返回到磁盘上的配置。
 
 ## 配置更新
 
-`/config` 写入你的磁盘配置（`openclaw.json`）。仅所有者。默认禁用；使用 `commands.config: true` 启用。
+`/config` 写入你的磁盘配置（`coderclaw.json`）。仅所有者。默认禁用；使用 `commands.config: true` 启用。
 
 示例：
 
@@ -185,7 +185,7 @@ x-i18n:
 /config show
 /config show messages.responsePrefix
 /config get messages.responsePrefix
-/config set messages.responsePrefix="[openclaw]"
+/config set messages.responsePrefix="[coderclaw]"
 /config unset messages.responsePrefix
 ```
 

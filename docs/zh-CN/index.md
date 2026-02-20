@@ -41,7 +41,7 @@ x-i18n:
     安装 OpenClaw 并在几分钟内启动 Gateway 网关。
   </Card>
   <Card title="运行向导" href="/start/wizard" icon="sparkles">
-    通过 `openclaw onboard` 和配对流程进行引导式设置。
+    通过 `coderclaw onboard` 和配对流程进行引导式设置。
   </Card>
   <Card title="打开控制界面" href="/web/control-ui" icon="layout-dashboard">
     启动浏览器仪表板，管理聊天、配置和会话。
@@ -97,13 +97,13 @@ Gateway 网关是会话、路由和渠道连接的唯一事实来源。
   </Step>
   <Step title="新手引导并安装服务">
     ```bash
-    openclaw onboard --install-daemon
+    coderclaw onboard --install-daemon
     ```
   </Step>
   <Step title="配对 WhatsApp 并启动 Gateway 网关">
     ```bash
-    openclaw channels login
-    openclaw gateway --port 18789
+    coderclaw channels login
+    coderclaw gateway --port 18789
     ```
   </Step>
 </Steps>
@@ -123,7 +123,7 @@ Gateway 网关启动后，打开浏览器控制界面。
 
 ## 配置（可选）
 
-配置文件位于 `~/.openclaw/openclaw.json`。
+配置文件位于 `~/.openclaw/coderclaw.json`。
 
 - 如果你**不做任何修改**，OpenClaw 将使用内置的 Pi 二进制文件以 RPC 模式运行，并按发送者创建独立会话。
 - 如果你想要限制访问，可以从 `channels.whatsapp.allowFrom` 和（针对群组的）提及规则开始配置。

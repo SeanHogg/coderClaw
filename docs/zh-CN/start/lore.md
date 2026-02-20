@@ -99,7 +99,7 @@ Molty：_可见的龙虾尴尬_
 
 ### 大蜕壳（2026 年 1 月 27 日）
 
-凌晨 5 点，Anthropic 的邮件到了。到 6:14，Peter 拍板了："管他的，就用 openclaw 吧。"
+凌晨 5 点，Anthropic 的邮件到了。到 6:14，Peter 拍板了："管他的，就用 coderclaw 吧。"
 
 然后混乱开始了。
 
@@ -123,10 +123,10 @@ Moltbot 说起来总是不太顺口。于是，在格林威治时间凌晨 4 点
 
 仅用 3 小时：
 
-- GitHub 更名：`github.com/openclaw/openclaw` ✅
+- GitHub 更名：`github.com/SeanHogg/coderClaw` ✅
 - X 账号 `@openclaw` 获得金色认证标记 💰
 - npm 包以新名称发布
-- 文档迁移到 `docs.openclaw.ai`
+- 文档迁移到 `docs.coderclaw.ai`
 - 公告在 90 分钟内获得 20 万以上浏览量
 
 **英雄们：**

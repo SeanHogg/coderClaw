@@ -31,7 +31,7 @@ It does not install or modify anything on the remote host.
 
 <Steps>
   <Step title="Existing config detection">
-    - If `~/.coderclaw/openclaw.json` exists, choose Keep, Modify, or Reset.
+    - If `~/.coderclaw/coderclaw.json` exists, choose Keep, Modify, or Reset.
     - Re-running the wizard does not wipe anything unless you explicitly choose Reset (or pass `--reset`).
     - If config is invalid or contains legacy keys, the wizard stops and asks you to run `coderclaw doctor` before continuing.
     - Reset uses `trash` and offers scopes:
@@ -204,13 +204,13 @@ Credential and profile paths:
 
 <Note>
 Headless and server tip: complete OAuth on a machine with a browser, then copy
-`~/.coderclaw/credentials/oauth.json` (or `$OPENCLAW_STATE_DIR/credentials/oauth.json`)
+`~/.coderclaw/credentials/oauth.json` (or `$CODERCLAW_STATE_DIR/credentials/oauth.json`)
 to the gateway host.
 </Note>
 
 ## Outputs and internals
 
-Typical fields in `~/.coderclaw/openclaw.json`:
+Typical fields in `~/.coderclaw/coderclaw.json`:
 
 - `agents.defaults.workspace`
 - `agents.defaults.model` / `models.providers` (if Minimax chosen)

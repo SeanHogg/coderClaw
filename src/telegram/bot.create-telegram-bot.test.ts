@@ -1613,7 +1613,7 @@ describe("createTelegramBot", () => {
   it("honors routed group activation from session store", async () => {
     onSpy.mockReset();
     replySpy.mockReset();
-    const storeDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-telegram-"));
+    const storeDir = fs.mkdtempSync(path.join(os.tmpdir(), "coderclaw-telegram-"));
     const storePath = path.join(storeDir, "sessions.json");
     fs.writeFileSync(
       storePath,

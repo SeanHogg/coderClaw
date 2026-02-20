@@ -58,7 +58,7 @@ describe("nodes camera helpers", () => {
   });
 
   it("writes camera clip payload to temp path", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-test-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-test-"));
     try {
       const out = await writeCameraClipPayloadToFile({
         payload: {
@@ -79,7 +79,7 @@ describe("nodes camera helpers", () => {
   });
 
   it("writes base64 to file", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-test-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-test-"));
     const out = path.join(dir, "x.bin");
     await writeBase64ToFile(out, "aGk=");
     await expect(fs.readFile(out, "utf8")).resolves.toBe("hi");
@@ -95,7 +95,7 @@ describe("nodes camera helpers", () => {
       "fetch",
       vi.fn(async () => new Response("url-content", { status: 200 })),
     );
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-test-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-test-"));
     const out = path.join(dir, "x.bin");
     try {
       await writeUrlToFile(out, "https://example.com/clip.mp4");

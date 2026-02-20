@@ -21,7 +21,7 @@ For model selection rules, see [/concepts/models](/concepts/models).
 
 - Supports generic provider rotation for selected providers.
 - Configure multiple keys via:
-  - `OPENCLAW_LIVE_<PROVIDER>_KEY` (single live override, highest priority)
+  - `CODERCLAW_LIVE_<PROVIDER>_KEY` (single live override, highest priority)
   - `<PROVIDER>_API_KEYS` (comma or semicolon list)
   - `<PROVIDER>_API_KEY` (primary key)
   - `<PROVIDER>_API_KEY_*` (numbered list, e.g. `<PROVIDER>_API_KEY_1`)
@@ -40,7 +40,7 @@ OpenClaw ships with the pi‑ai catalog. These providers require **no**
 
 - Provider: `openai`
 - Auth: `OPENAI_API_KEY`
-- Optional rotation: `OPENAI_API_KEYS`, `OPENAI_API_KEY_1`, `OPENAI_API_KEY_2`, plus `OPENCLAW_LIVE_OPENAI_KEY` (single override)
+- Optional rotation: `OPENAI_API_KEYS`, `OPENAI_API_KEY_1`, `OPENAI_API_KEY_2`, plus `CODERCLAW_LIVE_OPENAI_KEY` (single override)
 - Example model: `openai/gpt-5.1-codex`
 - CLI: `coderclaw onboard --auth-choice openai-api-key`
 
@@ -54,7 +54,7 @@ OpenClaw ships with the pi‑ai catalog. These providers require **no**
 
 - Provider: `anthropic`
 - Auth: `ANTHROPIC_API_KEY` or `claude setup-token`
-- Optional rotation: `ANTHROPIC_API_KEYS`, `ANTHROPIC_API_KEY_1`, `ANTHROPIC_API_KEY_2`, plus `OPENCLAW_LIVE_ANTHROPIC_KEY` (single override)
+- Optional rotation: `ANTHROPIC_API_KEYS`, `ANTHROPIC_API_KEY_1`, `ANTHROPIC_API_KEY_2`, plus `CODERCLAW_LIVE_ANTHROPIC_KEY` (single override)
 - Example model: `anthropic/claude-opus-4-6`
 - CLI: `coderclaw onboard --auth-choice token` (paste setup-token) or `coderclaw models auth paste-token --provider anthropic`
 
@@ -94,7 +94,7 @@ OpenClaw ships with the pi‑ai catalog. These providers require **no**
 
 - Provider: `google`
 - Auth: `GEMINI_API_KEY`
-- Optional rotation: `GEMINI_API_KEYS`, `GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, `GOOGLE_API_KEY` fallback, and `OPENCLAW_LIVE_GEMINI_KEY` (single override)
+- Optional rotation: `GEMINI_API_KEYS`, `GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, `GOOGLE_API_KEY` fallback, and `CODERCLAW_LIVE_GEMINI_KEY` (single override)
 - Example model: `google/gemini-3-pro-preview`
 - CLI: `coderclaw onboard --auth-choice gemini-api-key`
 
@@ -108,7 +108,7 @@ OpenClaw ships with the pi‑ai catalog. These providers require **no**
 - Gemini CLI OAuth is shipped as a bundled plugin (`google-gemini-cli-auth`, disabled by default).
   - Enable: `coderclaw plugins enable google-gemini-cli-auth`
   - Login: `coderclaw models auth login --provider google-gemini-cli --set-default`
-  - Note: you do **not** paste a client id or secret into `openclaw.json`. The CLI login flow stores
+  - Note: you do **not** paste a client id or secret into `coderclaw.json`. The CLI login flow stores
     tokens in auth profiles on the gateway host.
 
 ### Z.AI (GLM)

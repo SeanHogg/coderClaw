@@ -21,8 +21,8 @@ if ! docker compose version >/dev/null 2>&1; then
   exit 1
 fi
 
-CODERCLAW_CONFIG_DIR="${CODERCLAW_CONFIG_DIR:-$HOME/.openclaw}"
-CODERCLAW_WORKSPACE_DIR="${CODERCLAW_WORKSPACE_DIR:-$HOME/.openclaw/workspace}"
+CODERCLAW_CONFIG_DIR="${CODERCLAW_CONFIG_DIR:-$HOME/.coderclaw}"
+CODERCLAW_WORKSPACE_DIR="${CODERCLAW_WORKSPACE_DIR:-$HOME/.coderclaw/workspace}"
 
 mkdir -p "$CODERCLAW_CONFIG_DIR"
 mkdir -p "$CODERCLAW_WORKSPACE_DIR"
@@ -66,8 +66,8 @@ YAML
 
   if [[ -n "$home_volume" ]]; then
     printf '      - %s:/home/node\n' "$home_volume" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/.openclaw\n' "$CODERCLAW_CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/.openclaw/workspace\n' "$CODERCLAW_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/.coderclaw\n' "$CODERCLAW_CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/.coderclaw/workspace\n' "$CODERCLAW_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
   fi
 
   for mount in "$@"; do
@@ -81,8 +81,8 @@ YAML
 
   if [[ -n "$home_volume" ]]; then
     printf '      - %s:/home/node\n' "$home_volume" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/.openclaw\n' "$CODERCLAW_CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/.openclaw/workspace\n' "$CODERCLAW_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/.coderclaw\n' "$CODERCLAW_CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/.coderclaw/workspace\n' "$CODERCLAW_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
   fi
 
   for mount in "$@"; do

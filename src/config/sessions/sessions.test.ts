@@ -84,7 +84,7 @@ describe("session store lock (Promise chain mutex)", () => {
   }
 
   beforeAll(async () => {
-    lockFixtureRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), "openclaw-lock-test-"));
+    lockFixtureRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), "coderclaw-lock-test-"));
   });
 
   afterAll(async () => {

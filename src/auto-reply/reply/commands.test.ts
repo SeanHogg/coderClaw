@@ -122,7 +122,7 @@ vi.mock("./commands-context-report.js", () => ({
 let testWorkspaceDir = os.tmpdir();
 
 beforeAll(async () => {
-  testWorkspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-commands-"));
+  testWorkspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-commands-"));
   await fs.writeFile(path.join(testWorkspaceDir, "AGENTS.md"), "# Agents\n", "utf-8");
 });
 
@@ -341,7 +341,7 @@ describe("/compact command", () => {
     const cfg = {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-      session: { store: "/tmp/openclaw-session-store.json" },
+      session: { store: "/tmp/coderclaw-session-store.json" },
     } as OpenClawConfig;
     const params = buildParams("/compact: focus on decisions", cfg, {
       From: "+15550001",

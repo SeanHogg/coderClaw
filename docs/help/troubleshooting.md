@@ -238,7 +238,7 @@ flowchart TD
     ```bash
     coderclaw status
     coderclaw gateway status
-    openclaw browser status
+    coderclaw browser status
     coderclaw logs --follow
     coderclaw doctor
     ```

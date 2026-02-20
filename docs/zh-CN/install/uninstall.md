@@ -25,14 +25,14 @@ x-i18n:
 推荐：使用内置卸载程序：
 
 ```bash
-openclaw uninstall
+coderclaw uninstall
 ```
 
 非交互式（自动化 / npx）：
 
 ```bash
-openclaw uninstall --all --yes --non-interactive
-npx -y openclaw uninstall --all --yes --non-interactive
+coderclaw uninstall --all --yes --non-interactive
+npx -y coderclaw uninstall --all --yes --non-interactive
 ```
 
 手动步骤（效果相同）：
@@ -40,22 +40,22 @@ npx -y openclaw uninstall --all --yes --non-interactive
 1. 停止 Gateway 网关服务：
 
 ```bash
-openclaw gateway stop
+coderclaw gateway stop
 ```
 
 2. 卸载 Gateway 网关服务（launchd/systemd/schtasks）：
 
 ```bash
-openclaw gateway uninstall
+coderclaw gateway uninstall
 ```
 
 3. 删除状态 + 配置：
 
 ```bash
-rm -rf "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
+rm -rf "${CODERCLAW_STATE_DIR:-$HOME/.openclaw}"
 ```
 
-如果你将 `OPENCLAW_CONFIG_PATH` 设置为状态目录外的自定义位置，也请删除该文件。
+如果你将 `CODERCLAW_CONFIG_PATH` 设置为状态目录外的自定义位置，也请删除该文件。
 
 4. 删除你的工作区（可选，移除智能体文件）：
 
@@ -79,7 +79,7 @@ rm -rf /Applications/OpenClaw.app
 
 注意事项：
 
-- 如果你使用了配置文件（`--profile` / `OPENCLAW_PROFILE`），对每个状态目录重复步骤 3（默认为 `~/.openclaw-<profile>`）。
+- 如果你使用了配置文件（`--profile` / `CODERCLAW_PROFILE`），对每个状态目录重复步骤 3（默认为 `~/.openclaw-<profile>`）。
 - 在远程模式下，状态目录位于 **Gateway 网关主机**上，因此也需要在那里运行步骤 1-4。
 
 ## 手动服务移除（CLI 未安装）
@@ -128,7 +128,7 @@ Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd"
 
 ### 源码检出（git clone）
 
-如果你从仓库检出运行（`git clone` + `openclaw ...` / `bun run openclaw ...`）：
+如果你从仓库检出运行（`git clone` + `openclaw ...` / `bun run coderclaw ...`）：
 
 1. 在删除仓库**之前**卸载 Gateway 网关服务（使用上面的简单方式或手动服务移除）。
 2. 删除仓库目录。

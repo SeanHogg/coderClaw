@@ -19,7 +19,7 @@ describe("doctor include warning", () => {
       const configDir = path.join(home, ".coderclaw");
       await fs.mkdir(configDir, { recursive: true });
       await fs.writeFile(
-        path.join(configDir, "openclaw.json"),
+        path.join(configDir, "coderclaw.json"),
         JSON.stringify({ $include: "/etc/passwd" }, null, 2),
         "utf-8",
       );

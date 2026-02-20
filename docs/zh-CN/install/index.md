@@ -32,7 +32,7 @@ iwr -useb https://openclaw.ai/install.ps1 | iex
 下一步（如果你跳过了新手引导）：
 
 ```bash
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 ## 系统要求
@@ -94,21 +94,21 @@ pnpm 需要显式批准带有构建脚本的包。在首次安装显示"Ignored 
 然后：
 
 ```bash
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 ### 3）从源代码（贡献者/开发）
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
+git clone https://github.com/SeanHogg/coderClaw.git
 cd openclaw
 pnpm install
 pnpm ui:build # 首次运行时自动安装 UI 依赖
 pnpm build
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
-提示：如果你还没有全局安装，请通过 `pnpm openclaw ...` 运行仓库命令。
+提示：如果你还没有全局安装，请通过 `pnpm coderclaw ...` 运行仓库命令。
 
 ### 4）其他安装选项
 
@@ -119,10 +119,10 @@ openclaw onboard --install-daemon
 
 ## 安装后
 
-- 运行新手引导：`openclaw onboard --install-daemon`
-- 快速检查：`openclaw doctor`
-- 检查 Gateway 网关健康状态：`openclaw status` + `openclaw health`
-- 打开仪表板：`openclaw dashboard`
+- 运行新手引导：`coderclaw onboard --install-daemon`
+- 快速检查：`coderclaw doctor`
+- 检查 Gateway 网关健康状态：`coderclaw status` + `coderclaw health`
+- 打开仪表板：`coderclaw dashboard`
 
 ## 安装方式：npm vs git（安装器）
 
@@ -144,7 +144,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
 常用标志：
 
 - `--install-method npm|git`
-- `--git-dir <path>`（默认：`~/openclaw`）
+- `--git-dir <path>`（默认：`~/coderclaw`）
 - `--no-git-update`（使用现有 checkout 时跳过 `git pull`）
 - `--no-prompt`（禁用提示；CI/自动化中必需）
 - `--dry-run`（打印将要执行的操作；不做任何更改）
@@ -154,12 +154,12 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
 
 等效的环境变量（对自动化有用）：
 
-- `OPENCLAW_INSTALL_METHOD=git|npm`
-- `OPENCLAW_GIT_DIR=...`
-- `OPENCLAW_GIT_UPDATE=0|1`
-- `OPENCLAW_NO_PROMPT=1`
-- `OPENCLAW_DRY_RUN=1`
-- `OPENCLAW_NO_ONBOARD=1`
+- `CODERCLAW_INSTALL_METHOD=git|npm`
+- `CODERCLAW_GIT_DIR=...`
+- `CODERCLAW_GIT_UPDATE=0|1`
+- `CODERCLAW_NO_PROMPT=1`
+- `CODERCLAW_DRY_RUN=1`
+- `CODERCLAW_NO_ONBOARD=1`
 - `SHARP_IGNORE_GLOBAL_LIBVIPS=0|1`（默认：`1`；避免 `sharp` 针对系统 libvips 构建）
 
 ## 故障排除：找不到 `openclaw`（PATH）

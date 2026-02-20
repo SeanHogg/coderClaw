@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { createConfigIO } from "./io.js";
 
 async function withTempHome(run: (home: string) => Promise<void>): Promise<void> {
-  const home = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-config-"));
+  const home = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-config-"));
   try {
     await run(home);
   } finally {
@@ -17,7 +17,7 @@ async function writeConfig(
   home: string,
   dirname: ".coderclaw",
   port: number,
-  filename: string = "openclaw.json",
+  filename: string = "coderclaw.json",
 ) {
   const dir = path.join(home, dirname);
   await fs.mkdir(dir, { recursive: true });
@@ -27,7 +27,7 @@ async function writeConfig(
 }
 
 describe("config io paths", () => {
-  it("uses ~/.coderclaw/openclaw.json when config exists", async () => {
+  it("uses ~/.coderclaw/coderclaw.json when config exists", async () => {
     await withTempHome(async (home) => {
       const configPath = await writeConfig(home, ".coderclaw", 19001);
       const io = createConfigIO({
@@ -39,31 +39,31 @@ describe("config io paths", () => {
     });
   });
 
-  it("defaults to ~/.coderclaw/openclaw.json when config is missing", async () => {
+  it("defaults to ~/.coderclaw/coderclaw.json when config is missing", async () => {
     await withTempHome(async (home) => {
       const io = createConfigIO({
         env: {} as NodeJS.ProcessEnv,
         homedir: () => home,
       });
-      expect(io.configPath).toBe(path.join(home, ".coderclaw", "openclaw.json"));
+      expect(io.configPath).toBe(path.join(home, ".coderclaw", "coderclaw.json"));
     });
   });
 
-  it("uses OPENCLAW_HOME for default config path", async () => {
+  it("uses CODERCLAW_HOME for default config path", async () => {
     await withTempHome(async (home) => {
       const io = createConfigIO({
-        env: { OPENCLAW_HOME: path.join(home, "svc-home") } as NodeJS.ProcessEnv,
+        env: { CODERCLAW_HOME: path.join(home, "svc-home") } as NodeJS.ProcessEnv,
         homedir: () => path.join(home, "ignored-home"),
       });
-      expect(io.configPath).toBe(path.join(home, "svc-home", ".coderclaw", "openclaw.json"));
+      expect(io.configPath).toBe(path.join(home, "svc-home", ".coderclaw", "coderclaw.json"));
     });
   });
 
-  it("honors explicit OPENCLAW_CONFIG_PATH override", async () => {
+  it("honors explicit CODERCLAW_CONFIG_PATH override", async () => {
     await withTempHome(async (home) => {
       const customPath = await writeConfig(home, ".coderclaw", 20002, "custom.json");
       const io = createConfigIO({
-        env: { OPENCLAW_CONFIG_PATH: customPath } as NodeJS.ProcessEnv,
+        env: { CODERCLAW_CONFIG_PATH: customPath } as NodeJS.ProcessEnv,
         homedir: () => home,
       });
       expect(io.configPath).toBe(customPath);

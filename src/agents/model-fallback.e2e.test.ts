@@ -52,7 +52,7 @@ async function withTempAuthStore<T>(
   store: AuthProfileStore,
   run: (tempDir: string) => Promise<T>,
 ): Promise<T> {
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-auth-"));
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-auth-"));
   saveAuthProfileStore(store, tempDir);
   try {
     return await run(tempDir);

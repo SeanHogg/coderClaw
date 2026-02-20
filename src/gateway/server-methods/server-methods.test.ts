@@ -508,7 +508,7 @@ describe("logs.tail", () => {
   });
 
   it("falls back to latest rolling log file when today is missing", async () => {
-    const tempDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "openclaw-logs-"));
+    const tempDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "coderclaw-logs-"));
     const older = path.join(tempDir, "openclaw-2026-01-20.log");
     const newer = path.join(tempDir, "openclaw-2026-01-21.log");
 

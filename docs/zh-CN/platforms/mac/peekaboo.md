@@ -21,7 +21,7 @@ OpenClaw 可以将 **PeekabooBridge** 作为本地的、权限感知的 UI 自�
 ## 这是什么（以及不是什么）
 
 - **宿主**：OpenClaw.app 可以作为 PeekabooBridge 宿主。
-- **客户端**：使用 `peekaboo` CLI（无需单独的 `openclaw ui ...` 界面）。
+- **客户端**：使用 `peekaboo` CLI（无需单独的 `coderclaw ui ...` 界面）。
 - **界面**：视觉叠加层保留在 Peekaboo.app 中；OpenClaw 只是一个轻量代理宿主。
 
 ## 启用桥接

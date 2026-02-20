@@ -2,12 +2,12 @@
 summary: "Integrated browser control service + action commands"
 read_when:
   - Adding agent-controlled browser automation
-  - Debugging why openclaw is interfering with your own Chrome
+  - Debugging why coderclaw is interfering with your own Chrome
   - Implementing browser settings + lifecycle in the macOS app
 title: "Browser (OpenClaw-managed)"
 ---
 
-# Browser (openclaw-managed)
+# Browser (coderclaw-managed)
 
 OpenClaw can run a **dedicated Chrome/Brave/Edge/Chromium profile** that the agent controls.
 It is isolated from your personal browser and is managed through a small local
@@ -16,17 +16,17 @@ control service inside the Gateway (loopback only).
 Beginner view:
 
 - Think of it as a **separate, agent-only browser**.
-- The `openclaw` profile does **not** touch your personal browser profile.
+- The `coderclaw` profile does **not** touch your personal browser profile.
 - The agent can **open tabs, read pages, click, and type** in a safe lane.
 - The default `chrome` profile uses the **system default Chromium browser** via the
-  extension relay; switch to `openclaw` for the isolated managed browser.
+  extension relay; switch to `coderclaw` for the isolated managed browser.
 
 ## What you get
 
-- A separate browser profile named **openclaw** (orange accent by default).
+- A separate browser profile named **coderclaw** (orange accent by default).
 - Deterministic tab control (list/open/focus/close).
 - Agent actions (click/type/drag/select), snapshots, screenshots, PDFs.
-- Optional multi-profile support (`openclaw`, `work`, `remote`, ...).
+- Optional multi-profile support (`coderclaw`, `work`, `remote`, ...).
 
 This browser is **not** your daily driver. It is a safe, isolated surface for
 agent automation and verification.
@@ -34,26 +34,26 @@ agent automation and verification.
 ## Quick start
 
 ```bash
-openclaw browser --browser-profile coderclaw status
-openclaw browser --browser-profile openclaw start
-openclaw browser --browser-profile openclaw open https://example.com
-openclaw browser --browser-profile openclaw snapshot
+coderclaw browser --browser-profile coderclaw status
+coderclaw browser --browser-profile coderclaw start
+coderclaw browser --browser-profile coderclaw open https://example.com
+coderclaw browser --browser-profile coderclaw snapshot
 ```
 
 If you get “Browser disabled”, enable it in config (see below) and restart the
 Gateway.
 
-## Profiles: `openclaw` vs `chrome`
+## Profiles: `coderclaw` vs `chrome`
 
-- `openclaw`: managed, isolated browser (no extension required).
+- `coderclaw`: managed, isolated browser (no extension required).
 - `chrome`: extension relay to your **system browser** (requires the OpenClaw
   extension to be attached to a tab).
 
-Set `browser.defaultProfile: "openclaw"` if you want managed mode by default.
+Set `browser.defaultProfile: "coderclaw"` if you want managed mode by default.
 
 ## Configuration
 
-Browser settings live in `~/.coderclaw/openclaw.json`.
+Browser settings live in `~/.coderclaw/coderclaw.json`.
 
 ```json5
 {
@@ -69,7 +69,7 @@ Browser settings live in `~/.coderclaw/openclaw.json`.
     attachOnly: false,
     executablePath: "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
     profiles: {
-      openclaw: { cdpPort: 18800, color: "#FF4500" },
+      coderclaw: { cdpPort: 18800, color: "#FF4500" },
       work: { cdpPort: 18801, color: "#0066CC" },
       remote: { cdpUrl: "http://10.0.0.42:9222", color: "#00AA00" },
     },
@@ -81,16 +81,16 @@ Notes:
 
 - The browser control service binds to loopback on a port derived from `gateway.port`
   (default: `18791`, which is gateway + 2). The relay uses the next port (`18792`).
-- If you override the Gateway port (`gateway.port` or `OPENCLAW_GATEWAY_PORT`),
+- If you override the Gateway port (`gateway.port` or `CODERCLAW_GATEWAY_PORT`),
   the derived browser ports shift to stay in the same “family”.
 - `cdpUrl` defaults to the relay port when unset.
 - `remoteCdpTimeoutMs` applies to remote (non-loopback) CDP reachability checks.
 - `remoteCdpHandshakeTimeoutMs` applies to remote CDP WebSocket reachability checks.
 - `attachOnly: true` means “never launch a local browser; only attach if it is already running.”
 - `color` + per-profile `color` tint the browser UI so you can see which profile is active.
-- Default profile is `chrome` (extension relay). Use `defaultProfile: "openclaw"` for the managed browser.
+- Default profile is `chrome` (extension relay). Use `defaultProfile: "coderclaw"` for the managed browser.
 - Auto-detect order: system default browser if Chromium-based; otherwise Chrome → Brave → Edge → Chromium → Chrome Canary.
-- Local `openclaw` profiles auto-assign `cdpPort`/`cdpUrl` — set those only for remote CDP.
+- Local `coderclaw` profiles auto-assign `cdpPort`/`cdpUrl` — set those only for remote CDP.
 
 ## Use Brave (or another Chromium-based browser)
 
@@ -205,13 +205,13 @@ Remote CDP tips:
 
 OpenClaw supports multiple named profiles (routing configs). Profiles can be:
 
-- **openclaw-managed**: a dedicated Chromium-based browser instance with its own user data directory + CDP port
+- **coderclaw-managed**: a dedicated Chromium-based browser instance with its own user data directory + CDP port
 - **remote**: an explicit CDP URL (Chromium-based browser running elsewhere)
 - **extension relay**: your existing Chrome tab(s) via the local relay + Chrome extension
 
 Defaults:
 
-- The `openclaw` profile is auto-created if missing.
+- The `coderclaw` profile is auto-created if missing.
 - The `chrome` profile is built-in for the Chrome extension relay (points at `http://127.0.0.1:18792` by default).
 - Local CDP ports allocate from **18800–18899** by default.
 - Deleting a profile moves its local data directory to Trash.
@@ -246,22 +246,22 @@ Chrome extension relay takeover requires host browser control, so either:
 1. Load the extension (dev/unpacked):
 
 ```bash
-openclaw browser extension install
+coderclaw browser extension install
 ```
 
 - Chrome → `chrome://extensions` → enable “Developer mode”
-- “Load unpacked” → select the directory printed by `openclaw browser extension path`
+- “Load unpacked” → select the directory printed by `coderclaw browser extension path`
 - Pin the extension, then click it on the tab you want to control (badge shows `ON`).
 
 2. Use it:
 
-- CLI: `openclaw browser --browser-profile chrome tabs`
+- CLI: `coderclaw browser --browser-profile chrome tabs`
 - Agent tool: `browser` with `profile="chrome"`
 
 Optional: if you want a different name or relay port, create your own profile:
 
 ```bash
-openclaw browser create-profile \
+coderclaw browser create-profile \
   --name my-chrome \
   --driver extension \
   --cdp-url http://127.0.0.1:18792 \
@@ -319,13 +319,13 @@ All endpoints accept `?profile=<name>`.
 If gateway auth is configured, browser HTTP routes require auth too:
 
 - `Authorization: Bearer <gateway token>`
-- `x-openclaw-password: <gateway password>` or HTTP Basic auth with that password
+- `x-coderclaw-password: <gateway password>` or HTTP Basic auth with that password
 
 ### Playwright requirement
 
 Some features (navigate/act/AI snapshot/role snapshot, element screenshots, PDF) require
 Playwright. If Playwright isn’t installed, those endpoints return a clear 501
-error. ARIA snapshots and basic screenshots still work for openclaw-managed Chrome.
+error. ARIA snapshots and basic screenshots still work for coderclaw-managed Chrome.
 For the Chrome extension relay driver, ARIA snapshots and screenshots require Playwright.
 
 If you see `Playwright is not available in this gateway build`, install the full
@@ -338,13 +338,13 @@ If your Gateway runs in Docker, avoid `npx playwright` (npm override conflicts).
 Use the bundled CLI instead:
 
 ```bash
-docker compose run --rm openclaw-cli \
+docker compose run --rm coderclaw-cli \
   node /app/node_modules/playwright-core/cli.js install chromium
 ```
 
 To persist browser downloads, set `PLAYWRIGHT_BROWSERS_PATH` (for example,
 `/home/node/.cache/ms-playwright`) and make sure `/home/node` is persisted via
-`OPENCLAW_HOME_VOLUME` or a bind mount. See [Docker](/install/docker).
+`CODERCLAW_HOME_VOLUME` or a bind mount. See [Docker](/install/docker).
 
 ## How it works (internal)
 
@@ -366,95 +366,95 @@ All commands also accept `--json` for machine-readable output (stable payloads).
 
 Basics:
 
-- `openclaw browser status`
-- `openclaw browser start`
-- `openclaw browser stop`
-- `openclaw browser tabs`
-- `openclaw browser tab`
-- `openclaw browser tab new`
-- `openclaw browser tab select 2`
-- `openclaw browser tab close 2`
-- `openclaw browser open https://example.com`
-- `openclaw browser focus abcd1234`
-- `openclaw browser close abcd1234`
+- `coderclaw browser status`
+- `coderclaw browser start`
+- `coderclaw browser stop`
+- `coderclaw browser tabs`
+- `coderclaw browser tab`
+- `coderclaw browser tab new`
+- `coderclaw browser tab select 2`
+- `coderclaw browser tab close 2`
+- `coderclaw browser open https://example.com`
+- `coderclaw browser focus abcd1234`
+- `coderclaw browser close abcd1234`
 
 Inspection:
 
-- `openclaw browser screenshot`
-- `openclaw browser screenshot --full-page`
-- `openclaw browser screenshot --ref 12`
-- `openclaw browser screenshot --ref e12`
-- `openclaw browser snapshot`
-- `openclaw browser snapshot --format aria --limit 200`
-- `openclaw browser snapshot --interactive --compact --depth 6`
-- `openclaw browser snapshot --efficient`
-- `openclaw browser snapshot --labels`
-- `openclaw browser snapshot --selector "#main" --interactive`
-- `openclaw browser snapshot --frame "iframe#main" --interactive`
-- `openclaw browser console --level error`
-- `openclaw browser errors --clear`
-- `openclaw browser requests --filter api --clear`
-- `openclaw browser pdf`
-- `openclaw browser responsebody "**/api" --max-chars 5000`
+- `coderclaw browser screenshot`
+- `coderclaw browser screenshot --full-page`
+- `coderclaw browser screenshot --ref 12`
+- `coderclaw browser screenshot --ref e12`
+- `coderclaw browser snapshot`
+- `coderclaw browser snapshot --format aria --limit 200`
+- `coderclaw browser snapshot --interactive --compact --depth 6`
+- `coderclaw browser snapshot --efficient`
+- `coderclaw browser snapshot --labels`
+- `coderclaw browser snapshot --selector "#main" --interactive`
+- `coderclaw browser snapshot --frame "iframe#main" --interactive`
+- `coderclaw browser console --level error`
+- `coderclaw browser errors --clear`
+- `coderclaw browser requests --filter api --clear`
+- `coderclaw browser pdf`
+- `coderclaw browser responsebody "**/api" --max-chars 5000`
 
 Actions:
 
-- `openclaw browser navigate https://example.com`
-- `openclaw browser resize 1280 720`
-- `openclaw browser click 12 --double`
-- `openclaw browser click e12 --double`
-- `openclaw browser type 23 "hello" --submit`
-- `openclaw browser press Enter`
-- `openclaw browser hover 44`
-- `openclaw browser scrollintoview e12`
-- `openclaw browser drag 10 11`
-- `openclaw browser select 9 OptionA OptionB`
-- `openclaw browser download e12 report.pdf`
-- `openclaw browser waitfordownload report.pdf`
-- `openclaw browser upload /tmp/openclaw/uploads/file.pdf`
-- `openclaw browser fill --fields '[{"ref":"1","type":"text","value":"Ada"}]'`
-- `openclaw browser dialog --accept`
-- `openclaw browser wait --text "Done"`
-- `openclaw browser wait "#main" --url "**/dash" --load networkidle --fn "window.ready===true"`
-- `openclaw browser evaluate --fn '(el) => el.textContent' --ref 7`
-- `openclaw browser highlight e12`
-- `openclaw browser trace start`
-- `openclaw browser trace stop`
+- `coderclaw browser navigate https://example.com`
+- `coderclaw browser resize 1280 720`
+- `coderclaw browser click 12 --double`
+- `coderclaw browser click e12 --double`
+- `coderclaw browser type 23 "hello" --submit`
+- `coderclaw browser press Enter`
+- `coderclaw browser hover 44`
+- `coderclaw browser scrollintoview e12`
+- `coderclaw browser drag 10 11`
+- `coderclaw browser select 9 OptionA OptionB`
+- `coderclaw browser download e12 report.pdf`
+- `coderclaw browser waitfordownload report.pdf`
+- `coderclaw browser upload /tmp/coderclaw/uploads/file.pdf`
+- `coderclaw browser fill --fields '[{"ref":"1","type":"text","value":"Ada"}]'`
+- `coderclaw browser dialog --accept`
+- `coderclaw browser wait --text "Done"`
+- `coderclaw browser wait "#main" --url "**/dash" --load networkidle --fn "window.ready===true"`
+- `coderclaw browser evaluate --fn '(el) => el.textContent' --ref 7`
+- `coderclaw browser highlight e12`
+- `coderclaw browser trace start`
+- `coderclaw browser trace stop`
 
 State:
 
-- `openclaw browser cookies`
-- `openclaw browser cookies set session abc123 --url "https://example.com"`
-- `openclaw browser cookies clear`
-- `openclaw browser storage local get`
-- `openclaw browser storage local set theme dark`
-- `openclaw browser storage session clear`
-- `openclaw browser set offline on`
-- `openclaw browser set headers --headers-json '{"X-Debug":"1"}'`
-- `openclaw browser set credentials user pass`
-- `openclaw browser set credentials --clear`
-- `openclaw browser set geo 37.7749 -122.4194 --origin "https://example.com"`
-- `openclaw browser set geo --clear`
-- `openclaw browser set media dark`
-- `openclaw browser set timezone America/New_York`
-- `openclaw browser set locale en-US`
-- `openclaw browser set device "iPhone 14"`
+- `coderclaw browser cookies`
+- `coderclaw browser cookies set session abc123 --url "https://example.com"`
+- `coderclaw browser cookies clear`
+- `coderclaw browser storage local get`
+- `coderclaw browser storage local set theme dark`
+- `coderclaw browser storage session clear`
+- `coderclaw browser set offline on`
+- `coderclaw browser set headers --headers-json '{"X-Debug":"1"}'`
+- `coderclaw browser set credentials user pass`
+- `coderclaw browser set credentials --clear`
+- `coderclaw browser set geo 37.7749 -122.4194 --origin "https://example.com"`
+- `coderclaw browser set geo --clear`
+- `coderclaw browser set media dark`
+- `coderclaw browser set timezone America/New_York`
+- `coderclaw browser set locale en-US`
+- `coderclaw browser set device "iPhone 14"`
 
 Notes:
 
 - `upload` and `dialog` are **arming** calls; run them before the click/press
   that triggers the chooser/dialog.
 - Download and trace output paths are constrained to OpenClaw temp roots:
-  - traces: `/tmp/openclaw` (fallback: `${os.tmpdir()}/openclaw`)
-  - downloads: `/tmp/openclaw/downloads` (fallback: `${os.tmpdir()}/openclaw/downloads`)
+  - traces: `/tmp/coderclaw` (fallback: `${os.tmpdir()}/coderclaw`)
+  - downloads: `/tmp/coderclaw/downloads` (fallback: `${os.tmpdir()}/coderclaw/downloads`)
 - Upload paths are constrained to an OpenClaw temp uploads root:
-  - uploads: `/tmp/openclaw/uploads` (fallback: `${os.tmpdir()}/openclaw/uploads`)
+  - uploads: `/tmp/coderclaw/uploads` (fallback: `${os.tmpdir()}/coderclaw/uploads`)
 - `upload` can also set file inputs directly via `--input-ref` or `--element`.
 - `snapshot`:
   - `--format ai` (default when Playwright is installed): returns an AI snapshot with numeric refs (`aria-ref="<n>"`).
   - `--format aria`: returns the accessibility tree (no refs; inspection only).
   - `--efficient` (or `--mode efficient`): compact role snapshot preset (interactive + compact + depth + lower maxChars).
-  - Config default (tool/CLI only): set `browser.snapshotDefaults.mode: "efficient"` to use efficient snapshots when the caller does not pass a mode (see [Gateway configuration](/gateway/configuration#browser-openclaw-managed-browser)).
+  - Config default (tool/CLI only): set `browser.snapshotDefaults.mode: "efficient"` to use efficient snapshots when the caller does not pass a mode (see [Gateway configuration](/gateway/configuration#browser-coderclaw-managed-browser)).
   - Role snapshot options (`--interactive`, `--compact`, `--depth`, `--selector`) force a role-based snapshot with refs like `ref=e12`.
   - `--frame "<iframe selector>"` scopes role snapshots to an iframe (pairs with role refs like `e12`).
   - `--interactive` outputs a flat, easy-to-pick list of interactive elements (best for driving actions).
@@ -466,14 +466,14 @@ Notes:
 
 OpenClaw supports two “snapshot” styles:
 
-- **AI snapshot (numeric refs)**: `openclaw browser snapshot` (default; `--format ai`)
+- **AI snapshot (numeric refs)**: `coderclaw browser snapshot` (default; `--format ai`)
   - Output: a text snapshot that includes numeric refs.
-  - Actions: `openclaw browser click 12`, `openclaw browser type 23 "hello"`.
+  - Actions: `coderclaw browser click 12`, `coderclaw browser type 23 "hello"`.
   - Internally, the ref is resolved via Playwright’s `aria-ref`.
 
-- **Role snapshot (role refs like `e12`)**: `openclaw browser snapshot --interactive` (or `--compact`, `--depth`, `--selector`, `--frame`)
+- **Role snapshot (role refs like `e12`)**: `coderclaw browser snapshot --interactive` (or `--compact`, `--depth`, `--selector`, `--frame`)
   - Output: a role-based list/tree with `[ref=e12]` (and optional `[nth=1]`).
-  - Actions: `openclaw browser click e12`, `openclaw browser highlight e12`.
+  - Actions: `coderclaw browser click e12`, `coderclaw browser highlight e12`.
   - Internally, the ref is resolved via `getByRole(...)` (plus `nth()` for duplicates).
   - Add `--labels` to include a viewport screenshot with overlayed `e12` labels.
 
@@ -487,18 +487,18 @@ Ref behavior:
 You can wait on more than just time/text:
 
 - Wait for URL (globs supported by Playwright):
-  - `openclaw browser wait --url "**/dash"`
+  - `coderclaw browser wait --url "**/dash"`
 - Wait for load state:
-  - `openclaw browser wait --load networkidle`
+  - `coderclaw browser wait --load networkidle`
 - Wait for a JS predicate:
-  - `openclaw browser wait --fn "window.ready===true"`
+  - `coderclaw browser wait --fn "window.ready===true"`
 - Wait for a selector to become visible:
-  - `openclaw browser wait "#main"`
+  - `coderclaw browser wait "#main"`
 
 These can be combined:
 
 ```bash
-openclaw browser wait "#main" \
+coderclaw browser wait "#main" \
   --url "**/dash" \
   --load networkidle \
   --fn "window.ready===true" \
@@ -509,16 +509,16 @@ openclaw browser wait "#main" \
 
 When an action fails (e.g. “not visible”, “strict mode violation”, “covered”):
 
-1. `openclaw browser snapshot --interactive`
+1. `coderclaw browser snapshot --interactive`
 2. Use `click <ref>` / `type <ref>` (prefer role refs in interactive mode)
-3. If it still fails: `openclaw browser highlight <ref>` to see what Playwright is targeting
+3. If it still fails: `coderclaw browser highlight <ref>` to see what Playwright is targeting
 4. If the page behaves oddly:
-   - `openclaw browser errors --clear`
-   - `openclaw browser requests --filter api --clear`
+   - `coderclaw browser errors --clear`
+   - `coderclaw browser requests --filter api --clear`
 5. For deep debugging: record a trace:
-   - `openclaw browser trace start`
+   - `coderclaw browser trace start`
    - reproduce the issue
-   - `openclaw browser trace stop` (prints `TRACE:<path>`)
+   - `coderclaw browser trace stop` (prints `TRACE:<path>`)
 
 ## JSON output
 
@@ -527,10 +527,10 @@ When an action fails (e.g. “not visible”, “strict mode violation”, “co
 Examples:
 
 ```bash
-openclaw browser status --json
-openclaw browser snapshot --interactive --json
-openclaw browser requests --filter api --json
-openclaw browser cookies --json
+coderclaw browser status --json
+coderclaw browser snapshot --interactive --json
+coderclaw browser requests --filter api --json
+coderclaw browser cookies --json
 ```
 
 Role snapshots in JSON include `refs` plus a small `stats` block (lines/chars/refs/interactive) so tools can reason about payload size and density.
@@ -553,8 +553,8 @@ These are useful for “make the site behave like X” workflows:
 
 ## Security & privacy
 
-- The openclaw browser profile may contain logged-in sessions; treat it as sensitive.
-- `browser act kind=evaluate` / `openclaw browser evaluate` and `wait --fn`
+- The coderclaw browser profile may contain logged-in sessions; treat it as sensitive.
+- `browser act kind=evaluate` / `coderclaw browser evaluate` and `wait --fn`
   execute arbitrary JavaScript in the page context. Prompt injection can steer
   this. Disable it with `browser.evaluateEnabled=false` if you do not need it.
 - For logins and anti-bot notes (X/Twitter, etc.), see [Browser login + X/Twitter posting](/tools/browser-login).
@@ -578,7 +578,7 @@ How it maps:
 - `browser act` uses the snapshot `ref` IDs to click/type/drag/select.
 - `browser screenshot` captures pixels (full page or element).
 - `browser` accepts:
-  - `profile` to choose a named browser profile (openclaw, chrome, or remote CDP).
+  - `profile` to choose a named browser profile (coderclaw, chrome, or remote CDP).
   - `target` (`sandbox` | `host` | `node`) to select where the browser lives.
   - In sandboxed sessions, `target: "host"` requires `agents.defaults.sandbox.browser.allowHostControl=true`.
   - If `target` is omitted: sandboxed sessions default to `sandbox`, non-sandbox sessions default to `host`.

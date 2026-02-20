@@ -18,12 +18,12 @@ describe("media store", () => {
       "USERPROFILE",
       "HOMEDRIVE",
       "HOMEPATH",
-      "OPENCLAW_STATE_DIR",
+      "CODERCLAW_STATE_DIR",
     ]);
-    home = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-test-home-"));
+    home = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-test-home-"));
     process.env.HOME = home;
     process.env.USERPROFILE = home;
-    process.env.OPENCLAW_STATE_DIR = path.join(home, ".coderclaw");
+    process.env.CODERCLAW_STATE_DIR = path.join(home, ".coderclaw");
     if (process.platform === "win32") {
       const match = home.match(/^([A-Za-z]:)(.*)$/);
       if (match) {

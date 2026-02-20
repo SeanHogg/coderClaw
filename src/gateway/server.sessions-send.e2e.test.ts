@@ -22,11 +22,11 @@ const gatewayToken = "test-token";
 let envSnapshot: ReturnType<typeof captureEnv>;
 
 beforeAll(async () => {
-  envSnapshot = captureEnv(["OPENCLAW_GATEWAY_PORT", "OPENCLAW_GATEWAY_TOKEN"]);
+  envSnapshot = captureEnv(["CODERCLAW_GATEWAY_PORT", "CODERCLAW_GATEWAY_TOKEN"]);
   gatewayPort = await getFreePort();
   testState.gatewayAuth = { mode: "token", token: gatewayToken };
-  process.env.OPENCLAW_GATEWAY_PORT = String(gatewayPort);
-  process.env.OPENCLAW_GATEWAY_TOKEN = gatewayToken;
+  process.env.CODERCLAW_GATEWAY_PORT = String(gatewayPort);
+  process.env.CODERCLAW_GATEWAY_TOKEN = gatewayToken;
   server = await startGatewayServer(gatewayPort);
 });
 
@@ -113,9 +113,9 @@ describe("sessions_send gateway loopback", () => {
 describe("sessions_send label lookup", () => {
   it("finds session by label and sends message", { timeout: 60_000 }, async () => {
     // This is an operator feature; enable broader session tool targeting for this test.
-    const configPath = process.env.OPENCLAW_CONFIG_PATH;
+    const configPath = process.env.CODERCLAW_CONFIG_PATH;
     if (!configPath) {
-      throw new Error("OPENCLAW_CONFIG_PATH missing in gateway test environment");
+      throw new Error("CODERCLAW_CONFIG_PATH missing in gateway test environment");
     }
     await fs.mkdir(path.dirname(configPath), { recursive: true });
     await fs.writeFile(

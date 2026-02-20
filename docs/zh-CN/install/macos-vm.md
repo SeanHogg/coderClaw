@@ -52,9 +52,9 @@ x-i18n:
 ## 快速路径（Lume，有经验的用户）
 
 1. 安装 Lume
-2. `lume create openclaw --os macos --ipsw latest`
+2. `lume create coderclaw --os macos --ipsw latest`
 3. 完成设置助手，启用远程登录（SSH）
-4. `lume run openclaw --no-display`
+4. `lume run coderclaw --no-display`
 5. SSH 进入，安装 OpenClaw，配置渠道
 6. 完成
 
@@ -94,7 +94,7 @@ lume --version
 ## 2) 创建 macOS VM
 
 ```bash
-lume create openclaw --os macos --ipsw latest
+lume create coderclaw --os macos --ipsw latest
 ```
 
 这会下载 macOS 并创建 VM。VNC 窗口会自动打开。
@@ -145,7 +145,7 @@ ssh youruser@192.168.64.X
 
 ```bash
 npm install -g openclaw@latest
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 按照新手引导提示设置你的模型提供商（Anthropic、OpenAI 等）。
@@ -157,7 +157,7 @@ openclaw onboard --install-daemon
 编辑配置文件：
 
 ```bash
-nano ~/.openclaw/openclaw.json
+nano ~/.openclaw/coderclaw.json
 ```
 
 添加你的渠道：
@@ -179,7 +179,7 @@ nano ~/.openclaw/openclaw.json
 然后登录 WhatsApp（扫描二维码）：
 
 ```bash
-openclaw channels login
+coderclaw channels login
 ```
 
 ---
@@ -190,7 +190,7 @@ openclaw channels login
 
 ```bash
 lume stop openclaw
-lume run openclaw --no-display
+lume run coderclaw --no-display
 ```
 
 VM 在后台运行。OpenClaw 的守护进程保持 Gateway 网关运行。
@@ -240,15 +240,15 @@ ssh youruser@192.168.64.X "openclaw status"
 
 ```bash
 lume stop openclaw
-lume clone openclaw openclaw-golden
+lume clone coderclaw openclaw-golden
 ```
 
 随时重置：
 
 ```bash
-lume stop openclaw && lume delete openclaw
+lume stop coderclaw && lume delete openclaw
 lume clone openclaw-golden openclaw
-lume run openclaw --no-display
+lume run coderclaw --no-display
 ```
 
 ---
@@ -272,7 +272,7 @@ lume run openclaw --no-display
 | 无法 SSH 进入 VM        | 检查 VM 的系统设置中是否启用了"远程登录"                         |
 | VM IP 未显示            | 等待 VM 完全启动，再次运行 `lume get openclaw`                   |
 | 找不到 Lume 命令        | 将 `~/.local/bin` 添加到你的 PATH                                |
-| WhatsApp 二维码扫描失败 | 确保运行 `openclaw channels login` 时你是登录到 VM（而不是主机） |
+| WhatsApp 二维码扫描失败 | 确保运行 `coderclaw channels login` 时你是登录到 VM（而不是主机） |
 
 ---
 

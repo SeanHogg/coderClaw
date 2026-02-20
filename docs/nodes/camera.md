@@ -110,7 +110,7 @@ Photos are recompressed to keep the base64 payload under 5 MB.
 
 The macOS companion app exposes a checkbox:
 
-- **Settings → General → Allow Camera** (`openclaw.cameraEnabled`)
+- **Settings → General → Allow Camera** (`coderclaw.cameraEnabled`)
   - Default: **off**
   - When off: camera requests return “Camera disabled by user”.
 

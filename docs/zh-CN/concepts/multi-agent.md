@@ -40,8 +40,8 @@ Gateway 网关可以托管**一个智能体**（默认）或**多个智能体**�
 
 ## 路径（快速映射）
 
-- 配置：`~/.openclaw/openclaw.json`（或 `OPENCLAW_CONFIG_PATH`）
-- 状态目录：`~/.openclaw`（或 `OPENCLAW_STATE_DIR`）
+- 配置：`~/.openclaw/coderclaw.json`（或 `CODERCLAW_CONFIG_PATH`）
+- 状态目录：`~/.openclaw`（或 `CODERCLAW_STATE_DIR`）
 - 工作区：`~/.openclaw/workspace`（或 `~/.openclaw/workspace-<agentId>`）
 - 智能体目录：`~/.openclaw/agents/<agentId>/agent`（或 `agents.list[].agentDir`）
 - 会话：`~/.openclaw/agents/<agentId>/sessions`
@@ -52,7 +52,7 @@ Gateway 网关可以托管**一个智能体**（默认）或**多个智能体**�
 
 - `agentId` 默认为 **`main`**。
 - 会话键为 `agent:main:<mainKey>`。
-- 工作区默认为 `~/.openclaw/workspace`（或当设置了 `OPENCLAW_PROFILE` 时为 `~/.openclaw/workspace-<profile>`）。
+- 工作区默认为 `~/.openclaw/workspace`（或当设置了 `CODERCLAW_PROFILE` 时为 `~/.openclaw/workspace-<profile>`）。
 - 状态默认为 `~/.openclaw/agents/main/agent`。
 
 ## 智能体助手
@@ -60,7 +60,7 @@ Gateway 网关可以托管**一个智能体**（默认）或**多个智能体**�
 使用智能体向导添加新的隔离智能体：
 
 ```bash
-openclaw agents add work
+coderclaw agents add work
 ```
 
 然后添加 `bindings`（或让向导完成）来路由入站消息。
@@ -68,7 +68,7 @@ openclaw agents add work
 验证：
 
 ```bash
-openclaw agents list --bindings
+coderclaw agents list --bindings
 ```
 
 ## 多个智能体 = 多个人、多种人格
@@ -139,7 +139,7 @@ openclaw agents list --bindings
 
 ## 示例：两个 WhatsApp → 两个智能体
 
-`~/.openclaw/openclaw.json`（JSON5）：
+`~/.openclaw/coderclaw.json`（JSON5）：
 
 ```js
 {

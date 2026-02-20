@@ -16,7 +16,7 @@ x-i18n:
 
 # Chrome 扩展（浏览器中继）
 
-OpenClaw Chrome 扩展让智能体控制你**现有的 Chrome 标签页**（你的正常 Chrome 窗口），而不是启动一个单独的 openclaw 管理的 Chrome 配置文件。
+OpenClaw Chrome 扩展让智能体控制你**现有的 Chrome 标签页**（你的正常 Chrome 窗口），而不是启动一个单独的 coderclaw 管理的 Chrome 配置文件。
 
 附加/分离通过一个**单独的 Chrome 工具栏按钮**实现。
 
@@ -35,13 +35,13 @@ OpenClaw Chrome 扩展让智能体控制你**现有的 Chrome 标签页**（你�
 1. 将扩展安装到稳定的本地路径：
 
 ```bash
-openclaw browser extension install
+coderclaw browser extension install
 ```
 
 2. 打印已安装扩展的目录路径：
 
 ```bash
-openclaw browser extension path
+coderclaw browser extension path
 ```
 
 3. Chrome → `chrome://extensions`
@@ -57,7 +57,7 @@ openclaw browser extension path
 
 升级 OpenClaw 后：
 
-- 重新运行 `openclaw browser extension install` 以刷新 OpenClaw 状态目录下的已安装文件。
+- 重新运行 `coderclaw browser extension install` 以刷新 OpenClaw 状态目录下的已安装文件。
 - Chrome → `chrome://extensions` → 点击扩展上的"重新加载"。
 
 ## 使用它（无需额外配置）
@@ -66,13 +66,13 @@ OpenClaw 附带一个名为 `chrome` 的内置浏览器配置文件，它指向�
 
 使用它：
 
-- CLI：`openclaw browser --browser-profile chrome tabs`
+- CLI：`coderclaw browser --browser-profile chrome tabs`
 - 智能体工具：`browser` 配合 `profile="chrome"`
 
 如果你想要不同的名称或不同的中继端口，创建你自己的配置文件：
 
 ```bash
-openclaw browser create-profile \
+coderclaw browser create-profile \
   --name my-chrome \
   --driver extension \
   --cdp-url http://127.0.0.1:18792 \
@@ -143,7 +143,7 @@ openclaw browser create-profile \
 
 然后确保工具未被工具策略拒绝，并（如果需要）以 `target="host"` 调用 `browser`。
 
-调试：`openclaw sandbox explain`
+调试：`coderclaw sandbox explain`
 
 ## 远程访问提示
 
@@ -152,9 +152,9 @@ openclaw browser create-profile \
 
 ## "extension path"的工作原理
 
-`openclaw browser extension path` 打印包含扩展文件的**已安装**磁盘目录。
+`coderclaw browser extension path` 打印包含扩展文件的**已安装**磁盘目录。
 
-CLI 有意**不**打印 `node_modules` 路径。始终先运行 `openclaw browser extension install` 将扩展复制到 OpenClaw 状态目录下的稳定位置。
+CLI 有意**不**打印 `node_modules` 路径。始终先运行 `coderclaw browser extension install` 将扩展复制到 OpenClaw 状态目录下的稳定位置。
 
 如果你移动或删除该安装目录，Chrome 将把扩展标记为损坏，直到你从有效路径重新加载它。
 
@@ -166,7 +166,7 @@ CLI 有意**不**打印 `node_modules` 路径。始终先运行 `openclaw browse
   - 在该标签页中点击/输入/导航
   - 读取页面内容
   - 访问标签页已登录会话可以访问的任何内容
-- **这不像**专用的 openclaw 管理配置文件那样隔离。
+- **这不像**专用的 coderclaw 管理配置文件那样隔离。
   - 如果你附加到你的日常使用配置文件/标签页，你就是在授予对该账户状态的访问权限。
 
 建议：

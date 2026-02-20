@@ -15,22 +15,22 @@ function makeTempDir() {
 }
 
 async function withStateDir<T>(stateDir: string, fn: () => Promise<T>) {
-  const prev = process.env.OPENCLAW_STATE_DIR;
-  const prevBundled = process.env.OPENCLAW_BUNDLED_PLUGINS_DIR;
-  process.env.OPENCLAW_STATE_DIR = stateDir;
-  process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
+  const prev = process.env.CODERCLAW_STATE_DIR;
+  const prevBundled = process.env.CODERCLAW_BUNDLED_PLUGINS_DIR;
+  process.env.CODERCLAW_STATE_DIR = stateDir;
+  process.env.CODERCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
   try {
     return await fn();
   } finally {
     if (prev === undefined) {
-      delete process.env.OPENCLAW_STATE_DIR;
+      delete process.env.CODERCLAW_STATE_DIR;
     } else {
-      process.env.OPENCLAW_STATE_DIR = prev;
+      process.env.CODERCLAW_STATE_DIR = prev;
     }
     if (prevBundled === undefined) {
-      delete process.env.OPENCLAW_BUNDLED_PLUGINS_DIR;
+      delete process.env.CODERCLAW_BUNDLED_PLUGINS_DIR;
     } else {
-      process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = prevBundled;
+      process.env.CODERCLAW_BUNDLED_PLUGINS_DIR = prevBundled;
     }
   }
 }

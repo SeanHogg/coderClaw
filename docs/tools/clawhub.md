@@ -233,7 +233,7 @@ Updates compare the local skill contents to registry versions using a content ha
 
 ### Sync scanning and fallback roots
 
-`clawhub sync` scans your current workdir first. If no skills are found, it falls back to known legacy locations (for example `~/openclaw/skills` and `~/.coderclaw/skills`). This is designed to find older skill installs without extra flags.
+`clawhub sync` scans your current workdir first. If no skills are found, it falls back to known legacy locations (for example `~/coderclaw/skills` and `~/.coderclaw/skills`). This is designed to find older skill installs without extra flags.
 
 ### Storage and lockfile
 

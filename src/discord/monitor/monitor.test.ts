@@ -291,7 +291,7 @@ describe("discord component interactions", () => {
     deliverDiscordReplyMock.mockReset();
     recordInboundSessionMock.mockReset().mockResolvedValue(undefined);
     readSessionUpdatedAtMock.mockReset().mockReturnValue(undefined);
-    resolveStorePathMock.mockReset().mockReturnValue("/tmp/openclaw-sessions-test.json");
+    resolveStorePathMock.mockReset().mockReturnValue("/tmp/coderclaw-sessions-test.json");
   });
 
   it("routes button clicks with reply references", async () => {

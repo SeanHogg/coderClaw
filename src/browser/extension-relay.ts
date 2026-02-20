@@ -78,7 +78,7 @@ type ConnectedTarget = {
   targetInfo: TargetInfo;
 };
 
-const RELAY_AUTH_HEADER = "x-openclaw-relay-token";
+const RELAY_AUTH_HEADER = "x-coderclaw-relay-token";
 
 function headerValue(value: string | string[] | undefined): string | undefined {
   if (!value) {
@@ -148,7 +148,7 @@ const relayAuthByPort = new Map<number, string>();
 
 function resolveGatewayAuthToken(): string | null {
   const envToken =
-    process.env.OPENCLAW_GATEWAY_TOKEN?.trim() || process.env.CLAWDBOT_GATEWAY_TOKEN?.trim();
+    process.env.CODERCLAW_GATEWAY_TOKEN?.trim() || process.env.CLAWDBOT_GATEWAY_TOKEN?.trim();
   if (envToken) {
     return envToken;
   }
@@ -170,7 +170,7 @@ function deriveDeterministicRelayAuthToken(port: number): string | null {
     return null;
   }
   return createHash("sha256")
-    .update(`openclaw-relay:${port}:`)
+    .update(`coderclaw-relay:${port}:`)
     .update(gatewayToken)
     .digest("base64url");
 }

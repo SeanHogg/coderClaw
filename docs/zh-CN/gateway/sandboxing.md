@@ -107,7 +107,7 @@ Skills 注意事项：`read` 工具以沙箱为根。使用 `workspaceAccess: "n
 
 ## 镜像 + 设置
 
-默认镜像：`openclaw-sandbox:bookworm-slim`
+默认镜像：`coderclaw-sandbox:bookworm-slim`
 
 构建一次：
 
@@ -155,7 +155,7 @@ Docker 安装和容器化 Gateway 网关在此：
 
 调试：
 
-- 使用 `openclaw sandbox explain` 检查生效的沙箱模式、工具策略和修复配置键。
+- 使用 `coderclaw sandbox explain` 检查生效的沙箱模式、工具策略和修复配置键。
 - 参见[沙箱 vs 工具策略 vs 提权](/gateway/sandbox-vs-tool-policy-vs-elevated)了解"为什么被阻止？"的心智模型。
   保持锁定。
 

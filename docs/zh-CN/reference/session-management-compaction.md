@@ -228,8 +228,8 @@ OpenClaw 还为嵌入式运行强制执行安全下限：
 你可以通过以下方式观察压缩和会话状态：
 
 - `/status`（在任何聊天会话中）
-- `openclaw status`（CLI）
-- `openclaw sessions` / `sessions --json`
+- `coderclaw status`（CLI）
+- `coderclaw sessions` / `sessions --json`
 - 详细模式：`🧹 Auto-compaction complete` + 压缩计数
 
 ---
@@ -279,7 +279,7 @@ Pi 还在扩展 API 中公开了 `session_before_compact` 钩子，但 OpenClaw 
 ## 故障排除检查清单
 
 - 会话键错误？从 [/concepts/session](/concepts/session) 开始，并在 `/status` 中确认 `sessionKey`。
-- 存储 vs 记录不匹配？从 `openclaw status` 确认 Gateway 网关主机和存储路径。
+- 存储 vs 记录不匹配？从 `coderclaw status` 确认 Gateway 网关主机和存储路径。
 - 压缩过于频繁？检查：
   - 模型上下文窗口（太小）
   - 压缩设置（`reserveTokens` 对于模型窗口来说太高会导致更早的压缩）

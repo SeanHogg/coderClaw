@@ -6,9 +6,9 @@ read_when:
 title: "Plugin Manifest"
 ---
 
-# Plugin manifest (openclaw.plugin.json)
+# Plugin manifest (coderclaw.plugin.json)
 
-Every plugin **must** ship a `openclaw.plugin.json` file in the **plugin root**.
+Every plugin **must** ship a `coderclaw.plugin.json` file in the **plugin root**.
 OpenClaw uses this manifest to validate configuration **without executing plugin
 code**. Missing or invalid manifests are treated as plugin errors and block
 config validation.

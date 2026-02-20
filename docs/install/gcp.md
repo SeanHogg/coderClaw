@@ -89,8 +89,8 @@ All steps can be done via the web UI at [https://console.cloud.google.com](https
 **CLI:**
 
 ```bash
-gcloud projects create my-openclaw-project --name="OpenClaw Gateway"
-gcloud config set project my-openclaw-project
+gcloud projects create my-coderclaw-project --name="OpenClaw Gateway"
+gcloud config set project my-coderclaw-project
 ```
 
 Enable billing at [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) (required for Compute Engine).
@@ -215,16 +215,16 @@ mkdir -p ~/.coderclaw/workspace
 Create `.env` in the repository root.
 
 ```bash
-OPENCLAW_IMAGE=openclaw:latest
-OPENCLAW_GATEWAY_TOKEN=change-me-now
-OPENCLAW_GATEWAY_BIND=lan
-OPENCLAW_GATEWAY_PORT=18789
+CODERCLAW_IMAGE=coderclaw:latest
+CODERCLAW_GATEWAY_TOKEN=change-me-now
+CODERCLAW_GATEWAY_BIND=lan
+CODERCLAW_GATEWAY_PORT=18789
 
-OPENCLAW_CONFIG_DIR=/home/$USER/.openclaw
-OPENCLAW_WORKSPACE_DIR=/home/$USER/.openclaw/workspace
+CODERCLAW_CONFIG_DIR=/home/$USER/.coderclaw
+CODERCLAW_WORKSPACE_DIR=/home/$USER/.coderclaw/workspace
 
 GOG_KEYRING_PASSWORD=change-me-now
-XDG_CONFIG_HOME=/home/node/.openclaw
+XDG_CONFIG_HOME=/home/node/.coderclaw
 ```
 
 Generate strong secrets:
@@ -243,8 +243,8 @@ Create or update `docker-compose.yml`.
 
 ```yaml
 services:
-  openclaw-gateway:
-    image: ${OPENCLAW_IMAGE}
+  coderclaw-gateway:
+    image: ${CODERCLAW_IMAGE}
     build: .
     restart: unless-stopped
     env_file:
@@ -253,28 +253,28 @@ services:
       - HOME=/home/node
       - NODE_ENV=production
       - TERM=xterm-256color
-      - OPENCLAW_GATEWAY_BIND=${OPENCLAW_GATEWAY_BIND}
-      - OPENCLAW_GATEWAY_PORT=${OPENCLAW_GATEWAY_PORT}
-      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+      - CODERCLAW_GATEWAY_BIND=${CODERCLAW_GATEWAY_BIND}
+      - CODERCLAW_GATEWAY_PORT=${CODERCLAW_GATEWAY_PORT}
+      - CODERCLAW_GATEWAY_TOKEN=${CODERCLAW_GATEWAY_TOKEN}
       - GOG_KEYRING_PASSWORD=${GOG_KEYRING_PASSWORD}
       - XDG_CONFIG_HOME=${XDG_CONFIG_HOME}
       - PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:
-      - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
-      - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+      - ${CODERCLAW_CONFIG_DIR}:/home/node/.coderclaw
+      - ${CODERCLAW_WORKSPACE_DIR}:/home/node/.coderclaw/workspace
     ports:
       # Recommended: keep the Gateway loopback-only on the VM; access via SSH tunnel.
       # To expose it publicly, remove the `127.0.0.1:` prefix and firewall accordingly.
-      - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
+      - "127.0.0.1:${CODERCLAW_GATEWAY_PORT}:18789"
     command:
       [
         "node",
         "dist/index.js",
         "gateway",
         "--bind",
-        "${OPENCLAW_GATEWAY_BIND}",
+        "${CODERCLAW_GATEWAY_BIND}",
         "--port",
-        "${OPENCLAW_GATEWAY_PORT}",
+        "${CODERCLAW_GATEWAY_PORT}",
       ]
 ```
 
@@ -347,15 +347,15 @@ CMD ["node","dist/index.js"]
 
 ```bash
 docker compose build
-docker compose up -d openclaw-gateway
+docker compose up -d coderclaw-gateway
 ```
 
 Verify binaries:
 
 ```bash
-docker compose exec openclaw-gateway which gog
-docker compose exec openclaw-gateway which goplaces
-docker compose exec openclaw-gateway which wacli
+docker compose exec coderclaw-gateway which gog
+docker compose exec coderclaw-gateway which goplaces
+docker compose exec coderclaw-gateway which wacli
 ```
 
 Expected output:
@@ -371,7 +371,7 @@ Expected output:
 ## 12) Verify Gateway
 
 ```bash
-docker compose logs -f openclaw-gateway
+docker compose logs -f coderclaw-gateway
 ```
 
 Success:
@@ -405,12 +405,12 @@ All long-lived state must survive restarts, rebuilds, and reboots.
 
 | Component           | Location                          | Persistence mechanism  | Notes                            |
 | ------------------- | --------------------------------- | ---------------------- | -------------------------------- |
-| Gateway config      | `/home/node/.openclaw/`           | Host volume mount      | Includes `openclaw.json`, tokens |
-| Model auth profiles | `/home/node/.openclaw/`           | Host volume mount      | OAuth tokens, API keys           |
-| Skill configs       | `/home/node/.openclaw/skills/`    | Host volume mount      | Skill-level state                |
-| Agent workspace     | `/home/node/.openclaw/workspace/` | Host volume mount      | Code and agent artifacts         |
-| WhatsApp session    | `/home/node/.openclaw/`           | Host volume mount      | Preserves QR login               |
-| Gmail keyring       | `/home/node/.openclaw/`           | Host volume + password | Requires `GOG_KEYRING_PASSWORD`  |
+| Gateway config      | `/home/node/.coderclaw/`           | Host volume mount      | Includes `coderclaw.json`, tokens |
+| Model auth profiles | `/home/node/.coderclaw/`           | Host volume mount      | OAuth tokens, API keys           |
+| Skill configs       | `/home/node/.coderclaw/skills/`    | Host volume mount      | Skill-level state                |
+| Agent workspace     | `/home/node/.coderclaw/workspace/` | Host volume mount      | Code and agent artifacts         |
+| WhatsApp session    | `/home/node/.coderclaw/`           | Host volume mount      | Preserves QR login               |
+| Gmail keyring       | `/home/node/.coderclaw/`           | Host volume + password | Requires `GOG_KEYRING_PASSWORD`  |
 | External binaries   | `/usr/local/bin/`                 | Docker image           | Must be baked at build time      |
 | Node runtime        | Container filesystem              | Docker image           | Rebuilt every image build        |
 | OS packages         | Container filesystem              | Docker image           | Do not install at runtime        |
@@ -423,7 +423,7 @@ All long-lived state must survive restarts, rebuilds, and reboots.
 To update OpenClaw on the VM:
 
 ```bash
-cd ~/openclaw
+cd ~/coderclaw
 git pull
 docker compose build
 docker compose up -d
@@ -482,8 +482,8 @@ For automation or CI/CD pipelines, create a dedicated service account with minim
 2. Grant Compute Instance Admin role (or narrower custom role):
 
    ```bash
-   gcloud projects add-iam-policy-binding my-openclaw-project \
-     --member="serviceAccount:openclaw-deploy@my-openclaw-project.iam.gserviceaccount.com" \
+   gcloud projects add-iam-policy-binding my-coderclaw-project \
+     --member="serviceAccount:openclaw-deploy@my-coderclaw-project.iam.gserviceaccount.com" \
      --role="roles/compute.instanceAdmin.v1"
    ```
 

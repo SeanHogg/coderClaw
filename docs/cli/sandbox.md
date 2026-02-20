@@ -15,25 +15,25 @@ OpenClaw can run agents in isolated Docker containers for security. The `sandbox
 
 ## Commands
 
-### `openclaw sandbox explain`
+### `coderclaw sandbox explain`
 
 Inspect the **effective** sandbox mode/scope/workspace access, sandbox tool policy, and elevated gates (with fix-it config key paths).
 
 ```bash
-openclaw sandbox explain
-openclaw sandbox explain --session agent:main:main
-openclaw sandbox explain --agent work
-openclaw sandbox explain --json
+coderclaw sandbox explain
+coderclaw sandbox explain --session agent:main:main
+coderclaw sandbox explain --agent work
+coderclaw sandbox explain --json
 ```
 
-### `openclaw sandbox list`
+### `coderclaw sandbox list`
 
 List all sandbox containers with their status and configuration.
 
 ```bash
-openclaw sandbox list
-openclaw sandbox list --browser  # List only browser containers
-openclaw sandbox list --json     # JSON output
+coderclaw sandbox list
+coderclaw sandbox list --browser  # List only browser containers
+coderclaw sandbox list --json     # JSON output
 ```
 
 **Output includes:**
@@ -44,16 +44,16 @@ openclaw sandbox list --json     # JSON output
 - Idle time (time since last use)
 - Associated session/agent
 
-### `openclaw sandbox recreate`
+### `coderclaw sandbox recreate`
 
 Remove sandbox containers to force recreation with updated images/config.
 
 ```bash
-openclaw sandbox recreate --all                # Recreate all containers
-openclaw sandbox recreate --session main       # Specific session
-openclaw sandbox recreate --agent mybot        # Specific agent
-openclaw sandbox recreate --browser            # Only browser containers
-openclaw sandbox recreate --all --force        # Skip confirmation
+coderclaw sandbox recreate --all                # Recreate all containers
+coderclaw sandbox recreate --session main       # Specific session
+coderclaw sandbox recreate --agent mybot        # Specific agent
+coderclaw sandbox recreate --browser            # Only browser containers
+coderclaw sandbox recreate --all --force        # Skip confirmation
 ```
 
 **Options:**
@@ -72,14 +72,14 @@ openclaw sandbox recreate --all --force        # Skip confirmation
 
 ```bash
 # Pull new image
-docker pull openclaw-sandbox:latest
-docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
+docker pull coderclaw-sandbox:latest
+docker tag coderclaw-sandbox:latest coderclaw-sandbox:bookworm-slim
 
 # Update config to use new image
 # Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
 
 # Recreate containers
-openclaw sandbox recreate --all
+coderclaw sandbox recreate --all
 ```
 
 ### After changing sandbox configuration
@@ -88,22 +88,22 @@ openclaw sandbox recreate --all
 # Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
 
 # Recreate to apply new config
-openclaw sandbox recreate --all
+coderclaw sandbox recreate --all
 ```
 
 ### After changing setupCommand
 
 ```bash
-openclaw sandbox recreate --all
+coderclaw sandbox recreate --all
 # or just one agent:
-openclaw sandbox recreate --agent family
+coderclaw sandbox recreate --agent family
 ```
 
 ### For a specific agent only
 
 ```bash
 # Update only one agent's containers
-openclaw sandbox recreate --agent alfred
+coderclaw sandbox recreate --agent alfred
 ```
 
 ## Why is this needed?
@@ -114,14 +114,14 @@ openclaw sandbox recreate --agent alfred
 - Containers are only pruned after 24h of inactivity
 - Regularly-used agents keep old containers running indefinitely
 
-**Solution:** Use `openclaw sandbox recreate` to force removal of old containers. They'll be recreated automatically with current settings when next needed.
+**Solution:** Use `coderclaw sandbox recreate` to force removal of old containers. They'll be recreated automatically with current settings when next needed.
 
-Tip: prefer `openclaw sandbox recreate` over manual `docker rm`. It uses the
+Tip: prefer `coderclaw sandbox recreate` over manual `docker rm`. It uses the
 Gateway’s container naming and avoids mismatches when scope/session keys change.
 
 ## Configuration
 
-Sandbox settings live in `~/.coderclaw/openclaw.json` under `agents.defaults.sandbox` (per-agent overrides go in `agents.list[].sandbox`):
+Sandbox settings live in `~/.coderclaw/coderclaw.json` under `agents.defaults.sandbox` (per-agent overrides go in `agents.list[].sandbox`):
 
 ```jsonc
 {
@@ -131,8 +131,8 @@ Sandbox settings live in `~/.coderclaw/openclaw.json` under `agents.defaults.san
         "mode": "all", // off, non-main, all
         "scope": "agent", // session, agent, shared
         "docker": {
-          "image": "openclaw-sandbox:bookworm-slim",
-          "containerPrefix": "openclaw-sbx-",
+          "image": "coderclaw-sandbox:bookworm-slim",
+          "containerPrefix": "coderclaw-sbx-",
           // ... more Docker options
         },
         "prune": {

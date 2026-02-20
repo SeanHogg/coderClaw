@@ -16,13 +16,13 @@ provider mixes reasoning into normal text.
 
 Use `/debug` in chat to set **runtime-only** config overrides (memory, not disk).
 `/debug` is disabled by default; enable with `commands.debug: true`.
-This is handy when you need to toggle obscure settings without editing `openclaw.json`.
+This is handy when you need to toggle obscure settings without editing `coderclaw.json`.
 
 Examples:
 
 ```
 /debug show
-/debug set messages.responsePrefix="[openclaw]"
+/debug set messages.responsePrefix="[coderclaw]"
 /debug unset messages.responsePrefix
 /debug reset
 ```
@@ -60,7 +60,7 @@ Recommended flow (dev profile + dev bootstrap):
 
 ```bash
 pnpm gateway:dev
-OPENCLAW_PROFILE=dev coderclaw tui
+CODERCLAW_PROFILE=dev coderclaw tui
 ```
 
 If you don’t have a global install yet, run the CLI via `pnpm coderclaw ...`.
@@ -68,10 +68,10 @@ If you don’t have a global install yet, run the CLI via `pnpm coderclaw ...`.
 What this does:
 
 1. **Profile isolation** (global `--dev`)
-   - `OPENCLAW_PROFILE=dev`
-   - `OPENCLAW_STATE_DIR=~/.coderclaw-dev`
-   - `OPENCLAW_CONFIG_PATH=~/.coderclaw-dev/openclaw.json`
-   - `OPENCLAW_GATEWAY_PORT=19001` (browser/canvas shift accordingly)
+   - `CODERCLAW_PROFILE=dev`
+   - `CODERCLAW_STATE_DIR=~/.coderclaw-dev`
+   - `CODERCLAW_CONFIG_PATH=~/.coderclaw-dev/coderclaw.json`
+   - `CODERCLAW_GATEWAY_PORT=19001` (browser/canvas shift accordingly)
 
 2. **Dev bootstrap** (`gateway --dev`)
    - Writes a minimal config if missing (`gateway.mode=local`, bind loopback).
@@ -80,7 +80,7 @@ What this does:
    - Seeds the workspace files if missing:
      `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
    - Default identity: **C3‑PO** (protocol droid).
-   - Skips channel providers in dev mode (`OPENCLAW_SKIP_CHANNELS=1`).
+   - Skips channel providers in dev mode (`CODERCLAW_SKIP_CHANNELS=1`).
 
 Reset flow (fresh start):
 
@@ -92,7 +92,7 @@ Note: `--dev` is a **global** profile flag and gets eaten by some runners.
 If you need to spell it out, use the env var form:
 
 ```bash
-OPENCLAW_PROFILE=dev coderclaw gateway --dev --reset
+CODERCLAW_PROFILE=dev coderclaw gateway --dev --reset
 ```
 
 `--reset` wipes config, credentials, sessions, and the dev workspace (using
@@ -125,8 +125,8 @@ pnpm gateway:watch --raw-stream --raw-stream-path ~/.coderclaw/logs/raw-stream.j
 Equivalent env vars:
 
 ```bash
-OPENCLAW_RAW_STREAM=1
-OPENCLAW_RAW_STREAM_PATH=~/.coderclaw/logs/raw-stream.jsonl
+CODERCLAW_RAW_STREAM=1
+CODERCLAW_RAW_STREAM_PATH=~/.coderclaw/logs/raw-stream.jsonl
 ```
 
 Default file:

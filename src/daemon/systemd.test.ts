@@ -61,45 +61,45 @@ describe("systemd runtime parsing", () => {
 });
 
 describe("resolveSystemdUserUnitPath", () => {
-  it("uses default service name when OPENCLAW_PROFILE is unset", () => {
+  it("uses default service name when CODERCLAW_PROFILE is unset", () => {
     const env = { HOME: "/home/test" };
     expect(resolveSystemdUserUnitPath(env)).toBe(
       "/home/test/.config/systemd/user/openclaw-gateway.service",
     );
   });
 
-  it("uses profile-specific service name when OPENCLAW_PROFILE is set to a custom value", () => {
-    const env = { HOME: "/home/test", OPENCLAW_PROFILE: "jbphoenix" };
+  it("uses profile-specific service name when CODERCLAW_PROFILE is set to a custom value", () => {
+    const env = { HOME: "/home/test", CODERCLAW_PROFILE: "jbphoenix" };
     expect(resolveSystemdUserUnitPath(env)).toBe(
       "/home/test/.config/systemd/user/openclaw-gateway-jbphoenix.service",
     );
   });
 
-  it("prefers OPENCLAW_SYSTEMD_UNIT over OPENCLAW_PROFILE", () => {
+  it("prefers CODERCLAW_SYSTEMD_UNIT over CODERCLAW_PROFILE", () => {
     const env = {
       HOME: "/home/test",
-      OPENCLAW_PROFILE: "jbphoenix",
-      OPENCLAW_SYSTEMD_UNIT: "custom-unit",
+      CODERCLAW_PROFILE: "jbphoenix",
+      CODERCLAW_SYSTEMD_UNIT: "custom-unit",
     };
     expect(resolveSystemdUserUnitPath(env)).toBe(
       "/home/test/.config/systemd/user/custom-unit.service",
     );
   });
 
-  it("handles OPENCLAW_SYSTEMD_UNIT with .service suffix", () => {
+  it("handles CODERCLAW_SYSTEMD_UNIT with .service suffix", () => {
     const env = {
       HOME: "/home/test",
-      OPENCLAW_SYSTEMD_UNIT: "custom-unit.service",
+      CODERCLAW_SYSTEMD_UNIT: "custom-unit.service",
     };
     expect(resolveSystemdUserUnitPath(env)).toBe(
       "/home/test/.config/systemd/user/custom-unit.service",
     );
   });
 
-  it("trims whitespace from OPENCLAW_SYSTEMD_UNIT", () => {
+  it("trims whitespace from CODERCLAW_SYSTEMD_UNIT", () => {
     const env = {
       HOME: "/home/test",
-      OPENCLAW_SYSTEMD_UNIT: "  custom-unit  ",
+      CODERCLAW_SYSTEMD_UNIT: "  custom-unit  ",
     };
     expect(resolveSystemdUserUnitPath(env)).toBe(
       "/home/test/.config/systemd/user/custom-unit.service",
@@ -185,7 +185,7 @@ describe("systemd service control", () => {
     const write = vi.fn();
     const stdout = { write } as unknown as NodeJS.WritableStream;
 
-    await restartSystemdService({ stdout, env: { OPENCLAW_PROFILE: "work" } });
+    await restartSystemdService({ stdout, env: { CODERCLAW_PROFILE: "work" } });
 
     expect(write).toHaveBeenCalledTimes(1);
     expect(String(write.mock.calls[0]?.[0])).toContain("Restarted systemd service");

@@ -55,7 +55,7 @@ coderclaw channels login
 coderclaw gateway --port 18789
 ```
 
-3. Put a minimal config in `~/.coderclaw/openclaw.json`:
+3. Put a minimal config in `~/.coderclaw/coderclaw.json`:
 
 ```json5
 {

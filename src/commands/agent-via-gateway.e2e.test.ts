@@ -47,7 +47,7 @@ async function withTempStore(
   fn: (ctx: { dir: string; store: string }) => Promise<void>,
   overrides?: Partial<OpenClawConfig>,
 ) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-agent-cli-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "coderclaw-agent-cli-"));
   const store = path.join(dir, "sessions.json");
   mockConfig(store, overrides);
   try {

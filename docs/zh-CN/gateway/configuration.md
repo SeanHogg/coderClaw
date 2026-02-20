@@ -1,7 +1,7 @@
 ---
 read_when:
   - 添加或修改配置字段时
-summary: ~/.openclaw/openclaw.json 的所有配置选项及示例
+summary: ~/.openclaw/coderclaw.json 的所有配置选项及示例
 title: 配置
 x-i18n:
   generated_at: "2026-02-01T21:29:41Z"
@@ -14,7 +14,7 @@ x-i18n:
 
 # 配置 🔧
 
-OpenClaw 从 `~/.openclaw/openclaw.json` 读取可选的 **JSON5** 配置（支持注释和尾逗号）。
+OpenClaw 从 `~/.openclaw/coderclaw.json` 读取可选的 **JSON5** 配置（支持注释和尾逗号）。
 
 如果文件不存在，OpenClaw 使用安全的默认值（内置 Pi 智能体 + 按发送者分会话 + 工作区 `~/.openclaw/workspace`）。通常只在以下情况需要配置：
 
@@ -35,9 +35,9 @@ OpenClaw 只接受完全匹配 schema 的配置。
 验证失败时：
 
 - Gateway 网关不会启动。
-- 只允许诊断命令（例如：`openclaw doctor`、`openclaw logs`、`openclaw health`、`openclaw status`、`openclaw service`、`openclaw help`）。
-- 运行 `openclaw doctor` 查看具体问题。
-- 运行 `openclaw doctor --fix`（或 `--yes`）应用迁移/修复。
+- 只允许诊断命令（例如：`coderclaw doctor`、`coderclaw logs`、`coderclaw health`、`coderclaw status`、`coderclaw service`、`coderclaw help`）。
+- 运行 `coderclaw doctor` 查看具体问题。
+- 运行 `coderclaw doctor --fix`（或 `--yes`）应用迁移/修复。
 
 Doctor 不会写入任何更改，除非你明确选择了 `--fix`/`--yes`。
 
@@ -57,7 +57,7 @@ Gateway 网关通过 `config.schema` 暴露配置的 JSON Schema 表示，供 UI
 它会写入重启哨兵文件，并在 Gateway 网关恢复后 ping 最后活跃的会话。
 
 警告：`config.apply` 会替换**整个配置**。如果你只想更改部分键，
-请使用 `config.patch` 或 `openclaw config set`。请备份 `~/.openclaw/openclaw.json`。
+请使用 `config.patch` 或 `coderclaw config set`。请备份 `~/.openclaw/coderclaw.json`。
 
 参数：
 
@@ -70,8 +70,8 @@ Gateway 网关通过 `config.schema` 暴露配置的 JSON Schema 表示，供 UI
 示例（通过 `gateway call`）：
 
 ```bash
-openclaw gateway call config.get --params '{}' # capture payload.hash
-openclaw gateway call config.apply --params '{
+coderclaw gateway call config.get --params '{}' # capture payload.hash
+coderclaw gateway call config.apply --params '{
   "raw": "{\\n  agents: { defaults: { workspace: \\"~/.openclaw/workspace\\" } }\\n}\\n",
   "baseHash": "<hash-from-config.get>",
   "sessionKey": "agent:main:whatsapp:dm:+15555550123",
@@ -101,8 +101,8 @@ openclaw gateway call config.apply --params '{
 示例：
 
 ```bash
-openclaw gateway call config.get --params '{}' # capture payload.hash
-openclaw gateway call config.patch --params '{
+coderclaw gateway call config.get --params '{}' # capture payload.hash
+coderclaw gateway call config.patch --params '{
   "raw": "{\\n  channels: { telegram: { groups: { \\"*\\": { requireMention: false } } } }\\n}\\n",
   "baseHash": "<hash-from-config.get>",
   "sessionKey": "agent:main:whatsapp:dm:+15555550123",
@@ -161,7 +161,7 @@ scripts/sandbox-setup.sh
 ### 基本用法
 
 ```json5
-// ~/.openclaw/openclaw.json
+// ~/.openclaw/coderclaw.json
 {
   gateway: { port: 18789 },
 
@@ -231,7 +231,7 @@ scripts/sandbox-setup.sh
 ### 示例：多客户法律事务设置
 
 ```json5
-// ~/.openclaw/openclaw.json
+// ~/.openclaw/coderclaw.json
 {
   gateway: { port: 18789, auth: { token: "secret" } },
 
@@ -277,7 +277,7 @@ OpenClaw 从父进程（shell、launchd/systemd、CI 等）读取环境变量。
 此外，它还会加载：
 
 - 当前工作目录中的 `.env`（如果存在）
-- `~/.openclaw/.env`（即 `$OPENCLAW_STATE_DIR/.env`）作为全局回退 `.env`
+- `~/.openclaw/.env`（即 `$CODERCLAW_STATE_DIR/.env`）作为全局回退 `.env`
 
 两个 `.env` 文件都不会覆盖已有的环境变量。
 
@@ -314,8 +314,8 @@ OpenClaw 从父进程（shell、launchd/systemd、CI 等）读取环境变量。
 
 等效环境变量：
 
-- `OPENCLAW_LOAD_SHELL_ENV=1`
-- `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`
+- `CODERCLAW_LOAD_SHELL_ENV=1`
+- `CODERCLAW_SHELL_ENV_TIMEOUT_MS=15000`
 
 ### 配置中的环境变量替换
 
@@ -332,7 +332,7 @@ OpenClaw 从父进程（shell、launchd/systemd、CI 等）读取环境变量。
   },
   gateway: {
     auth: {
-      token: "${OPENCLAW_GATEWAY_TOKEN}",
+      token: "${CODERCLAW_GATEWAY_TOKEN}",
     },
   },
 }
@@ -369,7 +369,7 @@ OpenClaw 在以下位置存储**每个智能体的**认证配置文件（OAuth +
 
 旧版 OAuth 导入：
 
-- `~/.openclaw/credentials/oauth.json`（或 `$OPENCLAW_STATE_DIR/credentials/oauth.json`）
+- `~/.openclaw/credentials/oauth.json`（或 `$CODERCLAW_STATE_DIR/credentials/oauth.json`）
 
 内置 Pi 智能体在以下位置维护运行时缓存：
 
@@ -377,12 +377,12 @@ OpenClaw 在以下位置存储**每个智能体的**认证配置文件（OAuth +
 
 旧版智能体目录（多智能体之前）：
 
-- `~/.openclaw/agent/*`（由 `openclaw doctor` 迁移到 `~/.openclaw/agents/<defaultAgentId>/agent/*`）
+- `~/.openclaw/agent/*`（由 `coderclaw doctor` 迁移到 `~/.openclaw/agents/<defaultAgentId>/agent/*`）
 
 覆盖：
 
-- OAuth 目录（仅旧版导入）：`OPENCLAW_OAUTH_DIR`
-- 智能体目录（默认智能体根目录覆盖）：`OPENCLAW_AGENT_DIR`（推荐）、`PI_CODING_AGENT_DIR`（旧版）
+- OAuth 目录（仅旧版导入）：`CODERCLAW_OAUTH_DIR`
+- 智能体目录（默认智能体根目录覆盖）：`CODERCLAW_AGENT_DIR`（推荐）、`PI_CODING_AGENT_DIR`（旧版）
 
 首次使用时，OpenClaw 会将 `oauth.json` 条目导入到 `auth-profiles.json` 中。
 
@@ -495,8 +495,8 @@ OpenClaw 在以下位置存储**每个智能体的**认证配置文件（OAuth +
 
 配对批准：
 
-- `openclaw pairing list whatsapp`
-- `openclaw pairing approve whatsapp <code>`
+- `coderclaw pairing list whatsapp`
+- `coderclaw pairing approve whatsapp <code>`
 
 ### `channels.whatsapp.allowFrom`
 
@@ -558,7 +558,7 @@ OpenClaw 在以下位置存储**每个智能体的**认证配置文件（OAuth +
 说明：
 
 - 出站命令默认使用 `default` 账号（如果存在）；否则使用第一个配置的账号 id（排序后）。
-- 旧版单账号 Baileys 认证目录由 `openclaw doctor` 迁移到 `whatsapp/default`。
+- 旧版单账号 Baileys 认证目录由 `coderclaw doctor` 迁移到 `whatsapp/default`。
 
 ### `channels.telegram.accounts` / `channels.discord.accounts` / `channels.googlechat.accounts` / `channels.slack.accounts` / `channels.mattermost.accounts` / `channels.signal.accounts` / `channels.imessage.accounts`
 
@@ -1002,7 +1002,7 @@ OpenClaw 在以下位置存储**每个智能体的**认证配置文件（OAuth +
 - `channels.telegram.customCommands` 添加额外的 Telegram 机器人菜单项。名称会被规范化；与原生命令冲突的会被忽略。
 - `commands.bash: true` 启用 `! <cmd>` 运行主机 shell 命令（`/bash <cmd>` 也可作为别名）。需要 `tools.elevated.enabled` 并在 `tools.elevated.allowFrom.<channel>` 中添加发送者白名单。
 - `commands.bashForegroundMs` 控制 bash 在后台运行前等待的时间。当 bash 任务正在运行时，新的 `! <cmd>` 请求会被拒绝（一次一个）。
-- `commands.config: true` 启用 `/config`（读写 `openclaw.json`）。
+- `commands.config: true` 启用 `/config`（读写 `coderclaw.json`）。
 - `channels.<provider>.configWrites` 控制由该渠道发起的配置变更（默认：true）。适用于 `/config set|unset` 以及提供商特定的自动迁移（Telegram 超级群组 ID 变更、Slack 频道 ID 变更）。
 - `commands.debug: true` 启用 `/debug`（仅运行时覆盖）。
 - `commands.restart: true` 启用 `/restart` 和 gateway 工具重启动作。
@@ -1318,7 +1318,7 @@ Slack 动作组（控制 `slack` 工具动作）：
 ### `channels.mattermost`（机器人 token）
 
 Mattermost 作为插件提供，不包含在核心安装中。
-请先安装：`openclaw plugins install @openclaw/mattermost`（或从 git checkout 使用 `./extensions/mattermost`）。
+请先安装：`coderclaw plugins install @openclaw/mattermost`（或从 git checkout 使用 `./extensions/mattermost`）。
 
 Mattermost 需要机器人 token 加上服务器的基础 URL：
 
@@ -2000,7 +2000,7 @@ Z.AI 模型可通过 `zai/<model>` 使用（例如 `zai/glm-4.7`），需要环�
 `tools.web` 配置 Web 搜索 + 获取工具：
 
 - `tools.web.search.enabled`（默认：有密钥时为 true）
-- `tools.web.search.apiKey`（推荐：通过 `openclaw configure --section web` 设置，或使用 `BRAVE_API_KEY` 环境变量）
+- `tools.web.search.apiKey`（推荐：通过 `coderclaw configure --section web` 设置，或使用 `BRAVE_API_KEY` 环境变量）
 - `tools.web.search.maxResults`（1–10，默认 5）
 - `tools.web.search.timeoutSeconds`（默认 30）
 - `tools.web.search.cacheTtlMinutes`（默认 15）
@@ -2261,8 +2261,8 @@ Z.AI 模型可通过 `zai/<model>` 使用（例如 `zai/glm-4.7`），需要环�
         workspaceAccess: "none", // none | ro | rw
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
-          image: "openclaw-sandbox:bookworm-slim",
-          containerPrefix: "openclaw-sbx-",
+          image: "coderclaw-sandbox:bookworm-slim",
+          containerPrefix: "coderclaw-sbx-",
           workdir: "/workspace",
           readOnlyRoot: true,
           tmpfs: ["/tmp", "/var/tmp", "/run"],
@@ -2281,15 +2281,15 @@ Z.AI 模型可通过 `zai/<model>` 使用（例如 `zai/glm-4.7`），需要环�
             nproc: 256,
           },
           seccompProfile: "/path/to/seccomp.json",
-          apparmorProfile: "openclaw-sandbox",
+          apparmorProfile: "coderclaw-sandbox",
           dns: ["1.1.1.1", "8.8.8.8"],
           extraHosts: ["internal.service:10.0.0.5"],
           binds: ["/var/run/docker.sock:/var/run/docker.sock", "/home/user/source:/source:rw"],
         },
         browser: {
           enabled: false,
-          image: "openclaw-sandbox-browser:bookworm-slim",
-          containerPrefix: "openclaw-sbx-browser-",
+          image: "coderclaw-sandbox-browser:bookworm-slim",
+          containerPrefix: "coderclaw-sbx-browser-",
           cdpPort: 9222,
           vncPort: 5900,
           noVncPort: 6080,
@@ -2424,7 +2424,7 @@ pi-ai 内置的 `opencode` 提供商；从 https://opencode.ai/auth 设置 `OPEN
 
 - 模型引用使用 `opencode/<modelId>`（示例：`opencode/claude-opus-4-5`）。
 - 如果你通过 `agents.defaults.models` 启用白名单，请添加你计划使用的每个模型。
-- 快捷方式：`openclaw onboard --auth-choice opencode-zen`。
+- 快捷方式：`coderclaw onboard --auth-choice opencode-zen`。
 
 ```json5
 {
@@ -2442,7 +2442,7 @@ pi-ai 内置的 `opencode` 提供商；从 https://opencode.ai/auth 设置 `OPEN
 Z.AI 模型通过内置的 `zai` 提供商提供。在环境中设置 `ZAI_API_KEY`
 并通过 provider/model 引用模型。
 
-快捷方式：`openclaw onboard --auth-choice zai-api-key`。
+快捷方式：`coderclaw onboard --auth-choice zai-api-key`。
 
 ```json5
 {
@@ -2506,7 +2506,7 @@ Z.AI 模型通过内置的 `zai` 提供商提供。在环境中设置 `ZAI_API_K
 
 说明：
 
-- 在环境中设置 `MOONSHOT_API_KEY` 或使用 `openclaw onboard --auth-choice moonshot-api-key`。
+- 在环境中设置 `MOONSHOT_API_KEY` 或使用 `coderclaw onboard --auth-choice moonshot-api-key`。
 - 模型引用：`moonshot/kimi-k2.5`。
 - 如需中国端点，使用 `https://api.moonshot.cn/v1`。
 
@@ -2528,7 +2528,7 @@ Z.AI 模型通过内置的 `zai` 提供商提供。在环境中设置 `ZAI_API_K
 
 说明：
 
-- 在环境中设置 `KIMI_API_KEY` 或使用 `openclaw onboard --auth-choice kimi-code-api-key`。
+- 在环境中设置 `KIMI_API_KEY` 或使用 `coderclaw onboard --auth-choice kimi-code-api-key`。
 - 模型引用：`kimi-coding/k2p5`。
 
 ### Synthetic（Anthropic 兼容）
@@ -2570,7 +2570,7 @@ Z.AI 模型通过内置的 `zai` 提供商提供。在环境中设置 `ZAI_API_K
 
 说明：
 
-- 设置 `SYNTHETIC_API_KEY` 或使用 `openclaw onboard --auth-choice synthetic-api-key`。
+- 设置 `SYNTHETIC_API_KEY` 或使用 `coderclaw onboard --auth-choice synthetic-api-key`。
 - 模型引用：`synthetic/hf:MiniMaxAI/MiniMax-M2.1`。
 - 基础 URL 应省略 `/v1`，因为 Anthropic 客户端会自动附加。
 
@@ -2618,7 +2618,7 @@ Z.AI 模型通过内置的 `zai` 提供商提供。在环境中设置 `ZAI_API_K
 
 说明：
 
-- 设置 `MINIMAX_API_KEY` 环境变量或使用 `openclaw onboard --auth-choice minimax-api`。
+- 设置 `MINIMAX_API_KEY` 环境变量或使用 `coderclaw onboard --auth-choice minimax-api`。
 - 可用模型：`MiniMax-M2.1`（默认）。
 - 如需精确费用跟踪，请在 `models.json` 中更新定价。
 
@@ -2668,7 +2668,7 @@ Z.AI 模型通过内置的 `zai` 提供商提供。在环境中设置 `ZAI_API_K
 - 支持的 API：`openai-completions`、`openai-responses`、`anthropic-messages`、
   `google-generative-ai`
 - 对于自定义认证需求使用 `authHeader: true` + `headers`。
-- 如果你希望 `models.json` 存储在其他位置，请使用 `OPENCLAW_AGENT_DIR`（或 `PI_CODING_AGENT_DIR`）覆盖智能体配置根目录（默认：`~/.openclaw/agents/main/agent`）。
+- 如果你希望 `models.json` 存储在其他位置，请使用 `CODERCLAW_AGENT_DIR`（或 `PI_CODING_AGENT_DIR`）覆盖智能体配置根目录（默认：`~/.openclaw/agents/main/agent`）。
 
 ### `session`
 
@@ -2828,7 +2828,7 @@ OpenClaw 可以为 OpenClaw 启动一个**专用、隔离的** Chrome/Brave/Edge
 - 控制服务：仅 local loopback（端口从 `gateway.port` 派生，默认 `18791`）
 - CDP URL：`http://127.0.0.1:18792`（控制服务 + 1，旧版单配置文件）
 - 配置文件颜色：`#FF4500`（龙虾橙）
-- 注意：控制服务器由运行中的 Gateway 网关（OpenClaw.app 菜单栏或 `openclaw gateway`）启动。
+- 注意：控制服务器由运行中的 Gateway 网关（OpenClaw.app 菜单栏或 `coderclaw gateway`）启动。
 - 自动检测顺序：如果为 Chromium 内核则使用默认浏览器；否则 Chrome → Brave → Edge → Chromium → Chrome Canary。
 
 ```json5
@@ -2889,7 +2889,7 @@ OpenClaw 可以为 OpenClaw 启动一个**专用、隔离的** Chrome/Brave/Edge
     mode: "local", // 或 "remote"
     port: 18789, // WS + HTTP 多路复用
     bind: "loopback",
-    // controlUi: { enabled: true, basePath: "/openclaw" }
+    // controlUi: { enabled: true, basePath: "/coderclaw" }
     // auth: { mode: "token", token: "your-token" } // token 控制 WS + 控制台 UI 访问
     // tailscale: { mode: "off" | "serve" | "funnel" }
   },
@@ -2920,10 +2920,10 @@ OpenClaw 可以为 OpenClaw 启动一个**专用、隔离的** Chrome/Brave/Edge
 
 说明：
 
-- `openclaw gateway` 拒绝启动，除非 `gateway.mode` 设为 `local`（或你传递了覆盖标志）。
+- `coderclaw gateway` 拒绝启动，除非 `gateway.mode` 设为 `local`（或你传递了覆盖标志）。
 - `gateway.port` 控制用于 WebSocket + HTTP（控制台 UI、hooks、A2UI）的单一多路复用端口。
 - OpenAI Chat Completions 端点：**默认禁用**；通过 `gateway.http.endpoints.chatCompletions.enabled: true` 启用。
-- 优先级：`--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > 默认 `18789`。
+- 优先级：`--port` > `CODERCLAW_GATEWAY_PORT` > `gateway.port` > 默认 `18789`。
 - 默认需要 Gateway 网关认证（token/密码或 Tailscale Serve 身份）。非 local loopback 绑定需要共享 token/密码。
 - 新手引导向导默认生成 gateway token（即使在 local loopback 上）。
 - `gateway.remote.token` **仅**用于远程 CLI 调用；它不启用本地 gateway 认证。`gateway.token` 被忽略。
@@ -2933,7 +2933,7 @@ OpenClaw 可以为 OpenClaw 启动一个**专用、隔离的** Chrome/Brave/Edge
 - `gateway.auth.mode` 设置握手要求（`token` 或 `password`）。未设置时，假定 token 认证。
 - `gateway.auth.token` 存储 token 认证的共享 token（同一机器上的 CLI 使用）。
 - 当设置了 `gateway.auth.mode` 时，仅接受该方法（加上可选的 Tailscale 头部）。
-- `gateway.auth.password` 可在此设置，或通过 `OPENCLAW_GATEWAY_PASSWORD`（推荐）。
+- `gateway.auth.password` 可在此设置，或通过 `CODERCLAW_GATEWAY_PASSWORD`（推荐）。
 - `gateway.auth.allowTailscale` 允许 Tailscale Serve 身份头部
   （`tailscale-user-login`）在请求通过 local loopback 到达且带有 `x-forwarded-for`、
   `x-forwarded-proto` 和 `x-forwarded-host` 时满足认证。OpenClaw 在接受之前
@@ -2953,7 +2953,7 @@ OpenClaw 可以为 OpenClaw 启动一个**专用、隔离的** Chrome/Brave/Edge
 
 macOS 应用行为：
 
-- OpenClaw.app 监视 `~/.openclaw/openclaw.json`，当 `gateway.mode` 或 `gateway.remote.url` 变更时实时切换模式。
+- OpenClaw.app 监视 `~/.openclaw/coderclaw.json`，当 `gateway.mode` 或 `gateway.remote.url` 变更时实时切换模式。
 - 如果 `gateway.mode` 未设置但 `gateway.remote.url` 已设置，macOS 应用将其视为远程模式。
 - 当你在 macOS 应用中更改连接模式时，它会将 `gateway.mode`（以及远程模式下的 `gateway.remote.url` + `gateway.remote.transport`）写回配置文件。
 
@@ -2987,7 +2987,7 @@ macOS 应用行为：
 
 ### `gateway.reload`（配置热重载）
 
-Gateway 网关监视 `~/.openclaw/openclaw.json`（或 `OPENCLAW_CONFIG_PATH`）并自动应用更改。
+Gateway 网关监视 `~/.openclaw/coderclaw.json`（或 `CODERCLAW_CONFIG_PATH`）并自动应用更改。
 
 模式：
 
@@ -3011,7 +3011,7 @@ Gateway 网关监视 `~/.openclaw/openclaw.json`（或 `OPENCLAW_CONFIG_PATH`）
 
 监视的文件：
 
-- `~/.openclaw/openclaw.json`（或 `OPENCLAW_CONFIG_PATH`）
+- `~/.openclaw/coderclaw.json`（或 `CODERCLAW_CONFIG_PATH`）
 
 热应用（无需完全重启 Gateway 网关）：
 
@@ -3036,15 +3036,15 @@ Gateway 网关监视 `~/.openclaw/openclaw.json`（或 `OPENCLAW_CONFIG_PATH`）
 
 要在一台主机上运行多个 Gateway 网关（用于冗余或救援机器人），请隔离每个实例的状态 + 配置并使用唯一端口：
 
-- `OPENCLAW_CONFIG_PATH`（每实例配置）
-- `OPENCLAW_STATE_DIR`（会话/凭据）
+- `CODERCLAW_CONFIG_PATH`（每实例配置）
+- `CODERCLAW_STATE_DIR`（会话/凭据）
 - `agents.defaults.workspace`（记忆）
 - `gateway.port`（每实例唯一）
 
 便利标志（CLI）：
 
 - `openclaw --dev …` → 使用 `~/.openclaw-dev` + 端口从基础 `19001` 偏移
-- `openclaw --profile <name> …` → 使用 `~/.openclaw-<name>`（端口通过配置/环境变量/标志）
+- `openclaw --profile <name> …` → 使用 `~/.coderclaw-<name>`（端口通过配置/环境变量/标志）
 
 参见 [Gateway 网关运维手册](/gateway) 了解派生的端口映射（gateway/browser/canvas）。
 参见[多 Gateway 网关](/gateway/multiple-gateways) 了解浏览器/CDP 端口隔离细节。
@@ -3052,9 +3052,9 @@ Gateway 网关监视 `~/.openclaw/openclaw.json`（或 `OPENCLAW_CONFIG_PATH`）
 示例：
 
 ```bash
-OPENCLAW_CONFIG_PATH=~/.openclaw/a.json \
-OPENCLAW_STATE_DIR=~/.openclaw-a \
-openclaw gateway --port 19001
+CODERCLAW_CONFIG_PATH=~/.openclaw/a.json \
+CODERCLAW_STATE_DIR=~/.openclaw-a \
+coderclaw gateway --port 19001
 ```
 
 ### `hooks`（Gateway 网关 webhook）
@@ -3116,7 +3116,7 @@ openclaw gateway --port 19001
 - 如果没有先前的投递路由，请显式设置 `channel` + `to`（Telegram/Discord/Google Chat/Slack/Signal/iMessage/MS Teams 必需）。
 - `model` 覆盖此 hook 运行的 LLM（`provider/model` 或别名；如果设置了 `agents.defaults.models` 则必须被允许）。
 
-Gmail 辅助配置（由 `openclaw webhooks gmail setup` / `run` 使用）：
+Gmail 辅助配置（由 `coderclaw webhooks gmail setup` / `run` 使用）：
 
 ```json5
 {
@@ -3156,7 +3156,7 @@ Gateway 网关自动启动：
 
 - 如果 `hooks.enabled=true` 且 `hooks.gmail.account` 已设置，Gateway 网关在启动时
   启动 `gog gmail watch serve` 并自动续期监视。
-- 设置 `OPENCLAW_SKIP_GMAIL_WATCHER=1` 禁用自动启动（用于手动运行）。
+- 设置 `CODERCLAW_SKIP_GMAIL_WATCHER=1` 禁用自动启动（用于手动运行）。
 - 避免在 Gateway 网关旁边单独运行 `gog gmail watch serve`；它会
   因 `listen tcp 127.0.0.1:8788: bind: address already in use` 而失败。
 
@@ -3177,9 +3177,9 @@ Gateway 网关通过 HTTP 提供 HTML/CSS/JS 目录服务，以便 iOS/Android �
 
 - 提供 `canvasHost.root` 下的文件
 - 向提供的 HTML 注入微型实时重载客户端
-- 监视目录并通过 `/__openclaw__/ws` 的 WebSocket 端点广播重载
+- 监视目录并通过 `/__coderclaw__/ws` 的 WebSocket 端点广播重载
 - 目录为空时自动创建起始 `index.html`（以便你立即看到内容）
-- 同时在 `/__openclaw__/a2ui/` 提供 A2UI，并作为 `canvasHostUrl` 通告给节点
+- 同时在 `/__coderclaw__/a2ui/` 提供 A2UI，并作为 `canvasHostUrl` 通告给节点
   （节点始终使用它来访问 Canvas/A2UI）
 
 如果目录很大或遇到 `EMFILE`，请禁用实时重载（和文件监视）：
@@ -3201,7 +3201,7 @@ Gateway 网关通过 HTTP 提供 HTML/CSS/JS 目录服务，以便 iOS/Android �
 禁用方式：
 
 - 配置：`canvasHost: { enabled: false }`
-- 环境变量：`OPENCLAW_SKIP_CANVAS_HOST=1`
+- 环境变量：`CODERCLAW_SKIP_CANVAS_HOST=1`
 
 ### `bridge`（旧版 TCP 桥接，已移除）
 
@@ -3253,12 +3253,12 @@ TLS：
 
 ### `discovery.mdns`（Bonjour / mDNS 广播模式）
 
-控制 LAN mDNS 发现广播（`_openclaw-gw._tcp`）。
+控制 LAN mDNS 发现广播（`_coderclaw-gw._tcp`）。
 
 - `minimal`（默认）：从 TXT 记录中省略 `cliPath` + `sshPort`
 - `full`：在 TXT 记录中包含 `cliPath` + `sshPort`
 - `off`：完全禁用 mDNS 广播
-- 主机名：默认为 `openclaw`（通告 `openclaw.local`）。通过 `OPENCLAW_MDNS_HOSTNAME` 覆盖。
+- 主机名：默认为 `openclaw`（通告 `openclaw.local`）。通过 `CODERCLAW_MDNS_HOSTNAME` 覆盖。
 
 ```json5
 {
@@ -3268,7 +3268,7 @@ TLS：
 
 ### `discovery.wideArea`（广域 Bonjour / 单播 DNS‑SD）
 
-启用后，Gateway 网关在 `~/.openclaw/dns/` 下使用配置的发现域（示例：`openclaw.internal.`）为 `_openclaw-gw._tcp` 写入单播 DNS-SD 区域。
+启用后，Gateway 网关在 `~/.openclaw/dns/` 下使用配置的发现域（示例：`coderclaw.internal.`）为 `_coderclaw-gw._tcp` 写入单播 DNS-SD 区域。
 
 要使 iOS/Android 跨网络发现（跨地域访问），请配合以下使用：
 
@@ -3278,7 +3278,7 @@ TLS：
 一次性设置助手（Gateway 网关主机）：
 
 ```bash
-openclaw dns setup --apply
+coderclaw dns setup --apply
 ```
 
 ```json5

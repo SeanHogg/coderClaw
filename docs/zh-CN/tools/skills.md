@@ -29,7 +29,7 @@ Skills 从**三个**位置加载：
 
 `<workspace>/skills`（最高）→ `~/.openclaw/skills` → 内置 Skills（最低）
 
-此外，你可以通过 `~/.openclaw/openclaw.json` 中的 `skills.load.extraDirs` 配置额外的 Skills 文件夹（最低优先级）。
+此外，你可以通过 `~/.openclaw/coderclaw.json` 中的 `skills.load.extraDirs` 配置额外的 Skills 文件夹（最低优先级）。
 
 ## 单智能体 vs 共享 Skills
 
@@ -43,7 +43,7 @@ Skills 从**三个**位置加载：
 
 ## 插件 + Skills
 
-插件可以通过在 `openclaw.plugin.json` 中列出 `skills` 目录（相对于插件根目录的路径）来发布自己的 Skills。插件 Skills 在插件启用时加载，并参与正常的 Skills 优先级规则。你可以通过插件配置条目上的 `metadata.openclaw.requires.config` 对它们进行门控。参见[插件](/tools/plugin)了解发现/配置，以及[工具](/tools)了解这些 Skills 所教授的工具接口。
+插件可以通过在 `coderclaw.plugin.json` 中列出 `skills` 目录（相对于插件根目录的路径）来发布自己的 Skills。插件 Skills 在插件启用时加载，并参与正常的 Skills 优先级规则。你可以通过插件配置条目上的 `metadata.coderclaw.requires.config` 对它们进行门控。参见[插件](/tools/plugin)了解发现/配置，以及[工具](/tools)了解这些 Skills 所教授的工具接口。
 
 ## ClawHub（安装 + 同步）
 
@@ -85,7 +85,7 @@ description: Generate or edit images via Gemini 3 Pro Image
 - `metadata` 应该是**单行 JSON 对象**。
 - 在说明中使用 `{baseDir}` 来引用 Skills 文件夹路径。
 - 可选的 frontmatter 键：
-  - `homepage` — 在 macOS Skills UI 中显示为"Website"的 URL（也支持通过 `metadata.openclaw.homepage`）。
+  - `homepage` — 在 macOS Skills UI 中显示为"Website"的 URL（也支持通过 `metadata.coderclaw.homepage`）。
   - `user-invocable` — `true|false`（默认：`true`）。当为 `true` 时，Skills 作为用户斜杠命令暴露。
   - `disable-model-invocation` — `true|false`（默认：`false`）。当为 `true` 时，Skills 从模型提示词中排除（仍可通过用户调用使用）。
   - `command-dispatch` — `tool`（可选）。当设置为 `tool` 时，斜杠命令绕过模型直接调度到工具。
@@ -105,7 +105,7 @@ name: nano-banana-pro
 description: Generate or edit images via Gemini 3 Pro Image
 metadata:
   {
-    "openclaw":
+    "coderclaw":
       {
         "requires": { "bins": ["uv"], "env": ["GEMINI_API_KEY"], "config": ["browser.enabled"] },
         "primaryEnv": "GEMINI_API_KEY",
@@ -123,7 +123,7 @@ metadata:
 - `requires.bins` — 列表；每个都必须存在于 `PATH` 中。
 - `requires.anyBins` — 列表；至少一个必须存在于 `PATH` 中。
 - `requires.env` — 列表；环境变量必须存在**或**在配置中提供。
-- `requires.config` — `openclaw.json` 路径列表，必须为真值。
+- `requires.config` — `coderclaw.json` 路径列表，必须为真值。
 - `primaryEnv` — 与 `skills.entries.<name>.apiKey` 关联的环境变量名称。
 - `install` — macOS Skills UI 使用的可选安装器规格数组（brew/node/go/uv/download）。
 
@@ -140,7 +140,7 @@ name: gemini
 description: Use Gemini CLI for coding assistance and Google search lookups.
 metadata:
   {
-    "openclaw":
+    "coderclaw":
       {
         "emoji": "♊️",
         "requires": { "bins": ["gemini"] },
@@ -164,13 +164,13 @@ metadata:
 - 如果列出了多个安装器，Gateway 网关会选择**单个**首选选项（可用时选择 brew，否则选择 node）。
 - 如果所有安装器都是 `download`，OpenClaw 会列出每个条目，以便你查看可用的构件。
 - 安装器规格可以包含 `os: ["darwin"|"linux"|"win32"]` 按平台过滤选项。
-- Node 安装遵循 `openclaw.json` 中的 `skills.install.nodeManager`（默认：npm；选项：npm/pnpm/yarn/bun）。这仅影响 **Skills 安装**；Gateway 网关运行时应仍为 Node（不推荐 Bun 用于 WhatsApp/Telegram）。
+- Node 安装遵循 `coderclaw.json` 中的 `skills.install.nodeManager`（默认：npm；选项：npm/pnpm/yarn/bun）。这仅影响 **Skills 安装**；Gateway 网关运行时应仍为 Node（不推荐 Bun 用于 WhatsApp/Telegram）。
 - Go 安装：如果缺少 `go` 且 `brew` 可用，Gateway 网关会首先通过 Homebrew 安装 Go，并在可能时将 `GOBIN` 设置为 Homebrew 的 `bin`。
 - Download 安装：`url`（必填）、`archive`（`tar.gz` | `tar.bz2` | `zip`）、`extract`（默认：检测到归档时自动）、`stripComponents`、`targetDir`（默认：`~/.openclaw/tools/<skillKey>`）。
 
 如果没有 `metadata.openclaw`，该 Skills 始终有资格（除非在配置中禁用或被 `skills.allowBundled` 阻止用于内置 Skills）。
 
-## 配置覆盖（`~/.openclaw/openclaw.json`）
+## 配置覆盖（`~/.openclaw/coderclaw.json`）
 
 内置/托管 Skills 可以被切换并提供环境变量值：
 
@@ -198,13 +198,13 @@ metadata:
 
 注意：如果 Skills 名称包含连字符，请用引号括起键名（JSON5 允许带引号的键名）。
 
-配置键默认匹配 **Skills 名称**。如果 Skills 定义了 `metadata.openclaw.skillKey`，请在 `skills.entries` 下使用该键。
+配置键默认匹配 **Skills 名称**。如果 Skills 定义了 `metadata.coderclaw.skillKey`，请在 `skills.entries` 下使用该键。
 
 规则：
 
 - `enabled: false` 禁用该 Skills，即使它是内置/已安装的。
 - `env`：**仅在**变量在进程中尚未设置时注入。
-- `apiKey`：为声明 `metadata.openclaw.primaryEnv` 的 Skills 提供的便捷字段。
+- `apiKey`：为声明 `metadata.coderclaw.primaryEnv` 的 Skills 提供的便捷字段。
 - `config`：用于自定义单 Skills 字段的可选容器；自定义键必须放在这里。
 - `allowBundled`：可选的仅用于**内置** Skills 的白名单。如果设置，只有列表中的内置 Skills 才有资格（托管/工作区 Skills 不受影响）。
 

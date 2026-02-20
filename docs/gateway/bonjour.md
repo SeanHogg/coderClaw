@@ -21,12 +21,12 @@ boundary. You can keep the same discovery UX by switching to **unicast DNS‑SD*
 High‑level steps:
 
 1. Run a DNS server on the gateway host (reachable over Tailnet).
-2. Publish DNS‑SD records for `_openclaw-gw._tcp` under a dedicated zone
-   (example: `openclaw.internal.`).
+2. Publish DNS‑SD records for `_coderclaw-gw._tcp` under a dedicated zone
+   (example: `coderclaw.internal.`).
 3. Configure Tailscale **split DNS** so your chosen domain resolves via that
    DNS server for clients (including iOS).
 
-OpenClaw supports any discovery domain; `openclaw.internal.` is just an example.
+OpenClaw supports any discovery domain; `coderclaw.internal.` is just an example.
 iOS/Android nodes browse both `local.` and your configured wide‑area domain.
 
 ### Gateway config (recommended)
@@ -47,13 +47,13 @@ coderclaw dns setup --apply
 This installs CoreDNS and configures it to:
 
 - listen on port 53 only on the gateway’s Tailscale interfaces
-- serve your chosen domain (example: `openclaw.internal.`) from `~/.coderclaw/dns/<domain>.db`
+- serve your chosen domain (example: `coderclaw.internal.`) from `~/.coderclaw/dns/<domain>.db`
 
 Validate from a tailnet‑connected machine:
 
 ```bash
-dns-sd -B _openclaw-gw._tcp openclaw.internal.
-dig @<TAILNET_IPV4> -p 53 _openclaw-gw._tcp.openclaw.internal PTR +short
+dns-sd -B _coderclaw-gw._tcp coderclaw.internal.
+dig @<TAILNET_IPV4> -p 53 _coderclaw-gw._tcp.coderclaw.internal PTR +short
 ```
 
 ### Tailscale DNS settings
@@ -64,7 +64,7 @@ In the Tailscale admin console:
 - Add split DNS so your discovery domain uses that nameserver.
 
 Once clients accept tailnet DNS, iOS nodes can browse
-`_openclaw-gw._tcp` in your discovery domain without multicast.
+`_coderclaw-gw._tcp` in your discovery domain without multicast.
 
 ### Gateway listener security (recommended)
 
@@ -73,16 +73,16 @@ access, bind explicitly and keep auth enabled.
 
 For tailnet‑only setups:
 
-- Set `gateway.bind: "tailnet"` in `~/.coderclaw/openclaw.json`.
+- Set `gateway.bind: "tailnet"` in `~/.coderclaw/coderclaw.json`.
 - Restart the Gateway (or restart the macOS menubar app).
 
 ## What advertises
 
-Only the Gateway advertises `_openclaw-gw._tcp`.
+Only the Gateway advertises `_coderclaw-gw._tcp`.
 
 ## Service types
 
-- `_openclaw-gw._tcp` — gateway transport beacon (used by macOS/iOS/Android nodes).
+- `_coderclaw-gw._tcp` — gateway transport beacon (used by macOS/iOS/Android nodes).
 
 ## TXT keys (non‑secret hints)
 
@@ -114,13 +114,13 @@ Useful built‑in tools:
 - Browse instances:
 
   ```bash
-  dns-sd -B _openclaw-gw._tcp local.
+  dns-sd -B _coderclaw-gw._tcp local.
   ```
 
 - Resolve one instance (replace `<instance>`):
 
   ```bash
-  dns-sd -L "<instance>" _openclaw-gw._tcp local.
+  dns-sd -L "<instance>" _coderclaw-gw._tcp local.
   ```
 
 If browsing works but resolving fails, you’re usually hitting a LAN policy or
@@ -137,7 +137,7 @@ The Gateway writes a rolling log file (printed on startup as
 
 ## Debugging on iOS node
 
-The iOS node uses `NWBrowser` to discover `_openclaw-gw._tcp`.
+The iOS node uses `NWBrowser` to discover `_coderclaw-gw._tcp`.
 
 To capture logs:
 
@@ -165,11 +165,11 @@ sequences (e.g. spaces become `\032`).
 
 ## Disabling / configuration
 
-- `OPENCLAW_DISABLE_BONJOUR=1` disables advertising (legacy: `OPENCLAW_DISABLE_BONJOUR`).
-- `gateway.bind` in `~/.coderclaw/openclaw.json` controls the Gateway bind mode.
-- `OPENCLAW_SSH_PORT` overrides the SSH port advertised in TXT (legacy: `OPENCLAW_SSH_PORT`).
-- `OPENCLAW_TAILNET_DNS` publishes a MagicDNS hint in TXT (legacy: `OPENCLAW_TAILNET_DNS`).
-- `OPENCLAW_CLI_PATH` overrides the advertised CLI path (legacy: `OPENCLAW_CLI_PATH`).
+- `CODERCLAW_DISABLE_BONJOUR=1` disables advertising (legacy: `CODERCLAW_DISABLE_BONJOUR`).
+- `gateway.bind` in `~/.coderclaw/coderclaw.json` controls the Gateway bind mode.
+- `CODERCLAW_SSH_PORT` overrides the SSH port advertised in TXT (legacy: `CODERCLAW_SSH_PORT`).
+- `CODERCLAW_TAILNET_DNS` publishes a MagicDNS hint in TXT (legacy: `CODERCLAW_TAILNET_DNS`).
+- `CODERCLAW_CLI_PATH` overrides the advertised CLI path (legacy: `CODERCLAW_CLI_PATH`).
 
 ## Related docs
 

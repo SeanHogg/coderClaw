@@ -17,7 +17,7 @@ For a high-level overview, see [Onboarding Wizard](/start/wizard).
 
 <Steps>
   <Step title="Existing config detection">
-    - If `~/.coderclaw/openclaw.json` exists, choose **Keep / Modify / Reset**.
+    - If `~/.coderclaw/coderclaw.json` exists, choose **Keep / Modify / Reset**.
     - Re-running the wizard does **not** wipe anything unless you explicitly choose **Reset**
       (or pass `--reset`).
     - If the config is invalid or contains legacy keys, the wizard stops and asks
@@ -56,7 +56,7 @@ For a high-level overview, see [Onboarding Wizard](/start/wizard).
     - More detail: [/concepts/oauth](/concepts/oauth)
     <Note>
     Headless/server tip: complete OAuth on a machine with a browser, then copy
-    `~/.coderclaw/credentials/oauth.json` (or `$OPENCLAW_STATE_DIR/credentials/oauth.json`) to the
+    `~/.coderclaw/credentials/oauth.json` (or `$CODERCLAW_STATE_DIR/credentials/oauth.json`) to the
     gateway host.
     </Note>
   </Step>
@@ -238,7 +238,7 @@ Notes:
 
 ## What the wizard writes
 
-Typical fields in `~/.coderclaw/openclaw.json`:
+Typical fields in `~/.coderclaw/coderclaw.json`:
 
 - `agents.defaults.workspace`
 - `agents.defaults.model` / `models.providers` (if Minimax chosen)

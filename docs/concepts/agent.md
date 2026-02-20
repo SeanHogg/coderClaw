@@ -13,7 +13,7 @@ OpenClaw runs a single embedded agent runtime derived from **pi-mono**.
 
 OpenClaw uses a single agent workspace directory (`agents.defaults.workspace`) as the agent’s **only** working directory (`cwd`) for tools and context.
 
-Recommended: use `coderclaw setup` to create `~/.coderclaw/openclaw.json` if missing and initialize the workspace files.
+Recommended: use `coderclaw setup` to create `~/.coderclaw/coderclaw.json` if missing and initialize the workspace files.
 
 Full workspace layout + backup guide: [Agent workspace](/concepts/agent-workspace)
 

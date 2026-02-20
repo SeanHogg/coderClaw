@@ -1,7 +1,7 @@
 ---
 name: coderclaw
 description: "Multi-agent developer system for code creation, review, testing, debugging, and architecture. Use for complex development workflows requiring orchestration of specialized agents. Provides deep codebase understanding through AST parsing, dependency graphs, and git history analysis."
-metadata: { "openclaw": { "emoji": "🛠️" } }
+metadata: { "coderclaw": { "emoji": "🛠️" } }
 ---
 
 # coderClaw: Multi-Agent Developer System

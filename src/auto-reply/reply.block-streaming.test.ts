@@ -52,7 +52,7 @@ function createReplyConfig(home: string, streamMode?: "block"): OpenClawConfig {
     agents: {
       defaults: {
         model: { primary: "anthropic/claude-opus-4-5" },
-        workspace: path.join(home, "openclaw"),
+        workspace: path.join(home, "coderclaw"),
       },
     },
     channels: { telegram: { allowFrom: ["*"], streamMode } },
@@ -90,7 +90,7 @@ async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
 
 describe("block streaming", () => {
   beforeEach(() => {
-    vi.stubEnv("OPENCLAW_TEST_FAST", "1");
+    vi.stubEnv("CODERCLAW_TEST_FAST", "1");
     piEmbeddedMock.abortEmbeddedPiRun.mockReset().mockReturnValue(false);
     piEmbeddedMock.queueEmbeddedPiMessage.mockReset().mockReturnValue(false);
     piEmbeddedMock.isEmbeddedPiRunActive.mockReset().mockReturnValue(false);

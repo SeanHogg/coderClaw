@@ -50,13 +50,13 @@ x-i18n:
 ## 环境变量覆盖（一次性）
 
 ```bash
-OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
+CODERCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
 禁用所有标志：
 
 ```bash
-OPENCLAW_DIAGNOSTICS=0
+CODERCLAW_DIAGNOSTICS=0
 ```
 
 ## 日志存储位置
@@ -89,7 +89,7 @@ rg "telegram http error" /tmp/openclaw/openclaw-*.log
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-对于远程 Gateway 网关，你也可以使用 `openclaw logs --follow`（参见 [/cli/logs](/cli/logs)）。
+对于远程 Gateway 网关，你也可以使用 `coderclaw logs --follow`（参见 [/cli/logs](/cli/logs)）。
 
 ## 注意事项
 
