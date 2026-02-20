@@ -134,12 +134,13 @@ export type OpenClawPackageManifest = {
 };
 
 export type ManifestKey = typeof MANIFEST_KEY;
+type AnyManifestKey = ManifestKey | (typeof LEGACY_MANIFEST_KEYS)[number];
 
 export type PackageManifest = {
   name?: string;
   version?: string;
   description?: string;
-} & Partial<Record<ManifestKey | (typeof LEGACY_MANIFEST_KEYS)[number], OpenClawPackageManifest>>;
+} & Partial<Record<AnyManifestKey, OpenClawPackageManifest>>;
 
 export function getPackageManifestMetadata(
   manifest: PackageManifest | undefined,

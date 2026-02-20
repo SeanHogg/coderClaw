@@ -29,13 +29,12 @@ type PluginInstallLogger = {
   warn?: (message: string) => void;
 };
 
+type AnyManifestKey = typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number];
 type PackageManifest = {
   name?: string;
   version?: string;
   dependencies?: Record<string, string>;
-} & Partial<
-  Record<typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number], { extensions?: string[] }>
->;
+} & Partial<Record<AnyManifestKey, { extensions?: string[] }>>;
 
 export type InstallPluginResult =
   | {
