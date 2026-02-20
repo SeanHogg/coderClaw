@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { MANIFEST_KEY } from "../compat/legacy-names.js";
+import { LEGACY_MANIFEST_KEYS, MANIFEST_KEY } from "../compat/legacy-names.js";
 import { isRecord } from "../utils.js";
 import type { PluginConfigUiHint, PluginKind } from "./types.js";
 
@@ -134,12 +134,13 @@ export type OpenClawPackageManifest = {
 };
 
 export type ManifestKey = typeof MANIFEST_KEY;
+type AnyManifestKey = ManifestKey | (typeof LEGACY_MANIFEST_KEYS)[number];
 
 export type PackageManifest = {
   name?: string;
   version?: string;
   description?: string;
-} & Partial<Record<ManifestKey, OpenClawPackageManifest>>;
+} & Partial<Record<AnyManifestKey, OpenClawPackageManifest>>;
 
 export function getPackageManifestMetadata(
   manifest: PackageManifest | undefined,
@@ -147,5 +148,18 @@ export function getPackageManifestMetadata(
   if (!manifest) {
     return undefined;
   }
-  return manifest[MANIFEST_KEY];
+  // Check current key first, then fall back to legacy keys for backward compatibility.
+  const current = manifest[MANIFEST_KEY];
+  if (current !== undefined) {
+    return current;
+  }
+  for (const legacyKey of LEGACY_MANIFEST_KEYS) {
+    const legacy = (manifest as Record<string, unknown>)[legacyKey] as
+      | OpenClawPackageManifest
+      | undefined;
+    if (legacy !== undefined) {
+      return legacy;
+    }
+  }
+  return undefined;
 }

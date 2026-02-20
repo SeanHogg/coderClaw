@@ -1,14 +1,20 @@
 # Changelog
 
-Docs: https://docs.openclaw.ai
+Docs: https://docs.coderclaw.ai
 
-## 2026.2.20 (Unreleased)
+## 2026.2.20
 
 ### Changes
+
+- Branding: complete rename from `openclaw` to `coderclaw` across all runtime log prefixes, agent identity defaults, project manifest keys, and package description.
 
 ### Fixes
 
 - CLI: fix `[openclaw]` prefix in CLI error messages and process title; the CLI now correctly reports errors as `[coderclaw]`. Fix `DEFAULT_CLI_NAME`, update completion and update-command defaults to `coderclaw`.
+- Agents: fix default identity fallback prefix from `[openclaw]` to `[coderclaw]` in agent identity, model selection warnings, session transcript repair, and web auto-reply message prefix.
+- Infra: fix `[openclaw]` prefix in unhandled rejection handler, fatal error, and shell env fallback log messages.
+- macOS: fix `[openclaw]` prefix in relay and gateway daemon error messages.
+- Config: update `PROJECT_NAME` manifest key from `openclaw` to `coderclaw`; existing configs using the `openclaw` key remain compatible via `LEGACY_PROJECT_NAMES`.
 
 ## 2026.2.18
 

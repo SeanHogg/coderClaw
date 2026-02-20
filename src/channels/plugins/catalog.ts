@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { MANIFEST_KEY } from "../../compat/legacy-names.js";
+import { LEGACY_MANIFEST_KEYS, MANIFEST_KEY } from "../../compat/legacy-names.js";
 import { discoverOpenClawPlugins } from "../../plugins/discovery.js";
 import type { OpenClawPackageManifest } from "../../plugins/manifest.js";
 import type { PluginOrigin } from "../../plugins/types.js";
@@ -221,7 +221,12 @@ function buildCatalogEntry(candidate: {
 }
 
 function buildExternalCatalogEntry(entry: ExternalCatalogEntry): ChannelPluginCatalogEntry | null {
-  const manifest = entry[MANIFEST_KEY];
+  // Check current key first, then fall back to legacy keys for backward compatibility.
+  const manifest =
+    entry[MANIFEST_KEY] ??
+    LEGACY_MANIFEST_KEYS.map(
+      (k) => (entry as Record<string, unknown>)[k] as (typeof entry)[typeof MANIFEST_KEY],
+    ).find(Boolean);
   return buildCatalogEntry({
     packageName: entry.name,
     packageManifest: manifest,

@@ -162,8 +162,8 @@ describe("chrome extension relay server", () => {
     process.env.CODERCLAW_GATEWAY_TOKEN = "test-gateway-token";
     try {
       const headers = getChromeExtensionRelayAuthHeaders(`http://127.0.0.1:${port}`);
-      expect(Object.keys(headers)).toContain("x-openclaw-relay-token");
-      expect((headers["x-openclaw-relay-token"] ?? "").length).toBeGreaterThan(20);
+      expect(Object.keys(headers)).toContain("x-coderclaw-relay-token");
+      expect((headers["x-coderclaw-relay-token"] ?? "").length).toBeGreaterThan(20);
     } finally {
       if (prev === undefined) {
         delete process.env.CODERCLAW_GATEWAY_TOKEN;

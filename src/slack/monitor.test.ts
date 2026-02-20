@@ -132,7 +132,7 @@ describe("buildSlackSlashCommandMatcher", () => {
     const matcher = buildSlackSlashCommandMatcher("coderclaw");
 
     expect(matcher.test("coderclaw")).toBe(true);
-    expect(matcher.test("/openclaw")).toBe(true);
+    expect(matcher.test("/coderclaw")).toBe(true);
   });
 
   it("does not match similar names", () => {
