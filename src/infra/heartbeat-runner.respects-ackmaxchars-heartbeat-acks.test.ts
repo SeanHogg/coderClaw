@@ -221,8 +221,8 @@ describe("resolveHeartbeatIntervalMs", () => {
         tmpDir,
         storePath,
         replySpy,
-        replyText: "[openclaw] HEARTBEAT_OK all good",
-        messages: { responsePrefix: "[openclaw]" },
+        replyText: "[coderclaw] HEARTBEAT_OK all good",
+        messages: { responsePrefix: "[coderclaw]" },
       });
 
       expect(sendTelegram).not.toHaveBeenCalled();
