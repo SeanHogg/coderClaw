@@ -38,7 +38,7 @@ jobs:
           retention-days: 1
 
       - name: Test
-        run: pnpm test
+        run: pnpm canvas:a2ui:bundle && pnpm test
 
       - name: Check package
         run: pnpm release:check
