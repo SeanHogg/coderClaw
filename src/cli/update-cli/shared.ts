@@ -53,7 +53,7 @@ const CODERCLAW_REPO_URL = "https://github.com/SeanHogg/coderClaw.git";
 const MAX_LOG_CHARS = 8000;
 
 export const DEFAULT_PACKAGE_NAME = "coderclaw";
-const CORE_PACKAGE_NAMES = new Set([DEFAULT_PACKAGE_NAME, "openclaw"]);
+const CORE_PACKAGE_NAMES = new Set([DEFAULT_PACKAGE_NAME]);
 
 export function normalizeTag(value?: string | null): string | null {
   if (!value) {
@@ -62,9 +62,6 @@ export function normalizeTag(value?: string | null): string | null {
   const trimmed = value.trim();
   if (!trimmed) {
     return null;
-  }
-  if (trimmed.startsWith("openclaw@")) {
-    return trimmed.slice("openclaw@".length);
   }
   if (trimmed.startsWith(`${DEFAULT_PACKAGE_NAME}@`)) {
     return trimmed.slice(`${DEFAULT_PACKAGE_NAME}@`.length);
