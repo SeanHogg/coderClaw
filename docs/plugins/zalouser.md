@@ -27,7 +27,7 @@ If you use a remote Gateway, install/configure it on the **machine running the G
 ### Option A: install from npm
 
 ```bash
-openclaw plugins install @openclaw/zalouser
+coderclaw plugins install @openclaw/zalouser
 ```
 
 Restart the Gateway afterwards.
@@ -35,7 +35,7 @@ Restart the Gateway afterwards.
 ### Option B: install from a local folder (dev)
 
 ```bash
-openclaw plugins install ./extensions/zalouser
+coderclaw plugins install ./extensions/zalouser
 cd ./extensions/zalouser && pnpm install
 ```
 
@@ -67,11 +67,11 @@ Channel config lives under `channels.zalouser` (not `plugins.entries.*`):
 ## CLI
 
 ```bash
-openclaw channels login --channel zalouser
-openclaw channels logout --channel zalouser
-openclaw channels status --probe
-openclaw message send --channel zalouser --target <threadId> --message "Hello from OpenClaw"
-openclaw directory peers list --channel zalouser --query "name"
+coderclaw channels login --channel zalouser
+coderclaw channels logout --channel zalouser
+coderclaw channels status --probe
+coderclaw message send --channel zalouser --target <threadId> --message "Hello from OpenClaw"
+coderclaw directory peers list --channel zalouser --query "name"
 ```
 
 ## Agent tool

@@ -113,15 +113,15 @@ Use token auth as the default. It’s predictable and avoids needing any “inse
 
 ```bash
 # Keep the Gateway private on the VM
-openclaw config set gateway.bind loopback
+coderclaw config set gateway.bind loopback
 
 # Require auth for the Gateway + Control UI
-openclaw config set gateway.auth.mode token
-openclaw doctor --generate-gateway-token
+coderclaw config set gateway.auth.mode token
+coderclaw doctor --generate-gateway-token
 
 # Expose over Tailscale Serve (HTTPS + tailnet access)
-openclaw config set gateway.tailscale.mode serve
-openclaw config set gateway.trustedProxies '["127.0.0.1"]'
+coderclaw config set gateway.tailscale.mode serve
+coderclaw config set gateway.trustedProxies '["127.0.0.1"]'
 
 systemctl --user restart openclaw-gateway
 ```
@@ -193,7 +193,7 @@ This setup often removes the _need_ for extra host-based firewall rules purely t
 
 ### Still Recommended
 
-- **Credential permissions:** `chmod 700 ~/.openclaw`
+- **Credential permissions:** `chmod 700 ~/.coderclaw`
 - **Security audit:** `openclaw security audit`
 - **System updates:** `sudo apt update && sudo apt upgrade` regularly
 - **Monitor Tailscale:** Review devices in [Tailscale admin console](https://login.tailscale.com/admin)
@@ -249,8 +249,8 @@ sudo tailscale up --ssh --hostname=openclaw --reset
 ### Gateway won't start
 
 ```bash
-openclaw gateway status
-openclaw doctor --non-interactive
+coderclaw gateway status
+coderclaw doctor --non-interactive
 journalctl --user -u openclaw-gateway -n 50
 ```
 
@@ -283,13 +283,13 @@ Most npm packages work fine. For binaries, look for `linux-arm64` or `aarch64` r
 
 All state lives in:
 
-- `~/.openclaw/` — config, credentials, session data
-- `~/.openclaw/workspace/` — workspace (SOUL.md, memory, artifacts)
+- `~/.coderclaw/` — config, credentials, session data
+- `~/.coderclaw/workspace/` — workspace (SOUL.md, memory, artifacts)
 
 Back up periodically:
 
 ```bash
-tar -czvf openclaw-backup.tar.gz ~/.openclaw ~/.openclaw/workspace
+tar -czvf openclaw-backup.tar.gz ~/.coderclaw ~/.coderclaw/workspace
 ```
 
 ---

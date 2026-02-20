@@ -74,7 +74,7 @@ SLACK_BOT_TOKEN=xoxb-...
       <Step title="Start gateway">
 
 ```bash
-openclaw gateway
+coderclaw gateway
 ```
 
       </Step>
@@ -152,7 +152,7 @@ For actions/directory reads, user token can be preferred when configured. For wr
     - `dm.groupEnabled` (group DMs default false)
     - `dm.groupChannels` (optional MPIM allowlist)
 
-    Pairing in DMs uses `openclaw pairing approve slack <code>`.
+    Pairing in DMs uses `coderclaw pairing approve slack <code>`.
 
   </Tab>
 
@@ -416,9 +416,9 @@ Notes:
     Useful commands:
 
 ```bash
-openclaw channels status --probe
-openclaw logs --follow
-openclaw doctor
+coderclaw channels status --probe
+coderclaw logs --follow
+coderclaw doctor
 ```
 
   </Accordion>
@@ -431,7 +431,7 @@ openclaw doctor
     - pairing approvals / allowlist entries
 
 ```bash
-openclaw pairing list slack
+coderclaw pairing list slack
 ```
 
   </Accordion>

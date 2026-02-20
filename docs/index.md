@@ -34,7 +34,7 @@ title: "CoderClaw"
     Install CoderClaw and bring up the Gateway in minutes.
   </Card>
   <Card title="Run the Wizard" href="/start/wizard" icon="sparkles">
-    Guided setup with `openclaw onboard` and pairing flows.
+    Guided setup with `coderclaw onboard` and pairing flows.
   </Card>
   <Card title="Open the Control UI" href="/web/control-ui" icon="layout-dashboard">
     Launch the browser dashboard for chat, config, and sessions.
@@ -43,7 +43,7 @@ title: "CoderClaw"
 
 ## What is CoderClaw?
 
-CoderClaw is a **distributed AI runtime** built on top of [OpenClaw](https://github.com/openclaw/openclaw)'s self-hosted gateway. It connects your favorite chat apps — WhatsApp, Telegram, Discord, iMessage, and more — to AI coding agents, with added **Phase 2 capabilities** for secure orchestration, distributed task execution, and team collaboration.
+CoderClaw is a **distributed AI runtime** built on top of [OpenClaw](https://github.com/SeanHogg/coderClaw)'s self-hosted gateway. It connects your favorite chat apps — WhatsApp, Telegram, Discord, iMessage, and more — to AI coding agents, with added **Phase 2 capabilities** for secure orchestration, distributed task execution, and team collaboration.
 
 **Who is it for?** Developers and teams who want a personal AI assistant with enterprise-ready features like RBAC, audit trails, and CI/CD integration — without giving up control of their data or relying on a hosted service.
 
@@ -99,18 +99,18 @@ The Gateway is the single source of truth for sessions, routing, and channel con
 <Steps>
   <Step title="Install CoderClaw">
     ```bash
-    npm install -g openclaw@latest
+    npm install -g coderclaw@latest
     ```
   </Step>
   <Step title="Onboard and install the service">
     ```bash
-    openclaw onboard --install-daemon
+    coderclaw onboard --install-daemon
     ```
   </Step>
   <Step title="Pair WhatsApp and start the Gateway">
     ```bash
-    openclaw channels login
-    openclaw gateway --port 18789
+    coderclaw channels login
+    coderclaw gateway --port 18789
     ```
   </Step>
 </Steps>
@@ -130,7 +130,7 @@ Open the browser Control UI after the Gateway starts.
 
 ## Configuration (optional)
 
-Config lives at `~/.openclaw/openclaw.json`.
+Config lives at `~/.coderclaw/openclaw.json`.
 
 - If you **do nothing**, CoderClaw uses the bundled Pi binary in RPC mode with per-sender sessions.
 - If you want to lock it down, start with `channels.whatsapp.allowFrom` and (for groups) mention rules.

@@ -1,11 +1,11 @@
 ---
 title: "Configuration Reference"
-description: "Complete field-by-field reference for ~/.openclaw/openclaw.json"
+description: "Complete field-by-field reference for ~/.coderclaw/openclaw.json"
 ---
 
 # Configuration Reference
 
-Every field available in `~/.openclaw/openclaw.json`. For a task-oriented overview, see [Configuration](/gateway/configuration).
+Every field available in `~/.coderclaw/openclaw.json`. For a task-oriented overview, see [Configuration](/gateway/configuration).
 
 Config format is **JSON5** (comments + trailing commas allowed). All fields are optional — OpenClaw uses safe defaults when omitted.
 
@@ -83,7 +83,7 @@ WhatsApp runs through the gateway's web channel (Baileys Web). It starts automat
         default: {},
         personal: {},
         biz: {
-          // authDir: "~/.openclaw/credentials/whatsapp/biz",
+          // authDir: "~/.coderclaw/credentials/whatsapp/biz",
         },
       },
     },
@@ -92,7 +92,7 @@ WhatsApp runs through the gateway's web channel (Baileys Web). It starts automat
 ```
 
 - Outbound commands default to account `default` if present; otherwise the first configured account id (sorted).
-- Legacy single-account Baileys auth dir is migrated by `openclaw doctor` into `whatsapp/default`.
+- Legacy single-account Baileys auth dir is migrated by `coderclaw doctor` into `whatsapp/default`.
 - Per-account overrides: `channels.whatsapp.accounts.<id>.sendReadReceipts`, `channels.whatsapp.accounts.<id>.dmPolicy`, `channels.whatsapp.accounts.<id>.allowFrom`.
 
 </Accordion>
@@ -341,7 +341,7 @@ WhatsApp runs through the gateway's web channel (Baileys Web). It starts automat
 
 ### Mattermost
 
-Mattermost ships as a plugin: `openclaw plugins install @openclaw/mattermost`.
+Mattermost ships as a plugin: `coderclaw plugins install @openclaw/mattermost`.
 
 ```json5
 {
@@ -549,11 +549,11 @@ Include your own number in `allowFrom` to enable self-chat mode (ignores native 
 
 ### `agents.defaults.workspace`
 
-Default: `~/.openclaw/workspace`.
+Default: `~/.coderclaw/workspace`.
 
 ```json5
 {
-  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
+  agents: { defaults: { workspace: "~/.coderclaw/workspace" } },
 }
 ```
 
@@ -865,7 +865,7 @@ Optional **Docker sandboxing** for the embedded agent. See [Sandboxing](/gateway
         mode: "non-main", // off | non-main | all
         scope: "agent", // session | agent | shared
         workspaceAccess: "none", // none | ro | rw
-        workspaceRoot: "~/.openclaw/sandboxes",
+        workspaceRoot: "~/.coderclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
           containerPrefix: "openclaw-sbx-",
@@ -937,7 +937,7 @@ Optional **Docker sandboxing** for the embedded agent. See [Sandboxing](/gateway
 
 **Workspace access:**
 
-- `none`: per-scope sandbox workspace under `~/.openclaw/sandboxes`
+- `none`: per-scope sandbox workspace under `~/.coderclaw/sandboxes`
 - `ro`: sandbox workspace at `/workspace`, agent workspace mounted read-only at `/agent`
 - `rw`: agent workspace mounted read/write at `/workspace`
 
@@ -979,8 +979,8 @@ scripts/sandbox-browser-setup.sh   # optional browser image
         id: "main",
         default: true,
         name: "Main Agent",
-        workspace: "~/.openclaw/workspace",
-        agentDir: "~/.openclaw/agents/main/agent",
+        workspace: "~/.coderclaw/workspace",
+        agentDir: "~/.coderclaw/agents/main/agent",
         model: "anthropic/claude-opus-4-6", // or { primary, fallbacks }
         identity: {
           name: "Samantha",
@@ -1020,8 +1020,8 @@ Run multiple isolated agents inside one Gateway. See [Multi-Agent](/concepts/mul
 {
   agents: {
     list: [
-      { id: "home", default: true, workspace: "~/.openclaw/workspace-home" },
-      { id: "work", workspace: "~/.openclaw/workspace-work" },
+      { id: "home", default: true, workspace: "~/.coderclaw/workspace-home" },
+      { id: "work", workspace: "~/.coderclaw/workspace-work" },
     ],
   },
   bindings: [
@@ -1059,7 +1059,7 @@ Within each tier, the first matching `bindings` entry wins.
     list: [
       {
         id: "personal",
-        workspace: "~/.openclaw/workspace-personal",
+        workspace: "~/.coderclaw/workspace-personal",
         sandbox: { mode: "off" },
       },
     ],
@@ -1077,7 +1077,7 @@ Within each tier, the first matching `bindings` entry wins.
     list: [
       {
         id: "family",
-        workspace: "~/.openclaw/workspace-family",
+        workspace: "~/.coderclaw/workspace-family",
         sandbox: { mode: "all", scope: "agent", workspaceAccess: "ro" },
         tools: {
           allow: [
@@ -1106,7 +1106,7 @@ Within each tier, the first matching `bindings` entry wins.
     list: [
       {
         id: "public",
-        workspace: "~/.openclaw/workspace-public",
+        workspace: "~/.coderclaw/workspace-public",
         sandbox: { mode: "all", scope: "agent", workspaceAccess: "none" },
         tools: {
           allow: [
@@ -1169,7 +1169,7 @@ See [Multi-Agent Sandbox & Tools](/tools/multi-agent-sandbox-tools) for preceden
       group: { mode: "idle", idleMinutes: 120 },
     },
     resetTriggers: ["/new", "/reset"],
-    store: "~/.openclaw/agents/{agentId}/sessions/sessions.json",
+    store: "~/.coderclaw/agents/{agentId}/sessions/sessions.json",
     maintenance: {
       mode: "warn", // warn | enforce
       pruneAfter: "30d",
@@ -1277,7 +1277,7 @@ Batches rapid text-only messages from the same sender into a single agent turn. 
       modelOverrides: { enabled: true },
       maxTextLength: 4000,
       timeoutMs: 30000,
-      prefsPath: "~/.openclaw/settings/tts.json",
+      prefsPath: "~/.coderclaw/settings/tts.json",
       elevenlabs: {
         apiKey: "elevenlabs_api_key",
         baseUrl: "https://api.elevenlabs.io",
@@ -1606,7 +1606,7 @@ Notes:
 
 ## Custom providers and base URLs
 
-OpenClaw uses the pi-coding-agent model catalog. Add custom providers via `models.providers` in config or `~/.openclaw/agents/<agentId>/agent/models.json`.
+OpenClaw uses the pi-coding-agent model catalog. Add custom providers via `models.providers` in config or `~/.coderclaw/agents/<agentId>/agent/models.json`.
 
 ```json5
 {
@@ -1690,7 +1690,7 @@ Use `cerebras/zai-glm-4.7` for Cerebras; `zai/glm-4.7` for Z.AI direct.
 }
 ```
 
-Set `OPENCODE_API_KEY` (or `OPENCODE_ZEN_API_KEY`). Shortcut: `openclaw onboard --auth-choice opencode-zen`.
+Set `OPENCODE_API_KEY` (or `OPENCODE_ZEN_API_KEY`). Shortcut: `coderclaw onboard --auth-choice opencode-zen`.
 
 </Accordion>
 
@@ -1707,7 +1707,7 @@ Set `OPENCODE_API_KEY` (or `OPENCODE_ZEN_API_KEY`). Shortcut: `openclaw onboard 
 }
 ```
 
-Set `ZAI_API_KEY`. `z.ai/*` and `z-ai/*` are accepted aliases. Shortcut: `openclaw onboard --auth-choice zai-api-key`.
+Set `ZAI_API_KEY`. `z.ai/*` and `z-ai/*` are accepted aliases. Shortcut: `coderclaw onboard --auth-choice zai-api-key`.
 
 - General endpoint: `https://api.z.ai/api/paas/v4`
 - Coding endpoint (default): `https://api.z.ai/api/coding/paas/v4`
@@ -1750,7 +1750,7 @@ Set `ZAI_API_KEY`. `z.ai/*` and `z-ai/*` are accepted aliases. Shortcut: `opencl
 }
 ```
 
-For the China endpoint: `baseUrl: "https://api.moonshot.cn/v1"` or `openclaw onboard --auth-choice moonshot-api-key-cn`.
+For the China endpoint: `baseUrl: "https://api.moonshot.cn/v1"` or `coderclaw onboard --auth-choice moonshot-api-key-cn`.
 
 </Accordion>
 
@@ -1768,7 +1768,7 @@ For the China endpoint: `baseUrl: "https://api.moonshot.cn/v1"` or `openclaw onb
 }
 ```
 
-Anthropic-compatible, built-in provider. Shortcut: `openclaw onboard --auth-choice kimi-code-api-key`.
+Anthropic-compatible, built-in provider. Shortcut: `coderclaw onboard --auth-choice kimi-code-api-key`.
 
 </Accordion>
 
@@ -1807,7 +1807,7 @@ Anthropic-compatible, built-in provider. Shortcut: `openclaw onboard --auth-choi
 }
 ```
 
-Base URL should omit `/v1` (Anthropic client appends it). Shortcut: `openclaw onboard --auth-choice synthetic-api-key`.
+Base URL should omit `/v1` (Anthropic client appends it). Shortcut: `coderclaw onboard --auth-choice synthetic-api-key`.
 
 </Accordion>
 
@@ -1847,7 +1847,7 @@ Base URL should omit `/v1` (Anthropic client appends it). Shortcut: `openclaw on
 }
 ```
 
-Set `MINIMAX_API_KEY`. Shortcut: `openclaw onboard --auth-choice minimax-api`.
+Set `MINIMAX_API_KEY`. Shortcut: `coderclaw onboard --auth-choice minimax-api`.
 
 </Accordion>
 
@@ -1911,7 +1911,7 @@ See [Local Models](/gateway/local-models). TL;DR: run MiniMax M2.1 via LM Studio
 }
 ```
 
-- Loaded from `~/.openclaw/extensions`, `<workspace>/.openclaw/extensions`, plus `plugins.load.paths`.
+- Loaded from `~/.coderclaw/extensions`, `<workspace>/.openclaw/extensions`, plus `plugins.load.paths`.
 - **Config changes require a gateway restart.**
 - `allow`: optional allowlist (only listed plugins load). `deny` wins.
 
@@ -2049,12 +2049,12 @@ See [Plugins](/tools/plugin).
 Run multiple gateways on one host with unique ports and state dirs:
 
 ```bash
-OPENCLAW_CONFIG_PATH=~/.openclaw/a.json \
-OPENCLAW_STATE_DIR=~/.openclaw-a \
-openclaw gateway --port 19001
+OPENCLAW_CONFIG_PATH=~/.coderclaw/a.json \
+OPENCLAW_STATE_DIR=~/.coderclaw-a \
+coderclaw gateway --port 19001
 ```
 
-Convenience flags: `--dev` (uses `~/.openclaw-dev` + port `19001`), `--profile <name>` (uses `~/.openclaw-<name>`).
+Convenience flags: `--dev` (uses `~/.coderclaw-dev` + port `19001`), `--profile <name>` (uses `~/.openclaw-<name>`).
 
 See [Multiple Gateways](/gateway/multiple-gateways).
 
@@ -2074,7 +2074,7 @@ See [Multiple Gateways](/gateway/multiple-gateways).
     allowedSessionKeyPrefixes: ["hook:"],
     allowedAgentIds: ["hooks", "main"],
     presets: ["gmail"],
-    transformsDir: "~/.openclaw/hooks/transforms",
+    transformsDir: "~/.coderclaw/hooks/transforms",
     mappings: [
       {
         match: { path: "gmail" },
@@ -2152,7 +2152,7 @@ Auth: `Authorization: Bearer <token>` or `x-openclaw-token: <token>`.
 ```json5
 {
   canvasHost: {
-    root: "~/.openclaw/workspace/canvas",
+    root: "~/.coderclaw/workspace/canvas",
     liveReload: true,
     // enabled: false, // or OPENCLAW_SKIP_CANVAS_HOST=1
   },
@@ -2201,9 +2201,9 @@ Auth: `Authorization: Bearer <token>` or `x-openclaw-token: <token>`.
 }
 ```
 
-Writes a unicast DNS-SD zone under `~/.openclaw/dns/`. For cross-network discovery, pair with a DNS server (CoreDNS recommended) + Tailscale split DNS.
+Writes a unicast DNS-SD zone under `~/.coderclaw/dns/`. For cross-network discovery, pair with a DNS server (CoreDNS recommended) + Tailscale split DNS.
 
-Setup: `openclaw dns setup --apply`.
+Setup: `coderclaw dns setup --apply`.
 
 ---
 
@@ -2227,7 +2227,7 @@ Setup: `openclaw dns setup --apply`.
 ```
 
 - Inline env vars are only applied if the process env is missing the key.
-- `.env` files: CWD `.env` + `~/.openclaw/.env` (neither overrides existing vars).
+- `.env` files: CWD `.env` + `~/.coderclaw/.env` (neither overrides existing vars).
 - `shellEnv`: imports missing expected keys from your login shell profile.
 - See [Environment](/help/environment) for full precedence.
 
@@ -2267,7 +2267,7 @@ Reference env vars in any config string with `${VAR_NAME}`:
 ```
 
 - Per-agent auth profiles stored at `<agentDir>/auth-profiles.json`.
-- Legacy OAuth imports from `~/.openclaw/credentials/oauth.json`.
+- Legacy OAuth imports from `~/.coderclaw/credentials/oauth.json`.
 - See [OAuth](/concepts/oauth).
 
 ---
@@ -2341,7 +2341,7 @@ Written by the macOS onboarding assistant. Derives defaults:
 
 ## Bridge (legacy, removed)
 
-Current builds no longer include the TCP bridge. Nodes connect over the Gateway WebSocket. `bridge.*` keys are no longer part of the config schema (validation fails until removed; `openclaw doctor --fix` can strip unknown keys).
+Current builds no longer include the TCP bridge. Nodes connect over the Gateway WebSocket. `bridge.*` keys are no longer part of the config schema (validation fails until removed; `coderclaw doctor --fix` can strip unknown keys).
 
 <Accordion title="Legacy bridge config (historical reference)">
 
@@ -2419,7 +2419,7 @@ Template placeholders expanded in `tools.media.*.models[].args`:
 Split config into multiple files:
 
 ```json5
-// ~/.openclaw/openclaw.json
+// ~/.coderclaw/openclaw.json
 {
   gateway: { port: 18789 },
   agents: { $include: "./agents.json5" },

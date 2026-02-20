@@ -41,7 +41,7 @@ x-i18n:
     OpenClawをインストールし、数分でGatewayを起動できます。
   </Card>
   <Card title="ウィザードを実行" href="/start/wizard" icon="sparkles">
-    `openclaw onboard`とペアリングフローによるガイド付きセットアップ。
+    `coderclaw onboard`とペアリングフローによるガイド付きセットアップ。
   </Card>
   <Card title="Control UIを開く" href="/web/control-ui" icon="layout-dashboard">
     チャット、設定、セッション用のブラウザダッシュボードを起動します。
@@ -92,18 +92,18 @@ Gatewayは、セッション、ルーティング、チャネル接続の信頼�
 <Steps>
   <Step title="OpenClawをインストール">
     ```bash
-    npm install -g openclaw@latest
+    npm install -g coderclaw@latest
     ```
   </Step>
   <Step title="オンボーディングとサービスのインストール">
     ```bash
-    openclaw onboard --install-daemon
+    coderclaw onboard --install-daemon
     ```
   </Step>
   <Step title="WhatsAppをペアリングしてGatewayを起動">
     ```bash
-    openclaw channels login
-    openclaw gateway --port 18789
+    coderclaw channels login
+    coderclaw gateway --port 18789
     ```
   </Step>
 </Steps>
@@ -123,7 +123,7 @@ Gatewayの起動後、ブラウザでControl UIを開きます。
 
 ## 設定（オプション）
 
-設定は`~/.openclaw/openclaw.json`にあります。
+設定は`~/.coderclaw/openclaw.json`にあります。
 
 - **何もしなければ**、OpenClawはバンドルされたPiバイナリをRPCモードで使用し、送信者ごとのセッションを作成します。
 - 制限を設けたい場合は、`channels.whatsapp.allowFrom`と（グループの場合）メンションルールから始めてください。

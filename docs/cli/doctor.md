@@ -1,12 +1,12 @@
 ---
-summary: "CLI reference for `openclaw doctor` (health checks + guided repairs)"
+summary: "CLI reference for `coderclaw doctor` (health checks + guided repairs)"
 read_when:
   - You have connectivity/auth issues and want guided fixes
   - You updated and want a sanity check
 title: "doctor"
 ---
 
-# `openclaw doctor`
+# `coderclaw doctor`
 
 Health checks + quick fixes for the gateway and channels.
 
@@ -18,15 +18,15 @@ Related:
 ## Examples
 
 ```bash
-openclaw doctor
-openclaw doctor --repair
-openclaw doctor --deep
+coderclaw doctor
+coderclaw doctor --repair
+coderclaw doctor --deep
 ```
 
 Notes:
 
 - Interactive prompts (like keychain/OAuth fixes) only run when stdin is a TTY and `--non-interactive` is **not** set. Headless runs (cron, Telegram, no terminal) will skip prompts.
-- `--fix` (alias for `--repair`) writes a backup to `~/.openclaw/openclaw.json.bak` and drops unknown config keys, listing each removal.
+- `--fix` (alias for `--repair`) writes a backup to `~/.coderclaw/openclaw.json.bak` and drops unknown config keys, listing each removal.
 
 ## macOS: `launchctl` env overrides
 

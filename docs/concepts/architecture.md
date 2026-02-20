@@ -11,7 +11,7 @@ Last updated: 2026-02-19
 
 ## Overview
 
-CoderClaw extends [OpenClaw](https://github.com/openclaw/openclaw)'s WebSocket gateway with **Phase 2 distributed runtime capabilities**:
+CoderClaw extends [OpenClaw](https://github.com/SeanHogg/coderClaw)'s WebSocket gateway with **Phase 2 distributed runtime capabilities**:
 
 - A single long‑lived **Gateway** owns all messaging surfaces (WhatsApp via
   Baileys, Telegram via grammY, Slack, Discord, Signal, iMessage, WebChat).
@@ -40,17 +40,20 @@ CoderClaw extends [OpenClaw](https://github.com/openclaw/openclaw)'s WebSocket g
 ### Phase 2 Runtime Components
 
 **Transport Abstraction Layer**:
+
 - Protocol-agnostic interface for local/remote task execution
 - Pluggable adapters (Local, HTTP, WebSocket, gRPC)
 - Runtime status monitoring and discovery
 
 **Distributed Task Engine**:
+
 - Formal state machine (PENDING → PLANNING → RUNNING → COMPLETED/FAILED/CANCELLED)
 - Globally unique task IDs with persistence
 - Complete audit trail and resumability
 - Task relationships and progress tracking
 
 **Security Service**:
+
 - Multi-provider authentication (OIDC, GitHub, Google, Local)
 - Device trust levels (trusted, verified, untrusted)
 - Role-based access control (RBAC) with built-in roles
@@ -151,7 +154,7 @@ Details: [Gateway protocol](/gateway/protocol), [Pairing](/channels/pairing),
 
 ## Operations snapshot
 
-- Start: `openclaw gateway` (foreground, logs to stdout).
+- Start: `coderclaw gateway` (foreground, logs to stdout).
 - Health: `health` over WS (also included in `hello-ok`).
 - Supervision: launchd/systemd for auto‑restart.
 

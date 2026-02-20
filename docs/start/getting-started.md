@@ -11,7 +11,7 @@ title: "Getting Started"
 Goal: go from zero to a first working chat with minimal setup.
 
 <Info>
-Fastest chat: open the Control UI (no channel setup needed). Run `openclaw dashboard`
+Fastest chat: open the Control UI (no channel setup needed). Run `coderclaw dashboard`
 and chat in the browser, or open `http://127.0.0.1:18789/` on the
 <Tooltip headline="Gateway host" tip="The machine running the CoderClaw gateway service.">gateway host</Tooltip>.
 Docs: [Dashboard](/web/dashboard) and [Control UI](/web/control-ui).
@@ -49,13 +49,13 @@ Check your Node version with `node --version` if you are unsure.
 
     <Note>
     Other install methods and requirements: [Install](/install).
-    Built on [OpenClaw](https://github.com/openclaw/openclaw)'s multi-channel gateway with Phase 2 enhancements.
+    Built on [OpenClaw](https://github.com/SeanHogg/coderClaw)'s multi-channel gateway with Phase 2 enhancements.
     </Note>
 
   </Step>
   <Step title="Run the onboarding wizard">
     ```bash
-    openclaw onboard --install-daemon
+    coderclaw onboard --install-daemon
     ```
 
     The wizard configures auth, gateway settings, and optional channels.
@@ -66,13 +66,13 @@ Check your Node version with `node --version` if you are unsure.
     If you installed the service, it should already be running:
 
     ```bash
-    openclaw gateway status
+    coderclaw gateway status
     ```
 
   </Step>
   <Step title="Open the Control UI">
     ```bash
-    openclaw dashboard
+    coderclaw dashboard
     ```
   </Step>
 </Steps>
@@ -88,7 +88,7 @@ If the Control UI loads, your Gateway is ready for use.
     Useful for quick tests or troubleshooting.
 
     ```bash
-    openclaw gateway --port 18789
+    coderclaw gateway --port 18789
     ```
 
   </Accordion>
@@ -96,7 +96,7 @@ If the Control UI loads, your Gateway is ready for use.
     Requires a configured channel.
 
     ```bash
-    openclaw message send --target +15555550123 --message "Hello from CoderClaw"
+    coderclaw message send --target +15555550123 --message "Hello from CoderClaw"
     ```
 
   </Accordion>

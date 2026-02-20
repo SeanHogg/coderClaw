@@ -1,12 +1,12 @@
 ---
-summary: "CLI reference for `openclaw models` (status/list/set/scan, aliases, fallbacks, auth)"
+summary: "CLI reference for `coderclaw models` (status/list/set/scan, aliases, fallbacks, auth)"
 read_when:
   - You want to change default models or view provider auth status
   - You want to scan available models/providers and debug auth profiles
 title: "models"
 ---
 
-# `openclaw models`
+# `coderclaw models`
 
 Model discovery, scanning, and configuration (default model, fallbacks, auth profiles).
 
@@ -18,13 +18,13 @@ Related:
 ## Common commands
 
 ```bash
-openclaw models status
-openclaw models list
-openclaw models set <model-or-alias>
-openclaw models scan
+coderclaw models status
+coderclaw models list
+coderclaw models set <model-or-alias>
+coderclaw models scan
 ```
 
-`openclaw models status` shows the resolved default/fallbacks plus an auth overview.
+`coderclaw models status` shows the resolved default/fallbacks plus an auth overview.
 When provider usage snapshots are available, the OAuth/token status section includes
 provider usage headers.
 Add `--probe` to run live auth probes against each configured provider profile.
@@ -57,21 +57,21 @@ Options:
 ## Aliases + fallbacks
 
 ```bash
-openclaw models aliases list
-openclaw models fallbacks list
+coderclaw models aliases list
+coderclaw models fallbacks list
 ```
 
 ## Auth profiles
 
 ```bash
-openclaw models auth add
-openclaw models auth login --provider <id>
-openclaw models auth setup-token
-openclaw models auth paste-token
+coderclaw models auth add
+coderclaw models auth login --provider <id>
+coderclaw models auth setup-token
+coderclaw models auth paste-token
 ```
 
 `models auth login` runs a provider plugin’s auth flow (OAuth/API key). Use
-`openclaw plugins list` to see which providers are installed.
+`coderclaw plugins list` to see which providers are installed.
 
 Notes:
 

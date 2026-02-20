@@ -25,7 +25,7 @@ describe("multi-agent agentDir validation", () => {
 
   it("throws on shared agentDir during loadConfig()", async () => {
     await withTempHome(async (home) => {
-      const configDir = path.join(home, ".openclaw");
+      const configDir = path.join(home, ".coderclaw");
       await fs.mkdir(configDir, { recursive: true });
       await fs.writeFile(
         path.join(configDir, "openclaw.json"),
@@ -33,8 +33,8 @@ describe("multi-agent agentDir validation", () => {
           {
             agents: {
               list: [
-                { id: "a", agentDir: "~/.openclaw/agents/shared/agent" },
-                { id: "b", agentDir: "~/.openclaw/agents/shared/agent" },
+                { id: "a", agentDir: "~/.coderclaw/agents/shared/agent" },
+                { id: "b", agentDir: "~/.coderclaw/agents/shared/agent" },
               ],
             },
             bindings: [{ agentId: "a", match: { channel: "telegram" } }],

@@ -32,15 +32,15 @@ Pairing codes:
 ### Approve a sender
 
 ```bash
-openclaw pairing list telegram
-openclaw pairing approve telegram <CODE>
+coderclaw pairing list telegram
+coderclaw pairing approve telegram <CODE>
 ```
 
 Supported channels: `telegram`, `whatsapp`, `signal`, `imessage`, `discord`, `slack`, `feishu`.
 
 ### Where the state lives
 
-Stored under `~/.openclaw/credentials/`:
+Stored under `~/.coderclaw/credentials/`:
 
 - Pending requests: `<channel>-pairing.json`
 - Approved allowlist store: `<channel>-allowFrom.json`
@@ -72,21 +72,21 @@ Treat the setup code like a password while it is valid.
 ### Approve a node device
 
 ```bash
-openclaw devices list
-openclaw devices approve <requestId>
-openclaw devices reject <requestId>
+coderclaw devices list
+coderclaw devices approve <requestId>
+coderclaw devices reject <requestId>
 ```
 
 ### Node pairing state storage
 
-Stored under `~/.openclaw/devices/`:
+Stored under `~/.coderclaw/devices/`:
 
 - `pending.json` (short-lived; pending requests expire)
 - `paired.json` (paired devices + tokens)
 
 ### Notes
 
-- The legacy `node.pair.*` API (CLI: `openclaw nodes pending/approve`) is a
+- The legacy `node.pair.*` API (CLI: `coderclaw nodes pending/approve`) is a
   separate gateway-owned pairing store. WS nodes still require device pairing.
 
 ## Related docs

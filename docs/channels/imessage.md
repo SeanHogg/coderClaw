@@ -61,7 +61,7 @@ imsg rpc --help
       <Step title="Start gateway">
 
 ```bash
-openclaw gateway
+coderclaw gateway
 ```
 
       </Step>
@@ -69,8 +69,8 @@ openclaw gateway
       <Step title="Approve first DM pairing (default dmPolicy)">
 
 ```bash
-openclaw pairing list imessage
-openclaw pairing approve imessage <CODE>
+coderclaw pairing list imessage
+coderclaw pairing approve imessage <CODE>
 ```
 
         Pairing requests expire after 1 hour.
@@ -94,7 +94,7 @@ exec ssh -T gateway-host imsg "$@"
   channels: {
     imessage: {
       enabled: true,
-      cliPath: "~/.openclaw/scripts/imsg-ssh",
+      cliPath: "~/.coderclaw/scripts/imsg-ssh",
       remoteHost: "user@gateway-host", // used for SCP attachment fetches
       includeAttachments: true,
     },
@@ -209,7 +209,7 @@ imsg send <handle> "test"
   channels: {
     imessage: {
       enabled: true,
-      cliPath: "~/.openclaw/scripts/imsg-ssh",
+      cliPath: "~/.coderclaw/scripts/imsg-ssh",
       remoteHost: "bot@mac-mini.tailnet-1234.ts.net",
       includeAttachments: true,
       dbPath: "/Users/bot/Library/Messages/chat.db",
@@ -295,7 +295,7 @@ Disable:
 
 ```bash
 imsg rpc --help
-openclaw channels status --probe
+coderclaw channels status --probe
 ```
 
     If probe reports RPC unsupported, update `imsg`.
@@ -307,7 +307,7 @@ openclaw channels status --probe
 
     - `channels.imessage.dmPolicy`
     - `channels.imessage.allowFrom`
-    - pairing approvals (`openclaw pairing list imessage`)
+    - pairing approvals (`coderclaw pairing list imessage`)
 
   </Accordion>
 

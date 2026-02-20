@@ -76,7 +76,7 @@ openclaw --version
 ## 4) Run Onboarding
 
 ```bash
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 The wizard will walk you through:
@@ -90,7 +90,7 @@ The wizard will walk you through:
 
 ```bash
 # Check status
-openclaw status
+coderclaw status
 
 # Check service
 systemctl --user status openclaw-gateway.service
@@ -120,8 +120,8 @@ curl -fsSL https://tailscale.com/install.sh | sh
 tailscale up
 
 # Configure Gateway to use Tailscale Serve
-openclaw config set gateway.tailscale.mode serve
-openclaw gateway restart
+coderclaw config set gateway.tailscale.mode serve
+coderclaw gateway restart
 ```
 
 Open: `https://<magicdns>/`
@@ -134,8 +134,8 @@ Notes:
 **Option C: Tailnet bind (no Serve)**
 
 ```bash
-openclaw config set gateway.bind tailnet
-openclaw gateway restart
+coderclaw config set gateway.bind tailnet
+coderclaw gateway restart
 ```
 
 Open: `http://<tailscale-ip>:18789` (token required).
@@ -145,14 +145,14 @@ Open: `http://<tailscale-ip>:18789` (token required).
 ### Telegram
 
 ```bash
-openclaw pairing list telegram
-openclaw pairing approve telegram <CODE>
+coderclaw pairing list telegram
+coderclaw pairing approve telegram <CODE>
 ```
 
 ### WhatsApp
 
 ```bash
-openclaw channels login whatsapp
+coderclaw channels login whatsapp
 # Scan QR code
 ```
 
@@ -194,13 +194,13 @@ htop
 
 All state lives in:
 
-- `~/.openclaw/` — config, credentials, session data
-- `~/.openclaw/workspace/` — workspace (SOUL.md, memory, etc.)
+- `~/.coderclaw/` — config, credentials, session data
+- `~/.coderclaw/workspace/` — workspace (SOUL.md, memory, etc.)
 
 These survive reboots. Back them up periodically:
 
 ```bash
-tar -czvf openclaw-backup.tar.gz ~/.openclaw ~/.openclaw/workspace
+tar -czvf openclaw-backup.tar.gz ~/.coderclaw ~/.coderclaw/workspace
 ```
 
 ---
@@ -230,8 +230,8 @@ For the full setup guide, see [Oracle Cloud](/platforms/oracle). For signup tips
 ### Gateway won't start
 
 ```bash
-openclaw gateway status
-openclaw doctor --non-interactive
+coderclaw gateway status
+coderclaw doctor --non-interactive
 journalctl -u openclaw --no-pager -n 50
 ```
 

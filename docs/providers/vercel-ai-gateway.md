@@ -19,7 +19,7 @@ The [Vercel AI Gateway](https://vercel.com/ai-gateway) provides a unified API to
 1. Set the API key (recommended: store it for the Gateway):
 
 ```bash
-openclaw onboard --auth-choice ai-gateway-api-key
+coderclaw onboard --auth-choice ai-gateway-api-key
 ```
 
 2. Set a default model:
@@ -37,7 +37,7 @@ openclaw onboard --auth-choice ai-gateway-api-key
 ## Non-interactive example
 
 ```bash
-openclaw onboard --non-interactive \
+coderclaw onboard --non-interactive \
   --mode local \
   --auth-choice ai-gateway-api-key \
   --ai-gateway-api-key "$AI_GATEWAY_API_KEY"
@@ -46,5 +46,5 @@ openclaw onboard --non-interactive \
 ## Environment note
 
 If the Gateway runs as a daemon (launchd/systemd), make sure `AI_GATEWAY_API_KEY`
-is available to that process (for example, in `~/.openclaw/.env` or via
+is available to that process (for example, in `~/.coderclaw/.env` or via
 `env.shellEnv`).

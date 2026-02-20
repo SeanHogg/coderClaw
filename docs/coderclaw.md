@@ -5,6 +5,7 @@ coderClaw is a developer-first, multi-agent AI system designed for code creation
 ## Vision
 
 An AI assistant that:
+
 - **Understands your codebase deeply** through AST parsing, semantic analysis, and dependency graphs
 - **Coordinates specialized agents** to handle complex development workflows
 - **Maintains persistent context** about your project's architecture, rules, and patterns
@@ -18,6 +19,7 @@ An AI assistant that:
 CoderClaw builds and maintains a persistent, structured project knowledge model:
 
 #### AST Parsing & Semantic Analysis
+
 - **TypeScript/JavaScript Support**: Full syntax tree parsing
 - **Function Discovery**: Names, parameters, return types, visibility
 - **Class Analysis**: Inheritance, interfaces, methods, properties
@@ -25,6 +27,7 @@ CoderClaw builds and maintains a persistent, structured project knowledge model:
 - **Export/Import Analysis**: Cross-file reference tracking
 
 #### Code Maps & Dependency Graphs
+
 - **Semantic Code Maps**: Complete file-level structure
 - **Dependency Relationships**: File-to-file dependencies
 - **Impact Analysis**: Calculate change radius
@@ -32,6 +35,7 @@ CoderClaw builds and maintains a persistent, structured project knowledge model:
 - **Module Boundaries**: Suggest refactoring opportunities
 
 #### Git History Awareness
+
 - **Commit Analysis**: Track file evolution over time
 - **Authorship Tracking**: Identify code ownership (git blame)
 - **Change Patterns**: Detect frequently modified areas
@@ -39,7 +43,9 @@ CoderClaw builds and maintains a persistent, structured project knowledge model:
 - **Hotspot Detection**: Find high-churn problem areas
 
 #### Persistent Context
+
 All project knowledge is stored in `.coderClaw/`:
+
 - `context.yaml`: Project metadata, languages, frameworks, dependencies
 - `architecture.md`: Design documentation and patterns
 - `rules.yaml`: Coding standards, testing requirements, git conventions
@@ -52,11 +58,13 @@ All project knowledge is stored in `.coderClaw/`:
 Coordinate multiple specialized agents to work together on complex tasks:
 
 #### Dynamic Agent Spawning
+
 - **On-Demand Creation**: Spawn agents as needed
 - **Role Selection**: Choose appropriate agent for each subtask
 - **Resource Management**: Manage agent lifecycle
 
 #### Task Lifecycle Management
+
 - **State Machine**: PENDING → PLANNING → RUNNING → COMPLETED
 - **Progress Tracking**: Real-time status updates
 - **Dependency Resolution**: Respect task dependencies
@@ -64,19 +72,23 @@ Coordinate multiple specialized agents to work together on complex tasks:
 - **Audit Trail**: Complete event history
 
 #### Workflow Patterns
+
 Built-in patterns for common scenarios:
 
 **Feature Development**
+
 ```
 Architecture Advisor → Code Creator → Test Generator → Code Reviewer
 ```
 
 **Bug Fix**
+
 ```
 Bug Analyzer → Code Creator → Test Generator → Code Reviewer
 ```
 
 **Refactoring**
+
 ```
 Code Reviewer → Refactor Agent → Test Generator
 ```
@@ -85,11 +97,13 @@ Code Reviewer → Refactor Agent → Test Generator
 Define your own multi-step agent coordination with dependencies.
 
 #### Result Aggregation
+
 - **Structured Output**: JSON schemas for tool calls
 - **Summary Generation**: Combine insights from multiple agents
 - **Decision Support**: Present options with trade-off analysis
 
 #### Iterative Refinement
+
 - **Generate → Test Loop**: Automatic validation
 - **Debug → Re-run**: Fix issues and retry
 - **Review → Improve**: Incorporate feedback
@@ -99,8 +113,9 @@ Define your own multi-step agent coordination with dependencies.
 Built-in developer-centric agents:
 
 #### Code Creator
+
 - **Purpose**: Implements features and generates code
-- **Capabilities**: 
+- **Capabilities**:
   - Create new files and modules
   - Implement features from specifications
   - Generate boilerplate code
@@ -109,6 +124,7 @@ Built-in developer-centric agents:
 - **Focus**: Clean architecture, maintainability, best practices
 
 #### Code Reviewer
+
 - **Purpose**: Reviews code for quality, security, performance
 - **Capabilities**:
   - Identify bugs and logic errors
@@ -119,6 +135,7 @@ Built-in developer-centric agents:
 - **Focus**: Correctness, security, performance, standards
 
 #### Test Generator
+
 - **Purpose**: Creates comprehensive test suites
 - **Capabilities**:
   - Generate unit tests
@@ -129,6 +146,7 @@ Built-in developer-centric agents:
 - **Focus**: Behavior testing, coverage, maintainability
 
 #### Bug Analyzer
+
 - **Purpose**: Diagnoses and fixes bugs systematically
 - **Capabilities**:
   - Analyze error logs and stack traces
@@ -139,6 +157,7 @@ Built-in developer-centric agents:
 - **Focus**: Root cause analysis, minimal fixes, validation
 
 #### Refactor Agent
+
 - **Purpose**: Improves code structure while preserving behavior
 - **Capabilities**:
   - Identify code smells
@@ -149,6 +168,7 @@ Built-in developer-centric agents:
 - **Focus**: Maintainability, readability, behavior preservation
 
 #### Documentation Agent
+
 - **Purpose**: Creates clear, helpful documentation
 - **Capabilities**:
   - Write API documentation
@@ -159,6 +179,7 @@ Built-in developer-centric agents:
 - **Focus**: Clarity, completeness, examples
 
 #### Architecture Advisor
+
 - **Purpose**: Provides high-level design guidance
 - **Capabilities**:
   - Analyze system architecture
@@ -171,6 +192,7 @@ Built-in developer-centric agents:
 ### 4. Extensibility & Customization
 
 #### Custom Agent Roles
+
 Define project-specific agents in `.coderClaw/agents/`:
 
 ```yaml
@@ -195,12 +217,15 @@ thinking: medium
 ```
 
 #### Project-Specific Skills
+
 Add custom skills in `.coderClaw/skills/`:
+
 - Domain-specific operations
 - Tool integrations
 - Custom workflows
 
 #### Community Extensibility
+
 - Share agent definitions across projects
 - Build domain-specific agent libraries
 - Version control agent definitions
@@ -231,10 +256,10 @@ CoderClaw stores project-specific context in a `.coderClaw/` directory:
 
 ```bash
 # In your project directory
-openclaw coderclaw init
+coderclaw init
 
 # Or specify a path
-openclaw coderclaw init /path/to/project
+coderclaw init /path/to/project
 ```
 
 This creates the `.coderClaw/` directory with default configuration.
@@ -242,7 +267,7 @@ This creates the `.coderClaw/` directory with default configuration.
 ### Check Project Status
 
 ```bash
-openclaw coderclaw status
+coderclaw project status
 ```
 
 ## Using coderClaw
@@ -251,16 +276,16 @@ openclaw coderclaw status
 
 ```bash
 # Analyze codebase structure
-openclaw agent --message "Analyze the dependency graph" --thinking high
+coderclaw agent --message "Analyze the dependency graph" --thinking high
 
 # Create feature with multi-agent workflow
-openclaw agent --message "Create user authentication with tests and review" --thinking high
+coderclaw agent --message "Create user authentication with tests and review" --thinking high
 
 # Fix bug with systematic approach
-openclaw agent --message "Debug the memory leak in the parser module" --thinking high
+coderclaw agent --message "Debug the memory leak in the parser module" --thinking high
 
 # Refactor code
-openclaw agent --message "Refactor the API module for better modularity" --thinking high
+coderclaw agent --message "Refactor the API module for better modularity" --thinking high
 ```
 
 ### From Messaging Channels
@@ -282,13 +307,17 @@ Send messages to your connected channels (WhatsApp, Telegram, Slack, Discord, et
 Agents automatically have access to coderClaw tools in initialized projects:
 
 #### Code Analysis
+
 Analyze code structure and dependencies:
+
 ```
 code_analysis projectRoot:/path/to/project
 ```
 
 #### Project Knowledge
+
 Query project context and rules:
+
 ```
 project_knowledge projectRoot:/path/to/project query:all
 project_knowledge projectRoot:/path/to/project query:rules
@@ -296,7 +325,9 @@ project_knowledge projectRoot:/path/to/project query:architecture
 ```
 
 #### Git History
+
 Analyze git history and patterns:
+
 ```
 git_history projectRoot:/path/to/project
 git_history projectRoot:/path/to/project path:src/api/ limit:20
@@ -304,7 +335,9 @@ git_history projectRoot:/path/to/project author:john@example.com
 ```
 
 #### Orchestrate Workflows
+
 Create multi-agent workflows:
+
 ```
 # Feature development workflow
 orchestrate workflow:feature description:"Add user authentication"
@@ -317,6 +350,7 @@ orchestrate workflow:refactor description:"Refactor API module"
 ```
 
 #### Check Workflow Status
+
 ```
 workflow_status workflowId:abc-123-def
 ```
@@ -368,6 +402,7 @@ CoderClaw extends OpenClaw's existing capabilities:
 coderClaw is built on OpenClaw's infrastructure:
 
 ### Components
+
 - **Tool System**: Uses AgentTool interface for consistency
 - **Subagent Spawning**: Leverages existing subagent lifecycle management
 - **Session Management**: Integrates with OpenClaw's session tracking
@@ -376,6 +411,7 @@ coderClaw is built on OpenClaw's infrastructure:
 - **Security Service**: RBAC with identity and device trust
 
 ### Technology Stack
+
 - **AST Parsing**: TypeScript Compiler API
 - **Code Analysis**: Custom semantic analysis engine
 - **Dependency Graphs**: Graph-based relationship tracking
@@ -435,6 +471,7 @@ Planned features:
 We welcome contributions! See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 Priority areas:
+
 - Additional language support (AST parsers)
 - New agent role templates
 - Workflow pattern library

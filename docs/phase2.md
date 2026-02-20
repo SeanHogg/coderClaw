@@ -2,7 +2,7 @@
 
 CoderClaw Phase 2 introduces a networked, distributed AI node architecture with secure remote orchestration capabilities while maintaining deterministic execution and security boundaries.
 
-> **Foundation**: CoderClaw is built on [OpenClaw](https://github.com/openclaw/openclaw)'s proven multi-channel gateway architecture. Phase 2 adds enterprise-ready features for distributed execution, security, and team collaboration.
+> **Foundation**: CoderClaw is built on [OpenClaw](https://github.com/SeanHogg/coderClaw)'s proven multi-channel gateway architecture. Phase 2 adds enterprise-ready features for distributed execution, security, and team collaboration.
 
 ## Overview
 

@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `openclaw pairing` (approve/list pairing requests)"
+summary: "CLI reference for `coderclaw pairing` (approve/list pairing requests)"
 read_when:
   - You’re using pairing-mode DMs and need to approve senders
 title: "pairing"
 ---
 
-# `openclaw pairing`
+# `coderclaw pairing`
 
 Approve or inspect DM pairing requests (for channels that support pairing).
 
@@ -16,6 +16,6 @@ Related:
 ## Commands
 
 ```bash
-openclaw pairing list whatsapp
-openclaw pairing approve whatsapp <code> --notify
+coderclaw pairing list whatsapp
+coderclaw pairing approve whatsapp <code> --notify
 ```

@@ -8,17 +8,14 @@ import { initializeCoderClawProject, isCoderClawProject } from "../coderclaw/pro
 import { theme } from "../terminal/theme.js";
 
 export function createCoderClawCommand(): Command {
-  const cmd = new Command("coderclaw");
+  const cmd = new Command("project");
 
-  cmd
-    .description("Developer-first multi-agent AI system for code workflows")
-    .addCommand(createInitCommand())
-    .addCommand(createStatusCommand());
+  cmd.description("Manage coderClaw project context").addCommand(createStatusCommand());
 
   return cmd;
 }
 
-function createInitCommand(): Command {
+export function createInitCommand(): Command {
   return new Command("init")
     .description("Initialize a project with coderClaw")
     .argument("[path]", "Project directory path", ".")
@@ -122,7 +119,7 @@ function createStatusCommand(): Command {
 
       if (!isInitialized) {
         console.log(theme.warn("Project is not initialized with coderClaw"));
-        console.log(theme.muted(`Run 'openclaw coderclaw init' to initialize`));
+        console.log(theme.muted(`Run 'coderclaw init' to initialize`));
         return;
       }
 

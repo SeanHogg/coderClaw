@@ -13,7 +13,7 @@ OpenClaw runs a single embedded agent runtime derived from **pi-mono**.
 
 OpenClaw uses a single agent workspace directory (`agents.defaults.workspace`) as the agent’s **only** working directory (`cwd`) for tools and context.
 
-Recommended: use `openclaw setup` to create `~/.openclaw/openclaw.json` if missing and initialize the workspace files.
+Recommended: use `coderclaw setup` to create `~/.coderclaw/openclaw.json` if missing and initialize the workspace files.
 
 Full workspace layout + backup guide: [Agent workspace](/concepts/agent-workspace)
 
@@ -36,7 +36,7 @@ On the first turn of a new session, OpenClaw injects the contents of these files
 
 Blank files are skipped. Large files are trimmed and truncated with a marker so prompts stay lean (read the file for full content).
 
-If a file is missing, OpenClaw injects a single “missing file” marker line (and `openclaw setup` will create a safe default template).
+If a file is missing, OpenClaw injects a single “missing file” marker line (and `coderclaw setup` will create a safe default template).
 
 `BOOTSTRAP.md` is only created for a **brand new workspace** (no other bootstrap files present). If you delete it after completing the ritual, it should not be recreated on later restarts.
 
@@ -58,7 +58,7 @@ guidance for how _you_ want them used.
 OpenClaw loads skills from three locations (workspace wins on name conflict):
 
 - Bundled (shipped with the install)
-- Managed/local: `~/.openclaw/skills`
+- Managed/local: `~/.coderclaw/skills`
 - Workspace: `<workspace>/skills`
 
 Skills can be gated by config/env (see `skills` in [Gateway configuration](/gateway/configuration)).
@@ -74,7 +74,7 @@ OpenClaw reuses pieces of the pi-mono codebase (models/tools), but **session man
 
 Session transcripts are stored as JSONL at:
 
-- `~/.openclaw/agents/<agentId>/sessions/<SessionId>.jsonl`
+- `~/.coderclaw/agents/<agentId>/sessions/<SessionId>.jsonl`
 
 The session ID is stable and chosen by OpenClaw.
 Legacy Pi/Tau session folders are **not** read.

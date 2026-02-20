@@ -31,7 +31,7 @@ Notes:
 
 - `host` defaults to `sandbox`.
 - `elevated` is ignored when sandboxing is off (exec already runs on the host).
-- `gateway`/`node` approvals are controlled by `~/.openclaw/exec-approvals.json`.
+- `gateway`/`node` approvals are controlled by `~/.coderclaw/exec-approvals.json`.
 - `node` requires a paired node (companion app or headless node host).
 - If multiple nodes are available, set `exec.node` or `tools.exec.node` to select one.
 - On non-Windows hosts, exec uses `SHELL` when set; if `SHELL` is `fish`, it prefers `bash` (or `sh`)
@@ -81,8 +81,8 @@ Example:
 Per-agent node binding (use the agent list index in config):
 
 ```bash
-openclaw config get agents.list
-openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
+coderclaw config get agents.list
+coderclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 ```
 
 Control UI: the Nodes tab includes a small “Exec node binding” panel for the same settings.

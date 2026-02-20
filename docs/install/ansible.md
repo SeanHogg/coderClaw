@@ -9,7 +9,7 @@ title: "Ansible"
 
 # Ansible Installation
 
-The recommended way to deploy OpenClaw to production servers is via **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** — an automated installer with security-first architecture.
+The recommended way to deploy OpenClaw to production servers is via **[openclaw-ansible](https://github.com/SeanHogg/coderClaw-ansible)** — an automated installer with security-first architecture.
 
 ## Quick Start
 
@@ -19,7 +19,7 @@ One-command install:
 curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash
 ```
 
-> **📦 Full guide: [github.com/openclaw/openclaw-ansible](https://github.com/openclaw/openclaw-ansible)**
+> **📦 Full guide: [github.com/openclaw/openclaw-ansible](https://github.com/SeanHogg/coderClaw-ansible)**
 >
 > The openclaw-ansible repo is the source of truth for Ansible deployment. This page is a quick overview.
 
@@ -81,7 +81,7 @@ sudo systemctl restart openclaw
 
 # Provider login (run as openclaw user)
 sudo -i -u openclaw
-openclaw channels login
+coderclaw channels login
 ```
 
 ## Security Architecture
@@ -118,8 +118,8 @@ If you prefer manual control over the automation:
 sudo apt update && sudo apt install -y ansible git
 
 # 2. Clone repository
-git clone https://github.com/openclaw/openclaw-ansible.git
-cd openclaw-ansible
+git clone https://github.com/SeanHogg/coderClaw-ansible.git
+cd coderClaw-ansible
 
 # 3. Install Ansible collections
 ansible-galaxy collection install -r requirements.yml
@@ -138,7 +138,7 @@ The Ansible installer sets up OpenClaw for manual updates. See [Updating](/insta
 To re-run the Ansible playbook (e.g., for configuration changes):
 
 ```bash
-cd openclaw-ansible
+cd coderClaw-ansible
 ./run-playbook.sh
 ```
 
@@ -189,20 +189,20 @@ Make sure you're running as the `openclaw` user:
 
 ```bash
 sudo -i -u openclaw
-openclaw channels login
+coderclaw channels login
 ```
 
 ## Advanced Configuration
 
 For detailed security architecture and troubleshooting:
 
-- [Security Architecture](https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md)
-- [Technical Details](https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md)
-- [Troubleshooting Guide](https://github.com/openclaw/openclaw-ansible/blob/main/docs/troubleshooting.md)
+- [Security Architecture](https://github.com/SeanHogg/coderClaw-ansible/blob/main/docs/security.md)
+- [Technical Details](https://github.com/SeanHogg/coderClaw-ansible/blob/main/docs/architecture.md)
+- [Troubleshooting Guide](https://github.com/SeanHogg/coderClaw-ansible/blob/main/docs/troubleshooting.md)
 
 ## Related
 
-- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) — full deployment guide
+- [openclaw-ansible](https://github.com/SeanHogg/coderClaw-ansible) — full deployment guide
 - [Docker](/install/docker) — containerized gateway setup
 - [Sandboxing](/gateway/sandboxing) — agent sandbox configuration
 - [Multi-Agent Sandbox & Tools](/tools/multi-agent-sandbox-tools) — per-agent isolation

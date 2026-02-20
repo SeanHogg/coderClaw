@@ -84,12 +84,12 @@ describe("restart-helper", () => {
 
       const scriptPath = await prepareRestartScript({
         OPENCLAW_PROFILE: "default",
-        OPENCLAW_LAUNCHD_LABEL: "com.custom.openclaw",
+        OPENCLAW_LAUNCHD_LABEL: "com.custom.coderclaw",
       });
 
       expect(scriptPath).toBeTruthy();
       const content = await fs.readFile(scriptPath!, "utf-8");
-      expect(content).toContain("launchctl kickstart -k 'gui/501/com.custom.openclaw'");
+      expect(content).toContain("launchctl kickstart -k 'gui/501/com.custom.coderclaw'");
 
       if (scriptPath) {
         await fs.unlink(scriptPath);

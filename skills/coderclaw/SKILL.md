@@ -16,11 +16,11 @@ coderClaw is a developer-first multi-agent system for comprehensive software dev
 
 # Initialize coderClaw in current project
 
-openclaw coderclaw init
+coderclaw init
 
 # Check project status
 
-openclaw coderclaw status
+coderclaw project status
 \`\`\`
 
 ### Use coderClaw Tools
@@ -303,10 +303,10 @@ Workflows spawn subagents automatically:
 ### Project Not Initialized
 
 \`\`\`
-Error: No project knowledge found. Initialize with 'openclaw coderclaw init' first.
+Error: No project knowledge found. Initialize with 'coderclaw init' first.
 \`\`\`
 
-Solution: Run `openclaw coderclaw init` in your project directory.
+Solution: Run `coderclaw init` in your project directory.
 
 ### Code Analysis Fails
 

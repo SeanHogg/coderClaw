@@ -43,7 +43,7 @@ Recommended flow:
 - Run the gateway in dev mode:
   - `pnpm gateway:dev`
 - Trigger the agent directly:
-  - `pnpm openclaw agent --message "Hello" --thinking low`
+  - `pnpm coderclaw agent --message "Hello" --thinking low`
 - Use the TUI for interactive debugging:
   - `pnpm tui`
 
@@ -51,7 +51,7 @@ For tool call behavior, prompt for a `read` or `exec` action so you can see tool
 
 ## Clean Slate Reset
 
-State lives under the OpenClaw state directory. Default is `~/.openclaw`. If `OPENCLAW_STATE_DIR` is set, use that directory instead.
+State lives under the OpenClaw state directory. Default is `~/.coderclaw`. If `OPENCLAW_STATE_DIR` is set, use that directory instead.
 
 To reset everything:
 

@@ -71,15 +71,15 @@ The **installer script** is the recommended way to install OpenClaw. It handles 
     <Tabs>
       <Tab title="npm">
         ```bash
-        npm install -g openclaw@latest
-        openclaw onboard --install-daemon
+        npm install -g coderclaw@latest
+        coderclaw onboard --install-daemon
         ```
 
         <Accordion title="sharp build errors?">
           If you have libvips installed globally (common on macOS via Homebrew) and `sharp` fails, force prebuilt binaries:
 
           ```bash
-          SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
+          SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g coderclaw@latest
           ```
 
           If you see `sharp: Please add node-gyp to your dependencies`, either install build tooling (macOS: Xcode CLT + `npm install -g node-gyp`) or use the env var above.
@@ -87,9 +87,9 @@ The **installer script** is the recommended way to install OpenClaw. It handles 
       </Tab>
       <Tab title="pnpm">
         ```bash
-        pnpm add -g openclaw@latest
+        pnpm add -g coderclaw@latest
         pnpm approve-builds -g        # approve openclaw, node-llama-cpp, sharp, etc.
-        openclaw onboard --install-daemon
+        coderclaw onboard --install-daemon
         ```
 
         <Note>
@@ -105,11 +105,11 @@ The **installer script** is the recommended way to install OpenClaw. It handles 
 
     <Steps>
       <Step title="Clone and build">
-        Clone the [OpenClaw repo](https://github.com/openclaw/openclaw) and build:
+        Clone the [OpenClaw repo](https://github.com/SeanHogg/coderClaw) and build:
 
         ```bash
-        git clone https://github.com/openclaw/openclaw.git
-        cd openclaw
+        git clone https://github.com/SeanHogg/coderClaw.git
+        cd coderClaw
         pnpm install
         pnpm ui:build
         pnpm build
@@ -122,11 +122,11 @@ The **installer script** is the recommended way to install OpenClaw. It handles 
         pnpm link --global
         ```
 
-        Alternatively, skip the link and run commands via `pnpm openclaw ...` from inside the repo.
+        Alternatively, skip the link and run commands via `pnpm coderclaw ...` from inside the repo.
       </Step>
       <Step title="Run onboarding">
         ```bash
-        openclaw onboard --install-daemon
+        coderclaw onboard --install-daemon
         ```
       </Step>
     </Steps>
@@ -161,9 +161,9 @@ The **installer script** is the recommended way to install OpenClaw. It handles 
 Verify everything is working:
 
 ```bash
-openclaw doctor         # check for config issues
-openclaw status         # gateway status
-openclaw dashboard      # open the browser UI
+coderclaw doctor         # check for config issues
+coderclaw status         # gateway status
+coderclaw dashboard      # open the browser UI
 ```
 
 If you need custom runtime paths, use:

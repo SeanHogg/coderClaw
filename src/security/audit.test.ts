@@ -1491,8 +1491,8 @@ describe("security audit", () => {
       config: cfg,
       includeFilesystem: false,
       includeChannelSecurity: false,
-      stateDir: "/Users/test/Dropbox/.openclaw",
-      configPath: "/Users/test/Dropbox/.openclaw/openclaw.json",
+      stateDir: "/Users/test/Dropbox/.coderclaw",
+      configPath: "/Users/test/Dropbox/.coderclaw/openclaw.json",
     });
 
     expect(res.findings).toEqual(
