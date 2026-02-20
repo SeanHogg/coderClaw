@@ -4,7 +4,7 @@ import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { UpdateCheckResult } from "./update-check.js";
 
-vi.mock("./openclaw-root.js", () => ({
+vi.mock("./coderclaw-root.js", () => ({
   resolveCoderClawPackageRoot: vi.fn(),
 }));
 
@@ -45,7 +45,7 @@ describe("update-startup", () => {
   let hadNodeEnv = false;
   let hadVitest = false;
 
-  let resolveCoderClawPackageRoot: (typeof import("./openclaw-root.js"))["resolveCoderClawPackageRoot"];
+  let resolveCoderClawPackageRoot: (typeof import("./coderclaw-root.js"))["resolveCoderClawPackageRoot"];
   let checkUpdateStatus: (typeof import("./update-check.js"))["checkUpdateStatus"];
   let resolveNpmChannelTag: (typeof import("./update-check.js"))["resolveNpmChannelTag"];
   let runGatewayUpdateCheck: (typeof import("./update-startup.js"))["runGatewayUpdateCheck"];
@@ -75,7 +75,7 @@ describe("update-startup", () => {
 
     // Perf: load mocked modules once (after timers/env are set up).
     if (!loaded) {
-      ({ resolveCoderClawPackageRoot } = await import("./openclaw-root.js"));
+      ({ resolveCoderClawPackageRoot } = await import("./coderclaw-root.js"));
       ({ checkUpdateStatus, resolveNpmChannelTag } = await import("./update-check.js"));
       ({ runGatewayUpdateCheck } = await import("./update-startup.js"));
       loaded = true;

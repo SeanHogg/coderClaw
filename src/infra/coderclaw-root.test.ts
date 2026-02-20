@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 type FakeFsEntry = { kind: "file"; content: string } | { kind: "dir" };
 
-const VITEST_FS_BASE = path.join(path.parse(process.cwd()).root, "__openclaw_vitest__");
-const FIXTURE_BASE = path.join(VITEST_FS_BASE, "openclaw-root");
+const VITEST_FS_BASE = path.join(path.parse(process.cwd()).root, "__coderclaw_vitest__");
+const FIXTURE_BASE = path.join(VITEST_FS_BASE, "coderclaw-root");
 
 const state = vi.hoisted(() => ({
   entries: new Map<string, FakeFsEntry>(),
@@ -87,30 +87,30 @@ describe("resolveCoderClawPackageRoot", () => {
   });
 
   it("resolves package root from .bin argv1", async () => {
-    const { resolveCoderClawPackageRootSync } = await import("./openclaw-root.js");
+    const { resolveCoderClawPackageRootSync } = await import("./coderclaw-root.js");
 
     const project = fx("bin-scenario");
-    const argv1 = path.join(project, "node_modules", ".bin", "openclaw");
-    const pkgRoot = path.join(project, "node_modules", "openclaw");
+    const argv1 = path.join(project, "node_modules", ".bin", "coderclaw");
+    const pkgRoot = path.join(project, "node_modules", "coderclaw");
     setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "coderclaw" }));
 
     expect(resolveCoderClawPackageRootSync({ argv1 })).toBe(pkgRoot);
   });
 
   it("resolves package root via symlinked argv1", async () => {
-    const { resolveCoderClawPackageRootSync } = await import("./openclaw-root.js");
+    const { resolveCoderClawPackageRootSync } = await import("./coderclaw-root.js");
 
     const project = fx("symlink-scenario");
-    const bin = path.join(project, "bin", "openclaw");
+    const bin = path.join(project, "bin", "coderclaw");
     const realPkg = path.join(project, "real-pkg");
-    state.realpaths.set(abs(bin), abs(path.join(realPkg, "openclaw.mjs")));
+    state.realpaths.set(abs(bin), abs(path.join(realPkg, "coderclaw.mjs")));
     setFile(path.join(realPkg, "package.json"), JSON.stringify({ name: "coderclaw" }));
 
     expect(resolveCoderClawPackageRootSync({ argv1: bin })).toBe(realPkg);
   });
 
   it("prefers moduleUrl candidates", async () => {
-    const { resolveCoderClawPackageRootSync } = await import("./openclaw-root.js");
+    const { resolveCoderClawPackageRootSync } = await import("./coderclaw-root.js");
 
     const pkgRoot = fx("moduleurl");
     setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "coderclaw" }));
@@ -119,17 +119,17 @@ describe("resolveCoderClawPackageRoot", () => {
     expect(resolveCoderClawPackageRootSync({ moduleUrl })).toBe(pkgRoot);
   });
 
-  it("returns null for non-openclaw package roots", async () => {
-    const { resolveCoderClawPackageRootSync } = await import("./openclaw-root.js");
+  it("returns null for non-coderclaw package roots", async () => {
+    const { resolveCoderClawPackageRootSync } = await import("./coderclaw-root.js");
 
-    const pkgRoot = fx("not-openclaw");
-    setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "not-openclaw" }));
+    const pkgRoot = fx("not-coderclaw");
+    setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "not-coderclaw" }));
 
     expect(resolveCoderClawPackageRootSync({ cwd: pkgRoot })).toBeNull();
   });
 
   it("async resolver matches sync behavior", async () => {
-    const { resolveCoderClawPackageRoot } = await import("./openclaw-root.js");
+    const { resolveCoderClawPackageRoot } = await import("./coderclaw-root.js");
 
     const pkgRoot = fx("async");
     setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "coderclaw" }));
