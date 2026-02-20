@@ -77,7 +77,7 @@ npx tsx examples/phase2/task-lifecycle.ts
 
 Runtime Status:
   Mode: local-only
-  Version: 2026.2.18
+  Version: 2026.2.20
   Active Tasks: 0
   Total Tasks: 0
 
