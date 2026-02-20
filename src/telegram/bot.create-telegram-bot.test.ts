@@ -4,6 +4,7 @@ import path from "node:path";
 import type { Chat, Message } from "@grammyjs/types";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { escapeRegExp, formatEnvelopeTimestamp } from "../../test/helpers/envelope-timestamp.js";
+import * as ssrf from "../infra/net/ssrf.js";
 import {
   answerCallbackQuerySpy,
   botCtorSpy,
@@ -1820,6 +1821,18 @@ describe("createTelegramBot", () => {
         }),
     );
 
+    const ssrfSpy = vi
+      .spyOn(ssrf, "resolvePinnedHostnameWithPolicy")
+      .mockImplementation(async (hostname) => {
+        const normalized = hostname.trim().toLowerCase().replace(/\.$/, "");
+        const addresses = ["149.154.167.220"];
+        return {
+          hostname: normalized,
+          addresses,
+          lookup: ssrf.createPinnedLookup({ hostname: normalized, addresses }),
+        };
+      });
+
     const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
     try {
       createTelegramBot({ token: "tok", testTimings: TELEGRAM_TEST_TIMINGS });
@@ -1869,6 +1882,7 @@ describe("createTelegramBot", () => {
     } finally {
       setTimeoutSpy.mockRestore();
       fetchSpy.mockRestore();
+      ssrfSpy.mockRestore();
     }
   });
   it("coalesces channel_post near-limit text fragments into one message", async () => {

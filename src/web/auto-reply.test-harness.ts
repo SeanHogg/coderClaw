@@ -133,10 +133,14 @@ export function installWebAutoReplyUnitTestHooks(opts?: { pinDns?: boolean }) {
     _resetLoadConfigMock();
     if (opts?.pinDns) {
       resolvePinnedHostnameSpy = vi
-        .spyOn(ssrf, "resolvePinnedHostname")
-        .mockImplementation(async (hostname) => {
+        .spyOn(ssrf, "resolvePinnedHostnameWithPolicy")
+        .mockImplementation(async (hostname, _params) => {
           // SSRF guard pins DNS; stub resolution to avoid live lookups in unit tests.
           const normalized = hostname.trim().toLowerCase().replace(/\.$/, "");
+          // Preserve real SSRF checks for private/blocked hostnames.
+          if (ssrf.isBlockedHostname(normalized) || ssrf.isPrivateIpAddress(normalized)) {
+            throw new ssrf.SsrFBlockedError(`Blocked hostname: ${hostname}`);
+          }
           const addresses = [TEST_NET_IP];
           return {
             hostname: normalized,

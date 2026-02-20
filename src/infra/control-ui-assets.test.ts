@@ -129,10 +129,10 @@ describe("control UI assets helpers (fs-mocked)", () => {
     const { resolveControlUiDistIndexPath } = await import("./control-ui-assets.js");
 
     const root = abs("fixtures/fallback");
-    setFile(path.join(root, "package.json"), JSON.stringify({ name: "openclaw" }));
+    setFile(path.join(root, "package.json"), JSON.stringify({ name: "coderclaw" }));
     setFile(path.join(root, "dist", "control-ui", "index.html"), "<html></html>\n");
 
-    await expect(resolveControlUiDistIndexPath(path.join(root, "openclaw.mjs"))).resolves.toBe(
+    await expect(resolveControlUiDistIndexPath(path.join(root, "coderclaw.mjs"))).resolves.toBe(
       path.join(root, "dist", "control-ui", "index.html"),
     );
   });
