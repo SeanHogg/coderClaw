@@ -1,6 +1,6 @@
 {
   "name": "coderclaw",
-  "version": "2026.2.18",
+  "version": "2026.2.20",
   "description": "Distributed AI Coding assistant runtime with secure orchestration - Built on OpenClaw's multi-channel gateway",
   "keywords": ["ai", "distributed", "runtime", "orchestration", "coderclaw", "gateway", "multi-agent", "rbac", "security"],
   "homepage": "https://github.com/SeanHogg/coderClaw#readme",
