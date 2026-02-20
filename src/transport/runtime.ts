@@ -3,7 +3,7 @@
  * Main entry point for coderClaw distributed runtime
  */
 
-import { version } from "../version.js";
+import { VERSION } from "../version.js";
 import { globalTaskEngine } from "./task-engine.js";
 import type {
   AgentInfo,
@@ -89,7 +89,7 @@ export class CoderClawRuntime implements RuntimeInterface {
     });
 
     return {
-      version,
+      version: VERSION,
       uptime: Math.floor(uptime / 1000),
       activeTasks: activeTasks.length,
       totalTasks: this.totalTasks,
