@@ -32,19 +32,19 @@ Native Windows companion apps are planned.
 Inside WSL2:
 
 ```
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 Or:
 
 ```
-openclaw gateway install
+coderclaw gateway install
 ```
 
 Or:
 
 ```
-openclaw configure
+coderclaw configure
 ```
 
 Select **Gateway service** when prompted.
@@ -52,7 +52,7 @@ Select **Gateway service** when prompted.
 Repair/migrate:
 
 ```
-openclaw doctor
+coderclaw doctor
 ```
 
 ## Advanced: expose WSL services over LAN (portproxy)
@@ -95,7 +95,7 @@ Notes:
 
 - SSH from another machine targets the **Windows host IP** (example: `ssh user@windows-host -p 2222`).
 - Remote nodes must point at a **reachable** Gateway URL (not `127.0.0.1`); use
-  `openclaw status --all` to confirm.
+  `coderclaw status --all` to confirm.
 - Use `listenaddress=0.0.0.0` for LAN access; `127.0.0.1` keeps it local only.
 - If you want this automatic, register a Scheduled Task to run the refresh
   step at login.
@@ -143,12 +143,12 @@ systemctl --user status
 Follow the Linux Getting Started flow inside WSL:
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
+git clone https://github.com/SeanHogg/coderClaw.git
+cd coderClaw
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
 pnpm build
-openclaw onboard
+coderclaw onboard
 ```
 
 Full guide: [Getting Started](/start/getting-started)

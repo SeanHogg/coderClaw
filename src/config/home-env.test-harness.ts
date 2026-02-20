@@ -8,7 +8,7 @@ export async function withTempHome<T>(
   fn: (home: string) => Promise<T>,
 ): Promise<T> {
   const home = await fs.mkdtemp(path.join(os.tmpdir(), prefix));
-  await fs.mkdir(path.join(home, ".openclaw"), { recursive: true });
+  await fs.mkdir(path.join(home, ".coderclaw"), { recursive: true });
 
   const snapshot = captureEnv([
     "HOME",
@@ -19,7 +19,7 @@ export async function withTempHome<T>(
   ]);
   process.env.HOME = home;
   process.env.USERPROFILE = home;
-  process.env.OPENCLAW_STATE_DIR = path.join(home, ".openclaw");
+  process.env.OPENCLAW_STATE_DIR = path.join(home, ".coderclaw");
 
   if (process.platform === "win32") {
     const match = home.match(/^([A-Za-z]:)(.*)$/);

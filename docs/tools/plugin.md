@@ -22,13 +22,13 @@ Fast path:
 1. See what’s already loaded:
 
 ```bash
-openclaw plugins list
+coderclaw plugins list
 ```
 
 2. Install an official plugin (example: Voice Call):
 
 ```bash
-openclaw plugins install @openclaw/voice-call
+coderclaw plugins install @openclaw/voice-call
 ```
 
 Npm specs are **registry-only** (package name + optional version/tag). Git/URL/file
@@ -105,15 +105,15 @@ OpenClaw scans, in order:
 
 3. Global extensions
 
-- `~/.openclaw/extensions/*.ts`
-- `~/.openclaw/extensions/*/index.ts`
+- `~/.coderclaw/extensions/*.ts`
+- `~/.coderclaw/extensions/*/index.ts`
 
 4. Bundled extensions (shipped with OpenClaw, **disabled by default**)
 
 - `<openclaw>/extensions/*`
 
 Bundled plugins must be enabled explicitly via `plugins.entries.<id>.enabled`
-or `openclaw plugins enable <id>`. Installed plugins are enabled by default,
+or `coderclaw plugins enable <id>`. Installed plugins are enabled by default,
 but can be disabled the same way.
 
 Each plugin must include a `openclaw.plugin.json` file in its root. If a path
@@ -142,7 +142,7 @@ becomes `name/<fileBase>`.
 If your plugin imports npm deps, install them in that directory so
 `node_modules` is available (`npm install` / `pnpm install`).
 
-Security note: `openclaw plugins install` installs plugin dependencies with
+Security note: `coderclaw plugins install` installs plugin dependencies with
 `npm install --ignore-scripts` (no lifecycle scripts). Keep plugin dependency
 trees "pure JS/TS" and avoid packages that require `postinstall` builds.
 
@@ -180,9 +180,9 @@ Example:
 OpenClaw can also merge **external channel catalogs** (for example, an MPM
 registry export). Drop a JSON file at one of:
 
-- `~/.openclaw/mpm/plugins.json`
-- `~/.openclaw/mpm/catalog.json`
-- `~/.openclaw/plugins/catalog.json`
+- `~/.coderclaw/mpm/plugins.json`
+- `~/.coderclaw/mpm/catalog.json`
+- `~/.coderclaw/plugins/catalog.json`
 
 Or point `OPENCLAW_PLUGIN_CATALOG_PATHS` (or `OPENCLAW_MPM_CATALOG_PATHS`) at
 one or more JSON files (comma/semicolon/`PATH`-delimited). Each file should
@@ -287,19 +287,19 @@ Example:
 ## CLI
 
 ```bash
-openclaw plugins list
-openclaw plugins info <id>
-openclaw plugins install <path>                 # copy a local file/dir into ~/.openclaw/extensions/<id>
-openclaw plugins install ./extensions/voice-call # relative path ok
-openclaw plugins install ./plugin.tgz           # install from a local tarball
-openclaw plugins install ./plugin.zip           # install from a local zip
-openclaw plugins install -l ./extensions/voice-call # link (no copy) for dev
-openclaw plugins install @openclaw/voice-call # install from npm
-openclaw plugins update <id>
-openclaw plugins update --all
-openclaw plugins enable <id>
-openclaw plugins disable <id>
-openclaw plugins doctor
+coderclaw plugins list
+coderclaw plugins info <id>
+coderclaw plugins install <path>                 # copy a local file/dir into ~/.coderclaw/extensions/<id>
+coderclaw plugins install ./extensions/voice-call # relative path ok
+coderclaw plugins install ./plugin.tgz           # install from a local tarball
+coderclaw plugins install ./plugin.zip           # install from a local zip
+coderclaw plugins install -l ./extensions/voice-call # link (no copy) for dev
+coderclaw plugins install @openclaw/voice-call # install from npm
+coderclaw plugins update <id>
+coderclaw plugins update --all
+coderclaw plugins enable <id>
+coderclaw plugins disable <id>
+coderclaw plugins doctor
 ```
 
 `plugins update` only works for npm installs tracked under `plugins.installs`.
@@ -332,8 +332,8 @@ Notes:
 
 - Hook directories follow the normal hook structure (`HOOK.md` + `handler.ts`).
 - Hook eligibility rules still apply (OS/bins/env/config requirements).
-- Plugin-managed hooks show up in `openclaw hooks list` with `plugin:<id>`.
-- You cannot enable/disable plugin-managed hooks via `openclaw hooks`; enable/disable the plugin instead.
+- Plugin-managed hooks show up in `coderclaw hooks list` with `plugin:<id>`.
+- You cannot enable/disable plugin-managed hooks via `coderclaw hooks`; enable/disable the plugin instead.
 
 ## Provider plugins (model auth)
 
@@ -343,7 +343,7 @@ API-key setup inside OpenClaw (no external scripts needed).
 Register a provider via `api.registerProvider(...)`. Each provider exposes one
 or more auth methods (OAuth, API key, device code, etc.). These methods power:
 
-- `openclaw models auth login --provider <id> [--method <id>]`
+- `coderclaw models auth login --provider <id> [--method <id>]`
 
 Example:
 
@@ -639,7 +639,7 @@ Publishing contract:
 
 - Plugin `package.json` must include `openclaw.extensions` with one or more entry files.
 - Entry files can be `.js` or `.ts` (jiti loads TS at runtime).
-- `openclaw plugins install <npm-spec>` uses `npm pack`, extracts into `~/.openclaw/extensions/<id>/`, and enables it in config.
+- `coderclaw plugins install <npm-spec>` uses `npm pack`, extracts into `~/.coderclaw/extensions/<id>/`, and enables it in config.
 - Config key stability: scoped packages are normalized to the **unscoped** id for `plugins.entries.*`.
 
 ## Example plugin: Voice Call

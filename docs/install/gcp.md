@@ -22,7 +22,7 @@ Pricing varies by machine type and region; pick the smallest VM that fits your w
 - Create a Compute Engine VM
 - Install Docker (isolated app runtime)
 - Start the OpenClaw Gateway in Docker
-- Persist `~/.openclaw` + `~/.openclaw/workspace` on the host (survives restarts/rebuilds)
+- Persist `~/.coderclaw` + `~/.coderclaw/workspace` on the host (survives restarts/rebuilds)
 - Access the Control UI from your laptop via an SSH tunnel
 
 The Gateway can be accessed via:
@@ -190,8 +190,8 @@ docker compose version
 ## 6) Clone the OpenClaw repository
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
+git clone https://github.com/SeanHogg/coderClaw.git
+cd coderClaw
 ```
 
 This guide assumes you will build a custom image to guarantee binary persistence.
@@ -204,8 +204,8 @@ Docker containers are ephemeral.
 All long-lived state must live on the host.
 
 ```bash
-mkdir -p ~/.openclaw
-mkdir -p ~/.openclaw/workspace
+mkdir -p ~/.coderclaw
+mkdir -p ~/.coderclaw/workspace
 ```
 
 ---

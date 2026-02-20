@@ -8,7 +8,7 @@ title: "Personal Assistant Setup"
 
 # Building a personal assistant with CoderClaw
 
-CoderClaw extends [OpenClaw](https://github.com/openclaw/openclaw)'s multi-channel gateway (WhatsApp + Telegram + Discord + iMessage) with distributed runtime capabilities and enhanced security. This guide covers the "personal assistant" setup: one dedicated WhatsApp number that behaves like your always-on agent.
+CoderClaw extends [OpenClaw](https://github.com/SeanHogg/coderClaw)'s multi-channel gateway (WhatsApp + Telegram + Discord + iMessage) with distributed runtime capabilities and enhanced security. This guide covers the "personal assistant" setup: one dedicated WhatsApp number that behaves like your always-on agent.
 
 ## ⚠️ Safety first
 
@@ -46,16 +46,16 @@ If you link your personal WhatsApp to OpenClaw, every message to you becomes “
 1. Pair WhatsApp Web (shows QR; scan with the assistant phone):
 
 ```bash
-openclaw channels login
+coderclaw channels login
 ```
 
 2. Start the Gateway (leave it running):
 
 ```bash
-openclaw gateway --port 18789
+coderclaw gateway --port 18789
 ```
 
-3. Put a minimal config in `~/.openclaw/openclaw.json`:
+3. Put a minimal config in `~/.coderclaw/openclaw.json`:
 
 ```json5
 {
@@ -65,18 +65,18 @@ openclaw gateway --port 18789
 
 Now message the assistant number from your allowlisted phone.
 
-When onboarding finishes, we auto-open the dashboard and print a clean (non-tokenized) link. If it prompts for auth, paste the token from `gateway.auth.token` into Control UI settings. To reopen later: `openclaw dashboard`.
+When onboarding finishes, we auto-open the dashboard and print a clean (non-tokenized) link. If it prompts for auth, paste the token from `gateway.auth.token` into Control UI settings. To reopen later: `coderclaw dashboard`.
 
 ## Give the agent a workspace (AGENTS)
 
 OpenClaw reads operating instructions and “memory” from its workspace directory.
 
-By default, OpenClaw uses `~/.openclaw/workspace` as the agent workspace, and will create it (plus starter `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`) automatically on setup/first agent run. `BOOTSTRAP.md` is only created when the workspace is brand new (it should not come back after you delete it). `MEMORY.md` is optional (not auto-created); when present, it is loaded for normal sessions. Subagent sessions only inject `AGENTS.md` and `TOOLS.md`.
+By default, OpenClaw uses `~/.coderclaw/workspace` as the agent workspace, and will create it (plus starter `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`) automatically on setup/first agent run. `BOOTSTRAP.md` is only created when the workspace is brand new (it should not come back after you delete it). `MEMORY.md` is optional (not auto-created); when present, it is loaded for normal sessions. Subagent sessions only inject `AGENTS.md` and `TOOLS.md`.
 
 Tip: treat this folder like OpenClaw’s “memory” and make it a git repo (ideally private) so your `AGENTS.md` + memory files are backed up. If git is installed, brand-new workspaces are auto-initialized.
 
 ```bash
-openclaw setup
+coderclaw setup
 ```
 
 Full workspace layout + backup guide: [Agent workspace](/concepts/agent-workspace)
@@ -87,7 +87,7 @@ Optional: choose a different workspace with `agents.defaults.workspace` (support
 ```json5
 {
   agent: {
-    workspace: "~/.openclaw/workspace",
+    workspace: "~/.coderclaw/workspace",
   },
 }
 ```
@@ -117,7 +117,7 @@ Example:
   logging: { level: "info" },
   agent: {
     model: "anthropic/claude-opus-4-6",
-    workspace: "~/.openclaw/workspace",
+    workspace: "~/.coderclaw/workspace",
     thinkingDefault: "high",
     timeoutSeconds: 1800,
     // Start with 0; enable later.
@@ -150,8 +150,8 @@ Example:
 
 ## Sessions and memory
 
-- Session files: `~/.openclaw/agents/<agentId>/sessions/{{SessionId}}.jsonl`
-- Session metadata (token usage, last route, etc): `~/.openclaw/agents/<agentId>/sessions/sessions.json` (legacy: `~/.openclaw/sessions/sessions.json`)
+- Session files: `~/.coderclaw/agents/<agentId>/sessions/{{SessionId}}.jsonl`
+- Session metadata (token usage, last route, etc): `~/.coderclaw/agents/<agentId>/sessions/sessions.json` (legacy: `~/.coderclaw/sessions/sessions.json`)
 - `/new` or `/reset` starts a fresh session for that chat (configurable via `resetTriggers`). If sent alone, the agent replies with a short hello to confirm the reset.
 - `/compact [instructions]` compacts the session context and reports the remaining context budget.
 
@@ -194,10 +194,10 @@ OpenClaw extracts these and sends them as media alongside the text.
 ## Operations checklist
 
 ```bash
-openclaw status          # local status (creds, sessions, queued events)
-openclaw status --all    # full diagnosis (read-only, pasteable)
-openclaw status --deep   # adds gateway health probes (Telegram + Discord)
-openclaw health --json   # gateway health snapshot (WS)
+coderclaw status          # local status (creds, sessions, queued events)
+coderclaw status --all    # full diagnosis (read-only, pasteable)
+coderclaw status --deep   # adds gateway health probes (Telegram + Discord)
+coderclaw health --json   # gateway health snapshot (WS)
 ```
 
 Logs live under `/tmp/openclaw/` (default: `openclaw-YYYY-MM-DD.log`).

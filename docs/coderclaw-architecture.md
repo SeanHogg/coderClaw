@@ -21,12 +21,14 @@ The foundation layer responsible for understanding code structure and context.
 #### Components
 
 **AST Parser (`src/coderclaw/ast-parser.ts`)**
+
 - Parses TypeScript/JavaScript files using TypeScript Compiler API
 - Extracts semantic information: functions, classes, interfaces, types
 - Tracks visibility, parameters, return types, modifiers
 - Exports metadata for downstream analysis
 
 **Code Map Builder (`src/coderclaw/code-map.ts`)**
+
 - Builds semantic code maps across entire projects
 - Tracks import/export relationships
 - Creates dependency graphs
@@ -34,12 +36,14 @@ The foundation layer responsible for understanding code structure and context.
 - Identifies coupling and module boundaries
 
 **Git History Tool (`src/coderclaw/tools/git-history-tool.ts`)**
+
 - Analyzes commit history via native git commands
 - Tracks file evolution and authorship
 - Identifies change patterns and hotspots
 - Provides data for refactoring decisions
 
 **Project Context (`src/coderclaw/project-context.ts`)**
+
 - Manages `.coderClaw/` directory structure
 - Loads/saves project metadata, rules, architecture
 - Handles custom agent role definitions
@@ -64,12 +68,14 @@ The middle layer responsible for agent role definitions and capabilities.
 #### Components
 
 **Agent Roles (`src/coderclaw/agent-roles.ts`)**
+
 - Defines 7 built-in agent roles
 - Specifies capabilities, tools, system prompts
 - Provides role lookup and discovery
 - Supports custom role extensions
 
 **Built-in Roles:**
+
 1. **Code Creator**: Feature implementation
 2. **Code Reviewer**: Quality and security review
 3. **Test Generator**: Comprehensive test creation
@@ -79,6 +85,7 @@ The middle layer responsible for agent role definitions and capabilities.
 7. **Architecture Advisor**: Design guidance
 
 **Custom Agent Loading**
+
 - Loads YAML definitions from `.coderClaw/agents/`
 - Merges with built-in roles
 - Supports project-specific agent definitions
@@ -103,6 +110,7 @@ The top layer responsible for coordinating multiple agents.
 #### Components
 
 **Enhanced Orchestrator (`src/coderclaw/orchestrator-enhanced.ts`)**
+
 - Creates and manages workflows
 - Coordinates multi-agent execution
 - Tracks task dependencies
@@ -110,6 +118,7 @@ The top layer responsible for coordinating multiple agents.
 - Integrates with distributed task engine
 
 **Task Engine (`src/transport/task-engine.ts`)**
+
 - Manages distributed task lifecycle
 - State machine: PENDING → PLANNING → RUNNING → COMPLETED
 - Event logging and audit trails
@@ -117,6 +126,7 @@ The top layer responsible for coordinating multiple agents.
 - Progress tracking
 
 **Workflow Patterns**
+
 - Pre-defined patterns: feature, bugfix, refactor
 - Custom workflow support
 - Dependency resolution
@@ -143,21 +153,25 @@ The outer layer connecting to OpenClaw infrastructure.
 #### Components
 
 **Tool System Integration**
+
 - Uses OpenClaw's `AgentTool` interface
 - Registers coderClaw tools: `code_analysis`, `project_knowledge`, `git_history`, `orchestrate`, `workflow_status`
 - Follows OpenClaw tool conventions
 
 **Subagent Integration**
+
 - Leverages OpenClaw's subagent spawning
 - Integrates with session management
 - Respects tool policy and security boundaries
 
 **Transport Layer**
+
 - Local execution via `LocalTransportAdapter`
 - Remote execution support (future)
 - Protocol-agnostic runtime interface
 
 **Security Service**
+
 - RBAC enforcement
 - Device trust verification
 - Session-level permissions
@@ -316,7 +330,7 @@ type TaskState = {
 ### Project Initialization
 
 ```
-1. User runs `openclaw coderclaw init`
+1. User runs `coderclaw init`
 2. CLI prompts for project information
 3. Create .coderClaw/ directory structure
 4. Generate default context.yaml
@@ -369,24 +383,28 @@ type TaskState = {
 ## Technology Choices
 
 ### Why TypeScript?
+
 - Strong typing for tool interfaces
 - Excellent AST support via TypeScript Compiler API
 - Familiar to most developers
 - Good performance for orchestration tasks
 
 ### Why YAML for Configuration?
+
 - Human-readable and editable
 - Standard format for project config
 - Good tool support
 - Easy to version control
 
 ### Why Markdown for Documentation?
+
 - Universal format
 - Git-friendly
 - Renders well in all viewers
 - Easy to edit
 
 ### Why SQLite for Memory?
+
 - Embedded database, no server needed
 - ACID transactions
 - Good query performance
@@ -395,16 +413,19 @@ type TaskState = {
 ## Security Considerations
 
 ### Sandboxing
+
 - Code analysis runs with same permissions as other tools
 - No arbitrary code execution during analysis
 - Project context files are read-only during execution
 
 ### RBAC Integration
+
 - Workflow execution respects OpenClaw's tool policy
 - Agent spawning follows security boundaries
 - Distributed execution requires authentication
 
 ### Data Privacy
+
 - Project context stays local by default
 - No external network access during analysis
 - Git history analyzed locally
@@ -413,16 +434,19 @@ type TaskState = {
 ## Performance Optimization
 
 ### Caching
+
 - Parsed AST results cached in memory
 - Code maps incrementally updated
 - Git history cached with invalidation
 
 ### Incremental Analysis
+
 - Only re-parse changed files
 - Update dependency graph incrementally
 - Track file modification times
 
 ### Parallel Execution
+
 - Independent agents run in parallel
 - AST parsing parallelized per file
 - Workflow tasks respect dependencies
@@ -430,20 +454,26 @@ type TaskState = {
 ## Extensibility Points
 
 ### 1. Language Support
+
 Add new AST parsers in `src/coderclaw/`:
+
 ```typescript
-export async function parsePythonFile(filePath: string): Promise<FileInfo>
+export async function parsePythonFile(filePath: string): Promise<FileInfo>;
 ```
 
 ### 2. Custom Agents
+
 Define YAML in `.coderClaw/agents/`:
+
 ```yaml
 name: my-agent
 capabilities: [...]
 ```
 
 ### 3. Custom Tools
+
 Add to `.coderClaw/skills/`:
+
 ```typescript
 export const myTool: AgentTool = {
   name: "my_tool",
@@ -452,7 +482,9 @@ export const myTool: AgentTool = {
 ```
 
 ### 4. Transport Adapters
+
 Implement `RuntimeInterface`:
+
 ```typescript
 class HTTPTransportAdapter implements RuntimeInterface {
   async submitTask(request: TaskSubmitRequest): Promise<TaskState> { ... }
@@ -460,7 +492,9 @@ class HTTPTransportAdapter implements RuntimeInterface {
 ```
 
 ### 5. Workflow Patterns
+
 Define in orchestrator:
+
 ```typescript
 const customWorkflow: WorkflowPattern = {
   name: "custom",
@@ -471,18 +505,21 @@ const customWorkflow: WorkflowPattern = {
 ## Testing Strategy
 
 ### Unit Tests
+
 - AST parser: Parse sample files, verify structure
 - Code map: Build graphs, verify dependencies
 - Agent roles: Validate role definitions
 - Orchestrator: Test workflow creation and execution
 
 ### Integration Tests
+
 - Full workflow execution end-to-end
 - Project initialization and loading
 - Multi-agent coordination
 - Tool integration
 
 ### E2E Tests
+
 - Real project analysis
 - Git history integration
 - Custom agent loading
@@ -493,28 +530,33 @@ const customWorkflow: WorkflowPattern = {
 ### Planned Enhancements
 
 **Multi-Language Support**
+
 - Python AST parser (ast module)
 - Go parser (go/ast package)
 - Java parser (JavaParser library)
 - Rust parser (syn crate)
 
 **Real-Time Indexing**
+
 - File system watcher integration
 - Incremental re-parsing
 - Live dependency updates
 
 **IDE Integration**
+
 - Language Server Protocol support
 - Live error detection
 - Real-time suggestions
 
 **Distributed Execution**
+
 - HTTP transport adapter
 - WebSocket for streaming
 - gRPC for performance
 - Load balancing across nodes
 
 **Enhanced Semantic Search**
+
 - Natural language queries
 - Vector embeddings for code
 - Similarity search
@@ -523,6 +565,7 @@ const customWorkflow: WorkflowPattern = {
 ## Conclusion
 
 CoderClaw's architecture is designed to be:
+
 - **Modular**: Clear separation of concerns across layers
 - **Extensible**: Multiple extension points for customization
 - **Performant**: Caching and parallelization strategies

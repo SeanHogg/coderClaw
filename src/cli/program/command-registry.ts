@@ -204,13 +204,19 @@ const coreEntries: CoreCliEntry[] = [
   {
     commands: [
       {
-        name: "coderclaw",
-        description: "Developer-first multi-agent AI system for code workflows",
+        name: "init",
+        description: "Initialize a project with coderClaw",
+        hasSubcommands: false,
+      },
+      {
+        name: "project",
+        description: "Manage coderClaw project context",
         hasSubcommands: true,
       },
     ],
     register: async ({ program }) => {
       const mod = await import("../../commands/coderclaw.js");
+      program.addCommand(mod.createInitCommand());
       program.addCommand(mod.createCoderClawCommand());
     },
   },

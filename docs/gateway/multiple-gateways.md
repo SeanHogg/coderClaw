@@ -59,8 +59,8 @@ Port spacing: leave at least 20 ports between base ports so the derived browser/
 ```bash
 # Main bot (existing or fresh, without --profile param)
 # Runs on port 18789 + Chrome CDC/Canvas/... Ports
-openclaw onboard
-openclaw gateway install
+coderclaw onboard
+coderclaw gateway install
 
 # Rescue bot (isolated profile + ports)
 openclaw --profile rescue onboard
@@ -94,13 +94,13 @@ If you override any of these in config or env, you must keep them unique per ins
 ## Manual env example
 
 ```bash
-OPENCLAW_CONFIG_PATH=~/.openclaw/main.json \
-OPENCLAW_STATE_DIR=~/.openclaw-main \
-openclaw gateway --port 18789
+OPENCLAW_CONFIG_PATH=~/.coderclaw/main.json \
+OPENCLAW_STATE_DIR=~/.coderclaw-main \
+coderclaw gateway --port 18789
 
-OPENCLAW_CONFIG_PATH=~/.openclaw/rescue.json \
-OPENCLAW_STATE_DIR=~/.openclaw-rescue \
-openclaw gateway --port 19001
+OPENCLAW_CONFIG_PATH=~/.coderclaw/rescue.json \
+OPENCLAW_STATE_DIR=~/.coderclaw-rescue \
+coderclaw gateway --port 19001
 ```
 
 ## Quick checks

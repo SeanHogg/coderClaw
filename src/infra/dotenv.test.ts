@@ -32,7 +32,7 @@ async function withIsolatedEnvAndCwd(run: () => Promise<void>) {
 }
 
 describe("loadDotEnv", () => {
-  it("loads ~/.openclaw/.env as fallback without overriding CWD .env", async () => {
+  it("loads ~/.coderclaw/.env as fallback without overriding CWD .env", async () => {
     await withIsolatedEnvAndCwd(async () => {
       const base = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-dotenv-test-"));
       const cwdDir = path.join(base, "cwd");

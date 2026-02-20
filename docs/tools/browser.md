@@ -34,7 +34,7 @@ agent automation and verification.
 ## Quick start
 
 ```bash
-openclaw browser --browser-profile openclaw status
+openclaw browser --browser-profile coderclaw status
 openclaw browser --browser-profile openclaw start
 openclaw browser --browser-profile openclaw open https://example.com
 openclaw browser --browser-profile openclaw snapshot
@@ -53,7 +53,7 @@ Set `browser.defaultProfile: "openclaw"` if you want managed mode by default.
 
 ## Configuration
 
-Browser settings live in `~/.openclaw/openclaw.json`.
+Browser settings live in `~/.coderclaw/openclaw.json`.
 
 ```json5
 {
@@ -101,7 +101,7 @@ auto-detection:
 CLI example:
 
 ```bash
-openclaw config set browser.executablePath "/usr/bin/google-chrome"
+coderclaw config set browser.executablePath "/usr/bin/google-chrome"
 ```
 
 ```json5

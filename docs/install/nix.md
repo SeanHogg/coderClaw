@@ -67,7 +67,7 @@ OpenClaw reads JSON5 config from `OPENCLAW_CONFIG_PATH` and stores mutable data 
 When needed, you can also set `OPENCLAW_HOME` to control the base home directory used for internal path resolution.
 
 - `OPENCLAW_HOME` (default precedence: `HOME` / `USERPROFILE` / `os.homedir()`)
-- `OPENCLAW_STATE_DIR` (default: `~/.openclaw`)
+- `OPENCLAW_STATE_DIR` (default: `~/.coderclaw`)
 - `OPENCLAW_CONFIG_PATH` (default: `$OPENCLAW_STATE_DIR/openclaw.json`)
 
 When running under Nix, set these explicitly to Nix-managed locations so runtime state and config
@@ -87,7 +87,7 @@ The macOS packaging flow expects a stable Info.plist template at:
 apps/macos/Sources/OpenClaw/Resources/Info.plist
 ```
 
-[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) copies this template into the app bundle and patches dynamic fields
+[`scripts/package-mac-app.sh`](https://github.com/SeanHogg/coderClaw/blob/main/scripts/package-mac-app.sh) copies this template into the app bundle and patches dynamic fields
 (bundle ID, version/build, Git SHA, Sparkle keys). This keeps the plist deterministic for SwiftPM
 packaging and Nix builds (which do not rely on a full Xcode toolchain).
 

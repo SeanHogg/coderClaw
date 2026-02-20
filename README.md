@@ -27,6 +27,7 @@ An AI assistant that deeply understands your codebase and coordinates specialize
 ### Key Capabilities
 
 **🧠 Deep Knowledge & Context Engine**
+
 - **AST Parsing**: Extract semantic information from TypeScript/JavaScript code
 - **Semantic Code Maps**: Track functions, classes, interfaces, dependencies
 - **Dependency Graphs**: Understand file relationships and impact radius
@@ -35,6 +36,7 @@ An AI assistant that deeply understands your codebase and coordinates specialize
 - **Persistent Context**: Maintain `.coderClaw/` directory with project knowledge
 
 **🤖 Multi-Agent Orchestration**
+
 - **Dynamic Agent Spawning**: Create specialized agents on-demand
 - **Task Lifecycle Management**: Track status, dependencies, progress
 - **Iterative Refinement**: Generate → Test → Debug → Re-run loops
@@ -42,6 +44,7 @@ An AI assistant that deeply understands your codebase and coordinates specialize
 - **Deterministic Execution**: Formal state machine with audit trails
 
 **👨‍💻 Developer-Centric Agent Roles**
+
 - **Code Creator**: Implements features and generates code
 - **Code Reviewer**: Reviews for quality, security, performance
 - **Test Generator**: Creates comprehensive test suites
@@ -51,6 +54,7 @@ An AI assistant that deeply understands your codebase and coordinates specialize
 - **Architecture Advisor**: Provides high-level design guidance
 
 **🔌 Extensible & Pluggable**
+
 - Define custom agent roles via `.coderClaw/agents/`
 - Community-extensible agent libraries
 - Project-specific skills in `.coderClaw/skills/`
@@ -59,6 +63,7 @@ An AI assistant that deeply understands your codebase and coordinates specialize
 ### Distributed Runtime
 
 Built on OpenClaw's proven gateway architecture with **Phase 2 enhancements**:
+
 - **Transport Abstraction Layer**: Protocol-agnostic local or remote execution
 - **Distributed Task Lifecycle**: Formal state machine with complete audit trails
 - **Identity & Security Model**: RBAC, device trust, granular policy enforcement
@@ -91,16 +96,19 @@ The wizard installs the Gateway daemon (launchd/systemd user service) so it stay
 # Navigate to your project directory
 cd my-project
 
-# Initialize coderClaw context
-coderclaw coderclaw init
+# Initialize coderClaw context (interactive wizard)
+coderclaw init
 
 # This creates .coderClaw/ with:
-#   - context.yaml (project metadata)
-#   - architecture.md (design docs)
-#   - rules.yaml (coding standards)
-#   - agents/ (custom agent roles)
-#   - skills/ (project-specific skills)
-#   - memory/ (knowledge base)
+#   - context.yaml     project metadata, languages, frameworks, dependencies
+#   - architecture.md  design docs and patterns
+#   - rules.yaml       coding standards and testing requirements
+#   - agents/          custom agent role definitions (YAML, community-extensible)
+#   - skills/          project-specific skills
+#   - memory/          persistent knowledge base and semantic indices
+
+# Check project status
+coderclaw project status
 ```
 
 ### Run Multi-Agent Workflows
@@ -109,11 +117,18 @@ coderclaw coderclaw init
 # Start the gateway
 coderclaw gateway --port 18789 --verbose
 
-# Talk to the assistant
+# Deep-analyze the codebase (AST + dependency graph + git history)
 coderclaw agent --message "Analyze the codebase structure" --thinking high
 
-# Orchestrate multi-agent workflow
+# Full feature development workflow:
+# Architecture Advisor → Code Creator → Test Generator + Code Reviewer (parallel)
 coderclaw agent --message "Create a user authentication feature with tests and review" --thinking high
+
+# Bug fix workflow: Bug Analyzer → Code Creator → Test Generator + Code Reviewer
+coderclaw agent --message "Fix the memory leak in the parser" --thinking high
+
+# Refactor workflow: Code Reviewer → Refactor Agent → Test Generator
+coderclaw agent --message "Refactor the authentication module" --thinking high
 ```
 
 ### Access CoderClaw from Messaging Channels
@@ -183,13 +198,16 @@ Full beginner guide (auth, pairing, channels): [Getting started](https://docs.co
 ```bash
 coderclaw onboard --install-daemon
 
+# Initialize coderClaw in your project
+coderclaw init
+
 coderclaw gateway --port 18789 --verbose
 
-# Send a message
-coderclaw message send --to +1234567890 --message "Hello from CoderClaw"
+# Deep-analyze your codebase
+coderclaw agent --message "Analyze the codebase structure" --thinking high
 
-# Talk to the assistant (optionally deliver back to any connected channel: WhatsApp/Telegram/Slack/Discord/Google Chat/Signal/iMessage/BlueBubbles/Microsoft Teams/Matrix/Zalo/Zalo Personal/WebChat)
-coderclaw agent --message "Ship checklist" --thinking high
+# Ship a feature end-to-end
+coderclaw agent --message "Create a user authentication feature with tests and review" --thinking high
 ```
 
 Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run `coderclaw doctor`).

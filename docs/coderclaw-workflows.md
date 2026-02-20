@@ -18,27 +18,32 @@ Workflow patterns define how multiple agents coordinate to accomplish complex de
 **Purpose**: Implement a new feature with proper design, testing, and review.
 
 **Agent Flow**:
+
 ```
 Architecture Advisor → Code Creator → (Test Generator || Code Reviewer)
 ```
 
 **Execution**:
+
 1. Architecture Advisor analyzes requirements and proposes design
 2. Code Creator implements the feature based on design
 3. Test Generator creates tests (runs in parallel with review)
 4. Code Reviewer checks implementation (runs in parallel with tests)
 
 **Usage**:
+
 ```bash
-openclaw agent --message "Create user authentication feature" --thinking high
+coderclaw agent --message "Create user authentication feature" --thinking high
 ```
 
 Or via tool:
+
 ```
 orchestrate workflow:feature description:"Add WebSocket support for real-time updates"
 ```
 
 **Example Output**:
+
 ```
 Workflow: Feature Development
 ├─ [✓] Architecture Advisor: Design analysis complete
@@ -56,27 +61,32 @@ Workflow: Feature Development
 **Purpose**: Systematically diagnose and fix bugs with validation.
 
 **Agent Flow**:
+
 ```
 Bug Analyzer → Code Creator → (Test Generator || Code Reviewer)
 ```
 
 **Execution**:
+
 1. Bug Analyzer diagnoses the issue and identifies root cause
 2. Code Creator implements the fix
 3. Test Generator creates regression tests (parallel with review)
 4. Code Reviewer validates the fix (parallel with tests)
 
 **Usage**:
+
 ```bash
-openclaw agent --message "Fix the memory leak in the parser" --thinking high
+coderclaw agent --message "Fix the memory leak in the parser" --thinking high
 ```
 
 Or via tool:
+
 ```
 orchestrate workflow:bugfix description:"Fix race condition in cache invalidation"
 ```
 
 **Example Output**:
+
 ```
 Workflow: Bug Fix
 ├─ [✓] Bug Analyzer: Root cause identified
@@ -94,26 +104,31 @@ Workflow: Bug Fix
 **Purpose**: Improve code structure while preserving behavior.
 
 **Agent Flow**:
+
 ```
 Code Reviewer → Refactor Agent → Test Generator
 ```
 
 **Execution**:
+
 1. Code Reviewer identifies code smells and improvement opportunities
 2. Refactor Agent implements structural improvements
 3. Test Generator creates tests to validate behavior preservation
 
 **Usage**:
+
 ```bash
-openclaw agent --message "Refactor the authentication module" --thinking high
+coderclaw agent --message "Refactor the authentication module" --thinking high
 ```
 
 Or via tool:
+
 ```
 orchestrate workflow:refactor description:"Improve modularity of API layer"
 ```
 
 **Example Output**:
+
 ```
 Workflow: Refactoring
 ├─ [✓] Code Reviewer: Analysis complete
@@ -129,21 +144,25 @@ Workflow: Refactoring
 **Purpose**: Comprehensive code review for quality, security, and performance.
 
 **Agent Flow**:
+
 ```
 Code Reviewer → (Documentation Agent || Test Generator)
 ```
 
 **Execution**:
+
 1. Code Reviewer performs thorough analysis
 2. Documentation Agent updates docs if needed (parallel with tests)
 3. Test Generator adds missing test coverage (parallel with docs)
 
 **Usage**:
+
 ```bash
-openclaw agent --message "Review the latest changes for security issues" --thinking high
+coderclaw agent --message "Review the latest changes for security issues" --thinking high
 ```
 
 **Example Output**:
+
 ```
 Workflow: Code Review
 ├─ [✓] Code Reviewer: Review complete
@@ -161,21 +180,25 @@ Workflow: Code Review
 **Purpose**: Create comprehensive documentation for code or features.
 
 **Agent Flow**:
+
 ```
 Code Reviewer → Documentation Agent → Test Generator
 ```
 
 **Execution**:
+
 1. Code Reviewer analyzes code to understand functionality
 2. Documentation Agent creates documentation
 3. Test Generator adds example tests that serve as documentation
 
 **Usage**:
+
 ```bash
-openclaw agent --message "Document the API endpoints" --thinking medium
+coderclaw agent --message "Document the API endpoints" --thinking medium
 ```
 
 **Example Output**:
+
 ```
 Workflow: Documentation
 ├─ [✓] Code Reviewer: Code analysis complete
@@ -194,8 +217,8 @@ Define custom workflows for project-specific needs.
 
 ```typescript
 type WorkflowStep = {
-  role: string;        // Agent role name
-  task: string;        // Task description
+  role: string; // Agent role name
+  task: string; // Task description
   dependsOn?: string[]; // Dependencies (task descriptions)
 };
 
@@ -212,32 +235,33 @@ const apiDevelopmentWorkflow: WorkflowStep[] = [
   {
     role: "architecture-advisor",
     task: "Design API endpoints and data models",
-    dependsOn: []
+    dependsOn: [],
   },
   {
     role: "code-creator",
     task: "Implement API endpoints",
-    dependsOn: ["Design API endpoints and data models"]
+    dependsOn: ["Design API endpoints and data models"],
   },
   {
     role: "documentation-agent",
     task: "Create OpenAPI/Swagger specification",
-    dependsOn: ["Implement API endpoints"]
+    dependsOn: ["Implement API endpoints"],
   },
   {
     role: "test-generator",
     task: "Create integration tests for all endpoints",
-    dependsOn: ["Implement API endpoints"]
+    dependsOn: ["Implement API endpoints"],
   },
   {
     role: "code-reviewer",
     task: "Review API implementation for security",
-    dependsOn: ["Implement API endpoints", "Create integration tests for all endpoints"]
-  }
+    dependsOn: ["Implement API endpoints", "Create integration tests for all endpoints"],
+  },
 ];
 ```
 
 **Usage**:
+
 ```
 orchestrate workflow:custom description:"Build RESTful API" customSteps:[...]
 ```
@@ -249,28 +273,28 @@ const dbMigrationWorkflow: WorkflowStep[] = [
   {
     role: "architecture-advisor",
     task: "Analyze impact of schema changes",
-    dependsOn: []
+    dependsOn: [],
   },
   {
     role: "code-creator",
     task: "Create migration scripts (up and down)",
-    dependsOn: ["Analyze impact of schema changes"]
+    dependsOn: ["Analyze impact of schema changes"],
   },
   {
     role: "test-generator",
     task: "Create migration test suite",
-    dependsOn: ["Create migration scripts (up and down)"]
+    dependsOn: ["Create migration scripts (up and down)"],
   },
   {
     role: "code-reviewer",
     task: "Review migrations for data safety",
-    dependsOn: ["Create migration scripts (up and down)", "Create migration test suite"]
+    dependsOn: ["Create migration scripts (up and down)", "Create migration test suite"],
   },
   {
     role: "documentation-agent",
     task: "Document migration process and rollback procedure",
-    dependsOn: ["Review migrations for data safety"]
-  }
+    dependsOn: ["Review migrations for data safety"],
+  },
 ];
 ```
 
@@ -281,28 +305,28 @@ const performanceWorkflow: WorkflowStep[] = [
   {
     role: "bug-analyzer",
     task: "Profile application and identify bottlenecks",
-    dependsOn: []
+    dependsOn: [],
   },
   {
     role: "architecture-advisor",
     task: "Propose optimization strategies",
-    dependsOn: ["Profile application and identify bottlenecks"]
+    dependsOn: ["Profile application and identify bottlenecks"],
   },
   {
     role: "refactor-agent",
     task: "Implement performance optimizations",
-    dependsOn: ["Propose optimization strategies"]
+    dependsOn: ["Propose optimization strategies"],
   },
   {
     role: "test-generator",
     task: "Create performance benchmarks",
-    dependsOn: ["Implement performance optimizations"]
+    dependsOn: ["Implement performance optimizations"],
   },
   {
     role: "code-reviewer",
     task: "Validate optimizations and measure improvements",
-    dependsOn: ["Create performance benchmarks"]
-  }
+    dependsOn: ["Create performance benchmarks"],
+  },
 ];
 ```
 
@@ -326,7 +350,7 @@ Monitor workflow progress:
 
 ```bash
 # Get workflow status
-openclaw agent --message "What's the status of workflow abc-123?" --thinking low
+coderclaw agent --message "What's the status of workflow abc-123?" --thinking low
 
 # Via tool
 workflow_status workflowId:abc-123-def
@@ -380,6 +404,7 @@ Results from all agents are aggregated into a structured summary:
 ### 2. Define Clear Task Descriptions
 
 Good:
+
 ```
 "Implement JWT-based authentication with refresh tokens"
 "Fix memory leak in parser cleanup logic"
@@ -387,6 +412,7 @@ Good:
 ```
 
 Bad:
+
 ```
 "Add auth" (too vague)
 "Fix bug" (no context)
@@ -400,8 +426,8 @@ Tasks without dependencies run in parallel:
 ```typescript
 [
   { role: "test-generator", task: "Create tests", dependsOn: ["implement"] },
-  { role: "code-reviewer", task: "Review code", dependsOn: ["implement"] }
-]
+  { role: "code-reviewer", task: "Review code", dependsOn: ["implement"] },
+];
 // Both run simultaneously after "implement" completes
 ```
 
@@ -449,8 +475,9 @@ steps:
 ```
 
 Load and execute:
+
 ```bash
-openclaw agent --message "Run PR review workflow for the latest changes"
+coderclaw agent --message "Run PR review workflow for the latest changes"
 ```
 
 ## Integration with CI/CD
@@ -469,11 +496,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install CoderClaw
-        run: npm install -g openclaw
+        run: npm install -g coderclaw
       - name: Run Review Workflow
         run: |
-          openclaw coderclaw init
-          openclaw agent --message "Review PR changes" > review.txt
+          coderclaw init
+          coderclaw agent --message "Review PR changes" > review.txt
       - name: Comment on PR
         uses: actions/github-script@v6
         with:

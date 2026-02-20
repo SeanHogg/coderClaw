@@ -7,7 +7,7 @@ title: "Podman"
 
 # Podman
 
-Run the OpenClaw gateway in a **rootless** Podman container. Uses the same image as Docker (build from the repo [Dockerfile](https://github.com/openclaw/openclaw/blob/main/Dockerfile)).
+Run the OpenClaw gateway in a **rootless** Podman container. Uses the same image as Docker (build from the repo [Dockerfile](https://github.com/SeanHogg/coderClaw/blob/main/Dockerfile)).
 
 ## Requirements
 
@@ -64,7 +64,7 @@ To add quadlet **after** an initial setup that did not use it, re-run: `./setup-
 `setup-podman.sh` creates a dedicated system user `openclaw`:
 
 - **Shell:** `nologin` — no interactive login; reduces attack surface.
-- **Home:** e.g. `/home/openclaw` — holds `~/.openclaw` (config, workspace) and the launch script `run-openclaw-podman.sh`.
+- **Home:** e.g. `/home/openclaw` — holds `~/.coderclaw` (config, workspace) and the launch script `run-openclaw-podman.sh`.
 - **Rootless Podman:** The user must have a **subuid** and **subgid** range. Many distros assign these automatically when the user is created. If setup prints a warning, add lines to `/etc/subuid` and `/etc/subgid`:
 
   ```text
@@ -105,4 +105,4 @@ To add quadlet **after** an initial setup that did not use it, re-run: `./setup-
 
 ## Optional: run as your own user
 
-To run the gateway as your normal user (no dedicated openclaw user): build the image, create `~/.openclaw/.env` with `OPENCLAW_GATEWAY_TOKEN`, and run the container with `--userns=keep-id` and mounts to your `~/.openclaw`. The launch script is designed for the openclaw-user flow; for a single-user setup you can instead run the `podman run` command from the script manually, pointing config and workspace to your home. Recommended for most users: use `setup-podman.sh` and run as the openclaw user so config and process are isolated.
+To run the gateway as your normal user (no dedicated openclaw user): build the image, create `~/.coderclaw/.env` with `OPENCLAW_GATEWAY_TOKEN`, and run the container with `--userns=keep-id` and mounts to your `~/.coderclaw`. The launch script is designed for the openclaw-user flow; for a single-user setup you can instead run the `podman run` command from the script manually, pointing config and workspace to your home. Recommended for most users: use `setup-podman.sh` and run as the openclaw user so config and process are isolated.

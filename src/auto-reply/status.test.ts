@@ -342,7 +342,7 @@ describe("buildStatusMessage", () => {
   }) {
     const logPath = path.join(
       params.dir,
-      ".openclaw",
+      ".coderclaw",
       "agents",
       params.agentId,
       "sessions",

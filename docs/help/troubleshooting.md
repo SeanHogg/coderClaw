@@ -15,24 +15,24 @@ If you only have 2 minutes, use this page as a triage front door.
 Run this exact ladder in order:
 
 ```bash
-openclaw status
-openclaw status --all
-openclaw gateway probe
-openclaw gateway status
-openclaw doctor
-openclaw channels status --probe
-openclaw logs --follow
+coderclaw status
+coderclaw status --all
+coderclaw gateway probe
+coderclaw gateway status
+coderclaw doctor
+coderclaw channels status --probe
+coderclaw logs --follow
 ```
 
 Good output in one line:
 
-- `openclaw status` → shows configured channels and no obvious auth errors.
-- `openclaw status --all` → full report is present and shareable.
-- `openclaw gateway probe` → expected gateway target is reachable.
-- `openclaw gateway status` → `Runtime: running` and `RPC probe: ok`.
-- `openclaw doctor` → no blocking config/service errors.
-- `openclaw channels status --probe` → channels report `connected` or `ready`.
-- `openclaw logs --follow` → steady activity, no repeating fatal errors.
+- `coderclaw status` → shows configured channels and no obvious auth errors.
+- `coderclaw status --all` → full report is present and shareable.
+- `coderclaw gateway probe` → expected gateway target is reachable.
+- `coderclaw gateway status` → `Runtime: running` and `RPC probe: ok`.
+- `coderclaw doctor` → no blocking config/service errors.
+- `coderclaw channels status --probe` → channels report `connected` or `ready`.
+- `coderclaw logs --follow` → steady activity, no repeating fatal errors.
 
 ## Decision tree
 
@@ -59,11 +59,11 @@ flowchart TD
 <AccordionGroup>
   <Accordion title="No replies">
     ```bash
-    openclaw status
-    openclaw gateway status
-    openclaw channels status --probe
-    openclaw pairing list <channel>
-    openclaw logs --follow
+    coderclaw status
+    coderclaw gateway status
+    coderclaw channels status --probe
+    coderclaw pairing list <channel>
+    coderclaw logs --follow
     ```
 
     Good output looks like:
@@ -89,16 +89,16 @@ flowchart TD
 
   <Accordion title="Dashboard or Control UI will not connect">
     ```bash
-    openclaw status
-    openclaw gateway status
-    openclaw logs --follow
-    openclaw doctor
-    openclaw channels status --probe
+    coderclaw status
+    coderclaw gateway status
+    coderclaw logs --follow
+    coderclaw doctor
+    coderclaw channels status --probe
     ```
 
     Good output looks like:
 
-    - `Dashboard: http://...` is shown in `openclaw gateway status`
+    - `Dashboard: http://...` is shown in `coderclaw gateway status`
     - `RPC probe: ok`
     - No auth loop in logs
 
@@ -118,11 +118,11 @@ flowchart TD
 
   <Accordion title="Gateway will not start or service installed but not running">
     ```bash
-    openclaw status
-    openclaw gateway status
-    openclaw logs --follow
-    openclaw doctor
-    openclaw channels status --probe
+    coderclaw status
+    coderclaw gateway status
+    coderclaw logs --follow
+    coderclaw doctor
+    coderclaw channels status --probe
     ```
 
     Good output looks like:
@@ -147,11 +147,11 @@ flowchart TD
 
   <Accordion title="Channel connects but messages do not flow">
     ```bash
-    openclaw status
-    openclaw gateway status
-    openclaw logs --follow
-    openclaw doctor
-    openclaw channels status --probe
+    coderclaw status
+    coderclaw gateway status
+    coderclaw logs --follow
+    coderclaw doctor
+    coderclaw channels status --probe
     ```
 
     Good output looks like:
@@ -175,12 +175,12 @@ flowchart TD
 
   <Accordion title="Cron or heartbeat did not fire or did not deliver">
     ```bash
-    openclaw status
-    openclaw gateway status
-    openclaw cron status
-    openclaw cron list
-    openclaw cron runs --id <jobId> --limit 20
-    openclaw logs --follow
+    coderclaw status
+    coderclaw gateway status
+    coderclaw cron status
+    coderclaw cron list
+    coderclaw cron runs --id <jobId> --limit 20
+    coderclaw logs --follow
     ```
 
     Good output looks like:
@@ -206,11 +206,11 @@ flowchart TD
 
   <Accordion title="Node is paired but tool fails camera canvas screen exec">
     ```bash
-    openclaw status
-    openclaw gateway status
-    openclaw nodes status
-    openclaw nodes describe --node <idOrNameOrIp>
-    openclaw logs --follow
+    coderclaw status
+    coderclaw gateway status
+    coderclaw nodes status
+    coderclaw nodes describe --node <idOrNameOrIp>
+    coderclaw logs --follow
     ```
 
     Good output looks like:
@@ -236,11 +236,11 @@ flowchart TD
 
   <Accordion title="Browser tool fails">
     ```bash
-    openclaw status
-    openclaw gateway status
+    coderclaw status
+    coderclaw gateway status
     openclaw browser status
-    openclaw logs --follow
-    openclaw doctor
+    coderclaw logs --follow
+    coderclaw doctor
     ```
 
     Good output looks like:

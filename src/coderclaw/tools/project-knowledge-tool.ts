@@ -68,7 +68,7 @@ export const projectKnowledgeTool: AgentTool<typeof ProjectKnowledgeSchema, stri
 
       if (Object.keys(result).length === 0) {
         return jsonResult({
-          error: "No project knowledge found. Initialize with 'openclaw coderclaw init' first.",
+          error: "No project knowledge found. Initialize with 'coderclaw init' first.",
         }) as AgentToolResult<string>;
       }
 

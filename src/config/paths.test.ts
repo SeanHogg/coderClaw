@@ -51,10 +51,10 @@ describe("state + config path candidates", () => {
     } as NodeJS.ProcessEnv;
 
     const resolvedHome = path.resolve("/srv/openclaw-home");
-    expect(resolveStateDir(env)).toBe(path.join(resolvedHome, ".openclaw"));
+    expect(resolveStateDir(env)).toBe(path.join(resolvedHome, ".coderclaw"));
 
     const candidates = resolveDefaultConfigCandidates(env);
-    expect(candidates[0]).toBe(path.join(resolvedHome, ".openclaw", "openclaw.json"));
+    expect(candidates[0]).toBe(path.join(resolvedHome, ".coderclaw", "openclaw.json"));
   });
 
   it("prefers OPENCLAW_HOME over HOME for default state/config locations", () => {
@@ -64,10 +64,10 @@ describe("state + config path candidates", () => {
     } as NodeJS.ProcessEnv;
 
     const resolvedHome = path.resolve("/srv/openclaw-home");
-    expect(resolveStateDir(env)).toBe(path.join(resolvedHome, ".openclaw"));
+    expect(resolveStateDir(env)).toBe(path.join(resolvedHome, ".coderclaw"));
 
     const candidates = resolveDefaultConfigCandidates(env);
-    expect(candidates[0]).toBe(path.join(resolvedHome, ".openclaw", "openclaw.json"));
+    expect(candidates[0]).toBe(path.join(resolvedHome, ".coderclaw", "openclaw.json"));
   });
 
   it("orders default config candidates in a stable order", () => {
@@ -75,10 +75,10 @@ describe("state + config path candidates", () => {
     const resolvedHome = path.resolve(home);
     const candidates = resolveDefaultConfigCandidates({} as NodeJS.ProcessEnv, () => home);
     const expected = [
-      path.join(resolvedHome, ".openclaw", "openclaw.json"),
-      path.join(resolvedHome, ".openclaw", "clawdbot.json"),
-      path.join(resolvedHome, ".openclaw", "moldbot.json"),
-      path.join(resolvedHome, ".openclaw", "moltbot.json"),
+      path.join(resolvedHome, ".coderclaw", "openclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "clawdbot.json"),
+      path.join(resolvedHome, ".coderclaw", "moldbot.json"),
+      path.join(resolvedHome, ".coderclaw", "moltbot.json"),
       path.join(resolvedHome, ".clawdbot", "openclaw.json"),
       path.join(resolvedHome, ".clawdbot", "clawdbot.json"),
       path.join(resolvedHome, ".clawdbot", "moldbot.json"),
@@ -95,10 +95,10 @@ describe("state + config path candidates", () => {
     expect(candidates).toEqual(expected);
   });
 
-  it("prefers ~/.openclaw when it exists and legacy dir is missing", async () => {
+  it("prefers ~/.coderclaw when it exists and legacy dir is missing", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-state-"));
     try {
-      const newDir = path.join(root, ".openclaw");
+      const newDir = path.join(root, ".coderclaw");
       await fs.mkdir(newDir, { recursive: true });
       const resolved = resolveStateDir({} as NodeJS.ProcessEnv, () => root);
       expect(resolved).toBe(newDir);
@@ -110,7 +110,7 @@ describe("state + config path candidates", () => {
   it("CONFIG_PATH prefers existing config when present", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-config-"));
     try {
-      const legacyDir = path.join(root, ".openclaw");
+      const legacyDir = path.join(root, ".coderclaw");
       await fs.mkdir(legacyDir, { recursive: true });
       const legacyPath = path.join(legacyDir, "openclaw.json");
       await fs.writeFile(legacyPath, "{}", "utf-8");
@@ -125,7 +125,7 @@ describe("state + config path candidates", () => {
   it("respects state dir overrides when config is missing", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-config-override-"));
     try {
-      const legacyDir = path.join(root, ".openclaw");
+      const legacyDir = path.join(root, ".coderclaw");
       await fs.mkdir(legacyDir, { recursive: true });
       const legacyConfig = path.join(legacyDir, "openclaw.json");
       await fs.writeFile(legacyConfig, "{}", "utf-8");

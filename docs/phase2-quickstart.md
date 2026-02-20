@@ -15,7 +15,7 @@ Get started with CoderClaw's distributed runtime, security, and team collaborati
 
 ## What is Phase 2?
 
-CoderClaw Phase 2 extends [OpenClaw](https://github.com/openclaw/openclaw)'s multi-channel gateway with:
+CoderClaw Phase 2 extends [OpenClaw](https://github.com/SeanHogg/coderClaw)'s multi-channel gateway with:
 
 - **🔄 Transport Abstraction**: Execute tasks locally or remotely with protocol-agnostic runtime
 - **📊 Task Lifecycle Management**: Formal state machine with persistence and audit trails
@@ -32,8 +32,8 @@ Phase 2 features are **backward compatible**. Your existing setup continues to w
 
 ```bash
 # Create Phase 2 runtime config
-mkdir -p ~/.openclaw/.coderClaw
-cat > ~/.openclaw/.coderClaw/runtime.yaml <<EOF
+mkdir -p ~/.coderclaw/.coderClaw
+cat > ~/.coderclaw/.coderClaw/runtime.yaml <<EOF
 mode: local-only
 transport:
   type: local
@@ -93,7 +93,7 @@ console.log(`Available skills:`, skills);
 
 ```bash
 # Create security config
-cat > ~/.openclaw/.coderClaw/security.yaml <<EOF
+cat > ~/.coderclaw/.coderClaw/security.yaml <<EOF
 identity:
   providers:
     - github
@@ -121,7 +121,7 @@ EOF
 ### 2. Configure Runtime for Remote Access
 
 ```bash
-cat > ~/.openclaw/.coderClaw/runtime.yaml <<EOF
+cat > ~/.coderclaw/.coderClaw/runtime.yaml <<EOF
 mode: remote-enabled
 transport:
   type: local  # Use HTTP adapter for true remote (future)
@@ -208,16 +208,12 @@ import { SecurityService, MemorySecurityStorage } from "openclaw/security";
 const securityService = new SecurityService(new MemorySecurityStorage());
 
 // Create session with role
-const session = await securityService.createSession(
-  "user-123",
-  "device-456",
-  ["developer"]
-);
+const session = await securityService.createSession("user-123", "device-456", ["developer"]);
 
 // Check permissions
 const canSubmit = await securityService.checkPermission(
   { sessionId: session.sessionId, userId: "user-123" },
-  "task:submit"
+  "task:submit",
 );
 
 if (canSubmit.allowed) {
@@ -290,19 +286,19 @@ npx tsx examples/phase2/security-rbac.ts
 
 ## Configuration Reference
 
-### Runtime Configuration (`~/.openclaw/.coderClaw/runtime.yaml`)
+### Runtime Configuration (`~/.coderclaw/.coderClaw/runtime.yaml`)
 
 ```yaml
 # Deployment mode: local-only | remote-enabled | distributed-cluster
 mode: local-only
 
 transport:
-  type: local  # local | http | websocket | grpc
+  type: local # local | http | websocket | grpc
   enabled: true
 
 security:
-  enforceTrust: false  # Enable device trust enforcement
-  requireAuth: false   # Require authentication
+  enforceTrust: false # Enable device trust enforcement
+  requireAuth: false # Require authentication
   defaultRoles: [developer]
 
 deployment:
@@ -311,7 +307,7 @@ deployment:
   maxConcurrentTasks: 10
 ```
 
-### Security Configuration (`~/.openclaw/.coderClaw/security.yaml`)
+### Security Configuration (`~/.coderclaw/.coderClaw/security.yaml`)
 
 ```yaml
 identity:
@@ -322,7 +318,7 @@ identity:
     - local
 
 deviceTrust:
-  minimumLevel: verified  # trusted | verified | untrusted
+  minimumLevel: verified # trusted | verified | untrusted
   autoTrustLocal: true
 
 roles:
@@ -357,12 +353,12 @@ skillPolicies:
 
 CoderClaw includes these built-in roles:
 
-| Role | Permissions | Use Case |
-|------|------------|----------|
-| `admin` | All permissions (`admin:all`) | System administrators |
-| `developer` | Task submit/read/cancel, agent invoke, skill execute | Development team |
-| `readonly` | Task read, config read | Read-only access for stakeholders |
-| `ci` | Task submit/read, agent invoke | CI/CD pipelines |
+| Role        | Permissions                                          | Use Case                          |
+| ----------- | ---------------------------------------------------- | --------------------------------- |
+| `admin`     | All permissions (`admin:all`)                        | System administrators             |
+| `developer` | Task submit/read/cancel, agent invoke, skill execute | Development team                  |
+| `readonly`  | Task read, config read                               | Read-only access for stakeholders |
+| `ci`        | Task submit/read, agent invoke                       | CI/CD pipelines                   |
 
 ## Permissions Reference
 
@@ -402,7 +398,7 @@ Check your security configuration:
 
 ```bash
 # Verify runtime config
-cat ~/.openclaw/.coderClaw/runtime.yaml
+cat ~/.coderclaw/.coderClaw/runtime.yaml
 
 # Check if authentication is required
 # If security.requireAuth: true, you need a valid session
@@ -413,7 +409,7 @@ cat ~/.openclaw/.coderClaw/runtime.yaml
 Ensure your runtime is in `remote-enabled` mode:
 
 ```yaml
-# In ~/.openclaw/.coderClaw/runtime.yaml
+# In ~/.coderclaw/.coderClaw/runtime.yaml
 mode: remote-enabled
 deployment:
   allowRemoteSessions: true

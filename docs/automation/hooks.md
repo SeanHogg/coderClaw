@@ -43,45 +43,45 @@ The hooks system allows you to:
 
 OpenClaw ships with four bundled hooks that are automatically discovered:
 
-- **💾 session-memory**: Saves session context to your agent workspace (default `~/.openclaw/workspace/memory/`) when you issue `/new`
+- **💾 session-memory**: Saves session context to your agent workspace (default `~/.coderclaw/workspace/memory/`) when you issue `/new`
 - **📎 bootstrap-extra-files**: Injects additional workspace bootstrap files from configured glob/path patterns during `agent:bootstrap`
-- **📝 command-logger**: Logs all command events to `~/.openclaw/logs/commands.log`
+- **📝 command-logger**: Logs all command events to `~/.coderclaw/logs/commands.log`
 - **🚀 boot-md**: Runs `BOOT.md` when the gateway starts (requires internal hooks enabled)
 
 List available hooks:
 
 ```bash
-openclaw hooks list
+coderclaw hooks list
 ```
 
 Enable a hook:
 
 ```bash
-openclaw hooks enable session-memory
+coderclaw hooks enable session-memory
 ```
 
 Check hook status:
 
 ```bash
-openclaw hooks check
+coderclaw hooks check
 ```
 
 Get detailed information:
 
 ```bash
-openclaw hooks info session-memory
+coderclaw hooks info session-memory
 ```
 
 ### Onboarding
 
-During onboarding (`openclaw onboard`), you'll be prompted to enable recommended hooks. The wizard automatically discovers eligible hooks and presents them for selection.
+During onboarding (`coderclaw onboard`), you'll be prompted to enable recommended hooks. The wizard automatically discovers eligible hooks and presents them for selection.
 
 ## Hook Discovery
 
 Hooks are automatically discovered from three directories (in order of precedence):
 
 1. **Workspace hooks**: `<workspace>/hooks/` (per-agent, highest precedence)
-2. **Managed hooks**: `~/.openclaw/hooks/` (user-installed, shared across workspaces)
+2. **Managed hooks**: `~/.coderclaw/hooks/` (user-installed, shared across workspaces)
 3. **Bundled hooks**: `<openclaw>/dist/hooks/bundled/` (shipped with OpenClaw)
 
 Managed hook directories can be either a **single hook** or a **hook pack** (package directory).
@@ -100,7 +100,7 @@ Hook packs are standard npm packages that export one or more hooks via `openclaw
 `package.json`. Install them with:
 
 ```bash
-openclaw hooks install <path-or-spec>
+coderclaw hooks install <path-or-spec>
 ```
 
 Npm specs are registry-only (package name + optional version/tag). Git/URL/file specs are rejected.
@@ -118,9 +118,9 @@ Example `package.json`:
 ```
 
 Each entry points to a hook directory containing `HOOK.md` and `handler.ts` (or `index.ts`).
-Hook packs can ship dependencies; they will be installed under `~/.openclaw/hooks/<id>`.
+Hook packs can ship dependencies; they will be installed under `~/.coderclaw/hooks/<id>`.
 
-Security note: `openclaw hooks install` installs dependencies with `npm install --ignore-scripts`
+Security note: `coderclaw hooks install` installs dependencies with `npm install --ignore-scripts`
 (no lifecycle scripts). Keep hook pack dependency trees "pure JS/TS" and avoid packages that rely
 on `postinstall` builds.
 
@@ -336,13 +336,13 @@ Planned event types:
 ### 1. Choose Location
 
 - **Workspace hooks** (`<workspace>/hooks/`): Per-agent, highest precedence
-- **Managed hooks** (`~/.openclaw/hooks/`): Shared across workspaces
+- **Managed hooks** (`~/.coderclaw/hooks/`): Shared across workspaces
 
 ### 2. Create Directory Structure
 
 ```bash
-mkdir -p ~/.openclaw/hooks/my-hook
-cd ~/.openclaw/hooks/my-hook
+mkdir -p ~/.coderclaw/hooks/my-hook
+cd ~/.coderclaw/hooks/my-hook
 ```
 
 ### 3. Create HOOK.md
@@ -380,10 +380,10 @@ export default handler;
 
 ```bash
 # Verify hook is discovered
-openclaw hooks list
+coderclaw hooks list
 
 # Enable it
-openclaw hooks enable my-hook
+coderclaw hooks enable my-hook
 
 # Restart your gateway process (menu bar app restart on macOS, or restart your dev process)
 
@@ -479,46 +479,46 @@ Note: `module` must be a workspace-relative path. Absolute paths and traversal o
 
 ```bash
 # List all hooks
-openclaw hooks list
+coderclaw hooks list
 
 # Show only eligible hooks
-openclaw hooks list --eligible
+coderclaw hooks list --eligible
 
 # Verbose output (show missing requirements)
-openclaw hooks list --verbose
+coderclaw hooks list --verbose
 
 # JSON output
-openclaw hooks list --json
+coderclaw hooks list --json
 ```
 
 ### Hook Information
 
 ```bash
 # Show detailed info about a hook
-openclaw hooks info session-memory
+coderclaw hooks info session-memory
 
 # JSON output
-openclaw hooks info session-memory --json
+coderclaw hooks info session-memory --json
 ```
 
 ### Check Eligibility
 
 ```bash
 # Show eligibility summary
-openclaw hooks check
+coderclaw hooks check
 
 # JSON output
-openclaw hooks check --json
+coderclaw hooks check --json
 ```
 
 ### Enable/Disable
 
 ```bash
 # Enable a hook
-openclaw hooks enable session-memory
+coderclaw hooks enable session-memory
 
 # Disable a hook
-openclaw hooks disable command-logger
+coderclaw hooks disable command-logger
 ```
 
 ## Bundled hook reference
@@ -531,7 +531,7 @@ Saves session context to memory when you issue `/new`.
 
 **Requirements**: `workspace.dir` must be configured
 
-**Output**: `<workspace>/memory/YYYY-MM-DD-slug.md` (defaults to `~/.openclaw/workspace`)
+**Output**: `<workspace>/memory/YYYY-MM-DD-slug.md` (defaults to `~/.coderclaw/workspace`)
 
 **What it does**:
 
@@ -559,7 +559,7 @@ Saves session context to memory when you issue `/new`.
 **Enable**:
 
 ```bash
-openclaw hooks enable session-memory
+coderclaw hooks enable session-memory
 ```
 
 ### bootstrap-extra-files
@@ -600,7 +600,7 @@ Injects additional bootstrap files (for example monorepo-local `AGENTS.md` / `TO
 **Enable**:
 
 ```bash
-openclaw hooks enable bootstrap-extra-files
+coderclaw hooks enable bootstrap-extra-files
 ```
 
 ### command-logger
@@ -611,7 +611,7 @@ Logs all command events to a centralized audit file.
 
 **Requirements**: None
 
-**Output**: `~/.openclaw/logs/commands.log`
+**Output**: `~/.coderclaw/logs/commands.log`
 
 **What it does**:
 
@@ -630,19 +630,19 @@ Logs all command events to a centralized audit file.
 
 ```bash
 # View recent commands
-tail -n 20 ~/.openclaw/logs/commands.log
+tail -n 20 ~/.coderclaw/logs/commands.log
 
 # Pretty-print with jq
-cat ~/.openclaw/logs/commands.log | jq .
+cat ~/.coderclaw/logs/commands.log | jq .
 
 # Filter by action
-grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
+grep '"action":"new"' ~/.coderclaw/logs/commands.log | jq .
 ```
 
 **Enable**:
 
 ```bash
-openclaw hooks enable command-logger
+coderclaw hooks enable command-logger
 ```
 
 ### boot-md
@@ -663,7 +663,7 @@ Internal hooks must be enabled for this to run.
 **Enable**:
 
 ```bash
-openclaw hooks enable boot-md
+coderclaw hooks enable boot-md
 ```
 
 ## Best Practices
@@ -747,7 +747,7 @@ Registered hook: boot-md -> gateway:startup
 List all discovered hooks:
 
 ```bash
-openclaw hooks list --verbose
+coderclaw hooks list --verbose
 ```
 
 ### Check Registration
@@ -766,7 +766,7 @@ const handler: HookHandler = async (event) => {
 Check why a hook isn't eligible:
 
 ```bash
-openclaw hooks info my-hook
+coderclaw hooks info my-hook
 ```
 
 Look for missing requirements in the output.
@@ -782,7 +782,7 @@ Monitor gateway logs to see hook execution:
 ./scripts/clawlog.sh -f
 
 # Other platforms
-tail -f ~/.openclaw/gateway.log
+tail -f ~/.coderclaw/gateway.log
 ```
 
 ### Test Hooks Directly
@@ -858,21 +858,21 @@ Session reset
 1. Check directory structure:
 
    ```bash
-   ls -la ~/.openclaw/hooks/my-hook/
+   ls -la ~/.coderclaw/hooks/my-hook/
    # Should show: HOOK.md, handler.ts
    ```
 
 2. Verify HOOK.md format:
 
    ```bash
-   cat ~/.openclaw/hooks/my-hook/HOOK.md
+   cat ~/.coderclaw/hooks/my-hook/HOOK.md
    # Should have YAML frontmatter with name and metadata
    ```
 
 3. List all discovered hooks:
 
    ```bash
-   openclaw hooks list
+   coderclaw hooks list
    ```
 
 ### Hook Not Eligible
@@ -880,7 +880,7 @@ Session reset
 Check requirements:
 
 ```bash
-openclaw hooks info my-hook
+coderclaw hooks info my-hook
 ```
 
 Look for missing:
@@ -895,7 +895,7 @@ Look for missing:
 1. Verify hook is enabled:
 
    ```bash
-   openclaw hooks list
+   coderclaw hooks list
    # Should show ✓ next to enabled hooks
    ```
 
@@ -943,8 +943,8 @@ node -e "import('./path/to/handler.ts').then(console.log)"
 1. Create hook directory:
 
    ```bash
-   mkdir -p ~/.openclaw/hooks/my-hook
-   mv ./hooks/handlers/my-handler.ts ~/.openclaw/hooks/my-hook/handler.ts
+   mkdir -p ~/.coderclaw/hooks/my-hook
+   mv ./hooks/handlers/my-handler.ts ~/.coderclaw/hooks/my-hook/handler.ts
    ```
 
 2. Create HOOK.md:
@@ -979,7 +979,7 @@ node -e "import('./path/to/handler.ts').then(console.log)"
 4. Verify and restart your gateway process:
 
    ```bash
-   openclaw hooks list
+   coderclaw hooks list
    # Should show: 🎯 my-hook ✓
    ```
 
@@ -994,6 +994,6 @@ node -e "import('./path/to/handler.ts').then(console.log)"
 ## See Also
 
 - [CLI Reference: hooks](/cli/hooks)
-- [Bundled Hooks README](https://github.com/openclaw/openclaw/tree/main/src/hooks/bundled)
+- [Bundled Hooks README](https://github.com/SeanHogg/coderClaw/tree/main/src/hooks/bundled)
 - [Webhook Hooks](/automation/webhook)
 - [Configuration](/gateway/configuration#hooks)

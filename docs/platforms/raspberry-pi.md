@@ -118,8 +118,8 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 ### Option B: Hackable Install (For tinkering)
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
+git clone https://github.com/SeanHogg/coderClaw.git
+cd coderClaw
 npm install
 npm run build
 npm link
@@ -130,7 +130,7 @@ The hackable install gives you direct access to logs and code — useful for deb
 ## 7) Run Onboarding
 
 ```bash
-openclaw onboard --install-daemon
+coderclaw onboard --install-daemon
 ```
 
 Follow the wizard:
@@ -144,7 +144,7 @@ Follow the wizard:
 
 ```bash
 # Check status
-openclaw status
+coderclaw status
 
 # Check service
 sudo systemctl status openclaw
@@ -173,7 +173,7 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up
 
 # Update config
-openclaw config set gateway.bind tailnet
+coderclaw config set gateway.bind tailnet
 sudo systemctl restart openclaw
 ```
 

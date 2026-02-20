@@ -12,8 +12,8 @@ This guide migrates a OpenClaw Gateway from one machine to another **without red
 
 The migration is simple conceptually:
 
-- Copy the **state directory** (`$OPENCLAW_STATE_DIR`, default: `~/.openclaw/`) — this includes config, auth, sessions, and channel state.
-- Copy your **workspace** (`~/.openclaw/workspace/` by default) — this includes your agent files (memory, prompts, etc.).
+- Copy the **state directory** (`$OPENCLAW_STATE_DIR`, default: `~/.coderclaw/`) — this includes config, auth, sessions, and channel state.
+- Copy your **workspace** (`~/.coderclaw/workspace/` by default) — this includes your agent files (memory, prompts, etc.).
 
 But there are common footguns around **profiles**, **permissions**, and **partial copies**.
 
@@ -23,7 +23,7 @@ But there are common footguns around **profiles**, **permissions**, and **partia
 
 Most installs use the default:
 
-- **State dir:** `~/.openclaw/`
+- **State dir:** `~/.coderclaw/`
 
 But it may be different if you use:
 
@@ -33,7 +33,7 @@ But it may be different if you use:
 If you’re not sure, run on the **old** machine:
 
 ```bash
-openclaw status
+coderclaw status
 ```
 
 Look for mentions of `OPENCLAW_STATE_DIR` / profile in the output. If you run multiple gateways, repeat for each profile.
@@ -42,7 +42,7 @@ Look for mentions of `OPENCLAW_STATE_DIR` / profile in the output. If you run mu
 
 Common defaults:
 
-- `~/.openclaw/workspace/` (recommended workspace)
+- `~/.coderclaw/workspace/` (recommended workspace)
 - a custom folder you created
 
 Your workspace is where files like `MEMORY.md`, `USER.md`, and `memory/*.md` live.
@@ -72,7 +72,7 @@ Those live under `$OPENCLAW_STATE_DIR`.
 On the **old** machine, stop the gateway first so files aren’t changing mid-copy:
 
 ```bash
-openclaw gateway stop
+coderclaw gateway stop
 ```
 
 (Optional but recommended) archive the state dir and workspace:
@@ -85,7 +85,7 @@ tar -czf openclaw-state.tgz .openclaw
 tar -czf openclaw-workspace.tgz .openclaw/workspace
 ```
 
-If you have multiple profiles/state dirs (e.g. `~/.openclaw-main`, `~/.openclaw-work`), archive each.
+If you have multiple profiles/state dirs (e.g. `~/.coderclaw-main`, `~/.coderclaw-work`), archive each.
 
 ### Step 1 — Install OpenClaw on the new machine
 
@@ -93,14 +93,14 @@ On the **new** machine, install the CLI (and Node if needed):
 
 - See: [Install](/install)
 
-At this stage, it’s OK if onboarding creates a fresh `~/.openclaw/` — you will overwrite it in the next step.
+At this stage, it’s OK if onboarding creates a fresh `~/.coderclaw/` — you will overwrite it in the next step.
 
 ### Step 2 — Copy the state dir + workspace to the new machine
 
 Copy **both**:
 
-- `$OPENCLAW_STATE_DIR` (default `~/.openclaw/`)
-- your workspace (default `~/.openclaw/workspace/`)
+- `$OPENCLAW_STATE_DIR` (default `~/.coderclaw/`)
+- your workspace (default `~/.coderclaw/workspace/`)
 
 Common approaches:
 
@@ -118,7 +118,7 @@ After copying, ensure:
 On the **new** machine:
 
 ```bash
-openclaw doctor
+coderclaw doctor
 ```
 
 Doctor is the “safe boring” command. It repairs services, applies config migrations, and warns about mismatches.
@@ -126,8 +126,8 @@ Doctor is the “safe boring” command. It repairs services, applies config mig
 Then:
 
 ```bash
-openclaw gateway restart
-openclaw status
+coderclaw gateway restart
+coderclaw status
 ```
 
 ## Common footguns (and how to avoid them)
@@ -143,7 +143,7 @@ If you ran the old gateway with a profile (or `OPENCLAW_STATE_DIR`), and the new
 Fix: run the gateway/service using the **same** profile/state dir you migrated, then rerun:
 
 ```bash
-openclaw doctor
+coderclaw doctor
 ```
 
 ### Footgun: copying only `openclaw.json`
@@ -180,7 +180,7 @@ If you’re in remote mode, migrate the **gateway host**.
 
 On the new machine, confirm:
 
-- `openclaw status` shows the gateway running
+- `coderclaw status` shows the gateway running
 - Your channels are still connected (e.g. WhatsApp doesn’t require re-pair)
 - The dashboard opens and shows existing sessions
 - Your workspace files (memory, configs) are present

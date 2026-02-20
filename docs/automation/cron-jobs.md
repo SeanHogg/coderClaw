@@ -22,7 +22,7 @@ Troubleshooting: [/automation/troubleshooting](/automation/troubleshooting)
 ## TL;DR
 
 - Cron runs **inside the Gateway** (not inside the model).
-- Jobs persist under `~/.openclaw/cron/` so restarts don’t lose schedules.
+- Jobs persist under `~/.coderclaw/cron/` so restarts don’t lose schedules.
 - Two execution styles:
   - **Main session**: enqueue a system event, then run on the next heartbeat.
   - **Isolated**: run a dedicated agent turn in `cron:<jobId>`, with delivery (announce by default or none).
@@ -35,7 +35,7 @@ Troubleshooting: [/automation/troubleshooting](/automation/troubleshooting)
 Create a one-shot reminder, verify it exists, and run it immediately:
 
 ```bash
-openclaw cron add \
+coderclaw cron add \
   --name "Reminder" \
   --at "2026-02-01T16:00:00Z" \
   --session main \
@@ -43,15 +43,15 @@ openclaw cron add \
   --wake now \
   --delete-after-run
 
-openclaw cron list
-openclaw cron run <job-id>
-openclaw cron runs --id <job-id>
+coderclaw cron list
+coderclaw cron run <job-id>
+coderclaw cron runs --id <job-id>
 ```
 
 Schedule a recurring isolated job with delivery:
 
 ```bash
-openclaw cron add \
+coderclaw cron add \
   --name "Morning brief" \
   --cron "0 7 * * *" \
   --tz "America/Los_Angeles" \
@@ -68,9 +68,9 @@ For the canonical JSON shapes and examples, see [JSON schema for tool calls](/au
 
 ## Where cron jobs are stored
 
-Cron jobs are persisted on the Gateway host at `~/.openclaw/cron/jobs.json` by default.
+Cron jobs are persisted on the Gateway host at `~/.coderclaw/cron/jobs.json` by default.
 The Gateway loads the file into memory and writes it back on changes, so manual edits
-are only safe when the Gateway is stopped. Prefer `openclaw cron add/edit` or the cron
+are only safe when the Gateway is stopped. Prefer `coderclaw cron add/edit` or the cron
 tool call API for changes.
 
 ## Beginner-friendly overview
@@ -348,8 +348,8 @@ Notes:
 
 ## Storage & history
 
-- Job store: `~/.openclaw/cron/jobs.json` (Gateway-managed JSON).
-- Run history: `~/.openclaw/cron/runs/<jobId>.jsonl` (JSONL, auto-pruned).
+- Job store: `~/.coderclaw/cron/jobs.json` (Gateway-managed JSON).
+- Run history: `~/.coderclaw/cron/runs/<jobId>.jsonl` (JSONL, auto-pruned).
 - Override store path: `cron.store` in config.
 
 ## Configuration
@@ -358,7 +358,7 @@ Notes:
 {
   cron: {
     enabled: true, // default true
-    store: "~/.openclaw/cron/jobs.json",
+    store: "~/.coderclaw/cron/jobs.json",
     maxConcurrentRuns: 1, // default 1
     webhook: "https://example.invalid/legacy", // deprecated fallback for stored notify:true jobs
     webhookToken: "replace-with-dedicated-webhook-token", // optional bearer token for webhook mode
@@ -385,7 +385,7 @@ Disable cron entirely:
 One-shot reminder (UTC ISO, auto-delete after success):
 
 ```bash
-openclaw cron add \
+coderclaw cron add \
   --name "Send reminder" \
   --at "2026-01-12T18:00:00Z" \
   --session main \
@@ -397,7 +397,7 @@ openclaw cron add \
 One-shot reminder (main session, wake immediately):
 
 ```bash
-openclaw cron add \
+coderclaw cron add \
   --name "Calendar check" \
   --at "20m" \
   --session main \
@@ -408,7 +408,7 @@ openclaw cron add \
 Recurring isolated job (announce to WhatsApp):
 
 ```bash
-openclaw cron add \
+coderclaw cron add \
   --name "Morning status" \
   --cron "0 7 * * *" \
   --tz "America/Los_Angeles" \
@@ -422,7 +422,7 @@ openclaw cron add \
 Recurring cron job with explicit 30-second stagger:
 
 ```bash
-openclaw cron add \
+coderclaw cron add \
   --name "Minute watcher" \
   --cron "0 * * * * *" \
   --tz "UTC" \
@@ -435,7 +435,7 @@ openclaw cron add \
 Recurring isolated job (deliver to a Telegram topic):
 
 ```bash
-openclaw cron add \
+coderclaw cron add \
   --name "Nightly summary (topic)" \
   --cron "0 22 * * *" \
   --tz "America/Los_Angeles" \
@@ -449,7 +449,7 @@ openclaw cron add \
 Isolated job with model and thinking override:
 
 ```bash
-openclaw cron add \
+coderclaw cron add \
   --name "Deep analysis" \
   --cron "0 6 * * 1" \
   --tz "America/Los_Angeles" \
@@ -466,24 +466,24 @@ Agent selection (multi-agent setups):
 
 ```bash
 # Pin a job to agent "ops" (falls back to default if that agent is missing)
-openclaw cron add --name "Ops sweep" --cron "0 6 * * *" --session isolated --message "Check ops queue" --agent ops
+coderclaw cron add --name "Ops sweep" --cron "0 6 * * *" --session isolated --message "Check ops queue" --agent ops
 
 # Switch or clear the agent on an existing job
-openclaw cron edit <jobId> --agent ops
-openclaw cron edit <jobId> --clear-agent
+coderclaw cron edit <jobId> --agent ops
+coderclaw cron edit <jobId> --clear-agent
 ```
 
 Manual run (force is the default, use `--due` to only run when due):
 
 ```bash
-openclaw cron run <jobId>
-openclaw cron run <jobId> --due
+coderclaw cron run <jobId>
+coderclaw cron run <jobId> --due
 ```
 
 Edit an existing job (patch fields):
 
 ```bash
-openclaw cron edit <jobId> \
+coderclaw cron edit <jobId> \
   --message "Updated prompt" \
   --model "opus" \
   --thinking low
@@ -492,13 +492,13 @@ openclaw cron edit <jobId> \
 Force an existing cron job to run exactly on schedule (no stagger):
 
 ```bash
-openclaw cron edit <jobId> --exact
+coderclaw cron edit <jobId> --exact
 ```
 
 Run history:
 
 ```bash
-openclaw cron runs --id <jobId> --limit 50
+coderclaw cron runs --id <jobId> --limit 50
 ```
 
 Immediate system event without creating a job:

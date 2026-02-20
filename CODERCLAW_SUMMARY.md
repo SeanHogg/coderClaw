@@ -15,34 +15,30 @@ The problem statement requested a redesign of coderClaw with the following core 
 **Implementation Status**: ✅ **COMPLETE**
 
 **Delivered**:
+
 - ✅ **AST Parsing**: Full TypeScript/JavaScript parsing via TypeScript Compiler API (`src/coderclaw/ast-parser.ts`)
   - Extracts functions, classes, interfaces, types
   - Tracks parameters, return types, visibility, modifiers
   - Identifies exports and imports
-  
 - ✅ **Semantic Code Maps**: Complete codebase structure analysis (`src/coderclaw/code-map.ts`)
   - File-level metadata tracking
   - Function/class/interface discovery
   - Cross-file relationship mapping
-  
 - ✅ **Dependency Graphs**: Full dependency analysis
   - File-to-file dependency tracking
   - Impact radius calculation
   - Coupling detection
   - Module boundary identification
-  
 - ✅ **Cross-File Reference Tracking**: Import/export analysis
   - Source tracking for all imports
   - Export metadata with kind and location
   - Reference resolution across files
-  
 - ✅ **Git History Awareness**: Comprehensive git integration (`src/coderclaw/tools/git-history-tool.ts`)
   - Commit history analysis
   - Authorship tracking (git blame)
   - Change pattern detection
   - Hotspot identification
   - Architectural evolution tracking
-  
 - ✅ **Persistent Context**: `.coderClaw/` directory structure (`src/coderclaw/project-context.ts`)
   - `context.yaml`: Project metadata, languages, frameworks, dependencies
   - `architecture.md`: Design documentation
@@ -58,24 +54,22 @@ The problem statement requested a redesign of coderClaw with the following core 
 **Implementation Status**: ✅ **COMPLETE**
 
 **Delivered**:
+
 - ✅ **Dynamic Agent Spawning**: Agents created on-demand based on workflow needs
 - ✅ **Task Lifecycle Management**: Formal state machine implementation (`src/transport/task-engine.ts`)
   - States: PENDING → PLANNING → RUNNING → COMPLETED/FAILED/CANCELLED
   - Progress tracking (0-100%)
   - Event logging and audit trails
   - Resumable execution support
-  
 - ✅ **Enhanced Orchestrator**: Multi-agent coordination (`src/coderclaw/orchestrator-enhanced.ts`)
   - Workflow creation and management
   - Dependency resolution
   - Parallel execution where possible
   - Result aggregation
   - Integration with distributed task engine
-  
 - ✅ **Iterative Refinement**: Built-in workflow patterns support loops
   - Generate → Test → Debug → Re-run cycles
   - Automatic validation and retry logic
-  
 - ✅ **Structured Outputs**: JSON schemas for all tool calls
 - ✅ **Deterministic Execution**: State machine with validated transitions
 - ✅ **Complete Audit Trail**: All events logged with timestamps
@@ -87,6 +81,7 @@ The problem statement requested a redesign of coderClaw with the following core 
 **Implementation Status**: ✅ **COMPLETE**
 
 **Delivered**:
+
 - ✅ **Code Creator**: Feature implementation and code generation (`src/coderclaw/agent-roles.ts`)
 - ✅ **Code Reviewer**: Quality, security, and performance review
 - ✅ **Test Generator**: Comprehensive test suite creation
@@ -96,6 +91,7 @@ The problem statement requested a redesign of coderClaw with the following core 
 - ✅ **Architecture Advisor**: High-level design guidance
 
 **Extensibility**:
+
 - ✅ **Pluggable System**: Custom agents via `.coderClaw/agents/*.yaml`
 - ✅ **Community-Extensible**: YAML-based agent definitions can be shared
 - ✅ **Project-Specific**: Each project can define custom agents
@@ -166,6 +162,7 @@ VISION.md                       # Updated with multi-agent vision
 ## Statistics
 
 ### Lines of Code
+
 - **New TypeScript files**: 15
 - **New test files**: 3
 - **New documentation files**: 4
@@ -174,17 +171,20 @@ VISION.md                       # Updated with multi-agent vision
 - **Updated lines**: ~200
 
 ### Test Coverage
+
 - **Transport layer**: 17 tests
-- **Security layer**: 16 tests  
+- **Security layer**: 16 tests
 - **Existing tests**: 161 tests
 - **Total**: 194 tests (all passing)
 
 ### Agent Roles
+
 - **Built-in roles**: 7 (fully documented)
 - **Custom role support**: ✅
 - **Community extensibility**: ✅
 
 ### Tools
+
 - **Code Analysis**: ✅
 - **Project Knowledge**: ✅
 - **Git History**: ✅
@@ -218,6 +218,7 @@ Every coderClaw project has a `.coderClaw/` directory:
 ### 3. Multi-Agent Workflows
 
 Built-in patterns:
+
 - **Feature Development**: Architecture Advisor → Code Creator → Test Generator → Reviewer
 - **Bug Fix**: Bug Analyzer → Code Creator → Test Generator → Reviewer
 - **Refactoring**: Code Reviewer → Refactor Agent → Test Generator
@@ -240,17 +241,20 @@ Built-in patterns:
 ## CLI Commands
 
 ### Initialize Project
+
 ```bash
-openclaw coderclaw init
-openclaw coderclaw init /path/to/project
+coderclaw init
+coderclaw init /path/to/project
 ```
 
 ### Check Status
+
 ```bash
-openclaw coderclaw status
+coderclaw project status
 ```
 
 ### Run Workflows
+
 ```bash
 openclaw agent --message "Create user authentication with tests" --thinking high
 openclaw agent --message "Fix the memory leak in parser" --thinking high
@@ -258,6 +262,7 @@ openclaw agent --message "Refactor the API module" --thinking high
 ```
 
 ### From Messaging Channels
+
 ```
 @coderclaw analyze the codebase structure
 @coderclaw create authentication feature with tests
@@ -291,6 +296,7 @@ Comprehensive documentation:
 ## Testing
 
 All new functionality is tested:
+
 - ✅ Task engine state machine (17 tests)
 - ✅ Security service RBAC (16 tests)
 - ✅ Existing functionality preserved (161 tests)
@@ -299,6 +305,7 @@ All new functionality is tested:
 ## Integration
 
 CoderClaw integrates seamlessly with OpenClaw:
+
 - ✅ Uses OpenClaw's tool system
 - ✅ Leverages subagent spawning
 - ✅ Integrates with session management
@@ -317,6 +324,7 @@ CoderClaw integrates seamlessly with OpenClaw:
 ## Future Enhancements
 
 Documented roadmap:
+
 - **Language Support**: Python, Go, Java, Rust, C++
 - **Real-time Indexing**: File system watcher integration
 - **IDE Integration**: Language Server Protocol support
@@ -339,6 +347,7 @@ Documented roadmap:
 ## How to Verify
 
 ### 1. Explore Examples
+
 ```bash
 cd examples/coderclaw
 npx tsx 01-project-init.ts
@@ -349,27 +358,31 @@ npx tsx 05-custom-agents.ts
 ```
 
 ### 2. Initialize a Test Project
+
 ```bash
 mkdir test-project
 cd test-project
-openclaw coderclaw init
+coderclaw init
 cat .coderClaw/context.yaml
 cat .coderClaw/architecture.md
 cat .coderClaw/rules.yaml
 ```
 
 ### 3. Check Documentation
+
 - Read [docs/coderclaw.md](../docs/coderclaw.md) for feature overview
 - Read [docs/coderclaw-architecture.md](../docs/coderclaw-architecture.md) for technical details
 - Read [docs/coderclaw-workflows.md](../docs/coderclaw-workflows.md) for workflow patterns
 - Review examples in [examples/coderclaw/](../examples/coderclaw/)
 
 ### 4. Review Code
+
 - Check [src/coderclaw/](../src/coderclaw/) for implementation
 - Review [src/transport/](../src/transport/) for distributed execution
 - Examine [src/security/](../src/security/) for RBAC implementation
 
 ### 5. Run Tests
+
 ```bash
 # Note: Requires pnpm to be installed
 pnpm install

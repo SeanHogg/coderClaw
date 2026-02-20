@@ -134,7 +134,7 @@ describe("server-context hot-reload profiles", () => {
       profiles: new Map(),
     };
 
-    cfgProfiles.openclaw = { cdpPort: 19999, color: "#FF4500" };
+    cfgProfiles.coderclaw = { cdpPort: 19999, color: "#FF4500" };
     cachedConfig = null;
 
     const after = resolveBrowserProfileWithHotReload({

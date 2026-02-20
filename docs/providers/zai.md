@@ -15,9 +15,9 @@ with a Z.AI API key.
 ## CLI setup
 
 ```bash
-openclaw onboard --auth-choice zai-api-key
+coderclaw onboard --auth-choice zai-api-key
 # or non-interactive
-openclaw onboard --zai-api-key "$ZAI_API_KEY"
+coderclaw onboard --zai-api-key "$ZAI_API_KEY"
 ```
 
 ## Config snippet

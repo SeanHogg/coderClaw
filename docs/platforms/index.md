@@ -36,16 +36,16 @@ Native companion apps for Windows are also planned; the Gateway is recommended v
 - Install guide: [Getting Started](/start/getting-started)
 - Gateway runbook: [Gateway](/gateway)
 - Gateway configuration: [Configuration](/gateway/configuration)
-- Service status: `openclaw gateway status`
+- Service status: `coderclaw gateway status`
 
 ## Gateway service install (CLI)
 
 Use one of these (all supported):
 
-- Wizard (recommended): `openclaw onboard --install-daemon`
-- Direct: `openclaw gateway install`
-- Configure flow: `openclaw configure` → select **Gateway service**
-- Repair/migrate: `openclaw doctor` (offers to install or fix the service)
+- Wizard (recommended): `coderclaw onboard --install-daemon`
+- Direct: `coderclaw gateway install`
+- Configure flow: `coderclaw configure` → select **Gateway service**
+- Repair/migrate: `coderclaw doctor` (offers to install or fix the service)
 
 The service target depends on OS:
 

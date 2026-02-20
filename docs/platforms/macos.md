@@ -21,12 +21,12 @@ capabilities to the agent as a node.
 - Exposes macOS‑only tools (Canvas, Camera, Screen Recording, `system.run`).
 - Starts the local node host service in **remote** mode (launchd), and stops it in **local** mode.
 - Optionally hosts **PeekabooBridge** for UI automation.
-- Installs the global CLI (`openclaw`) via npm/pnpm on request (bun not recommended for the Gateway runtime).
+- Installs the global CLI (`coderclaw`) via npm/pnpm on request (bun not recommended for the Gateway runtime).
 
 ## Local vs remote mode
 
 - **Local** (default): the app attaches to a running local Gateway if present;
-  otherwise it enables the launchd service via `openclaw gateway install`.
+  otherwise it enables the launchd service via `coderclaw gateway install`.
 - **Remote**: the app connects to a Gateway over SSH/Tailscale and never starts
   a local process.
   The app starts the local **node host service** so the remote Gateway can reach this Mac.
@@ -45,7 +45,7 @@ launchctl bootout gui/$UID/bot.molt.gateway
 Replace the label with `bot.molt.<profile>` when running a named profile.
 
 If the LaunchAgent isn’t installed, enable it from the app or run
-`openclaw gateway install`.
+`coderclaw gateway install`.
 
 ## Node capabilities (mac)
 
@@ -78,7 +78,7 @@ Gateway -> Node Service (WS)
 Security + ask + allowlist are stored locally on the Mac in:
 
 ```
-~/.openclaw/exec-approvals.json
+~/.coderclaw/exec-approvals.json
 ```
 
 Example:
@@ -171,7 +171,7 @@ Discovery options:
 - `--timeout <ms>`: overall discovery window (default: `2000`)
 - `--json`: structured output for diffing
 
-Tip: compare against `openclaw gateway discover --json` to see whether the
+Tip: compare against `coderclaw gateway discover --json` to see whether the
 macOS app’s discovery pipeline (NWBrowser + tailnet DNS‑SD fallback) differs from
 the Node CLI’s `dns-sd` based discovery.
 

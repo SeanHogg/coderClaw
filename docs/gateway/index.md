@@ -24,11 +24,11 @@ Use this page for day-1 startup and day-2 operations of the Gateway service.
   <Step title="Start the Gateway">
 
 ```bash
-openclaw gateway --port 18789
+coderclaw gateway --port 18789
 # debug/trace mirrored to stdio
-openclaw gateway --port 18789 --verbose
+coderclaw gateway --port 18789 --verbose
 # force-kill listener on selected port, then start
-openclaw gateway --force
+coderclaw gateway --force
 ```
 
   </Step>
@@ -36,9 +36,9 @@ openclaw gateway --force
   <Step title="Verify service health">
 
 ```bash
-openclaw gateway status
-openclaw status
-openclaw logs --follow
+coderclaw gateway status
+coderclaw status
+coderclaw logs --follow
 ```
 
 Healthy baseline: `Runtime: running` and `RPC probe: ok`.
@@ -48,7 +48,7 @@ Healthy baseline: `Runtime: running` and `RPC probe: ok`.
   <Step title="Validate channel readiness">
 
 ```bash
-openclaw channels status --probe
+coderclaw channels status --probe
 ```
 
   </Step>
@@ -88,14 +88,14 @@ Default mode is `gateway.reload.mode="hybrid"`.
 ## Operator command set
 
 ```bash
-openclaw gateway status
-openclaw gateway status --deep
-openclaw gateway status --json
-openclaw gateway install
-openclaw gateway restart
-openclaw gateway stop
-openclaw logs --follow
-openclaw doctor
+coderclaw gateway status
+coderclaw gateway status --deep
+coderclaw gateway status --json
+coderclaw gateway install
+coderclaw gateway restart
+coderclaw gateway stop
+coderclaw logs --follow
+coderclaw doctor
 ```
 
 ## Remote access
@@ -123,22 +123,22 @@ Use supervised runs for production-like reliability.
   <Tab title="macOS (launchd)">
 
 ```bash
-openclaw gateway install
-openclaw gateway status
-openclaw gateway restart
-openclaw gateway stop
+coderclaw gateway install
+coderclaw gateway status
+coderclaw gateway restart
+coderclaw gateway stop
 ```
 
-LaunchAgent labels are `ai.openclaw.gateway` (default) or `ai.openclaw.<profile>` (named profile). `openclaw doctor` audits and repairs service config drift.
+LaunchAgent labels are `ai.openclaw.gateway` (default) or `ai.openclaw.<profile>` (named profile). `coderclaw doctor` audits and repairs service config drift.
 
   </Tab>
 
   <Tab title="Linux (systemd user)">
 
 ```bash
-openclaw gateway install
+coderclaw gateway install
 systemctl --user enable --now openclaw-gateway[-<profile>].service
-openclaw gateway status
+coderclaw gateway status
 ```
 
 For persistence after logout, enable lingering:
@@ -176,8 +176,8 @@ Checklist per instance:
 Example:
 
 ```bash
-OPENCLAW_CONFIG_PATH=~/.openclaw/a.json OPENCLAW_STATE_DIR=~/.openclaw-a openclaw gateway --port 19001
-OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b openclaw gateway --port 19002
+OPENCLAW_CONFIG_PATH=~/.coderclaw/a.json OPENCLAW_STATE_DIR=~/.coderclaw-a coderclaw gateway --port 19001
+OPENCLAW_CONFIG_PATH=~/.coderclaw/b.json OPENCLAW_STATE_DIR=~/.coderclaw-b coderclaw gateway --port 19002
 ```
 
 See: [Multiple gateways](/gateway/multiple-gateways).
@@ -216,9 +216,9 @@ See full protocol docs: [Gateway Protocol](/gateway/protocol).
 ### Readiness
 
 ```bash
-openclaw gateway status
-openclaw channels status --probe
-openclaw health
+coderclaw gateway status
+coderclaw channels status --probe
+coderclaw health
 ```
 
 ### Gap recovery

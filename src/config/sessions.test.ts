@@ -471,7 +471,7 @@ describe("sessions", () => {
 
   it("resolves cross-agent absolute sessionFile paths", () => {
     const prev = process.env.OPENCLAW_STATE_DIR;
-    const stateDir = path.resolve("/home/user/.openclaw");
+    const stateDir = path.resolve("/home/user/.coderclaw");
     process.env.OPENCLAW_STATE_DIR = stateDir;
     try {
       const bot2Session = path.join(stateDir, "agents", "bot2", "sessions", "sess-1.jsonl");
@@ -515,7 +515,7 @@ describe("sessions", () => {
 
   it("rejects absolute sessionFile paths outside agent sessions directories", () => {
     const prev = process.env.OPENCLAW_STATE_DIR;
-    process.env.OPENCLAW_STATE_DIR = path.resolve("/home/user/.openclaw");
+    process.env.OPENCLAW_STATE_DIR = path.resolve("/home/user/.coderclaw");
     try {
       expect(() =>
         resolveSessionFilePath(

@@ -96,12 +96,12 @@ You will need to create a new application with a bot, add the bot to your server
     Your Discord bot token is a secret (like a password). Set it on the machine running OpenClaw before messaging your agent.
 
 ```bash
-openclaw config set channels.discord.token '"YOUR_BOT_TOKEN"' --json
-openclaw config set channels.discord.enabled true --json
-openclaw gateway
+coderclaw config set channels.discord.token '"YOUR_BOT_TOKEN"' --json
+coderclaw config set channels.discord.enabled true --json
+coderclaw gateway
 ```
 
-    If OpenClaw is already running as a background service, use `openclaw gateway restart` instead.
+    If OpenClaw is already running as a background service, use `coderclaw gateway restart` instead.
 
   </Step>
 
@@ -150,8 +150,8 @@ DISCORD_BOT_TOKEN=...
       <Tab title="CLI">
 
 ```bash
-openclaw pairing list discord
-openclaw pairing approve discord <CODE>
+coderclaw pairing list discord
+coderclaw pairing approve discord <CODE>
 ```
 
       </Tab>
@@ -811,9 +811,9 @@ message(action="send", channel="discord", target="channel:123", path="/path/to/a
     Useful checks:
 
 ```bash
-openclaw doctor
-openclaw channels status --probe
-openclaw logs --follow
+coderclaw doctor
+coderclaw channels status --probe
+coderclaw logs --follow
 ```
 
   </Accordion>
@@ -873,7 +873,7 @@ High-signal Discord fields:
 
 - Treat bot tokens as secrets (`DISCORD_BOT_TOKEN` preferred in supervised environments).
 - Grant least-privilege Discord permissions.
-- If command deploy/state is stale, restart gateway and re-check with `openclaw channels status --probe`.
+- If command deploy/state is stale, restart gateway and re-check with `coderclaw channels status --probe`.
 
 ## Related
 
