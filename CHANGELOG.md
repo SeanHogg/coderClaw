@@ -8,6 +8,8 @@ Docs: https://docs.openclaw.ai
 
 ### Fixes
 
+- CLI: fix `[openclaw]` prefix in CLI error messages and process title; the CLI now correctly reports errors as `[coderclaw]`. Fix `DEFAULT_CLI_NAME`, update completion and update-command defaults to `coderclaw`.
+
 ## 2026.2.18
 
 ### Changes
