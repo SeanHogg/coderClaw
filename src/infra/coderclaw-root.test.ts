@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 type FakeFsEntry = { kind: "file"; content: string } | { kind: "dir" };
 
 const VITEST_FS_BASE = path.join(path.parse(process.cwd()).root, "__openclaw_vitest__");
-const FIXTURE_BASE = path.join(VITEST_FS_BASE, "openclaw-root");
+const FIXTURE_BASE = path.join(VITEST_FS_BASE, "coderclaw-root");
 
 const state = vi.hoisted(() => ({
   entries: new Map<string, FakeFsEntry>(),
@@ -87,7 +87,7 @@ describe("resolveCoderClawPackageRoot", () => {
   });
 
   it("resolves package root from .bin argv1", async () => {
-    const { resolveCoderClawPackageRootSync } = await import("./openclaw-root.js");
+    const { resolveCoderClawPackageRootSync } = await import("./coderclaw-root.js");
 
     const project = fx("bin-scenario");
     const argv1 = path.join(project, "node_modules", ".bin", "openclaw");
@@ -98,7 +98,7 @@ describe("resolveCoderClawPackageRoot", () => {
   });
 
   it("resolves package root via symlinked argv1", async () => {
-    const { resolveCoderClawPackageRootSync } = await import("./openclaw-root.js");
+    const { resolveCoderClawPackageRootSync } = await import("./coderclaw-root.js");
 
     const project = fx("symlink-scenario");
     const bin = path.join(project, "bin", "openclaw");
@@ -110,7 +110,7 @@ describe("resolveCoderClawPackageRoot", () => {
   });
 
   it("prefers moduleUrl candidates", async () => {
-    const { resolveCoderClawPackageRootSync } = await import("./openclaw-root.js");
+    const { resolveCoderClawPackageRootSync } = await import("./coderclaw-root.js");
 
     const pkgRoot = fx("moduleurl");
     setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "coderclaw" }));
@@ -120,7 +120,7 @@ describe("resolveCoderClawPackageRoot", () => {
   });
 
   it("returns null for non-openclaw package roots", async () => {
-    const { resolveCoderClawPackageRootSync } = await import("./openclaw-root.js");
+    const { resolveCoderClawPackageRootSync } = await import("./coderclaw-root.js");
 
     const pkgRoot = fx("not-openclaw");
     setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "not-openclaw" }));
@@ -129,7 +129,7 @@ describe("resolveCoderClawPackageRoot", () => {
   });
 
   it("async resolver matches sync behavior", async () => {
-    const { resolveCoderClawPackageRoot } = await import("./openclaw-root.js");
+    const { resolveCoderClawPackageRoot } = await import("./coderclaw-root.js");
 
     const pkgRoot = fx("async");
     setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "coderclaw" }));

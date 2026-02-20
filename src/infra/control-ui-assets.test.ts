@@ -68,7 +68,7 @@ vi.mock("node:fs", async (importOriginal) => {
   return { ...wrapped, default: wrapped };
 });
 
-vi.mock("./openclaw-root.js", () => ({
+vi.mock("./coderclaw-root.js", () => ({
   resolveCoderClawPackageRoot: vi.fn(async () => null),
   resolveCoderClawPackageRootSync: vi.fn(() => null),
 }));
@@ -112,7 +112,7 @@ describe("control UI assets helpers (fs-mocked)", () => {
   });
 
   it("uses resolveCoderClawPackageRoot when available", async () => {
-    const openclawRoot = await import("./openclaw-root.js");
+    const openclawRoot = await import("./coderclaw-root.js");
     const { resolveControlUiDistIndexPath } = await import("./control-ui-assets.js");
 
     const pkgRoot = abs("fixtures/openclaw");
@@ -181,7 +181,7 @@ describe("control UI assets helpers (fs-mocked)", () => {
   });
 
   it("resolves control-ui root for dist bundle argv1 and moduleUrl candidates", async () => {
-    const openclawRoot = await import("./openclaw-root.js");
+    const openclawRoot = await import("./coderclaw-root.js");
     const { resolveControlUiRootSync } = await import("./control-ui-assets.js");
 
     const pkgRoot = abs("fixtures/openclaw-bundle");

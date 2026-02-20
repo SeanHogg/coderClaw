@@ -4,7 +4,7 @@ import { formatCliCommand } from "../cli/command-format.js";
 import type { loadConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import { VERSION } from "../version.js";
-import { resolveCoderClawPackageRoot } from "./openclaw-root.js";
+import { resolveCoderClawPackageRoot } from "./coderclaw-root.js";
 import { normalizeUpdateChannel, DEFAULT_PACKAGE_CHANNEL } from "./update-channels.js";
 import { compareSemverStrings, resolveNpmChannelTag, checkUpdateStatus } from "./update-check.js";
 

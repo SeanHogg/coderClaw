@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { runCommandWithTimeout } from "../process/exec.js";
 import { defaultRuntime, type RuntimeEnv } from "../runtime.js";
-import { resolveCoderClawPackageRoot, resolveCoderClawPackageRootSync } from "./openclaw-root.js";
+import { resolveCoderClawPackageRoot, resolveCoderClawPackageRootSync } from "./coderclaw-root.js";
 
 const CONTROL_UI_DIST_PATH_SEGMENTS = ["dist", "control-ui", "index.html"] as const;
 
