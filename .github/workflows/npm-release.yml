@@ -30,6 +30,13 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-build
+          path: dist/
+          retention-days: 1
+
       - name: Test
         run: pnpm test
 
@@ -56,6 +63,7 @@ jobs:
           install-bun: "false"
 
       - name: Download dist artifact (if available)
+        id: download-dist
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
@@ -63,7 +71,7 @@ jobs:
           path: dist/
 
       - name: Build if no dist artifact
-        if: failure()
+        if: steps.download-dist.outcome == 'failure'
         run: pnpm build
 
       - name: Configure npm
