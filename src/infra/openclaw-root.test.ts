@@ -92,7 +92,7 @@ describe("resolveOpenClawPackageRoot", () => {
     const project = fx("bin-scenario");
     const argv1 = path.join(project, "node_modules", ".bin", "openclaw");
     const pkgRoot = path.join(project, "node_modules", "openclaw");
-    setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "openclaw" }));
+    setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "coderclaw" }));
 
     expect(resolveOpenClawPackageRootSync({ argv1 })).toBe(pkgRoot);
   });
@@ -104,7 +104,7 @@ describe("resolveOpenClawPackageRoot", () => {
     const bin = path.join(project, "bin", "openclaw");
     const realPkg = path.join(project, "real-pkg");
     state.realpaths.set(abs(bin), abs(path.join(realPkg, "openclaw.mjs")));
-    setFile(path.join(realPkg, "package.json"), JSON.stringify({ name: "openclaw" }));
+    setFile(path.join(realPkg, "package.json"), JSON.stringify({ name: "coderclaw" }));
 
     expect(resolveOpenClawPackageRootSync({ argv1: bin })).toBe(realPkg);
   });
@@ -113,7 +113,7 @@ describe("resolveOpenClawPackageRoot", () => {
     const { resolveOpenClawPackageRootSync } = await import("./openclaw-root.js");
 
     const pkgRoot = fx("moduleurl");
-    setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "openclaw" }));
+    setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "coderclaw" }));
     const moduleUrl = pathToFileURL(path.join(pkgRoot, "dist", "index.js")).toString();
 
     expect(resolveOpenClawPackageRootSync({ moduleUrl })).toBe(pkgRoot);
@@ -132,7 +132,7 @@ describe("resolveOpenClawPackageRoot", () => {
     const { resolveOpenClawPackageRoot } = await import("./openclaw-root.js");
 
     const pkgRoot = fx("async");
-    setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "openclaw" }));
+    setFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "coderclaw" }));
 
     await expect(resolveOpenClawPackageRoot({ cwd: pkgRoot })).resolves.toBe(pkgRoot);
   });

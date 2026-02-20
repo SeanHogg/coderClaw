@@ -116,15 +116,21 @@ describe("web media loading", () => {
   });
 
   beforeAll(() => {
-    vi.spyOn(ssrf, "resolvePinnedHostname").mockImplementation(async (hostname) => {
-      const normalized = hostname.trim().toLowerCase().replace(/\.$/, "");
-      const addresses = ["93.184.216.34"];
-      return {
-        hostname: normalized,
-        addresses,
-        lookup: ssrf.createPinnedLookup({ hostname: normalized, addresses }),
-      };
-    });
+    vi.spyOn(ssrf, "resolvePinnedHostnameWithPolicy").mockImplementation(
+      async (hostname, _params) => {
+        const normalized = hostname.trim().toLowerCase().replace(/\.$/, "");
+        // Preserve real SSRF checks for private/blocked hostnames.
+        if (ssrf.isBlockedHostname(normalized) || ssrf.isPrivateIpAddress(normalized)) {
+          throw new ssrf.SsrFBlockedError(`Blocked hostname: ${hostname}`);
+        }
+        const addresses = ["93.184.216.34"];
+        return {
+          hostname: normalized,
+          addresses,
+          lookup: ssrf.createPinnedLookup({ hostname: normalized, addresses }),
+        };
+      },
+    );
   });
 
   it("strips MEDIA: prefix before reading local file", async () => {
