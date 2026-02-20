@@ -302,7 +302,7 @@ describe("runGatewayUpdate", () => {
     tag?: string;
   }): Promise<{ calls: string[]; result: Awaited<ReturnType<typeof runGatewayUpdate>> }> {
     const nodeModules = path.join(tempDir, "node_modules");
-    const pkgRoot = path.join(nodeModules, "openclaw");
+    const pkgRoot = path.join(nodeModules, "coderclaw");
     await seedGlobalPackageRoot(pkgRoot);
 
     const { calls, runCommand } = createGlobalInstallHarness({
@@ -361,16 +361,16 @@ describe("runGatewayUpdate", () => {
   it.each([
     {
       title: "updates global npm installs when detected",
-      expectedInstallCommand: "npm i -g openclaw@latest",
+      expectedInstallCommand: "npm i -g coderclaw@latest",
     },
     {
       title: "uses update channel for global npm installs when tag is omitted",
-      expectedInstallCommand: "npm i -g openclaw@beta",
+      expectedInstallCommand: "npm i -g coderclaw@beta",
       channel: "beta" as const,
     },
     {
       title: "updates global npm installs with tag override",
-      expectedInstallCommand: "npm i -g openclaw@beta",
+      expectedInstallCommand: "npm i -g coderclaw@beta",
       tag: "beta",
     },
   ])("$title", async ({ expectedInstallCommand, channel, tag }) => {
@@ -389,7 +389,7 @@ describe("runGatewayUpdate", () => {
 
   it("cleans stale npm rename dirs before global update", async () => {
     const nodeModules = path.join(tempDir, "node_modules");
-    const pkgRoot = path.join(nodeModules, "openclaw");
+    const pkgRoot = path.join(nodeModules, "coderclaw");
     const staleDir = path.join(nodeModules, ".coderclaw-stale");
     await fs.mkdir(staleDir, { recursive: true });
     await seedGlobalPackageRoot(pkgRoot);
@@ -406,7 +406,7 @@ describe("runGatewayUpdate", () => {
       if (key === "pnpm root -g") {
         return { stdout: "", stderr: "", code: 1 };
       }
-      if (key === "npm i -g openclaw@latest") {
+      if (key === "npm i -g coderclaw@latest") {
         stalePresentAtInstall = await pathExists(staleDir);
         return { stdout: "ok", stderr: "", code: 0 };
       }
@@ -427,12 +427,12 @@ describe("runGatewayUpdate", () => {
 
     try {
       const bunGlobalRoot = path.join(bunInstall, "install", "global", "node_modules");
-      const pkgRoot = path.join(bunGlobalRoot, "openclaw");
+      const pkgRoot = path.join(bunGlobalRoot, "coderclaw");
       await seedGlobalPackageRoot(pkgRoot);
 
       const { calls, runCommand } = createGlobalInstallHarness({
         pkgRoot,
-        installCommand: "bun add -g openclaw@latest",
+        installCommand: "bun add -g coderclaw@latest",
         onInstall: async () => {
           await fs.writeFile(
             path.join(pkgRoot, "package.json"),
@@ -448,7 +448,7 @@ describe("runGatewayUpdate", () => {
       expect(result.mode).toBe("bun");
       expect(result.before?.version).toBe("1.0.0");
       expect(result.after?.version).toBe("2.0.0");
-      expect(calls.some((call) => call === "bun add -g openclaw@latest")).toBe(true);
+      expect(calls.some((call) => call === "bun add -g coderclaw@latest")).toBe(true);
     } finally {
       if (oldBunInstall === undefined) {
         delete process.env.BUN_INSTALL;
@@ -495,7 +495,7 @@ describe("runGatewayUpdate", () => {
 
     expect(result.status).toBe("error");
     expect(result.reason).toBe("doctor-entry-missing");
-    expect(result.steps.at(-1)?.name).toBe("openclaw doctor entry");
+    expect(result.steps.at(-1)?.name).toBe("coderclaw doctor entry");
   });
 
   it("repairs UI assets when doctor run removes control-ui files", async () => {

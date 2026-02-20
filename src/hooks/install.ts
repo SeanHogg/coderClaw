@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { MANIFEST_KEY } from "../compat/legacy-names.js";
+import { LEGACY_MANIFEST_KEYS, MANIFEST_KEY } from "../compat/legacy-names.js";
 import {
   extractArchive,
   fileExists,
@@ -28,7 +28,9 @@ type HookPackageManifest = {
   name?: string;
   version?: string;
   dependencies?: Record<string, string>;
-} & Partial<Record<typeof MANIFEST_KEY, { hooks?: string[] }>>;
+} & Partial<
+  Record<typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number], { hooks?: string[] }>
+>;
 
 export type InstallHooksResult =
   | {
@@ -73,13 +75,19 @@ export function resolveHookInstallDir(hookId: string, hooksDir?: string): string
 }
 
 async function ensureOpenClawHooks(manifest: HookPackageManifest) {
-  const hooks = manifest[MANIFEST_KEY]?.hooks;
+  // Check current key first, then fall back to legacy keys for backward compatibility.
+  const meta =
+    manifest[MANIFEST_KEY] ??
+    LEGACY_MANIFEST_KEYS.map(
+      (k) => (manifest as Record<string, unknown>)[k] as (typeof manifest)[typeof MANIFEST_KEY],
+    ).find(Boolean);
+  const hooks = meta?.hooks;
   if (!Array.isArray(hooks)) {
-    throw new Error("package.json missing openclaw.hooks");
+    throw new Error("package.json missing coderclaw.hooks");
   }
   const list = hooks.map((e) => (typeof e === "string" ? e.trim() : "")).filter(Boolean);
   if (list.length === 0) {
-    throw new Error("package.json openclaw.hooks is empty");
+    throw new Error("package.json coderclaw.hooks is empty");
   }
   return list;
 }

@@ -48,7 +48,11 @@ export function isAuthorizedBrowserRequest(
   }
 
   if (auth.password) {
-    const passwordHeader = firstHeaderValue(req.headers["x-openclaw-password"]).trim();
+    // Accept both current and legacy header names for backward compatibility.
+    const passwordHeader = (
+      firstHeaderValue(req.headers["x-coderclaw-password"]) ||
+      firstHeaderValue(req.headers["x-openclaw-password"])
+    ).trim();
     if (passwordHeader && safeEqualSecret(passwordHeader, auth.password)) {
       return true;
     }

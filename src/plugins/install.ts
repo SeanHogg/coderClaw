@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { MANIFEST_KEY } from "../compat/legacy-names.js";
+import { LEGACY_MANIFEST_KEYS, MANIFEST_KEY } from "../compat/legacy-names.js";
 import {
   extractArchive,
   fileExists,
@@ -33,7 +33,9 @@ type PackageManifest = {
   name?: string;
   version?: string;
   dependencies?: Record<string, string>;
-} & Partial<Record<typeof MANIFEST_KEY, { extensions?: string[] }>>;
+} & Partial<
+  Record<typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number], { extensions?: string[] }>
+>;
 
 export type InstallPluginResult =
   | {
@@ -65,13 +67,19 @@ function validatePluginId(pluginId: string): string | null {
 }
 
 async function ensureOpenClawExtensions(manifest: PackageManifest) {
-  const extensions = manifest[MANIFEST_KEY]?.extensions;
+  // Check current key first, then fall back to legacy keys for backward compatibility.
+  const meta =
+    manifest[MANIFEST_KEY] ??
+    LEGACY_MANIFEST_KEYS.map(
+      (k) => (manifest as Record<string, unknown>)[k] as (typeof manifest)[typeof MANIFEST_KEY],
+    ).find(Boolean);
+  const extensions = meta?.extensions;
   if (!Array.isArray(extensions)) {
-    throw new Error("package.json missing openclaw.extensions");
+    throw new Error("package.json missing coderclaw.extensions");
   }
   const list = extensions.map((e) => (typeof e === "string" ? e.trim() : "")).filter(Boolean);
   if (list.length === 0) {
-    throw new Error("package.json openclaw.extensions is empty");
+    throw new Error("package.json coderclaw.extensions is empty");
   }
   return list;
 }

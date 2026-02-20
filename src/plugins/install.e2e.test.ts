@@ -341,7 +341,7 @@ describe("installPluginFromArchive", () => {
     if (result.ok) {
       return;
     }
-    expect(result.error).toContain("openclaw.extensions");
+    expect(result.error).toMatch(/(?:coderclaw|openclaw)\.extensions/);
   });
 
   it("warns when plugin contains dangerous code patterns", async () => {
