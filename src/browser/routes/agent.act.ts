@@ -208,7 +208,7 @@ export function registerBrowserAgentActRoutes(
               targetId: tab.targetId,
               ref,
               values,
-              timeoutMs: timeoutMs ?? undefined,
+              ...(timeoutMs !== undefined ? { timeoutMs } : {}),
             });
             return res.json({ ok: true, targetId: tab.targetId });
           }
@@ -244,7 +244,7 @@ export function registerBrowserAgentActRoutes(
               cdpUrl,
               targetId: tab.targetId,
               fields,
-              timeoutMs: timeoutMs ?? undefined,
+              ...(timeoutMs !== undefined ? { timeoutMs } : {}),
             });
             return res.json({ ok: true, targetId: tab.targetId });
           }

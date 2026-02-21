@@ -5,7 +5,7 @@ import { POSIX_CODERCLAW_TMP_DIR, resolvePreferredCoderClawTmpDir } from "./tmp-
 type TmpDirOptions = NonNullable<Parameters<typeof resolvePreferredCoderClawTmpDir>[0]>;
 
 function fallbackTmp(uid = 501) {
-  return path.join("/var/fallback", `openclaw-${uid}`);
+  return path.join("/var/fallback", `coderclaw-${uid}`);
 }
 
 function resolveWithMocks(params: {
