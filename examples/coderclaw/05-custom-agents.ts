@@ -5,7 +5,7 @@
  * Custom agents are defined in .coderClaw/agents/ and can be loaded dynamically.
  */
 
-import { findAgentRole, getBuiltInAgentRoles } from "../../src/coderclaw/agent-roles.js";
+import { getBuiltInAgentRoles } from "../../src/coderclaw/agent-roles.js";
 import type { AgentRole } from "../../src/coderclaw/types.js";
 
 async function main() {

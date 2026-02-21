@@ -35,7 +35,7 @@ export class LocalTransportAdapter implements TransportAdapter {
 
     // Start execution asynchronously
     this.executeTask(task, request).catch((error) => {
-      globalTaskEngine.setTaskError(task.id, error.message || String(error));
+      void globalTaskEngine.setTaskError(task.id, error.message || String(error));
     });
 
     return task;

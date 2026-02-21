@@ -6,7 +6,7 @@
 import crypto from "node:crypto";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
 import { globalTaskEngine } from "../transport/task-engine.js";
-import type { TaskStatus as TransportTaskStatus, TaskState } from "../transport/types.js";
+import type { TaskStatus as TransportTaskStatus } from "../transport/types.js";
 
 // Re-export transport task status for backward compatibility
 export type TaskStatus = TransportTaskStatus;
@@ -39,27 +39,6 @@ export type Workflow = {
   tasks: Map<string, Task>;
   status: TaskStatus;
 };
-
-/**
- * Convert transport TaskState to orchestrator Task
- */
-function taskStateToTask(state: TaskState, deps: string[] = [], dependents: string[] = []): Task {
-  return {
-    id: state.id,
-    description: state.description,
-    agentRole: state.agentId || "general-purpose",
-    status: state.status,
-    input: state.description,
-    output: state.output,
-    error: state.error,
-    childSessionKey: state.sessionId,
-    createdAt: state.createdAt,
-    startedAt: state.startedAt,
-    completedAt: state.completedAt,
-    dependencies: deps,
-    dependents,
-  };
-}
 
 /**
  * Enhanced orchestrator with distributed task management

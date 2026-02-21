@@ -24,7 +24,7 @@ export type HookInstallLogger = {
   warn?: (message: string) => void;
 };
 
-type AnyManifestKey = typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number];
+type AnyManifestKey = typeof MANIFEST_KEY;
 type HookPackageManifest = {
   name?: string;
   version?: string;

@@ -134,7 +134,7 @@ export type OpenClawPackageManifest = {
 };
 
 export type ManifestKey = typeof MANIFEST_KEY;
-type AnyManifestKey = ManifestKey | (typeof LEGACY_MANIFEST_KEYS)[number];
+type AnyManifestKey = ManifestKey;
 
 export type PackageManifest = {
   name?: string;

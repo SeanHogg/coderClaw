@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { DistributedTaskEngine, MemoryTaskStorage } from "./task-engine.js";
-import type { TaskSubmitRequest } from "./types.js";
+import type { TaskSubmitRequest, TaskUpdateEvent } from "./types.js";
 
 describe("DistributedTaskEngine", () => {
   let engine: DistributedTaskEngine;
@@ -232,7 +232,7 @@ describe("DistributedTaskEngine", () => {
         input: "Test",
       });
 
-      const updates: any[] = [];
+      const updates: TaskUpdateEvent[] = [];
       const unsubscribe = engine.subscribeToTask(task.id, (event) => {
         updates.push(event);
       });
@@ -253,7 +253,7 @@ describe("DistributedTaskEngine", () => {
         input: "Test",
       });
 
-      const updates: any[] = [];
+      const updates: TaskUpdateEvent[] = [];
       const streamPromise = (async () => {
         for await (const update of engine.streamTaskUpdates(task.id)) {
           updates.push(update);

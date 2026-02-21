@@ -7,6 +7,7 @@ import crypto from "node:crypto";
 import type {
   AuditLogEntry,
   DeviceInfo,
+  IdentityProvider,
   Permission,
   PolicyCheckResult,
   RepoPolicy,
@@ -30,7 +31,7 @@ export class BasicSecurityService implements SecurityService {
   /**
    * Authenticate a user (simplified - real impl would validate credentials)
    */
-  async authenticateUser(provider: string, credentials: unknown): Promise<UserIdentity> {
+  async authenticateUser(provider: IdentityProvider, credentials: unknown): Promise<UserIdentity> {
     // This is a simplified implementation
     // Real implementation would validate credentials with OAuth/OIDC providers
     const creds = credentials as { email: string; name?: string };
@@ -38,7 +39,7 @@ export class BasicSecurityService implements SecurityService {
     const userId = crypto.randomUUID();
     const user: UserIdentity = {
       id: userId,
-      provider: provider as any,
+      provider,
       email: creds.email,
       name: creds.name,
       verified: true,
@@ -100,7 +101,7 @@ export class BasicSecurityService implements SecurityService {
   async checkPermission(
     context: SecurityContext,
     permission: Permission,
-    resource?: string,
+    _resource?: string,
   ): Promise<PolicyCheckResult> {
     // Check if user has admin permission (allows everything)
     if (context.effectivePermissions.includes("admin:all")) {
@@ -201,7 +202,6 @@ export class BasicSecurityService implements SecurityService {
 
           // Check device trust if required
           if (agentPolicy.requireDeviceTrust && context.device) {
-            const requiredLevels = ["trusted", "verified"];
             if (
               agentPolicy.requireDeviceTrust === "trusted" &&
               context.device.trustLevel !== "trusted"

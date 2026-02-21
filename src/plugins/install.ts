@@ -29,7 +29,7 @@ type PluginInstallLogger = {
   warn?: (message: string) => void;
 };
 
-type AnyManifestKey = typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number];
+type AnyManifestKey = typeof MANIFEST_KEY;
 type PackageManifest = {
   name?: string;
   version?: string;
