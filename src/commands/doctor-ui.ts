@@ -1,10 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { resolveCoderClawPackageRoot } from "../infra/coderclaw-root.js";
 import {
   resolveControlUiDistIndexHealth,
   resolveControlUiDistIndexPathForRoot,
 } from "../infra/control-ui-assets.js";
-import { resolveCoderClawPackageRoot } from "../infra/coderclaw-root.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { note } from "../terminal/note.js";

@@ -40,7 +40,7 @@ describe("BasicSecurityService", () => {
       const device1 = await service.verifyDevice("device-1");
       const firstSeen = device1.lastSeen;
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const device2 = await service.verifyDevice("device-1");
       expect(device2.lastSeen.getTime()).toBeGreaterThan(firstSeen.getTime());
@@ -97,10 +97,7 @@ describe("BasicSecurityService", () => {
         email: "user@example.com",
       });
       const device = await service.verifyDevice("device-1");
-      const session = await service.createSession(user.id, device.id, [
-        "developer",
-        "readonly",
-      ]);
+      const session = await service.createSession(user.id, device.id, ["developer", "readonly"]);
 
       const permissions = await service.getEffectivePermissions(session);
 

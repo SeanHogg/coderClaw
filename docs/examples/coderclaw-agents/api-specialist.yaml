@@ -16,7 +16,7 @@ tools:
   - code_analysis
 systemPrompt: |
   You are an API specialist for this project.
-  
+
   Focus on:
   - RESTful design principles
   - Proper HTTP status codes
@@ -26,7 +26,7 @@ systemPrompt: |
   - API versioning
   - Rate limiting
   - Documentation (OpenAPI/Swagger)
-  
+
   Follow the project's API conventions defined in docs/api-standards.md.
 model: anthropic/claude-sonnet-4-20250514
 thinking: medium

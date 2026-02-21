@@ -144,9 +144,9 @@ describe("formatCliCommand", () => {
   });
 
   it("trims whitespace from profile", () => {
-    expect(formatCliCommand("coderclaw doctor --fix", { CODERCLAW_PROFILE: "  jbopenclaw  " })).toBe(
-      "coderclaw --profile jbopenclaw doctor --fix",
-    );
+    expect(
+      formatCliCommand("coderclaw doctor --fix", { CODERCLAW_PROFILE: "  jbopenclaw  " }),
+    ).toBe("coderclaw --profile jbopenclaw doctor --fix");
   });
 
   it("handles command with no args after coderclaw", () => {

@@ -60,9 +60,9 @@ describe("DistributedTaskEngine", () => {
         input: "Test",
       });
 
-      await expect(
-        engine.updateTaskStatus(task.id, "completed")
-      ).rejects.toThrow(/Invalid status transition/);
+      await expect(engine.updateTaskStatus(task.id, "completed")).rejects.toThrow(
+        /Invalid status transition/,
+      );
     });
 
     it("should set timestamps on status changes", async () => {
@@ -264,7 +264,7 @@ describe("DistributedTaskEngine", () => {
       })();
 
       // Allow initial state to be yielded
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       await engine.updateTaskStatus(task.id, "planning");
       await engine.updateTaskStatus(task.id, "running");

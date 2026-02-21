@@ -84,7 +84,8 @@ export function resolveGatewayServiceDescription(params: {
     params.description ??
     formatGatewayServiceDescription({
       profile: params.env.CODERCLAW_PROFILE,
-      version: params.environment?.CODERCLAW_SERVICE_VERSION ?? params.env.CODERCLAW_SERVICE_VERSION,
+      version:
+        params.environment?.CODERCLAW_SERVICE_VERSION ?? params.env.CODERCLAW_SERVICE_VERSION,
     })
   );
 }

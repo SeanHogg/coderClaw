@@ -55,7 +55,10 @@ type NodeDaemonStatusOptions = {
 };
 
 function renderNodeServiceStartHints(): string[] {
-  const base = [formatCliCommand("coderclaw node install"), formatCliCommand("coderclaw node start")];
+  const base = [
+    formatCliCommand("coderclaw node install"),
+    formatCliCommand("coderclaw node start"),
+  ];
   switch (process.platform) {
     case "darwin":
       return [

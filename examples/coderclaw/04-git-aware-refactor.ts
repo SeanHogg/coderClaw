@@ -1,6 +1,6 @@
 /**
  * Example 4: Git-Aware Refactoring
- * 
+ *
  * This example demonstrates using git history awareness to guide refactoring:
  * - Analyze commit history
  * - Identify frequently changed files

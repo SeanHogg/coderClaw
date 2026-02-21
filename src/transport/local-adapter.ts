@@ -73,7 +73,10 @@ export class LocalTransportAdapter implements TransportAdapter {
         await globalTaskEngine.setTaskError(task.id, result.error || "Failed to spawn subagent");
       }
     } catch (error) {
-      await globalTaskEngine.setTaskError(task.id, error instanceof Error ? error.message : String(error));
+      await globalTaskEngine.setTaskError(
+        task.id,
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 

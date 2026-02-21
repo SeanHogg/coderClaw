@@ -1,18 +1,18 @@
 /**
  * Example 2: Multi-Agent Workflow
- * 
+ *
  * This example demonstrates orchestrating multiple agents working together:
  * Code Creator → Code Reviewer → Test Generator
- * 
+ *
  * Shows dynamic agent spawning, task coordination, and result aggregation.
  */
 
-import { EnhancedAgentOrchestrator } from "../../src/coderclaw/orchestrator-enhanced.js";
 import {
   CODE_CREATOR_ROLE,
   CODE_REVIEWER_ROLE,
   TEST_GENERATOR_ROLE,
 } from "../../src/coderclaw/agent-roles.js";
+import { EnhancedAgentOrchestrator } from "../../src/coderclaw/orchestrator-enhanced.js";
 
 async function main() {
   console.log("🦞 Multi-Agent Workflow Example\n");
