@@ -1,6 +1,6 @@
 # CoderClaw Architecture
 
-This document describes the architectural design and implementation of CoderClaw, the multi-agent developer system built on OpenClaw.
+This document describes the architectural design and implementation of CoderClaw, the multi-agent developer system.
 
 ## System Overview
 
@@ -569,7 +569,7 @@ CoderClaw's architecture is designed to be:
 - **Modular**: Clear separation of concerns across layers
 - **Extensible**: Multiple extension points for customization
 - **Performant**: Caching and parallelization strategies
-- **Secure**: Integration with OpenClaw's security model
+- **Secure**: Integrated security model with RBAC and device trust
 - **Developer-Friendly**: Clear APIs and documentation
 
 The layered design ensures that each component can evolve independently while maintaining a cohesive system.

@@ -81,7 +81,7 @@ The complete software development lifecycle — planning, coding, reviewing, tes
 
 ### Distributed Runtime
 
-Built on OpenClaw's proven gateway architecture with **Phase 2 enhancements**:
+CoderClaw's distributed runtime includes **Phase 2 enhancements**:
 
 - **Transport Abstraction Layer**: Protocol-agnostic local or remote execution
 - **Distributed Task Lifecycle**: Formal state machine with complete audit trails
@@ -301,7 +301,7 @@ Run `coderclaw doctor` to surface risky/misconfigured DM policies.
 
 ## CoderClaw Phase 2 Features
 
-**Distributed AI Runtime & Secure Control Mesh** — CoderClaw extends OpenClaw with enterprise-ready capabilities:
+**Distributed AI Runtime & Secure Control Mesh** — CoderClaw provides enterprise-ready capabilities:
 
 ### 🔄 Transport Abstraction Layer
 
