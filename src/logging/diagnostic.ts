@@ -1,3 +1,4 @@
+import { pruneStaleCommandPolls } from "../agents/command-poll-backoff.js";
 import { emitDiagnosticEvent } from "../infra/diagnostic-events.js";
 import {
   diagnosticSessionStates,
@@ -350,15 +351,15 @@ export function startDiagnosticHeartbeat() {
       queued: totalQueued,
     });
 
-    import("../agents/command-poll-backoff.js")
-      .then(({ pruneStaleCommandPolls }) => {
-        for (const [, state] of diagnosticSessionStates) {
+    void Promise.resolve().then(() => {
+      for (const [, state] of diagnosticSessionStates) {
+        try {
           pruneStaleCommandPolls(state);
+        } catch (err) {
+          diag.debug(`command-poll-backoff prune failed: ${String(err)}`);
         }
-      })
-      .catch((err) => {
-        diag.debug(`command-poll-backoff prune failed: ${String(err)}`);
-      });
+      }
+    });
 
     for (const [, state] of diagnosticSessionStates) {
       const ageMs = now - state.lastActivity;

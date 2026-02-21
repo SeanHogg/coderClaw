@@ -1,3 +1,4 @@
+import { ensureAuthProfileStore } from "../agents/auth-profiles.js";
 import { formatCliCommand } from "../cli/command-format.js";
 import type {
   GatewayAuthChoice,
@@ -336,7 +337,6 @@ export async function runOnboardingWizard(
   const { applyOnboardingLocalWorkspaceConfig } = await import("../commands/onboard-config.js");
   let nextConfig: OpenClawConfig = applyOnboardingLocalWorkspaceConfig(baseConfig, workspaceDir);
 
-  const { ensureAuthProfileStore } = await import("../agents/auth-profiles.js");
   const { promptAuthChoiceGrouped } = await import("../commands/auth-choice-prompt.js");
   const { promptCustomApiConfig } = await import("../commands/onboard-custom.js");
   const { applyAuthChoice, resolvePreferredProviderForAuthChoice, warnIfModelConfigLooksOff } =

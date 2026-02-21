@@ -12,6 +12,7 @@ import type { OpenClawConfig } from "../config/config.js";
 import { STATE_DIR } from "../config/paths.js";
 import { logVerbose } from "../globals.js";
 import { loadJsonFile, saveJsonFile } from "../infra/json-file.js";
+import { describeImageWithModel } from "../media-understanding/providers/image.js";
 import { resolveAutoImageModel } from "../media-understanding/runner.js";
 
 const CACHE_FILE = path.join(STATE_DIR, "telegram", "sticker-cache.json");
@@ -242,8 +243,6 @@ export async function describeStickerImage(params: DescribeStickerParams): Promi
 
   try {
     const buffer = await fs.readFile(imagePath);
-    // Dynamic import to avoid circular dependency
-    const { describeImageWithModel } = await import("../media-understanding/providers/image.js");
     const result = await describeImageWithModel({
       buffer,
       fileName: "sticker.webp",

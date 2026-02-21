@@ -1,9 +1,5 @@
 import type { OpenClawConfig } from "../config/config.js";
 import type { ModelDefinitionConfig } from "../config/types.models.js";
-import {
-  DEFAULT_COPILOT_API_BASE_URL,
-  resolveCopilotApiToken,
-} from "../providers/github-copilot-token.js";
 import { ensureAuthProfileStore, listProfilesForProvider } from "./auth-profiles.js";
 import { discoverBedrockModels } from "./bedrock-discovery.js";
 import {
@@ -837,6 +833,10 @@ export async function resolveImplicitCopilotProvider(params: {
     }
   }
 
+  // Lazy-import to break the bundler circular dependency that caused
+  // __exportAll to be called before it was initialized (ESM TDZ crash).
+  const { DEFAULT_COPILOT_API_BASE_URL, resolveCopilotApiToken } =
+    await import("../providers/github-copilot-token.js");
   let baseUrl = DEFAULT_COPILOT_API_BASE_URL;
   if (selectedGithubToken) {
     try {

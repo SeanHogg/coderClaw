@@ -1,3 +1,4 @@
+import { ensureAuthProfileStore } from "../../agents/auth-profiles.js";
 import { clearSessionAuthProfileOverride } from "../../agents/auth-profiles/session-override.js";
 import { lookupContextTokens } from "../../agents/context.js";
 import { DEFAULT_CONTEXT_TOKENS } from "../../agents/defaults.js";
@@ -360,7 +361,6 @@ export async function createModelSelectionState(params: {
   }
 
   if (sessionEntry && sessionStore && sessionKey && sessionEntry.authProfileOverride) {
-    const { ensureAuthProfileStore } = await import("../../agents/auth-profiles.js");
     const store = ensureAuthProfileStore(undefined, {
       allowKeychainPrompt: false,
     });
