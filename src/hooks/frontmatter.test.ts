@@ -253,7 +253,7 @@ metadata:
     expect(frontmatter.name).toBe("session-memory");
     expect(frontmatter.metadata).toBeDefined();
 
-    const openclaw = resolveOpenClawMetadata(frontmatter);
+    const coderclaw = resolveOpenClawMetadata(frontmatter);
     expect(coderclaw).toBeDefined();
     expect(coderclaw?.emoji).toBe("💾");
     expect(coderclaw?.events).toEqual(["command:new"]);
@@ -272,7 +272,7 @@ metadata:
 ---
 `;
     const frontmatter = parseFrontmatter(content);
-    const openclaw = resolveOpenClawMetadata(frontmatter);
+    const coderclaw = resolveOpenClawMetadata(frontmatter);
     expect(coderclaw?.emoji).toBe("disk");
     expect(coderclaw?.events).toEqual(["command:new"]);
   });
