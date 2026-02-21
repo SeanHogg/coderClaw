@@ -1,6 +1,6 @@
 {
-  "name": "@openclaw/voice-call",
-  "version": "2026.2.20",
+  "name": "@coderclaw/voice-call",
+  "version": "2026.2.21",
   "description": "OpenClaw voice-call plugin",
   "type": "module",
   "dependencies": {
@@ -9,9 +9,9 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "openclaw": "workspace:*"
+    "coderclaw": "workspace:*"
   },
-  "openclaw": {
+  "coderclaw": {
     "extensions": [
       "./index.ts"
     ]

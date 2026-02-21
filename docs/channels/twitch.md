@@ -16,7 +16,7 @@ Twitch ships as a plugin and is not bundled with the core install.
 Install via CLI (npm registry):
 
 ```bash
-coderclaw plugins install @openclaw/twitch
+coderclaw plugins install @coderclaw/twitch
 ```
 
 Local checkout (when running from a git repo):

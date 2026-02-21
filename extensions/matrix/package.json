@@ -1,6 +1,6 @@
 {
-  "name": "@openclaw/matrix",
-  "version": "2026.2.20",
+  "name": "@coderclaw/matrix",
+  "version": "2026.2.21",
   "description": "OpenClaw Matrix channel plugin",
   "type": "module",
   "dependencies": {
@@ -11,9 +11,9 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "openclaw": "workspace:*"
+    "coderclaw": "workspace:*"
   },
-  "openclaw": {
+  "coderclaw": {
     "extensions": [
       "./index.ts"
     ],
@@ -28,7 +28,7 @@
       "quickstartAllowFrom": true
     },
     "install": {
-      "npmSpec": "@openclaw/matrix",
+      "npmSpec": "@coderclaw/matrix",
       "localPath": "extensions/matrix",
       "defaultChoice": "npm"
     }

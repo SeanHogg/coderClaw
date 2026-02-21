@@ -204,7 +204,7 @@ describe("loadOpenClawPlugins", () => {
   it("preserves package.json metadata for bundled memory plugins", () => {
     const registry = loadBundledMemoryPluginRegistry({
       packageMeta: {
-        name: "@openclaw/memory-core",
+        name: "@coderclaw/memory-core",
         version: "1.2.3",
         description: "Memory plugin package",
       },

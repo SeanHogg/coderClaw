@@ -1,4 +1,4 @@
-# @openclaw/voice-call
+# @coderclaw/voice-call
 
 Official Voice Call plugin for **OpenClaw**.
 
@@ -17,7 +17,7 @@ Plugin system: `https://docs.openclaw.ai/plugin`
 ### Option A: install via OpenClaw (recommended)
 
 ```bash
-openclaw plugins install @openclaw/voice-call
+openclaw plugins install @coderclaw/voice-call
 ```
 
 Restart the Gateway afterwards.

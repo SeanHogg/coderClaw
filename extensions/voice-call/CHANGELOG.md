@@ -145,7 +145,7 @@
 
 ### Highlights
 
-- First public release of the @openclaw/voice-call plugin.
+- First public release of the @coderclaw/voice-call plugin.
 
 ### Features
 

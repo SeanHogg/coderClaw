@@ -1,4 +1,4 @@
-# @openclaw/nostr
+# @coderclaw/nostr
 
 Nostr DM channel plugin for OpenClaw using NIP-04 encrypted direct messages.
 
@@ -13,7 +13,7 @@ This extension adds Nostr as a messaging channel to OpenClaw. It enables your bo
 ## Installation
 
 ```bash
-openclaw plugins install @openclaw/nostr
+openclaw plugins install @coderclaw/nostr
 ```
 
 ## Quick Setup

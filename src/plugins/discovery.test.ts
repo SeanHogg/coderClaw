@@ -108,7 +108,7 @@ describe("discoverOpenClawPlugins", () => {
     fs.writeFileSync(
       path.join(globalExt, "package.json"),
       JSON.stringify({
-        name: "@openclaw/voice-call",
+        name: "@coderclaw/voice-call",
         openclaw: { extensions: ["./src/index.ts"] },
       }),
       "utf-8",
@@ -135,7 +135,7 @@ describe("discoverOpenClawPlugins", () => {
     fs.writeFileSync(
       path.join(packDir, "package.json"),
       JSON.stringify({
-        name: "@openclaw/demo-plugin-dir",
+        name: "@coderclaw/demo-plugin-dir",
         openclaw: { extensions: ["./index.js"] },
       }),
       "utf-8",
