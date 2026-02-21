@@ -8,7 +8,7 @@ title: "Perplexity Sonar"
 
 # Perplexity Sonar
 
-CoderClaw (built on OpenClaw) can use Perplexity Sonar for the `web_search` tool. You can connect
+CoderClaw can use Perplexity Sonar for the `web_search` tool. You can connect
 through Perplexity’s direct API or via OpenRouter.
 
 ## API options

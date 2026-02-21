@@ -388,28 +388,28 @@ orchestrate workflow:refactor description:"Refactor authentication module"
 
 Define your own workflow steps with dependencies.
 
-## Integration with OpenClaw
+## Architecture Integration
 
-CoderClaw extends OpenClaw's existing capabilities:
+CoderClaw's existing capabilities:
 
 - **Skills**: Use coding-agent skill for interactive development
 - **Subagents**: Orchestrate workflows spawn subagents automatically
-- **Memory**: Project knowledge integrates with OpenClaw's memory system
-- **Tools**: CoderClaw tools available alongside existing OpenClaw tools
+- **Memory**: Project knowledge managed by CoderClaw's memory system
+- **Tools**: CoderClaw tools available across all workflows
 - **Workspace**: Project context complements workspace-level configuration
 - **Transport Layer**: Distributed execution via transport adapters
 - **Security**: RBAC and policy enforcement
 
 ## Architecture
 
-coderClaw is built on OpenClaw's infrastructure:
+CoderClaw's infrastructure includes:
 
 ### Components
 
 - **Tool System**: Uses AgentTool interface for consistency
 - **Subagent Spawning**: Leverages existing subagent lifecycle management
-- **Session Management**: Integrates with OpenClaw's session tracking
-- **Configuration**: Extends OpenClaw config structure
+- **Session Management**: Integrates with CoderClaw's session tracking
+- **Configuration**: Extends CoderClaw config structure
 - **Transport Layer**: Protocol-agnostic execution (local or remote)
 - **Security Service**: RBAC with identity and device trust
 
@@ -423,7 +423,7 @@ coderClaw is built on OpenClaw's infrastructure:
 
 ## Security
 
-CoderClaw respects OpenClaw's security model and adds Phase 2 enhancements:
+CoderClaw's security model includes Phase 2 enhancements:
 
 - Project context files are read-only during execution
 - Code analysis runs with same permissions as other tools
