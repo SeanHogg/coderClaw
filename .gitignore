@@ -6,6 +6,7 @@ dist
 pnpm-lock.yaml
 bun.lock
 bun.lockb
+!docs/bun.lock
 coverage
 __pycache__/
 *.pyc
