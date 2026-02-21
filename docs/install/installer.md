@@ -126,28 +126,28 @@ The script exits with code `2` for invalid method selection or invalid `--instal
 <AccordionGroup>
   <Accordion title="Flags reference">
 
-| Flag                            | Description                                                |
-| ------------------------------- | ---------------------------------------------------------- |
-| `--install-method npm\|git`     | Choose install method (default: `npm`). Alias: `--method`  |
-| `--npm`                         | Shortcut for npm method                                    |
-| `--git`                         | Shortcut for git method. Alias: `--github`                 |
-| `--version <version\|dist-tag>` | npm version or dist-tag (default: `latest`)                |
-| `--beta`                        | Use beta dist-tag if available, else fallback to `latest`  |
+| Flag                            | Description                                                 |
+| ------------------------------- | ----------------------------------------------------------- |
+| `--install-method npm\|git`     | Choose install method (default: `npm`). Alias: `--method`   |
+| `--npm`                         | Shortcut for npm method                                     |
+| `--git`                         | Shortcut for git method. Alias: `--github`                  |
+| `--version <version\|dist-tag>` | npm version or dist-tag (default: `latest`)                 |
+| `--beta`                        | Use beta dist-tag if available, else fallback to `latest`   |
 | `--git-dir <path>`              | Checkout directory (default: `~/coderclaw`). Alias: `--dir` |
-| `--no-git-update`               | Skip `git pull` for existing checkout                      |
-| `--no-prompt`                   | Disable prompts                                            |
-| `--no-onboard`                  | Skip onboarding                                            |
-| `--onboard`                     | Enable onboarding                                          |
-| `--dry-run`                     | Print actions without applying changes                     |
-| `--verbose`                     | Enable debug output (`set -x`, npm notice-level logs)      |
-| `--help`                        | Show usage (`-h`)                                          |
+| `--no-git-update`               | Skip `git pull` for existing checkout                       |
+| `--no-prompt`                   | Disable prompts                                             |
+| `--no-onboard`                  | Skip onboarding                                             |
+| `--onboard`                     | Enable onboarding                                           |
+| `--dry-run`                     | Print actions without applying changes                      |
+| `--verbose`                     | Enable debug output (`set -x`, npm notice-level logs)       |
+| `--help`                        | Show usage (`-h`)                                           |
 
   </Accordion>
 
   <Accordion title="Environment variables reference">
 
-| Variable                                    | Description                                   |
-| ------------------------------------------- | --------------------------------------------- |
+| Variable                                     | Description                                   |
+| -------------------------------------------- | --------------------------------------------- |
 | `CODERCLAW_INSTALL_METHOD=git\|npm`          | Install method                                |
 | `CODERCLAW_VERSION=latest\|next\|<semver>`   | npm version or dist-tag                       |
 | `CODERCLAW_BETA=0\|1`                        | Use beta if available                         |
@@ -158,7 +158,7 @@ The script exits with code `2` for invalid method selection or invalid `--instal
 | `CODERCLAW_DRY_RUN=1`                        | Dry run mode                                  |
 | `CODERCLAW_VERBOSE=1`                        | Debug mode                                    |
 | `CODERCLAW_NPM_LOGLEVEL=error\|warn\|notice` | npm log level                                 |
-| `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`          | Control sharp/libvips behavior (default: `1`) |
+| `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`           | Control sharp/libvips behavior (default: `1`) |
 
   </Accordion>
 </AccordionGroup>
@@ -228,15 +228,15 @@ Designed for environments where you want everything under a local prefix (defaul
 
   <Accordion title="Environment variables reference">
 
-| Variable                                    | Description                                                                       |
-| ------------------------------------------- | --------------------------------------------------------------------------------- |
+| Variable                                     | Description                                                                       |
+| -------------------------------------------- | --------------------------------------------------------------------------------- |
 | `CODERCLAW_PREFIX=<path>`                    | Install prefix                                                                    |
 | `CODERCLAW_VERSION=<ver>`                    | OpenClaw version or dist-tag                                                      |
 | `CODERCLAW_NODE_VERSION=<ver>`               | Node version                                                                      |
 | `CODERCLAW_NO_ONBOARD=1`                     | Skip onboarding                                                                   |
 | `CODERCLAW_NPM_LOGLEVEL=error\|warn\|notice` | npm log level                                                                     |
 | `CODERCLAW_GIT_DIR=<path>`                   | Legacy cleanup lookup path (used when removing old `Peekaboo` submodule checkout) |
-| `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`          | Control sharp/libvips behavior (default: `1`)                                     |
+| `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`           | Control sharp/libvips behavior (default: `1`)                                     |
 
   </Accordion>
 </AccordionGroup>
@@ -312,8 +312,8 @@ Designed for environments where you want everything under a local prefix (defaul
 
   <Accordion title="Environment variables reference">
 
-| Variable                           | Description        |
-| ---------------------------------- | ------------------ |
+| Variable                            | Description        |
+| ----------------------------------- | ------------------ |
 | `CODERCLAW_INSTALL_METHOD=git\|npm` | Install method     |
 | `CODERCLAW_GIT_DIR=<path>`          | Checkout directory |
 | `CODERCLAW_NO_ONBOARD=1`            | Skip onboarding    |

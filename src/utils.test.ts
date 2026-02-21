@@ -157,9 +157,9 @@ describe("shortenHomePath", () => {
     vi.stubEnv("CODERCLAW_HOME", "/srv/coderclaw-home");
     vi.stubEnv("HOME", "/home/other");
 
-    expect(shortenHomePath(`${path.resolve("/srv/coderclaw-home")}/.coderclaw/coderclaw.json`)).toBe(
-      "$CODERCLAW_HOME/.coderclaw/coderclaw.json",
-    );
+    expect(
+      shortenHomePath(`${path.resolve("/srv/coderclaw-home")}/.coderclaw/coderclaw.json`),
+    ).toBe("$CODERCLAW_HOME/.coderclaw/coderclaw.json");
 
     vi.unstubAllEnvs();
   });
@@ -171,7 +171,9 @@ describe("shortenHomeInString", () => {
     vi.stubEnv("HOME", "/home/other");
 
     expect(
-      shortenHomeInString(`config: ${path.resolve("/srv/coderclaw-home")}/.coderclaw/coderclaw.json`),
+      shortenHomeInString(
+        `config: ${path.resolve("/srv/coderclaw-home")}/.coderclaw/coderclaw.json`,
+      ),
     ).toBe("config: $CODERCLAW_HOME/.coderclaw/coderclaw.json");
 
     vi.unstubAllEnvs();

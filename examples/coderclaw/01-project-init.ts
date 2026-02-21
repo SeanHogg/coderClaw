@@ -1,6 +1,6 @@
 /**
  * Example 1: Initialize a coderClaw project
- * 
+ *
  * This example demonstrates how to initialize a new project with coderClaw's
  * persistent context engine, creating the .coderClaw directory structure.
  */

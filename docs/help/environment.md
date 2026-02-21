@@ -76,11 +76,11 @@ See [Configuration: Env var substitution](/gateway/configuration#env-var-substit
 
 ## Path-related env vars
 
-| Variable               | Purpose                                                                                                                                                                           |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Variable                | Purpose                                                                                                                                                                           |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `CODERCLAW_HOME`        | Override the home directory used for all internal path resolution (`~/.coderclaw/`, agent dirs, sessions, credentials). Useful when running OpenClaw as a dedicated service user. |
 | `CODERCLAW_STATE_DIR`   | Override the state directory (default `~/.coderclaw`).                                                                                                                            |
-| `CODERCLAW_CONFIG_PATH` | Override the config file path (default `~/.coderclaw/coderclaw.json`).                                                                                                             |
+| `CODERCLAW_CONFIG_PATH` | Override the config file path (default `~/.coderclaw/coderclaw.json`).                                                                                                            |
 
 ### `CODERCLAW_HOME`
 

@@ -82,7 +82,7 @@ jobs:
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           echo "package-version=$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
-          
+
           # Check if version already exists on npm
           if npm view coderclaw@$PACKAGE_VERSION >/dev/null 2>&1; then
             echo "version-exists=true" >> "$GITHUB_OUTPUT"

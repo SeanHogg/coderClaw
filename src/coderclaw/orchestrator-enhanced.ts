@@ -66,7 +66,10 @@ function taskStateToTask(state: TaskState, deps: string[] = [], dependents: stri
  */
 export class EnhancedAgentOrchestrator {
   private workflows = new Map<string, Workflow>();
-  private workflowDependencies = new Map<string, Map<string, { deps: string[]; dependents: string[] }>>();
+  private workflowDependencies = new Map<
+    string,
+    Map<string, { deps: string[]; dependents: string[] }>
+  >();
   private taskResults = new Map<string, string>();
 
   /**

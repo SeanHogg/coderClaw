@@ -171,10 +171,7 @@ export class BasicSecurityService implements SecurityService {
   /**
    * Check if agent invocation is allowed
    */
-  async checkAgentAccess(
-    context: SecurityContext,
-    agentId: string,
-  ): Promise<PolicyCheckResult> {
+  async checkAgentAccess(context: SecurityContext, agentId: string): Promise<PolicyCheckResult> {
     // Check basic permission
     const permissionCheck = await this.checkPermission(context, "agent:invoke");
     if (!permissionCheck.allowed) {
@@ -225,10 +222,7 @@ export class BasicSecurityService implements SecurityService {
   /**
    * Check if skill execution is allowed
    */
-  async checkSkillAccess(
-    context: SecurityContext,
-    skillId: string,
-  ): Promise<PolicyCheckResult> {
+  async checkSkillAccess(context: SecurityContext, skillId: string): Promise<PolicyCheckResult> {
     // Check basic permission
     const permissionCheck = await this.checkPermission(context, "skill:execute");
     if (!permissionCheck.allowed) {

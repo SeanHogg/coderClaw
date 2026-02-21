@@ -416,7 +416,7 @@ OpenClaw 在 Docker 中运行，但 Docker 不是真实来源。
 
 | 组件             | 位置                              | 持久化机制    | 说明                        |
 | ---------------- | --------------------------------- | ------------- | --------------------------- |
-| Gateway 网关配置 | `/home/node/.openclaw/`           | 主机卷挂载    | 包括 `coderclaw.json`、令牌  |
+| Gateway 网关配置 | `/home/node/.openclaw/`           | 主机卷挂载    | 包括 `coderclaw.json`、令牌 |
 | 模型认证配置文件 | `/home/node/.openclaw/`           | 主机卷挂载    | OAuth 令牌、API 密钥        |
 | Skill 配置       | `/home/node/.openclaw/skills/`    | 主机卷挂载    | Skill 级别状态              |
 | 智能体工作区     | `/home/node/.openclaw/workspace/` | 主机卷挂载    | 代码和智能体产物            |

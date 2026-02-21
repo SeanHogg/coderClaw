@@ -63,6 +63,7 @@ When you initialize a coderClaw project, it creates a `.coderClaw/` directory:
 ## Key Features Demonstrated
 
 ### Deep Knowledge & Context Engine
+
 - AST parsing across TypeScript/JavaScript
 - Semantic code maps with function/class/interface discovery
 - Dependency graph generation and analysis
@@ -70,6 +71,7 @@ When you initialize a coderClaw project, it creates a `.coderClaw/` directory:
 - Git history awareness (blame, diffs, evolution)
 
 ### Multi-Agent Orchestration
+
 - Dynamic agent spawning
 - Task lifecycle management
 - Result aggregation
@@ -77,6 +79,7 @@ When you initialize a coderClaw project, it creates a `.coderClaw/` directory:
 - Deterministic execution
 
 ### Developer-Centric Agent Roles
+
 - **Code Creator**: Feature implementation
 - **Code Reviewer**: Quality and security review
 - **Test Generator**: Comprehensive test suites
@@ -86,6 +89,7 @@ When you initialize a coderClaw project, it creates a `.coderClaw/` directory:
 - **Architecture Advisor**: System design guidance
 
 ### Extensibility
+
 - Pluggable agent roles via `.coderClaw/agents/`
 - Custom skills per project
 - Configurable rules and constraints

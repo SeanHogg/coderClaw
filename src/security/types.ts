@@ -198,11 +198,7 @@ export interface SecurityService {
   /**
    * Create session with permissions
    */
-  createSession(
-    userId: string,
-    deviceId: string,
-    roles: string[],
-  ): Promise<SessionPermissions>;
+  createSession(userId: string, deviceId: string, roles: string[]): Promise<SessionPermissions>;
 
   /**
    * Check if action is allowed
@@ -231,16 +227,10 @@ export interface SecurityService {
   /**
    * Check if agent invocation is allowed
    */
-  checkAgentAccess(
-    context: SecurityContext,
-    agentId: string,
-  ): Promise<PolicyCheckResult>;
+  checkAgentAccess(context: SecurityContext, agentId: string): Promise<PolicyCheckResult>;
 
   /**
    * Check if skill execution is allowed
    */
-  checkSkillAccess(
-    context: SecurityContext,
-    skillId: string,
-  ): Promise<PolicyCheckResult>;
+  checkSkillAccess(context: SecurityContext, skillId: string): Promise<PolicyCheckResult>;
 }

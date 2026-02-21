@@ -1,6 +1,6 @@
 /**
  * Example 3: Deep Code Analysis
- * 
+ *
  * This example demonstrates coderClaw's deep codebase understanding:
  * - AST parsing
  * - Semantic code maps
@@ -9,26 +9,30 @@
  */
 
 import { parseTypeScriptFile, extractImportsAndExports } from "../../src/coderclaw/ast-parser.js";
-import { buildCodeMap, buildDependencyGraph, calculateImpactRadius } from "../../src/coderclaw/code-map.js";
+import {
+  buildCodeMap,
+  buildDependencyGraph,
+  calculateImpactRadius,
+} from "../../src/coderclaw/code-map.js";
 
 async function main() {
   console.log("🦞 Deep Code Analysis Example\n");
 
   // Example 1: Parse a single file
   console.log("1. AST Parsing - Extracting semantic information\n");
-  
+
   const exampleFile = "./src/coderclaw/agent-roles.ts";
   console.log(`Parsing: ${exampleFile}`);
-  
+
   try {
     const fileInfo = await parseTypeScriptFile(exampleFile);
-    
+
     console.log(`\n✓ Discovered:`);
     console.log(`  - Functions: ${fileInfo.functions.length}`);
     console.log(`  - Classes: ${fileInfo.classes.length}`);
     console.log(`  - Interfaces: ${fileInfo.interfaces.length}`);
     console.log(`  - Types: ${fileInfo.types.length}`);
-    
+
     if (fileInfo.functions.length > 0) {
       console.log(`\n  Sample function: ${fileInfo.functions[0].name}`);
       console.log(`    Line: ${fileInfo.functions[0].line}`);
@@ -39,21 +43,20 @@ async function main() {
     // Example 2: Extract imports and exports
     console.log("\n2. Cross-file Reference Tracking\n");
     const { imports, exports } = await extractImportsAndExports(exampleFile);
-    
+
     console.log(`✓ Imports: ${imports.length}`);
     if (imports.length > 0) {
       console.log(`  Sample: from "${imports[0].source}"`);
       console.log(`    Imports: ${imports[0].imports.slice(0, 3).join(", ")}`);
     }
-    
+
     console.log(`\n✓ Exports: ${exports.length}`);
     if (exports.length > 0) {
       console.log(`  Sample exports:`);
-      exports.slice(0, 3).forEach(exp => {
+      exports.slice(0, 3).forEach((exp) => {
         console.log(`    - ${exp.name} (${exp.kind})`);
       });
     }
-
   } catch (error) {
     console.log(`Note: ${error instanceof Error ? error.message : String(error)}`);
   }
@@ -61,36 +64,35 @@ async function main() {
   // Example 3: Build code map for entire project
   console.log("\n3. Semantic Code Map Generation\n");
   console.log("Building code map for src/coderclaw/...");
-  
+
   try {
     const codeMap = await buildCodeMap("./src/coderclaw", ["*.ts"]);
-    
+
     console.log(`\n✓ Code Map Statistics:`);
     console.log(`  - Total files: ${codeMap.files.size}`);
     console.log(`  - Total exports: ${codeMap.exports.size}`);
     console.log(`  - Dependency relationships: ${codeMap.dependencies.size}`);
-    
+
     // Example 4: Build dependency graph
     console.log("\n4. Dependency Graph Analysis\n");
     const graph = buildDependencyGraph(codeMap);
-    
+
     console.log(`✓ Dependency Graph:`);
     console.log(`  - Total nodes: ${graph.size}`);
-    
+
     // Find a file to analyze
     const sampleFile = Array.from(graph.keys())[0];
     if (sampleFile) {
       const node = graph.get(sampleFile);
-      console.log(`\n  Sample node: ${sampleFile.split('/').pop()}`);
+      console.log(`\n  Sample node: ${sampleFile.split("/").pop()}`);
       console.log(`    Dependencies: ${node?.dependencies.length || 0}`);
       console.log(`    Dependents: ${node?.dependents.length || 0}`);
-      
+
       // Calculate impact radius
       const impactRadius = calculateImpactRadius(sampleFile, graph);
       console.log(`    Impact radius: ${impactRadius.size} files`);
       console.log(`    (changing this file could affect ${impactRadius.size - 1} other files)`);
     }
-    
   } catch (error) {
     console.log(`Note: ${error instanceof Error ? error.message : String(error)}`);
   }

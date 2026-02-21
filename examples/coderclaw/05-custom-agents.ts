@@ -1,6 +1,6 @@
 /**
  * Example 5: Custom Agent Roles
- * 
+ *
  * This example demonstrates creating custom agent roles for project-specific workflows.
  * Custom agents are defined in .coderClaw/agents/ and can be loaded dynamically.
  */
@@ -23,7 +23,8 @@ async function main() {
   // Example custom agent: Database Migration Specialist
   const dbMigrationAgent: AgentRole = {
     name: "db-migration-specialist",
-    description: "Specialized in creating and reviewing database migrations with zero-downtime strategies",
+    description:
+      "Specialized in creating and reviewing database migrations with zero-downtime strategies",
     capabilities: [
       "Create forward and rollback migrations",
       "Ensure backward compatibility",
@@ -59,7 +60,8 @@ Guidelines:
   // Example custom agent: API Documentation Generator
   const apiDocsAgent: AgentRole = {
     name: "api-docs-generator",
-    description: "Generates comprehensive API documentation with examples, schemas, and best practices",
+    description:
+      "Generates comprehensive API documentation with examples, schemas, and best practices",
     capabilities: [
       "Extract API endpoints from code",
       "Generate OpenAPI/Swagger specs",
