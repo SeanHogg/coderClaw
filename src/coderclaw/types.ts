@@ -167,3 +167,26 @@ export type ProjectKnowledge = {
   gitHistory: GitHistoryEntry[];
   lastUpdated: Date;
 };
+
+/**
+ * A session handoff document that lets the next agent session resume where
+ * the last one stopped — the CoderClaw alternative to Claude Projects session notes.
+ */
+export type SessionHandoff = {
+  /** Unique identifier for this session */
+  sessionId: string;
+  /** ISO timestamp of when the session ended */
+  timestamp: string;
+  /** One-paragraph summary of what was accomplished */
+  summary: string;
+  /** Key decisions made during the session */
+  decisions: string[];
+  /** Concrete next steps for the following session */
+  nextSteps: string[];
+  /** Unresolved questions to revisit */
+  openQuestions: string[];
+  /** Files, docs, or other artifacts produced */
+  artifacts: string[];
+  /** Arbitrary extra context to carry forward */
+  context?: Record<string, unknown>;
+};

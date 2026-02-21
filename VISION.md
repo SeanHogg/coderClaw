@@ -19,6 +19,21 @@ It evolved through several names and shells: Warelay -> Clawdbot -> Moltbot -> O
 
 The goal: a personal assistant that is easy to use, supports a wide range of platforms, respects privacy and security, and **deeply understands your code**.
 
+## Competitive Position
+
+CoderClaw is a **direct replacement** for GitHub Copilot, Cursor, Windsurf, and Claude Code.
+
+These tools share the same fundamental limitation: they are cloud-controlled, IDE-tethered, single-agent tools that autocomplete or chat but do not orchestrate. CoderClaw is different at the architectural level:
+
+- **Self-hosted** — your code never leaves your machine.
+- **Multi-agent** — specialized agents plan, build, review, test, and document in coordinated workflows, not one model doing everything in one context window.
+- **Multi-channel** — works in WhatsApp, Telegram, Slack, Discord, iMessage, and the terminal. Your tools come to where you already are.
+- **Persistent project knowledge** — AST parsing, semantic code maps, dependency graphs, and session handoffs give every agent the full picture of your codebase, not just the files open in a tab.
+- **Any model** — Anthropic, OpenAI, Gemini, GitHub Copilot tokens — no lock-in.
+- **Open source, MIT** — no subscription ceiling, no black box.
+
+We do not build _on top of_ Claude Code or Copilot. We replace them.
+
 The current focus is:
 
 Priority:

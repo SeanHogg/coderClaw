@@ -186,3 +186,20 @@ export type TransportConfig = {
   enabled: boolean;
   options?: Record<string, unknown>;
 };
+
+/**
+ * Configuration for the ClawLink transport adapter.
+ * Points CoderClaw at a running CoderClawLink instance.
+ */
+export type ClawLinkConfig = {
+  /** Base URL of the CoderClawLink server, e.g. "http://localhost:8000" */
+  baseUrl: string;
+  /** Optional user ID to attach to the session */
+  userId?: string;
+  /** Optional device ID to attach to the session */
+  deviceId?: string;
+  /** How often (ms) to poll for task state updates. Default: 1000 */
+  pollIntervalMs?: number;
+  /** Request timeout in ms. Default: 30000 */
+  timeoutMs?: number;
+};

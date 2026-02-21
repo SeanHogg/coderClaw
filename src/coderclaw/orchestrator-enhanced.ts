@@ -363,6 +363,62 @@ export function createRefactorWorkflow(scope: string): WorkflowStep[] {
   ];
 }
 
+/**
+ * Planning workflow: Architecture Advisor builds a PRD and architecture spec,
+ * then decomposes it into an actionable task list.
+ * Use this at the start of any major feature or project.
+ *
+ * Produces three artifacts:
+ *   1. PRD — requirements, goals, non-goals, success criteria
+ *   2. Architecture spec — component design, data flows, interfaces
+ *   3. Task breakdown — ordered, dependency-annotated work items
+ */
+export function createPlanningWorkflow(goal: string): WorkflowStep[] {
+  return [
+    {
+      role: "architecture-advisor",
+      task: `Write a Product Requirements Document (PRD) for: ${goal}`,
+    },
+    {
+      role: "architecture-advisor",
+      task: `Write a detailed architecture specification for: ${goal}`,
+      dependsOn: [`Write a Product Requirements Document (PRD) for: ${goal}`],
+    },
+    {
+      role: "architecture-advisor",
+      task: `Decompose into an ordered task list with dependencies for: ${goal}`,
+      dependsOn: [`Write a detailed architecture specification for: ${goal}`],
+    },
+  ];
+}
+
+/**
+ * Adversarial review workflow: one agent produces output, a second agent
+ * critiques it for gaps and errors, and a third synthesizes the final result.
+ * Mirrors the "start a new chat, ask it to find gaps" technique without any
+ * external dependency.
+ */
+export function createAdversarialReviewWorkflow(subject: string): WorkflowStep[] {
+  return [
+    {
+      role: "architecture-advisor",
+      task: `Produce a detailed proposal for: ${subject}`,
+    },
+    {
+      role: "code-reviewer",
+      task: `Critically review the proposal for gaps, errors, and blind spots in: ${subject}`,
+      dependsOn: [`Produce a detailed proposal for: ${subject}`],
+    },
+    {
+      role: "architecture-advisor",
+      task: `Synthesize the critique into a revised, final proposal for: ${subject}`,
+      dependsOn: [
+        `Critically review the proposal for gaps, errors, and blind spots in: ${subject}`,
+      ],
+    },
+  ];
+}
+
 // Maintain backward compatibility by exporting original orchestrator
 export { AgentOrchestrator } from "./orchestrator-legacy.js";
 export { globalOrchestrator } from "./orchestrator-legacy.js";

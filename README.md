@@ -18,11 +18,30 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
-**CoderClaw** is a developer-first, multi-agent AI system for code creation, review, testing, debugging, refactoring, and deep codebase understanding. It operates as an **orchestration engine inside real developer workflows**.
+**CoderClaw** is the self-hosted, multi-agent AI coding system that replaces GitHub Copilot, Cursor, Windsurf, and Claude Code. Your code stays on your machine. Your agents run your workflows. No vendor lock-in, no IDE tether, no subscription ceiling.
+
+## 🔄 Why CoderClaw instead of GitHub Copilot, Cursor, or Claude Code?
+
+|                                            | **CoderClaw**                          | GitHub Copilot              | Cursor / Windsurf  | Claude Code        |
+| ------------------------------------------ | -------------------------------------- | --------------------------- | ------------------ | ------------------ |
+| **Self-hosted**                            | ✅ Your infra, your data               | ❌ Microsoft cloud          | ❌ Vendor cloud    | ❌ Anthropic cloud |
+| **IDE-independent**                        | ✅ Any channel / CLI                   | ❌ VS Code only             | ❌ Fork of VS Code | ⚠️ Terminal only   |
+| **Multi-agent orchestration**              | ✅ 7 built-in roles + custom           | ❌ Single inline suggestion | ❌ Single agent    | ❌ Single agent    |
+| **Planning workflow (PRD → Arch → Tasks)** | ✅ Built-in                            | ❌                          | ❌                 | ❌                 |
+| **Adversarial review pass**                | ✅ Built-in                            | ❌                          | ❌                 | ❌                 |
+| **Session handoffs**                       | ✅ `.coderClaw/sessions/`              | ❌                          | ❌                 | ❌                 |
+| **Deep AST + semantic analysis**           | ✅                                     | ❌                          | ⚠️ Basic RAG       | ⚠️ Basic RAG       |
+| **Persistent project knowledge**           | ✅ `.coderClaw/`                       | ❌                          | ⚠️ In-session only | ⚠️ In-session only |
+| **Works in WhatsApp / Telegram / Slack**   | ✅                                     | ❌                          | ❌                 | ❌                 |
+| **Any model provider**                     | ✅ Anthropic, OpenAI, Gemini, Copilot… | ❌ GPT-4o / Claude only     | ❌ Limited         | ❌ Anthropic only  |
+| **RBAC + audit trails**                    | ✅ Phase 2                             | ❌                          | ❌                 | ❌                 |
+| **Open source (MIT)**                      | ✅                                     | ❌                          | ❌                 | ❌                 |
+
+CoderClaw is not a plugin or an IDE extension. It is a **full orchestration runtime** that understands your codebase, coordinates specialized agents, and works wherever you do — in your terminal, your chat apps, or your CI pipeline.
 
 ## 🎯 Core Mission
 
-An AI assistant that deeply understands your codebase and coordinates specialized agents to handle the complete software development lifecycle.
+The complete software development lifecycle — planning, coding, reviewing, testing, debugging, refactoring, documenting — orchestrated by specialized agents that deeply understand your codebase. No IDE required. No cloud lock-in. Runs on your infra.
 
 ### Key Capabilities
 
@@ -71,7 +90,7 @@ Built on OpenClaw's proven gateway architecture with **Phase 2 enhancements**:
 
 It connects to the channels you already use (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat), plus extension channels like BlueBubbles, Matrix, Zalo, and Zalo Personal. It can speak and listen on macOS/iOS/Android, and can render a live Canvas you control.
 
-If you want an AI assistant that understands code deeply and orchestrates multi-agent workflows, this is it.
+If you want to stop paying for Copilot subscriptions, escape the IDE tether, and run AI agents that actually orchestrate your full dev workflow — this is it.
 
 [Website](https://coderclaw.ai) · [Docs](https://docs.coderclaw.ai) · [Vision](VISION.md) · [Multi-Agent System](docs/coderclaw.md) · [Examples](examples/coderclaw) · [Getting Started](https://docs.coderclaw.ai/start/getting-started) · [Updating](https://docs.coderclaw.ai/install/updating) · [Showcase](https://docs.coderclaw.ai/start/showcase) · [FAQ](https://docs.coderclaw.ai/start/faq) · [Discord](https://discord.gg/clawd)
 
@@ -106,6 +125,7 @@ coderclaw init
 #   - agents/          custom agent role definitions (YAML, community-extensible)
 #   - skills/          project-specific skills
 #   - memory/          persistent knowledge base and semantic indices
+#   - sessions/        session handoff docs (resume any session instantly)
 
 # Check project status
 coderclaw project status
@@ -120,6 +140,10 @@ coderclaw gateway --port 18789 --verbose
 # Deep-analyze the codebase (AST + dependency graph + git history)
 coderclaw agent --message "Analyze the codebase structure" --thinking high
 
+# Planning workflow (start here for major features):
+# Architecture Advisor → PRD → Architecture Spec → Task Breakdown
+coderclaw agent --message "Plan a real-time collaboration feature" --thinking high
+
 # Full feature development workflow:
 # Architecture Advisor → Code Creator → Test Generator + Code Reviewer (parallel)
 coderclaw agent --message "Create a user authentication feature with tests and review" --thinking high
@@ -129,6 +153,13 @@ coderclaw agent --message "Fix the memory leak in the parser" --thinking high
 
 # Refactor workflow: Code Reviewer → Refactor Agent → Test Generator
 coderclaw agent --message "Refactor the authentication module" --thinking high
+
+# Adversarial review (built-in critique pass — no external tool needed):
+# Architecture Advisor (Proposal) → Code Reviewer (Critique) → Architecture Advisor (Revised)
+coderclaw agent --message "Adversarially review the API authentication design" --thinking high
+
+# Save a session handoff so the next session picks up right where you left off
+coderclaw agent --message "Save a session handoff for what we accomplished today" --thinking low
 ```
 
 ### Access CoderClaw from Messaging Channels
@@ -158,8 +189,10 @@ When you initialize a coderClaw project, it creates a `.coderClaw/` directory:
 │   └── custom-agent.yaml
 ├── skills/              # Project-specific skills
 │   └── project-skill.ts
-└── memory/              # Persistent project knowledge and semantic indices
-    └── semantic-index.db
+├── memory/              # Persistent project knowledge and semantic indices
+│   └── semantic-index.db
+└── sessions/            # Session handoff docs — resume any session instantly
+    └── <session-id>.yaml
 ```
 
 This persistent context enables deep codebase understanding and intelligent agent coordination.
@@ -303,6 +336,27 @@ Run `coderclaw doctor` to surface risky/misconfigured DM policies.
 See [docs/phase2.md](docs/phase2.md) for complete documentation and [examples/phase2/](examples/phase2/) for usage examples.
 
 **Status**: Phase 2 is production-ready with 194 passing tests, full backward compatibility, and zero breaking changes.
+
+## 🔗 CoderClawLink
+
+[CoderClawLink](https://github.com/SeanHogg/coderClawLink) is the companion portal: a Python FastAPI app with a Kanban UI, Telegram bot, GitHub PR automation, and local LLM (Ollama) support. CoderClaw connects to it via the built-in **ClawLink transport adapter** — your multi-agent workflows run seamlessly on a remote CoderClawLink node with zero protocol boilerplate:
+
+```typescript
+import { ClawLinkTransportAdapter, CoderClawRuntime } from "coderclaw/transport";
+
+const adapter = new ClawLinkTransportAdapter({ baseUrl: "http://localhost:8000" });
+await adapter.connect();
+const runtime = new CoderClawRuntime(adapter, "remote-enabled");
+
+// Planning, feature, adversarial-review workflows all run on the ClawLink node
+const state = await runtime.submitTask({
+  agentId: "claude",
+  description: "Plan auth feature",
+  input: "...",
+});
+```
+
+Full guide: [CoderClawLink Integration](https://docs.coderclaw.ai/coderclaw-link)
 
 ## Star History
 
