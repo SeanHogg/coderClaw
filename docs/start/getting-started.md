@@ -112,6 +112,66 @@ If you run CoderClaw as a service account or want custom config/state locations:
 
 Full environment variable reference: [Environment vars](/help/environment).
 
+## CoderClaw dev workflows (quick start)
+
+Once your Gateway is running, initialize CoderClaw in any project and start running multi-agent workflows.
+
+<Steps>
+  <Step title="Initialize your project">
+    ```bash
+    cd my-project
+    coderclaw init
+    ```
+
+    This creates a `.coderClaw/` directory with persistent project context:
+
+    ```
+    .coderClaw/
+    ├── context.yaml    # project metadata (languages, frameworks, dependencies)
+    ├── architecture.md # design docs
+    ├── rules.yaml      # coding standards
+    ├── agents/         # custom agent roles
+    ├── skills/         # project-specific skills
+    ├── memory/         # knowledge base
+    └── sessions/       # session handoff docs
+    ```
+
+  </Step>
+  <Step title="Plan a major feature">
+    Run the **Planning workflow** before writing any code. It produces a PRD, architecture spec, and ordered task list.
+
+    ```bash
+    coderclaw agent --message "Plan a real-time collaboration feature" --thinking high
+    ```
+
+  </Step>
+  <Step title="Build with multi-agent workflows">
+    ```bash
+    # Feature: Architecture Advisor → Code Creator → Test Generator + Code Reviewer
+    coderclaw agent --message "Implement the authentication module" --thinking high
+
+    # Bug fix: Bug Analyzer → Code Creator → Test Generator + Code Reviewer
+    coderclaw agent --message "Fix the memory leak in the parser" --thinking high
+
+    # Adversarial review (built-in critique pass):
+    coderclaw agent --message "Adversarially review the API design" --thinking high
+    ```
+
+  </Step>
+  <Step title="Save a session handoff">
+    At the end of each session, save a handoff so the next one resumes instantly.
+
+    ```bash
+    coderclaw agent --message "Save a session handoff for today's work" --thinking low
+    ```
+
+    CoderClaw writes a structured YAML to `.coderClaw/sessions/` covering decisions, next steps, and open questions. The next session loads it automatically.
+
+  </Step>
+</Steps>
+
+Full workflow reference: [CoderClaw Workflows](/coderclaw-workflows)
+
 ## Go deeper
 
 <Columns>

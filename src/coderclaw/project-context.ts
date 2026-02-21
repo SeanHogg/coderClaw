@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
-import type { ProjectContext, ProjectRules, AgentRole } from "./types.js";
+import type { ProjectContext, ProjectRules, AgentRole, SessionHandoff } from "./types.js";
 
 const CODERCLAW_DIR = ".coderClaw";
 const CONTEXT_FILE = "context.yaml";
@@ -10,6 +10,7 @@ const RULES_FILE = "rules.yaml";
 const AGENTS_DIR = "agents";
 const SKILLS_DIR = "skills";
 const MEMORY_DIR = "memory";
+const SESSIONS_DIR = "sessions";
 
 export type CoderClawDirectory = {
   root: string;
@@ -19,6 +20,7 @@ export type CoderClawDirectory = {
   agentsDir: string;
   skillsDir: string;
   memoryDir: string;
+  sessionsDir: string;
 };
 
 /**
@@ -34,6 +36,7 @@ export function resolveCoderClawDir(projectRoot: string): CoderClawDirectory {
     agentsDir: path.join(root, AGENTS_DIR),
     skillsDir: path.join(root, SKILLS_DIR),
     memoryDir: path.join(root, MEMORY_DIR),
+    sessionsDir: path.join(root, SESSIONS_DIR),
   };
 }
 
@@ -64,6 +67,7 @@ export async function initializeCoderClawProject(
   await fs.mkdir(dir.agentsDir, { recursive: true });
   await fs.mkdir(dir.skillsDir, { recursive: true });
   await fs.mkdir(dir.memoryDir, { recursive: true });
+  await fs.mkdir(dir.sessionsDir, { recursive: true });
 
   // Create default context.yaml
   const defaultContext: ProjectContext = {
@@ -161,6 +165,7 @@ This directory contains project-specific context and configuration for coderClaw
 - \`agents/\` - Custom agent role definitions
 - \`skills/\` - Project-specific skills
 - \`memory/\` - Project knowledge base and semantic indices
+- \`sessions/\` - Session handoff documents (resume any session instantly)
 
 ## Usage
 
@@ -260,4 +265,70 @@ export async function saveAgentRole(projectRoot: string, role: AgentRole): Promi
   await fs.mkdir(dir.agentsDir, { recursive: true });
   const filename = `${role.name.toLowerCase().replace(/\s+/g, "-")}.yaml`;
   await fs.writeFile(path.join(dir.agentsDir, filename), stringifyYaml(role), "utf-8");
+}
+
+/**
+ * Save a session handoff document to .coderClaw/sessions/.
+ * Agents call this at the end of a session so the next one can resume
+ * instantly without replaying history.
+ */
+export async function saveSessionHandoff(
+  projectRoot: string,
+  handoff: SessionHandoff,
+): Promise<string> {
+  const dir = resolveCoderClawDir(projectRoot);
+  await fs.mkdir(dir.sessionsDir, { recursive: true });
+  const filename = `${handoff.sessionId}.yaml`;
+  const filePath = path.join(dir.sessionsDir, filename);
+  await fs.writeFile(filePath, stringifyYaml(handoff), "utf-8");
+  return filePath;
+}
+
+/**
+ * Load the most recent session handoff, giving the next session its starting context.
+ * Returns null when no handoff exists (fresh project).
+ */
+export async function loadLatestSessionHandoff(
+  projectRoot: string,
+): Promise<SessionHandoff | null> {
+  const dir = resolveCoderClawDir(projectRoot);
+  try {
+    const files = (await fs.readdir(dir.sessionsDir))
+      .filter((f) => f.endsWith(".yaml") || f.endsWith(".yml"))
+      .toSorted() // ISO timestamps sort lexicographically, newest last
+      .toReversed();
+
+    if (files.length === 0) {
+      return null;
+    }
+
+    const content = await fs.readFile(path.join(dir.sessionsDir, files[0]), "utf-8");
+    return parseYaml(content) as SessionHandoff;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * List all saved session handoffs, newest first.
+ */
+export async function listSessionHandoffs(projectRoot: string): Promise<SessionHandoff[]> {
+  const dir = resolveCoderClawDir(projectRoot);
+  const handoffs: SessionHandoff[] = [];
+
+  try {
+    const files = (await fs.readdir(dir.sessionsDir))
+      .filter((f) => f.endsWith(".yaml") || f.endsWith(".yml"))
+      .toSorted()
+      .toReversed();
+
+    for (const file of files) {
+      const content = await fs.readFile(path.join(dir.sessionsDir, file), "utf-8");
+      handoffs.push(parseYaml(content) as SessionHandoff);
+    }
+  } catch {
+    // Directory doesn't exist or is empty
+  }
+
+  return handoffs;
 }

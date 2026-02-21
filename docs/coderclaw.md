@@ -52,6 +52,7 @@ All project knowledge is stored in `.coderClaw/`:
 - `agents/`: Custom agent role definitions
 - `skills/`: Project-specific skills
 - `memory/`: Knowledge base and semantic indices
+- `sessions/`: Session handoff documents — agents write a structured summary at session end so the next session resumes instantly without replaying history
 
 ### 2. Multi-Agent Orchestration
 
@@ -246,8 +247,10 @@ CoderClaw stores project-specific context in a `.coderClaw/` directory:
 │   └── tester.yaml
 ├── skills/              # Project-specific skills
 │   └── project-skill.ts
-└── memory/              # Persistent project knowledge
-    └── semantic-index.db
+├── memory/              # Persistent project knowledge
+│   └── semantic-index.db
+└── sessions/            # Session handoff docs — resume any session instantly
+    └── <session-id>.yaml
 ```
 
 ## Getting Started

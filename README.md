@@ -106,6 +106,7 @@ coderclaw init
 #   - agents/          custom agent role definitions (YAML, community-extensible)
 #   - skills/          project-specific skills
 #   - memory/          persistent knowledge base and semantic indices
+#   - sessions/        session handoff docs (resume any session instantly)
 
 # Check project status
 coderclaw project status
@@ -120,6 +121,10 @@ coderclaw gateway --port 18789 --verbose
 # Deep-analyze the codebase (AST + dependency graph + git history)
 coderclaw agent --message "Analyze the codebase structure" --thinking high
 
+# Planning workflow (start here for major features):
+# Architecture Advisor → PRD → Architecture Spec → Task Breakdown
+coderclaw agent --message "Plan a real-time collaboration feature" --thinking high
+
 # Full feature development workflow:
 # Architecture Advisor → Code Creator → Test Generator + Code Reviewer (parallel)
 coderclaw agent --message "Create a user authentication feature with tests and review" --thinking high
@@ -129,6 +134,13 @@ coderclaw agent --message "Fix the memory leak in the parser" --thinking high
 
 # Refactor workflow: Code Reviewer → Refactor Agent → Test Generator
 coderclaw agent --message "Refactor the authentication module" --thinking high
+
+# Adversarial review (built-in critique pass — no external tool needed):
+# Architecture Advisor (Proposal) → Code Reviewer (Critique) → Architecture Advisor (Revised)
+coderclaw agent --message "Adversarially review the API authentication design" --thinking high
+
+# Save a session handoff so the next session picks up right where you left off
+coderclaw agent --message "Save a session handoff for what we accomplished today" --thinking low
 ```
 
 ### Access CoderClaw from Messaging Channels
@@ -158,8 +170,10 @@ When you initialize a coderClaw project, it creates a `.coderClaw/` directory:
 │   └── custom-agent.yaml
 ├── skills/              # Project-specific skills
 │   └── project-skill.ts
-└── memory/              # Persistent project knowledge and semantic indices
-    └── semantic-index.db
+├── memory/              # Persistent project knowledge and semantic indices
+│   └── semantic-index.db
+└── sessions/            # Session handoff docs — resume any session instantly
+    └── <session-id>.yaml
 ```
 
 This persistent context enables deep codebase understanding and intelligent agent coordination.

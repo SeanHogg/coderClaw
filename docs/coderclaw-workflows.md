@@ -391,6 +391,112 @@ Results from all agents are aggregated into a structured summary:
 }
 ```
 
+### 6. Planning Pattern
+
+**Purpose**: Produce a PRD, architecture specification, and ordered task list before writing any code. Use this at the start of any major feature or project so every agent downstream has a shared, written plan.
+
+**Agent Flow**:
+
+```
+Architecture Advisor (PRD) → Architecture Advisor (Spec) → Architecture Advisor (Task Breakdown)
+```
+
+**Execution**:
+
+1. Architecture Advisor writes a full Product Requirements Document
+2. Architecture Advisor drafts the detailed architecture specification
+3. Architecture Advisor decomposes the spec into a dependency-ordered task list
+
+**Usage**:
+
+```bash
+coderclaw agent --message "Plan a real-time collaboration feature" --thinking high
+```
+
+Or via tool:
+
+```
+orchestrate workflow:planning goal:"Add real-time collaboration to the editor"
+```
+
+**Example Output**:
+
+```
+Workflow: Planning
+├─ [✓] Architecture Advisor (PRD): Requirements documented
+│   └─ Artifacts: prd-realtime-collab.md
+├─ [✓] Architecture Advisor (Spec): Architecture defined
+│   └─ Artifacts: architecture-realtime-collab.md
+└─ [✓] Architecture Advisor (Tasks): Work items created
+    └─ 12 tasks across 4 milestones, all dependencies mapped
+```
+
+### 7. Adversarial Review Pattern
+
+**Purpose**: Have one agent propose a design and a second agent critique it for gaps and blind spots, then synthesize the final version. No external tool required.
+
+**Agent Flow**:
+
+```
+Architecture Advisor (Proposal) → Code Reviewer (Critique) → Architecture Advisor (Revised)
+```
+
+**Execution**:
+
+1. Architecture Advisor produces an initial proposal
+2. Code Reviewer critiques the proposal — finds gaps, errors, and unstated assumptions
+3. Architecture Advisor synthesizes the critique into a final, improved proposal
+
+**Usage**:
+
+```bash
+coderclaw agent --message "Adversarially review the API authentication design" --thinking high
+```
+
+Or via tool:
+
+```
+orchestrate workflow:adversarial-review subject:"API authentication design"
+```
+
+**Example Output**:
+
+```
+Workflow: Adversarial Review
+├─ [✓] Architecture Advisor: Initial proposal complete
+│   └─ Proposed: OAuth 2.0 + PKCE with short-lived JWTs
+├─ [✓] Code Reviewer: Critique complete
+│   └─ Found: No refresh-token rotation, missing rate limiting, unclear error codes
+└─ [✓] Architecture Advisor: Revised proposal complete
+    └─ All 3 gaps addressed, final spec saved to adversarial-review.md
+```
+
+### 8. Session Handoff
+
+CoderClaw stores session context in `.coderClaw/sessions/` so any agent session can pick up exactly where the last one stopped — no need to replay history or re-explain the project.
+
+**At the end of a session**, save a handoff:
+
+```bash
+coderclaw agent --message "Save a session handoff for what we accomplished today" --thinking low
+```
+
+The agent writes a YAML file to `.coderClaw/sessions/<session-id>.yaml` containing:
+
+- `summary` — one-paragraph description of what was done
+- `decisions` — key choices made
+- `nextSteps` — concrete follow-on tasks
+- `openQuestions` — unresolved items
+- `artifacts` — files or docs produced
+
+**At the start of the next session**, the agent automatically loads the latest handoff:
+
+```bash
+coderclaw agent --message "Resume from the last session" --thinking low
+```
+
+CoderClaw reads `.coderClaw/sessions/` and surfaces the most recent handoff as starting context.
+
 ## Best Practices
 
 ### 1. Choose the Right Pattern
@@ -398,6 +504,8 @@ Results from all agents are aggregated into a structured summary:
 - **Feature**: New functionality from scratch
 - **Bug Fix**: Known issue to diagnose and fix
 - **Refactoring**: Improve existing code structure
+- **Planning**: Major new features or projects — produce PRD, architecture spec, and task list before writing code
+- **Adversarial Review**: High-stakes designs or specs — get a built-in critique pass to find blind spots
 - **Review**: Validate existing code
 - **Documentation**: Create or update docs
 
