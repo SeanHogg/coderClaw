@@ -2,6 +2,16 @@
 
 Docs: https://docs.coderclaw.ai
 
+## 2026.2.21
+
+### Changes
+
+- Providers: fix circular chunk dependency in build output that could cause `[coderclaw] Failed to start CLI: TypeError: __exportAll is not a function` when the Copilot provider is involved. The GitHub Copilot token module now lazy‑imports JSON‑file helpers.
+
+### Fixes
+
+- Providers: avoid build-time circular dependency by moving `loadJsonFile`/`saveJsonFile` into a lazily imported module from `github-copilot-token`. This resolves CLI startup crashes with Copilot models.
+
 ## 2026.2.20
 
 ### Changes

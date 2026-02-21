@@ -20,7 +20,7 @@ x-i18n:
 通过 Node 使用 `tsx` 运行 OpenClaw 时，启动阶段报错：
 
 ```
-[openclaw] Failed to start CLI: TypeError: __name is not a function
+[coderclaw] Failed to start CLI: TypeError: __name is not a function
     at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
     at .../src/agents/auth-profiles/constants.ts:25:20
 ```
