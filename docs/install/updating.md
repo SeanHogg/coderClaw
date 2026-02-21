@@ -1,14 +1,14 @@
 ---
-summary: "Updating OpenClaw safely (global install or source), plus rollback strategy"
+summary: "Updating CoderClaw safely (global install or source), plus rollback strategy"
 read_when:
-  - Updating OpenClaw
+  - Updating CoderClaw
   - Something breaks after an update
 title: "Updating"
 ---
 
 # Updating
 
-OpenClaw is moving fast (pre “1.0”). Treat updates like shipping infra: update → run checks → restart (or use `coderclaw update`, which restarts) → verify.
+CoderClaw is moving fast (pre “1.0”). Treat updates like shipping infra: update → run checks → restart (or use `coderclaw update`, which restarts) → verify.
 
 ## Recommended: re-run the website installer (upgrade in place)
 
@@ -17,7 +17,7 @@ detects existing installs, upgrades in place, and runs `coderclaw doctor` when
 needed.
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://coderclaw.ai/install.sh | bash
 ```
 
 Notes:
@@ -26,13 +26,13 @@ Notes:
 - For **source installs**, use:
 
   ```bash
-  curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --no-onboard
+  curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git --no-onboard
   ```
 
   The installer will `git pull --rebase` **only** if the repo is clean.
 
 - For **global installs**, the script uses `npm install -g coderclaw@latest` under the hood.
-- Legacy note: `clawdbot` remains available as a compatibility shim.
+- Legacy note: `coderclaw` remains available as a compatibility shim.
 
 ## Before you update
 
@@ -48,7 +48,7 @@ Notes:
 Global install (pick one):
 
 ```bash
-npm i -g openclaw@latest
+npm i -g coderclaw@latest
 ```
 
 ```bash
@@ -135,7 +135,7 @@ coderclaw health
 
 Notes:
 
-- `pnpm build` matters when you run the packaged `openclaw` binary ([`coderclaw.mjs`](https://github.com/SeanHogg/coderClaw/blob/main/coderclaw.mjs)) or use Node to run `dist/`.
+- `pnpm build` matters when you run the packaged `coderclaw` binary ([`coderclaw.mjs`](https://github.com/SeanHogg/coderClaw/blob/main/coderclaw.mjs)) or use Node to run `dist/`.
 - If you run from a repo checkout without a global install, use `pnpm coderclaw ...` for CLI commands.
 - If you run directly from TypeScript (`pnpm coderclaw ...`), a rebuild is usually unnecessary, but **config migrations still apply** → run doctor.
 - Switching between global and git installs is easy: install the other flavor, then run `coderclaw doctor` so the gateway service entrypoint is rewritten to the current install.
@@ -151,7 +151,7 @@ Typical things it does:
 - Migrate deprecated config keys / legacy config file locations.
 - Audit DM policies and warn on risky “open” settings.
 - Check Gateway health and can offer to restart.
-- Detect and migrate older gateway services (launchd/systemd; legacy schtasks) to current OpenClaw services.
+- Detect and migrate older gateway services (launchd/systemd; legacy schtasks) to current CoderClaw services.
 - On Linux, ensure systemd user lingering (so the Gateway survives logout).
 
 Details: [Doctor](/gateway/doctor)
@@ -170,9 +170,9 @@ coderclaw logs --follow
 
 If you’re supervised:
 
-- macOS launchd (app-bundled LaunchAgent): `launchctl kickstart -k gui/$UID/bot.molt.gateway` (use `bot.molt.<profile>`; legacy `com.openclaw.*` still works)
-- Linux systemd user service: `systemctl --user restart openclaw-gateway[-<profile>].service`
-- Windows (WSL2): `systemctl --user restart openclaw-gateway[-<profile>].service`
+- macOS launchd (app-bundled LaunchAgent): `launchctl kickstart -k gui/$UID/bot.molt.gateway` (use `bot.molt.<profile>`; legacy `com.coderclaw.*` still works)
+- Linux systemd user service: `systemctl --user restart coderclaw-gateway[-<profile>].service`
+- Windows (WSL2): `systemctl --user restart coderclaw-gateway[-<profile>].service`
   - `launchctl`/`systemctl` only work if the service is installed; otherwise run `coderclaw gateway install`.
 
 Runbook + exact service labels: [Gateway runbook](/gateway)
@@ -184,7 +184,7 @@ Runbook + exact service labels: [Gateway runbook](/gateway)
 Install a known-good version (replace `<version>` with the last working one):
 
 ```bash
-npm i -g openclaw@<version>
+npm i -g coderclaw@<version>
 ```
 
 ```bash
@@ -228,4 +228,4 @@ git pull
 
 - Run `coderclaw doctor` again and read the output carefully (it often tells you the fix).
 - Check: [Troubleshooting](/gateway/troubleshooting)
-- Ask in Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
+- Ask in Discord: [https://discord.gg/coderclaw](https://discord.gg/coderclaw)

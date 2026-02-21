@@ -115,7 +115,7 @@ describe("mergeExecApprovalsSocketDefaults", () => {
 describe("resolve exec approvals defaults", () => {
   it("expands home-prefixed default file and socket paths", () => {
     const dir = makeTempDir();
-    const prevOpenClawHome = process.env.CODERCLAW_HOME;
+    const prevCoderClawHome = process.env.CODERCLAW_HOME;
     try {
       process.env.CODERCLAW_HOME = dir;
       expect(path.normalize(resolveExecApprovalsPath())).toBe(
@@ -125,10 +125,10 @@ describe("resolve exec approvals defaults", () => {
         path.normalize(path.join(dir, ".coderclaw", "exec-approvals.sock")),
       );
     } finally {
-      if (prevOpenClawHome === undefined) {
+      if (prevCoderClawHome === undefined) {
         delete process.env.CODERCLAW_HOME;
       } else {
-        process.env.CODERCLAW_HOME = prevOpenClawHome;
+        process.env.CODERCLAW_HOME = prevCoderClawHome;
       }
     }
   });
@@ -623,7 +623,7 @@ describe("exec approvals policy helpers", () => {
 describe("exec approvals wildcard agent", () => {
   it("merges wildcard allowlist entries with agent entries", () => {
     const dir = makeTempDir();
-    const prevOpenClawHome = process.env.CODERCLAW_HOME;
+    const prevCoderClawHome = process.env.CODERCLAW_HOME;
 
     try {
       process.env.CODERCLAW_HOME = dir;
@@ -650,10 +650,10 @@ describe("exec approvals wildcard agent", () => {
         "/usr/bin/uname",
       ]);
     } finally {
-      if (prevOpenClawHome === undefined) {
+      if (prevCoderClawHome === undefined) {
         delete process.env.CODERCLAW_HOME;
       } else {
-        process.env.CODERCLAW_HOME = prevOpenClawHome;
+        process.env.CODERCLAW_HOME = prevCoderClawHome;
       }
     }
   });

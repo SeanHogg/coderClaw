@@ -25,8 +25,8 @@ title: "CoderClaw"
 > _"EXFOLIATE! EXFOLIATE!"_ — A space lobster, probably
 
 <p align="center">
-  <strong>AI-powered coding assistant with multi-channel integrations for WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
-  Get coding help, code reviews, and development assistance from anywhere. Plugins add Mattermost and more platforms.
+  <strong>Self-hosted, open-source AI-powered coding assistant with multi-channel integrations for WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
+  Advanced multi-agent workflows, deep code understanding, and RBAC make it ideal for developers and teams. Get coding help, code reviews, and development assistance from anywhere. Plugins add Mattermost and more platforms.
 </p>
 
 <Columns>
@@ -43,11 +43,11 @@ title: "CoderClaw"
 
 ## What is CoderClaw?
 
-CoderClaw is a **distributed AI runtime** built on top of [OpenClaw](https://github.com/SeanHogg/coderClaw)'s self-hosted gateway. It connects your favorite chat apps — WhatsApp, Telegram, Discord, iMessage, and more — to AI coding agents, with added **Phase 2 capabilities** for secure orchestration, distributed task execution, and team collaboration.
+CoderClaw is a **distributed AI runtime** built on top of [CoderClaw](https://github.com/SeanHogg/coderClaw)'s self-hosted gateway. It connects your favorite chat apps — WhatsApp, Telegram, Discord, iMessage, and more — to AI coding agents, with added **Phase 2 capabilities** for secure orchestration, distributed task execution, and team collaboration.
 
 **Who is it for?** Developers and teams who want a personal AI assistant with enterprise-ready features like RBAC, audit trails, and CI/CD integration — without giving up control of their data or relying on a hosted service.
 
-**What makes it different from OpenClaw?**
+**What makes it different from CoderClaw?**
 
 - **Distributed Runtime**: Execute tasks locally or remotely with transport abstraction
 - **Enhanced Security**: RBAC, device trust levels, and granular policy enforcement
@@ -61,7 +61,7 @@ CoderClaw is a **distributed AI runtime** built on top of [OpenClaw](https://git
 
 ```mermaid
 flowchart LR
-  A["Chat apps + plugins"] --> B["CoderClaw Gateway<br/>(OpenClaw + Phase 2)"]
+  A["Chat apps + plugins"] --> B["CoderClaw Gateway<br/>(CoderClaw + Phase 2)"]
   B --> C["Pi agent"]
   B --> D["CLI"]
   B --> E["Web Control UI"]
@@ -125,7 +125,7 @@ Open the browser Control UI after the Gateway starts.
 - Remote access: [Web surfaces](/web) and [Tailscale](/gateway/tailscale)
 
 <p align="center">
-  <img src="whatsapp-openclaw.jpg" alt="CoderClaw Control UI" width="420" />
+  <img src="whatsapp-coderclaw.jpg" alt="CoderClaw Control UI" width="420" />
 </p>
 
 ## Configuration (optional)
@@ -146,7 +146,7 @@ Example:
       groups: { "*": { requireMention: true } },
     },
   },
-  messages: { groupChat: { mentionPatterns: ["@openclaw"] } },
+  messages: { groupChat: { mentionPatterns: ["@coderclaw"] } },
 }
 ```
 

@@ -60,7 +60,7 @@ Authoritative list lives in `src/gateway/server.ts` (`METHODS`, `EVENTS`).
 - Server handshake + method dispatch: `src/gateway/server.ts`
 - Node client: `src/gateway/client.ts`
 - Generated JSON Schema: `dist/protocol.schema.json`
-- Generated Swift models: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- Generated Swift models: `apps/macos/Sources/CoderClawProtocol/GatewayModels.swift`
 
 ## Current pipeline
 
@@ -93,7 +93,7 @@ Connect (first message):
     "minProtocol": 2,
     "maxProtocol": 2,
     "client": {
-      "id": "openclaw-macos",
+      "id": "coderclaw-macos",
       "displayName": "macos",
       "version": "1.0.0",
       "platform": "macos 15.1",

@@ -1,7 +1,7 @@
 ---
-summary: "Use MiniMax M2.1 in OpenClaw"
+summary: "Use MiniMax M2.1 in CoderClaw"
 read_when:
-  - You want MiniMax models in OpenClaw
+  - You want MiniMax models in CoderClaw
   - You need MiniMax setup guidance
 title: "MiniMax"
 ---

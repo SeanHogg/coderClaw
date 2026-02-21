@@ -48,7 +48,7 @@ WhatsApp 渠道通过 **Baileys Web** 运行。本文档记录了发送、Gatewa
 
 ## 入站媒体到命令（Pi）
 
-- 当入站网页消息包含媒体时，OpenClaw 下载到临时文件并暴露模板变量：
+- 当入站网页消息包含媒体时，CoderClaw 下载到临时文件并暴露模板变量：
   - `{{MediaUrl}}` 入站媒体的伪 URL。
   - `{{MediaPath}}` 运行命令前写入的本地临时路径。
 - 当启用每会话 Docker 沙箱时，入站媒体被复制到沙箱工作区，`MediaPath`/`MediaUrl` 被重写为相对路径如 `media/inbound/<filename>`。

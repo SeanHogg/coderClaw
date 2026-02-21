@@ -11,7 +11,7 @@ x-i18n:
 
 # Pi 开发工作流程
 
-本指南总结了在 OpenClaw 中开发 Pi 集成的合理工作流程。
+本指南总结了在 CoderClaw 中开发 Pi 集成的合理工作流程。
 
 ## 类型检查和代码检查
 
@@ -58,7 +58,7 @@ scripts/pi/run-tests.sh --live
 
 ## 完全重置
 
-状态存储在 OpenClaw 状态目录下。默认为 `~/.openclaw`。如果设置了 `CODERCLAW_STATE_DIR`，则使用该目录。
+状态存储在 CoderClaw 状态目录下。默认为 `~/.coderclaw`。如果设置了 `CODERCLAW_STATE_DIR`，则使用该目录。
 
 要重置所有内容：
 

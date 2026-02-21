@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { loadModelCatalog } from "../agents/model-catalog.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { withTempHome as withTempHomeHarness } from "../config/home-env.test-harness.js";
 import { getReplyFromConfig } from "./reply.js";
 
@@ -47,7 +47,7 @@ function createTelegramMessage(messageSid: string) {
   } as const;
 }
 
-function createReplyConfig(home: string, streamMode?: "block"): OpenClawConfig {
+function createReplyConfig(home: string, streamMode?: "block"): CoderClawConfig {
   return {
     agents: {
       defaults: {
@@ -80,7 +80,7 @@ async function runTelegramReply(params: {
 }
 
 async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
-  return withTempHomeHarness("openclaw-stream-", async (home) => {
+  return withTempHomeHarness("coderclaw-stream-", async (home) => {
     await fs.mkdir(path.join(home, ".coderclaw", "agents", "main", "sessions"), {
       recursive: true,
     });

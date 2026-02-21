@@ -34,7 +34,7 @@ coderclaw gateway --force
 pnpm gateway:watch
 ```
 
-- 配置热重载监视 `~/.openclaw/coderclaw.json`（或 `CODERCLAW_CONFIG_PATH`）。
+- 配置热重载监视 `~/.coderclaw/coderclaw.json`（或 `CODERCLAW_CONFIG_PATH`）。
   - 默认模式：`gateway.reload.mode="hybrid"`（热应用安全更改，关键更改时重启）。
   - 热重载在需要时通过 **SIGUSR1** 使用进程内重启。
   - 使用 `gateway.reload.mode="off"` 禁用。
@@ -43,7 +43,7 @@ pnpm gateway:watch
   - OpenAI Chat Completions（HTTP）：[`/v1/chat/completions`](/gateway/openai-http-api)。
   - OpenResponses（HTTP）：[`/v1/responses`](/gateway/openresponses-http-api)。
   - Tools Invoke（HTTP）：[`/tools/invoke`](/gateway/tools-invoke-http-api)。
-- 默认在 `canvasHost.port`（默认 `18793`）上启动 Canvas 文件服务器，从 `~/.openclaw/workspace/canvas` 提供 `http://<gateway-host>:18793/__coderclaw__/canvas/`。使用 `canvasHost.enabled=false` 或 `CODERCLAW_SKIP_CANVAS_HOST=1` 禁用。
+- 默认在 `canvasHost.port`（默认 `18793`）上启动 Canvas 文件服务器，从 `~/.coderclaw/workspace/canvas` 提供 `http://<gateway-host>:18793/__coderclaw__/canvas/`。使用 `canvasHost.enabled=false` 或 `CODERCLAW_SKIP_CANVAS_HOST=1` 禁用。
 - 输出日志到 stdout；使用 launchd/systemd 保持运行并轮转日志。
 - 故障排除时传递 `--verbose` 以将调试日志（握手、请求/响应、事件）从日志文件镜像到 stdio。
 - `--force` 使用 `lsof` 查找所选端口上的监听器，发送 SIGTERM，记录它终止了什么，然后启动 Gateway 网关（如果缺少 `lsof` 则快速失败）。
@@ -70,13 +70,13 @@ pnpm gateway:watch
 
 服务名称是配置文件感知的：
 
-- macOS：`bot.molt.<profile>`（旧版 `com.openclaw.*` 可能仍然存在）
-- Linux：`openclaw-gateway-<profile>.service`
-- Windows：`OpenClaw Gateway (<profile>)`
+- macOS：`bot.molt.<profile>`（旧版 `com.coderclaw.*` 可能仍然存在）
+- Linux：`coderclaw-gateway-<profile>.service`
+- Windows：`CoderClaw Gateway (<profile>)`
 
 安装元数据嵌入在服务配置中：
 
-- `CODERCLAW_SERVICE_MARKER=openclaw`
+- `CODERCLAW_SERVICE_MARKER=coderclaw`
 - `CODERCLAW_SERVICE_KIND=gateway`
 - `CODERCLAW_SERVICE_VERSION=<version>`
 
@@ -96,12 +96,12 @@ coderclaw --dev health
 
 默认值（可通过 env/flags/config 覆盖）：
 
-- `CODERCLAW_STATE_DIR=~/.openclaw-dev`
-- `CODERCLAW_CONFIG_PATH=~/.openclaw-dev/coderclaw.json`
+- `CODERCLAW_STATE_DIR=~/.coderclaw-dev`
+- `CODERCLAW_CONFIG_PATH=~/.coderclaw-dev/coderclaw.json`
 - `CODERCLAW_GATEWAY_PORT=19001`（Gateway 网关 WS + HTTP）
 - 浏览器控制服务端口 = `19003`（派生：`gateway.port+2`，仅 loopback）
 - `canvasHost.port=19005`（派生：`gateway.port+4`）
-- 当你在 `--dev` 下运行 `setup`/`onboard` 时，`agents.defaults.workspace` 默认变为 `~/.openclaw/workspace-dev`。
+- 当你在 `--dev` 下运行 `setup`/`onboard` 时，`agents.defaults.workspace` 默认变为 `~/.coderclaw/workspace-dev`。
 
 派生端口（经验法则）：
 
@@ -128,8 +128,8 @@ coderclaw --profile rescue gateway install
 示例：
 
 ```bash
-CODERCLAW_CONFIG_PATH=~/.openclaw/a.json CODERCLAW_STATE_DIR=~/.openclaw-a coderclaw gateway --port 19001
-CODERCLAW_CONFIG_PATH=~/.openclaw/b.json CODERCLAW_STATE_DIR=~/.openclaw-b coderclaw gateway --port 19002
+CODERCLAW_CONFIG_PATH=~/.coderclaw/a.json CODERCLAW_STATE_DIR=~/.coderclaw-a coderclaw gateway --port 19001
+CODERCLAW_CONFIG_PATH=~/.coderclaw/b.json CODERCLAW_STATE_DIR=~/.coderclaw-b coderclaw gateway --port 19002
 ```
 
 ## 协议（运维视角）
@@ -205,14 +205,14 @@ CODERCLAW_CONFIG_PATH=~/.openclaw/b.json CODERCLAW_STATE_DIR=~/.openclaw-b coder
 ## 监管（macOS 示例）
 
 - 使用 launchd 保持服务存活：
-  - Program：`openclaw` 的路径
+  - Program：`coderclaw` 的路径
   - Arguments：`gateway`
   - KeepAlive：true
   - StandardOut/Err：文件路径或 `syslog`
 - 失败时，launchd 重启；致命的配置错误应保持退出，以便运维人员注意到。
 - LaunchAgents 是按用户的，需要已登录的会话；对于无头设置，使用自定义 LaunchDaemon（未随附）。
   - `coderclaw gateway install` 写入 `~/Library/LaunchAgents/bot.molt.gateway.plist`
-    （或 `bot.molt.<profile>.plist`；旧版 `com.openclaw.*` 会被清理）。
+    （或 `bot.molt.<profile>.plist`；旧版 `com.coderclaw.*` 会被清理）。
   - `coderclaw doctor` 审计 LaunchAgent 配置，可以将其更新为当前默认值。
 
 ## Gateway 网关服务管理（CLI）
@@ -237,15 +237,15 @@ coderclaw logs --follow
 - `gateway status` 打印配置路径 + 探测目标以避免"localhost vs LAN 绑定"混淆和配置文件不匹配。
 - `gateway status` 在服务看起来正在运行但端口已关闭时包含最后一行 Gateway 网关错误。
 - `logs` 通过 RPC 尾随 Gateway 网关文件日志（无需手动 `tail`/`grep`）。
-- 如果检测到其他类似 Gateway 网关的服务，CLI 会发出警告，除非它们是 OpenClaw 配置文件服务。
+- 如果检测到其他类似 Gateway 网关的服务，CLI 会发出警告，除非它们是 CoderClaw 配置文件服务。
   我们仍然建议大多数设置**每台机器一个 Gateway 网关**；使用隔离的配置文件/端口进行冗余或救援机器人。参见[多个 Gateway 网关](/gateway/multiple-gateways)。
   - 清理：`coderclaw gateway uninstall`（当前服务）和 `coderclaw doctor`（旧版迁移）。
 - `gateway install` 在已安装时是无操作的；使用 `coderclaw gateway install --force` 重新安装（配置文件/env/路径更改）。
 
 捆绑的 mac 应用：
 
-- OpenClaw.app 可以捆绑基于 Node 的 Gateway 网关中继并安装标记为
-  `bot.molt.gateway`（或 `bot.molt.<profile>`；旧版 `com.openclaw.*` 标签仍能干净卸载）的按用户 LaunchAgent。
+- CoderClaw.app 可以捆绑基于 Node 的 Gateway 网关中继并安装标记为
+  `bot.molt.gateway`（或 `bot.molt.<profile>`；旧版 `com.coderclaw.*` 标签仍能干净卸载）的按用户 LaunchAgent。
 - 要干净地停止它，使用 `coderclaw gateway stop`（或 `launchctl bootout gui/$UID/bot.molt.gateway`）。
 - 要重启，使用 `coderclaw gateway restart`（或 `launchctl kickstart -k gui/$UID/bot.molt.gateway`）。
   - `launchctl` 仅在 LaunchAgent 已安装时有效；否则先使用 `coderclaw gateway install`。
@@ -253,7 +253,7 @@ coderclaw logs --follow
 
 ## 监管（systemd 用户单元）
 
-OpenClaw 在 Linux/WSL2 上默认安装 **systemd 用户服务**。我们
+CoderClaw 在 Linux/WSL2 上默认安装 **systemd 用户服务**。我们
 建议单用户机器使用用户服务（更简单的 env，按用户配置）。
 对于多用户或常驻服务器使用**系统服务**（无需 lingering，
 共享监管）。
@@ -261,16 +261,16 @@ OpenClaw 在 Linux/WSL2 上默认安装 **systemd 用户服务**。我们
 `coderclaw gateway install` 写入用户单元。`coderclaw doctor` 审计
 单元并可以将其更新以匹配当前推荐的默认值。
 
-创建 `~/.config/systemd/user/openclaw-gateway[-<profile>].service`：
+创建 `~/.config/systemd/user/coderclaw-gateway[-<profile>].service`：
 
 ```
 [Unit]
-Description=OpenClaw Gateway (profile: <profile>, v<version>)
+Description=CoderClaw Gateway (profile: <profile>, v<version>)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/openclaw gateway --port 18789
+ExecStart=/usr/local/bin/coderclaw gateway --port 18789
 Restart=always
 RestartSec=5
 Environment=CODERCLAW_GATEWAY_TOKEN=
@@ -290,17 +290,17 @@ sudo loginctl enable-linger youruser
 然后启用服务：
 
 ```
-systemctl --user enable --now openclaw-gateway[-<profile>].service
+systemctl --user enable --now coderclaw-gateway[-<profile>].service
 ```
 
 **替代方案（系统服务）** - 对于常驻或多用户服务器，你可以
 安装 systemd **系统**单元而不是用户单元（无需 lingering）。
-创建 `/etc/systemd/system/openclaw-gateway[-<profile>].service`（复制上面的单元，
+创建 `/etc/systemd/system/coderclaw-gateway[-<profile>].service`（复制上面的单元，
 切换 `WantedBy=multi-user.target`，设置 `User=` + `WorkingDirectory=`），然后：
 
 ```
 sudo systemctl daemon-reload
-sudo systemctl enable --now openclaw-gateway[-<profile>].service
+sudo systemctl enable --now coderclaw-gateway[-<profile>].service
 ```
 
 ## Windows（WSL2）

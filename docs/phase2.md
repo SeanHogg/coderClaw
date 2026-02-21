@@ -2,7 +2,7 @@
 
 CoderClaw Phase 2 introduces a networked, distributed AI node architecture with secure remote orchestration capabilities while maintaining deterministic execution and security boundaries.
 
-> **Foundation**: CoderClaw is built on [OpenClaw](https://github.com/SeanHogg/coderClaw)'s proven multi-channel gateway architecture. Phase 2 adds enterprise-ready features for distributed execution, security, and team collaboration.
+> **Foundation**: CoderClaw is built on [CoderClaw](https://github.com/SeanHogg/coderClaw)'s proven multi-channel gateway architecture. Phase 2 adds enterprise-ready features for distributed execution, security, and team collaboration.
 
 ## Overview
 
@@ -299,7 +299,7 @@ const task = await runtime.submitTask({
 
 ### Local-Only Mode
 
-Default single-machine setup (backward compatible with OpenClaw):
+Default single-machine setup (backward compatible with CoderClaw):
 
 ```typescript
 const runtime = new CoderClawRuntime(new LocalTransportAdapter(context), "local-only");
@@ -443,11 +443,11 @@ Phase 2 is backward compatible with Phase 1:
 
 ```typescript
 // Phase 1: Direct orchestrator usage
-import { globalOrchestrator } from "openclaw/coderclaw";
+import { globalOrchestrator } from "coderclaw/coderclaw";
 const workflow = globalOrchestrator.createWorkflow(steps);
 
 // Phase 2: Enhanced orchestrator with transport
-import { globalEnhancedOrchestrator } from "openclaw/coderclaw/orchestrator-enhanced";
+import { globalEnhancedOrchestrator } from "coderclaw/coderclaw/orchestrator-enhanced";
 const workflow = globalEnhancedOrchestrator.createWorkflow(steps);
 ```
 

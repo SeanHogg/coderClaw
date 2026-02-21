@@ -63,7 +63,7 @@ const baseQueuedRun = (messageProvider = "whatsapp"): FollowupRun =>
 describe("createFollowupRunner compaction", () => {
   it("adds verbose auto-compaction notice and tracks count", async () => {
     const storePath = path.join(
-      await fs.mkdtemp(path.join(tmpdir(), "openclaw-compaction-")),
+      await fs.mkdtemp(path.join(tmpdir(), "coderclaw-compaction-")),
       "sessions.json",
     );
     const sessionEntry: SessionEntry = {
@@ -135,7 +135,7 @@ describe("createFollowupRunner compaction", () => {
 
   it("updates totalTokens after auto-compaction using lastCallUsage", async () => {
     const storePath = path.join(
-      await fs.mkdtemp(path.join(tmpdir(), "openclaw-followup-compaction-")),
+      await fs.mkdtemp(path.join(tmpdir(), "coderclaw-followup-compaction-")),
       "sessions.json",
     );
     const sessionKey = "main";
@@ -301,7 +301,7 @@ describe("createFollowupRunner messaging tool dedupe", () => {
 
   it("persists usage even when replies are suppressed", async () => {
     const storePath = path.join(
-      await fs.mkdtemp(path.join(tmpdir(), "openclaw-followup-usage-")),
+      await fs.mkdtemp(path.join(tmpdir(), "coderclaw-followup-usage-")),
       "sessions.json",
     );
     const sessionKey = "main";

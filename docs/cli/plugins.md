@@ -29,7 +29,7 @@ coderclaw plugins update <id>
 coderclaw plugins update --all
 ```
 
-Bundled plugins ship with OpenClaw but start disabled. Use `plugins enable` to
+Bundled plugins ship with CoderClaw but start disabled. Use `plugins enable` to
 activate them.
 
 All plugins must ship a `coderclaw.plugin.json` file with an inline JSON Schema

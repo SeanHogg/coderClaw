@@ -8,7 +8,7 @@ title: "acp"
 
 # acp
 
-Run the ACP (Agent Client Protocol) bridge that talks to a OpenClaw Gateway.
+Run the ACP (Agent Client Protocol) bridge that talks to a CoderClaw Gateway.
 
 This command speaks ACP over stdio for IDEs and forwards prompts to the Gateway
 over WebSocket. It keeps ACP sessions mapped to Gateway session keys.
@@ -49,7 +49,7 @@ coderclaw acp client --server "node" --server-args coderclaw.mjs acp --url ws://
 ## How to use this
 
 Use ACP when an IDE (or other client) speaks Agent Client Protocol and you want
-it to drive a OpenClaw Gateway session.
+it to drive a CoderClaw Gateway session.
 
 1. Ensure the Gateway is running (local or remote).
 2. Configure the Gateway target (config or flags).
@@ -91,7 +91,7 @@ Add a custom ACP agent in `~/.config/zed/settings.json` (or use Zed’s Settings
 ```json
 {
   "agent_servers": {
-    "OpenClaw ACP": {
+    "CoderClaw ACP": {
       "type": "custom",
       "command": "coderclaw",
       "args": ["acp"],
@@ -106,7 +106,7 @@ To target a specific Gateway or agent:
 ```json
 {
   "agent_servers": {
-    "OpenClaw ACP": {
+    "CoderClaw ACP": {
       "type": "custom",
       "command": "coderclaw",
       "args": [
@@ -124,7 +124,7 @@ To target a specific Gateway or agent:
 }
 ```
 
-In Zed, open the Agent panel and select “OpenClaw ACP” to start a thread.
+In Zed, open the Agent panel and select “CoderClaw ACP” to start a thread.
 
 ## Session mapping
 

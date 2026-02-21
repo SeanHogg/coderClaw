@@ -13,14 +13,14 @@ import {
 } from "../agents/auth-profiles.js";
 import { updateAuthProfileStoreWithLock } from "../agents/auth-profiles/store.js";
 import { formatCliCommand } from "../cli/command-format.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { note } from "../terminal/note.js";
 import type { DoctorPrompter } from "./doctor-prompter.js";
 
 export async function maybeRepairAnthropicOAuthProfileId(
-  cfg: OpenClawConfig,
+  cfg: CoderClawConfig,
   prompter: DoctorPrompter,
-): Promise<OpenClawConfig> {
+): Promise<CoderClawConfig> {
   const store = ensureAuthProfileStore();
   const repair = repairOAuthProfileIdMismatch({
     cfg,
@@ -65,9 +65,9 @@ function pruneAuthOrder(
 }
 
 function pruneAuthProfiles(
-  cfg: OpenClawConfig,
+  cfg: CoderClawConfig,
   profileIds: Set<string>,
-): { next: OpenClawConfig; changed: boolean } {
+): { next: CoderClawConfig; changed: boolean } {
   const profiles = cfg.auth?.profiles;
   const order = cfg.auth?.order;
   const nextProfiles = profiles ? { ...profiles } : undefined;
@@ -110,9 +110,9 @@ function pruneAuthProfiles(
 }
 
 export async function maybeRemoveDeprecatedCliAuthProfiles(
-  cfg: OpenClawConfig,
+  cfg: CoderClawConfig,
   prompter: DoctorPrompter,
-): Promise<OpenClawConfig> {
+): Promise<CoderClawConfig> {
   const store = ensureAuthProfileStore(undefined, { allowKeychainPrompt: false });
   const deprecated = new Set<string>();
   if (store.profiles[CLAUDE_CLI_PROFILE_ID] || cfg.auth?.profiles?.[CLAUDE_CLI_PROFILE_ID]) {
@@ -135,7 +135,7 @@ export async function maybeRemoveDeprecatedCliAuthProfiles(
   if (deprecated.has(CODEX_CLI_PROFILE_ID)) {
     lines.push(
       `- ${CODEX_CLI_PROFILE_ID} (OpenAI Codex): use OAuth → ${formatCliCommand(
-        "openclaw models auth login --provider openai-codex",
+        "coderclaw models auth login --provider openai-codex",
       )}`,
     );
   }
@@ -209,12 +209,12 @@ type AuthIssue = {
 function formatAuthIssueHint(issue: AuthIssue): string | null {
   if (issue.provider === "anthropic" && issue.profileId === CLAUDE_CLI_PROFILE_ID) {
     return `Deprecated profile. Use ${formatCliCommand("coderclaw models auth setup-token")} or ${formatCliCommand(
-      "openclaw configure",
+      "coderclaw configure",
     )}.`;
   }
   if (issue.provider === "openai-codex" && issue.profileId === CODEX_CLI_PROFILE_ID) {
     return `Deprecated profile. Use ${formatCliCommand(
-      "openclaw models auth login --provider openai-codex",
+      "coderclaw models auth login --provider openai-codex",
     )} or ${formatCliCommand("coderclaw configure")}.`;
   }
   return `Re-auth via \`${formatCliCommand("coderclaw configure")}\` or \`${formatCliCommand("coderclaw onboard")}\`.`;
@@ -228,7 +228,7 @@ function formatAuthIssueLine(issue: AuthIssue): string {
 }
 
 export async function noteAuthProfileHealth(params: {
-  cfg: OpenClawConfig;
+  cfg: CoderClawConfig;
   prompter: DoctorPrompter;
   allowKeychainPrompt: boolean;
 }): Promise<void> {

@@ -8,7 +8,7 @@ title: "Platforms"
 
 # Platforms
 
-OpenClaw core is written in TypeScript. **Node is the recommended runtime**.
+CoderClaw core is written in TypeScript. **Node is the recommended runtime**.
 Bun is not recommended for the Gateway (WhatsApp/Telegram bugs).
 
 Companion apps exist for macOS (menu bar app) and mobile nodes (iOS/Android). Windows and
@@ -49,5 +49,5 @@ Use one of these (all supported):
 
 The service target depends on OS:
 
-- macOS: LaunchAgent (`bot.molt.gateway` or `bot.molt.<profile>`; legacy `com.openclaw.*`)
+- macOS: LaunchAgent (`bot.molt.gateway` or `bot.molt.<profile>`; legacy `com.coderclaw.*`)
 - Linux/WSL2: systemd user service (`coderclaw-gateway[-<profile>].service`)

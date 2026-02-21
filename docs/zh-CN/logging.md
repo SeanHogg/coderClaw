@@ -16,7 +16,7 @@ x-i18n:
 
 # 日志
 
-OpenClaw 在两个地方记录日志：
+CoderClaw 在两个地方记录日志：
 
 - **文件日志**（JSON 行）由 Gateway 网关写入。
 - **控制台输出**显示在终端和控制 UI 中。
@@ -27,16 +27,16 @@ OpenClaw 在两个地方记录日志：
 
 默认情况下，Gateway 网关在以下位置写入滚动日志文件：
 
-`/tmp/openclaw/openclaw-YYYY-MM-DD.log`
+`/tmp/coderclaw/coderclaw-YYYY-MM-DD.log`
 
 日期使用 Gateway 网关主机的本地时区。
 
-你可以在 `~/.openclaw/coderclaw.json` 中覆盖此设置：
+你可以在 `~/.coderclaw/coderclaw.json` 中覆盖此设置：
 
 ```json
 {
   "logging": {
-    "file": "/path/to/openclaw.log"
+    "file": "/path/to/coderclaw.log"
   }
 }
 ```
@@ -103,13 +103,13 @@ coderclaw channels logs --channel whatsapp
 
 ## 配置日志
 
-所有日志配置都在 `~/.openclaw/coderclaw.json` 的 `logging` 下。
+所有日志配置都在 `~/.coderclaw/coderclaw.json` 的 `logging` 下。
 
 ```json
 {
   "logging": {
     "level": "info",
-    "file": "/tmp/openclaw/openclaw-YYYY-MM-DD.log",
+    "file": "/tmp/coderclaw/coderclaw-YYYY-MM-DD.log",
     "consoleLevel": "info",
     "consoleStyle": "pretty",
     "redactSensitive": "tools",
@@ -152,7 +152,7 @@ coderclaw channels logs --channel whatsapp
 
 - **OpenTelemetry（OTel）**：追踪、指标和日志的数据模型 + SDK。
 - **OTLP**：用于将 OTel 数据导出到收集器/后端的线路协议。
-- OpenClaw 目前通过 **OTLP/HTTP（protobuf）** 导出。
+- CoderClaw 目前通过 **OTLP/HTTP（protobuf）** 导出。
 
 ### 导出的信号
 
@@ -240,7 +240,7 @@ CODERCLAW_DIAGNOSTICS=telegram.http,telegram.payload
       "enabled": true,
       "endpoint": "http://otel-collector:4318",
       "protocol": "http/protobuf",
-      "serviceName": "openclaw-gateway",
+      "serviceName": "coderclaw-gateway",
       "traces": true,
       "metrics": true,
       "logs": true,
@@ -264,45 +264,45 @@ CODERCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 
 模型使用：
 
-- `openclaw.tokens`（计数器，属性：`openclaw.token`、`openclaw.channel`、`openclaw.provider`、`openclaw.model`）
-- `openclaw.cost.usd`（计数器，属性：`openclaw.channel`、`openclaw.provider`、`openclaw.model`）
-- `openclaw.run.duration_ms`（直方图，属性：`openclaw.channel`、`openclaw.provider`、`openclaw.model`）
-- `openclaw.context.tokens`（直方图，属性：`openclaw.context`、`openclaw.channel`、`openclaw.provider`、`openclaw.model`）
+- `coderclaw.tokens`（计数器，属性：`coderclaw.token`、`coderclaw.channel`、`coderclaw.provider`、`coderclaw.model`）
+- `coderclaw.cost.usd`（计数器，属性：`coderclaw.channel`、`coderclaw.provider`、`coderclaw.model`）
+- `coderclaw.run.duration_ms`（直方图，属性：`coderclaw.channel`、`coderclaw.provider`、`coderclaw.model`）
+- `coderclaw.context.tokens`（直方图，属性：`coderclaw.context`、`coderclaw.channel`、`coderclaw.provider`、`coderclaw.model`）
 
 消息流：
 
-- `openclaw.webhook.received`（计数器，属性：`openclaw.channel`、`openclaw.webhook`）
-- `openclaw.webhook.error`（计数器，属性：`openclaw.channel`、`openclaw.webhook`）
-- `openclaw.webhook.duration_ms`（直方图，属性：`openclaw.channel`、`openclaw.webhook`）
-- `openclaw.message.queued`（计数器，属性：`openclaw.channel`、`openclaw.source`）
-- `openclaw.message.processed`（计数器，属性：`openclaw.channel`、`openclaw.outcome`）
-- `openclaw.message.duration_ms`（直方图，属性：`openclaw.channel`、`openclaw.outcome`）
+- `coderclaw.webhook.received`（计数器，属性：`coderclaw.channel`、`coderclaw.webhook`）
+- `coderclaw.webhook.error`（计数器，属性：`coderclaw.channel`、`coderclaw.webhook`）
+- `coderclaw.webhook.duration_ms`（直方图，属性：`coderclaw.channel`、`coderclaw.webhook`）
+- `coderclaw.message.queued`（计数器，属性：`coderclaw.channel`、`coderclaw.source`）
+- `coderclaw.message.processed`（计数器，属性：`coderclaw.channel`、`coderclaw.outcome`）
+- `coderclaw.message.duration_ms`（直方图，属性：`coderclaw.channel`、`coderclaw.outcome`）
 
 队列 + 会话：
 
-- `openclaw.queue.lane.enqueue`（计数器，属性：`openclaw.lane`）
-- `openclaw.queue.lane.dequeue`（计数器，属性：`openclaw.lane`）
-- `openclaw.queue.depth`（直方图，属性：`openclaw.lane` 或 `openclaw.channel=heartbeat`）
-- `openclaw.queue.wait_ms`（直方图，属性：`openclaw.lane`）
-- `openclaw.session.state`（计数器，属性：`openclaw.state`、`openclaw.reason`）
-- `openclaw.session.stuck`（计数器，属性：`openclaw.state`）
-- `openclaw.session.stuck_age_ms`（直方图，属性：`openclaw.state`）
-- `openclaw.run.attempt`（计数器，属性：`openclaw.attempt`）
+- `coderclaw.queue.lane.enqueue`（计数器，属性：`coderclaw.lane`）
+- `coderclaw.queue.lane.dequeue`（计数器，属性：`coderclaw.lane`）
+- `coderclaw.queue.depth`（直方图，属性：`coderclaw.lane` 或 `coderclaw.channel=heartbeat`）
+- `coderclaw.queue.wait_ms`（直方图，属性：`coderclaw.lane`）
+- `coderclaw.session.state`（计数器，属性：`coderclaw.state`、`coderclaw.reason`）
+- `coderclaw.session.stuck`（计数器，属性：`coderclaw.state`）
+- `coderclaw.session.stuck_age_ms`（直方图，属性：`coderclaw.state`）
+- `coderclaw.run.attempt`（计数器，属性：`coderclaw.attempt`）
 
 ### 导出的 span（名称 + 关键属性）
 
-- `openclaw.model.usage`
-  - `openclaw.channel`、`openclaw.provider`、`openclaw.model`
-  - `openclaw.sessionKey`、`openclaw.sessionId`
-  - `openclaw.tokens.*`（input/output/cache_read/cache_write/total）
-- `openclaw.webhook.processed`
-  - `openclaw.channel`、`openclaw.webhook`、`openclaw.chatId`
-- `openclaw.webhook.error`
-  - `openclaw.channel`、`openclaw.webhook`、`openclaw.chatId`、`openclaw.error`
-- `openclaw.message.processed`
-  - `openclaw.channel`、`openclaw.outcome`、`openclaw.chatId`、`openclaw.messageId`、`openclaw.sessionKey`、`openclaw.sessionId`、`openclaw.reason`
-- `openclaw.session.stuck`
-  - `openclaw.state`、`openclaw.ageMs`、`openclaw.queueDepth`、`openclaw.sessionKey`、`openclaw.sessionId`
+- `coderclaw.model.usage`
+  - `coderclaw.channel`、`coderclaw.provider`、`coderclaw.model`
+  - `coderclaw.sessionKey`、`coderclaw.sessionId`
+  - `coderclaw.tokens.*`（input/output/cache_read/cache_write/total）
+- `coderclaw.webhook.processed`
+  - `coderclaw.channel`、`coderclaw.webhook`、`coderclaw.chatId`
+- `coderclaw.webhook.error`
+  - `coderclaw.channel`、`coderclaw.webhook`、`coderclaw.chatId`、`coderclaw.error`
+- `coderclaw.message.processed`
+  - `coderclaw.channel`、`coderclaw.outcome`、`coderclaw.chatId`、`coderclaw.messageId`、`coderclaw.sessionKey`、`coderclaw.sessionId`、`coderclaw.reason`
+- `coderclaw.session.stuck`
+  - `coderclaw.state`、`coderclaw.ageMs`、`coderclaw.queueDepth`、`coderclaw.sessionKey`、`coderclaw.sessionId`
 
 ### 采样 + 刷新
 

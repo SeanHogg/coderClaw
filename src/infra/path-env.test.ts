@@ -33,9 +33,9 @@ vi.mock("node:fs", async (importOriginal) => {
   return { ...wrapped, default: wrapped };
 });
 
-let ensureOpenClawCliOnPath: typeof import("./path-env.js").ensureOpenClawCliOnPath;
+let ensureCoderClawCliOnPath: typeof import("./path-env.js").ensureCoderClawCliOnPath;
 
-describe("ensureOpenClawCliOnPath", () => {
+describe("ensureCoderClawCliOnPath", () => {
   const envKeys = [
     "PATH",
     "CODERCLAW_PATH_BOOTSTRAPPED",
@@ -48,7 +48,7 @@ describe("ensureOpenClawCliOnPath", () => {
   let envSnapshot: Record<(typeof envKeys)[number], string | undefined>;
 
   beforeAll(async () => {
-    ({ ensureOpenClawCliOnPath } = await import("./path-env.js"));
+    ({ ensureCoderClawCliOnPath } = await import("./path-env.js"));
   });
 
   beforeEach(() => {
@@ -72,10 +72,10 @@ describe("ensureOpenClawCliOnPath", () => {
     }
   });
 
-  it("prepends the bundled app bin dir when a sibling openclaw exists", () => {
+  it("prepends the bundled app bin dir when a sibling coderclaw exists", () => {
     const tmp = abs("/tmp/coderclaw-path/case-bundled");
     const appBinDir = path.join(tmp, "AppBin");
-    const cliPath = path.join(appBinDir, "openclaw");
+    const cliPath = path.join(appBinDir, "coderclaw");
     setDir(tmp);
     setDir(appBinDir);
     setExe(cliPath);
@@ -83,7 +83,7 @@ describe("ensureOpenClawCliOnPath", () => {
     process.env.PATH = "/usr/bin";
     delete process.env.CODERCLAW_PATH_BOOTSTRAPPED;
 
-    ensureOpenClawCliOnPath({
+    ensureCoderClawCliOnPath({
       execPath: cliPath,
       cwd: tmp,
       homeDir: tmp,
@@ -97,7 +97,7 @@ describe("ensureOpenClawCliOnPath", () => {
   it("is idempotent", () => {
     process.env.PATH = "/bin";
     process.env.CODERCLAW_PATH_BOOTSTRAPPED = "1";
-    ensureOpenClawCliOnPath({
+    ensureCoderClawCliOnPath({
       execPath: "/tmp/does-not-matter",
       cwd: "/tmp",
       homeDir: "/tmp",
@@ -109,7 +109,7 @@ describe("ensureOpenClawCliOnPath", () => {
   it("prepends mise shims when available", () => {
     const tmp = abs("/tmp/coderclaw-path/case-mise");
     const appBinDir = path.join(tmp, "AppBin");
-    const appCli = path.join(appBinDir, "openclaw");
+    const appCli = path.join(appBinDir, "coderclaw");
     setDir(tmp);
     setDir(appBinDir);
     setExe(appCli);
@@ -123,7 +123,7 @@ describe("ensureOpenClawCliOnPath", () => {
     process.env.PATH = "/usr/bin";
     delete process.env.CODERCLAW_PATH_BOOTSTRAPPED;
 
-    ensureOpenClawCliOnPath({
+    ensureCoderClawCliOnPath({
       execPath: appCli,
       cwd: tmp,
       homeDir: tmp,
@@ -141,13 +141,13 @@ describe("ensureOpenClawCliOnPath", () => {
   it("only appends project-local node_modules/.bin when explicitly enabled", () => {
     const tmp = abs("/tmp/coderclaw-path/case-project-local");
     const appBinDir = path.join(tmp, "AppBin");
-    const appCli = path.join(appBinDir, "openclaw");
+    const appCli = path.join(appBinDir, "coderclaw");
     setDir(tmp);
     setDir(appBinDir);
     setExe(appCli);
 
     const localBinDir = path.join(tmp, "node_modules", ".bin");
-    const localCli = path.join(localBinDir, "openclaw");
+    const localCli = path.join(localBinDir, "coderclaw");
     setDir(path.join(tmp, "node_modules"));
     setDir(localBinDir);
     setExe(localCli);
@@ -155,7 +155,7 @@ describe("ensureOpenClawCliOnPath", () => {
     process.env.PATH = "/usr/bin";
     delete process.env.CODERCLAW_PATH_BOOTSTRAPPED;
 
-    ensureOpenClawCliOnPath({
+    ensureCoderClawCliOnPath({
       execPath: appCli,
       cwd: tmp,
       homeDir: tmp,
@@ -167,7 +167,7 @@ describe("ensureOpenClawCliOnPath", () => {
     process.env.PATH = "/usr/bin";
     delete process.env.CODERCLAW_PATH_BOOTSTRAPPED;
 
-    ensureOpenClawCliOnPath({
+    ensureCoderClawCliOnPath({
       execPath: appCli,
       cwd: tmp,
       homeDir: tmp,
@@ -200,7 +200,7 @@ describe("ensureOpenClawCliOnPath", () => {
     delete process.env.HOMEBREW_BREW_FILE;
     delete process.env.XDG_BIN_HOME;
 
-    ensureOpenClawCliOnPath({
+    ensureCoderClawCliOnPath({
       execPath: path.join(execDir, "node"),
       cwd: tmp,
       homeDir: tmp,

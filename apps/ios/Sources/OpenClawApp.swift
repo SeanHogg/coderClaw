@@ -3,8 +3,8 @@ import Foundation
 import os
 import UIKit
 
-final class OpenClawAppDelegate: NSObject, UIApplicationDelegate {
-    private let logger = Logger(subsystem: "ai.openclaw.ios", category: "Push")
+final class CoderClawAppDelegate: NSObject, UIApplicationDelegate {
+    private let logger = Logger(subsystem: "ai.coderclaw.ios", category: "Push")
     private var pendingAPNsDeviceToken: Data?
     weak var appModel: NodeAppModel? {
         didSet {
@@ -60,10 +60,10 @@ final class OpenClawAppDelegate: NSObject, UIApplicationDelegate {
 }
 
 @main
-struct OpenClawApp: App {
+struct CoderClawApp: App {
     @State private var appModel: NodeAppModel
     @State private var gatewayController: GatewayConnectionController
-    @UIApplicationDelegateAdaptor(OpenClawAppDelegate.self) private var appDelegate
+    @UIApplicationDelegateAdaptor(CoderClawAppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
@@ -94,9 +94,9 @@ struct OpenClawApp: App {
     }
 }
 
-extension OpenClawApp {
+extension CoderClawApp {
     private static func installUncaughtExceptionLogger() {
-        NSLog("OpenClaw: installing uncaught exception handler")
+        NSLog("CoderClaw: installing uncaught exception handler")
         NSSetUncaughtExceptionHandler { exception in
             // Useful when the app hits NSExceptions from SwiftUI/WebKit internals; these do not
             // produce a normal Swift error backtrace.

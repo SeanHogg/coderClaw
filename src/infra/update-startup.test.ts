@@ -110,9 +110,9 @@ describe("update-startup", () => {
   });
 
   async function runUpdateCheckAndReadState(channel: "stable" | "beta") {
-    vi.mocked(resolveCoderClawPackageRoot).mockResolvedValue("/opt/openclaw");
+    vi.mocked(resolveCoderClawPackageRoot).mockResolvedValue("/opt/coderclaw");
     vi.mocked(checkUpdateStatus).mockResolvedValue({
-      root: "/opt/openclaw",
+      root: "/opt/coderclaw",
       installKind: "package",
       packageManager: "npm",
     } satisfies UpdateCheckResult);

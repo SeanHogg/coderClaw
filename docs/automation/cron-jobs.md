@@ -120,7 +120,7 @@ Cron supports three schedule kinds:
 Cron expressions use `croner`. If a timezone is omitted, the Gateway host’s
 local timezone is used.
 
-To reduce top-of-hour load spikes across many gateways, OpenClaw applies a
+To reduce top-of-hour load spikes across many gateways, CoderClaw applies a
 deterministic per-job stagger window of up to 5 minutes for recurring
 top-of-hour expressions (for example `0 * * * *`, `0 */2 * * *`). Fixed-hour
 expressions such as `0 7 * * *` remain exact.
@@ -187,7 +187,7 @@ Delivery config:
 Announce delivery suppresses messaging tool sends for the run; use `delivery.channel`/`delivery.to`
 to target the chat instead. When `delivery.mode = "none"`, no summary is posted to the main session.
 
-If `delivery` is omitted for isolated jobs, OpenClaw defaults to `announce`.
+If `delivery` is omitted for isolated jobs, CoderClaw defaults to `announce`.
 
 #### Announce delivery flow
 
@@ -523,7 +523,7 @@ coderclaw system event --mode now --text "Next heartbeat: check battery."
 
 ### A recurring job keeps delaying after failures
 
-- OpenClaw applies exponential retry backoff for recurring jobs after consecutive errors:
+- CoderClaw applies exponential retry backoff for recurring jobs after consecutive errors:
   30s, 1m, 5m, 15m, then 60m between retries.
 - Backoff resets automatically after the next successful run.
 - One-shot (`at`) jobs disable after a terminal run (`ok`, `error`, or `skipped`) and do not retry.

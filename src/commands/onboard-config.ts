@@ -1,9 +1,9 @@
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 
 export function applyOnboardingLocalWorkspaceConfig(
-  baseConfig: OpenClawConfig,
+  baseConfig: CoderClawConfig,
   workspaceDir: string,
-): OpenClawConfig {
+): CoderClawConfig {
   return {
     ...baseConfig,
     agents: {

@@ -1,7 +1,7 @@
 ---
 read_when:
   - 你希望以最快的方式从安装到运行一个可用的 Gateway 网关
-summary: 安装 OpenClaw，完成 Gateway 网关新手引导，并配对你的第一个渠道。
+summary: 安装 CoderClaw，完成 Gateway 网关新手引导，并配对你的第一个渠道。
 title: 快速开始
 x-i18n:
   generated_at: "2026-02-04T17:53:21Z"
@@ -13,7 +13,7 @@ x-i18n:
 ---
 
 <Note>
-OpenClaw 需要 Node 22 或更新版本。
+CoderClaw 需要 Node 22 或更新版本。
 </Note>
 
 ## 安装
@@ -21,12 +21,12 @@ OpenClaw 需要 Node 22 或更新版本。
 <Tabs>
   <Tab title="npm">
     ```bash
-    npm install -g openclaw@latest
+    npm install -g coderclaw@latest
     ```
   </Tab>
   <Tab title="pnpm">
     ```bash
-    pnpm add -g openclaw@latest
+    pnpm add -g coderclaw@latest
     ```
   </Tab>
 </Tabs>
@@ -62,7 +62,7 @@ OpenClaw 需要 Node 22 或更新版本。
 
 ```bash
 git clone https://github.com/SeanHogg/coderClaw.git
-cd openclaw
+cd coderclaw
 pnpm install
 pnpm ui:build # 首次运行时会自动安装 UI 依赖
 pnpm build
@@ -74,8 +74,8 @@ coderclaw onboard --install-daemon
 ## 多实例快速开始（可选）
 
 ```bash
-CODERCLAW_CONFIG_PATH=~/.openclaw/a.json \
-CODERCLAW_STATE_DIR=~/.openclaw-a \
+CODERCLAW_CONFIG_PATH=~/.coderclaw/a.json \
+CODERCLAW_STATE_DIR=~/.coderclaw-a \
 coderclaw gateway --port 19001
 ```
 
@@ -84,5 +84,5 @@ coderclaw gateway --port 19001
 需要一个正在运行的 Gateway 网关。
 
 ```bash
-coderclaw message send --target +15555550123 --message "Hello from OpenClaw"
+coderclaw message send --target +15555550123 --message "Hello from CoderClaw"
 ```

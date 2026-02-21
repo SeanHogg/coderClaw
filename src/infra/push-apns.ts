@@ -447,7 +447,7 @@ export async function sendApnsAlert(params: {
       },
       sound: "default",
     },
-    openclaw: {
+    coderclaw: {
       kind: "push.test",
       nodeId: params.nodeId,
       ts: Date.now(),
@@ -491,7 +491,7 @@ export async function sendApnsBackgroundWake(params: {
     aps: {
       "content-available": 1,
     },
-    openclaw: {
+    coderclaw: {
       kind: "node.wake",
       reason: params.wakeReason ?? "node.invoke",
       nodeId: params.nodeId,

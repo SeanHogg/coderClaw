@@ -1,14 +1,14 @@
 ---
 summary: "Windows (WSL2) support + companion app status"
 read_when:
-  - Installing OpenClaw on Windows
+  - Installing CoderClaw on Windows
   - Looking for Windows companion app status
 title: "Windows (WSL2)"
 ---
 
 # Windows (WSL2)
 
-OpenClaw on Windows is recommended **via WSL2** (Ubuntu recommended). The
+CoderClaw on Windows is recommended **via WSL2** (Ubuntu recommended). The
 CLI + Gateway run inside Linux, which keeps the runtime consistent and makes
 tooling far more compatible (Node/Bun/pnpm, Linux binaries, skills). Native
 Windows might be trickier. WSL2 gives you the full Linux experience — one command
@@ -138,7 +138,7 @@ Re-open Ubuntu, then verify:
 systemctl --user status
 ```
 
-### 3) Install OpenClaw (inside WSL)
+### 3) Install CoderClaw (inside WSL)
 
 Follow the Linux Getting Started flow inside WSL:
 

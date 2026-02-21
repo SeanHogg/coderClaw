@@ -8,7 +8,7 @@ title: "OpenResponses API"
 
 # OpenResponses API (HTTP)
 
-OpenClaw’s Gateway can serve an OpenResponses-compatible `POST /v1/responses` endpoint.
+CoderClaw’s Gateway can serve an OpenResponses-compatible `POST /v1/responses` endpoint.
 
 This endpoint is **disabled by default**. Enable it in config first.
 
@@ -34,16 +34,16 @@ Notes:
 
 No custom headers required: encode the agent id in the OpenResponses `model` field:
 
-- `model: "openclaw:<agentId>"` (example: `"openclaw:main"`, `"openclaw:beta"`)
+- `model: "coderclaw:<agentId>"` (example: `"coderclaw:main"`, `"coderclaw:beta"`)
 - `model: "agent:<agentId>"` (alias)
 
-Or target a specific OpenClaw agent by header:
+Or target a specific CoderClaw agent by header:
 
-- `x-openclaw-agent-id: <agentId>` (default: `main`)
+- `x-coderclaw-agent-id: <agentId>` (default: `main`)
 
 Advanced:
 
-- `x-openclaw-session-key: <sessionKey>` to fully control session routing.
+- `x-coderclaw-session-key: <sessionKey>` to fully control session routing.
 
 ## Enabling the endpoint
 
@@ -311,9 +311,9 @@ Non-streaming:
 curl -sS http://127.0.0.1:18789/v1/responses \
   -H 'Authorization: Bearer YOUR_TOKEN' \
   -H 'Content-Type: application/json' \
-  -H 'x-openclaw-agent-id: main' \
+  -H 'x-coderclaw-agent-id: main' \
   -d '{
-    "model": "openclaw",
+    "model": "coderclaw",
     "input": "hi"
   }'
 ```
@@ -324,9 +324,9 @@ Streaming:
 curl -N http://127.0.0.1:18789/v1/responses \
   -H 'Authorization: Bearer YOUR_TOKEN' \
   -H 'Content-Type: application/json' \
-  -H 'x-openclaw-agent-id: main' \
+  -H 'x-coderclaw-agent-id: main' \
   -d '{
-    "model": "openclaw",
+    "model": "coderclaw",
     "stream": true,
     "input": "hi"
   }'

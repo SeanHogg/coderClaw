@@ -9,11 +9,11 @@ function createSandboxContext(overrides?: Partial<SandboxContext>): SandboxConte
     workspaceDir: "/tmp/coderclaw-sandbox",
     agentWorkspaceDir: "/tmp/coderclaw-workspace",
     workspaceAccess: "none",
-    containerName: "openclaw-sbx-test",
+    containerName: "coderclaw-sbx-test",
     containerWorkdir: "/workspace",
     docker: {
-      image: "openclaw-sandbox:bookworm-slim",
-      containerPrefix: "openclaw-sbx-",
+      image: "coderclaw-sandbox:bookworm-slim",
+      containerPrefix: "coderclaw-sbx-",
       workdir: "/workspace",
       readOnlyRoot: true,
       tmpfs: ["/tmp"],
@@ -30,7 +30,7 @@ function createSandboxContext(overrides?: Partial<SandboxContext>): SandboxConte
     browser: {
       bridgeUrl: "http://localhost:9222",
       noVncUrl: "http://localhost:6080",
-      containerName: "openclaw-sbx-browser-test",
+      containerName: "coderclaw-sbx-browser-test",
     },
   } satisfies SandboxContext;
   return { ...base, ...overrides };

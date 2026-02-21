@@ -20,7 +20,7 @@ x-i18n:
 
 1. 创建 Discord 机器人并复制机器人令牌。
 2. 在 Discord 应用设置中启用 **Message Content Intent**（如果你计划使用允许列表或名称查找，还需启用 **Server Members Intent**）。
-3. 为 OpenClaw 设置令牌：
+3. 为 CoderClaw 设置令牌：
    - 环境变量：`DISCORD_BOT_TOKEN=...`
    - 或配置：`channels.discord.token: "..."`。
    - 如果两者都设置，配置优先（环境变量回退仅适用于默认账户）。
@@ -43,7 +43,7 @@ x-i18n:
 
 ## 目标
 
-- 通过 Discord 私信或服务器频道与 OpenClaw 对话。
+- 通过 Discord 私信或服务器频道与 CoderClaw 对话。
 - 直接聊天会合并到智能体的主会话（默认 `agent:main:main`）；服务器频道保持隔离为 `agent:<agentId>:discord:channel:<channelId>`（显示名称使用 `discord:<guildSlug>#<channelSlug>`）。
 - 群组私信默认被忽略；通过 `channels.discord.dm.groupEnabled` 启用，并可选择通过 `channels.discord.dm.groupChannels` 进行限制。
 - 保持路由确定性：回复始终返回到消息来源的渠道。
@@ -52,7 +52,7 @@ x-i18n:
 
 1. 创建 Discord 应用程序 → Bot，启用你需要的意图（私信 + 服务器消息 + 消息内容），并获取机器人令牌。
 2. 使用所需权限邀请机器人到你的服务器，以便在你想使用的地方读取/发送消息。
-3. 使用 `channels.discord.token` 配置 OpenClaw（或使用 `DISCORD_BOT_TOKEN` 作为回退）。
+3. 使用 `channels.discord.token` 配置 CoderClaw（或使用 `DISCORD_BOT_TOKEN` 作为回退）。
 4. 运行 Gateway 网关；当令牌可用（配置优先，环境变量回退）且 `channels.discord.enabled` 不为 `false` 时，它会自动启动 Discord 渠道。
    - 如果你更喜欢使用环境变量，设置 `DISCORD_BOT_TOKEN`（配置块是可选的）。
 5. 直接聊天：发送时使用 `user:<id>`（或 `<@id>` 提及）；所有对话都进入共享的 `main` 会话。纯数字 ID 是模糊的，会被拒绝。
@@ -89,7 +89,7 @@ x-i18n:
 
 ## 如何创建自己的机器人
 
-这是在服务器（guild）频道（如 `#help`）中运行 OpenClaw 的"Discord 开发者门户"设置。
+这是在服务器（guild）频道（如 `#help`）中运行 CoderClaw 的"Discord 开发者门户"设置。
 
 ### 1）创建 Discord 应用 + 机器人用户
 
@@ -98,7 +98,7 @@ x-i18n:
    - **Bot** → **Add Bot**
    - 复制 **Bot Token**（这是你放入 `DISCORD_BOT_TOKEN` 的内容）
 
-### 2）启用 OpenClaw 需要的网关意图
+### 2）启用 CoderClaw 需要的网关意图
 
 Discord 会阻止"特权意图"，除非你明确启用它们。
 
@@ -134,7 +134,7 @@ Discord 会阻止"特权意图"，除非你明确启用它们。
 
 ### 4）获取 ID（服务器/用户/频道）
 
-Discord 到处使用数字 ID；OpenClaw 配置优先使用 ID。
+Discord 到处使用数字 ID；CoderClaw 配置优先使用 ID。
 
 1. Discord（桌面/网页）→ **用户设置** → **高级** → 启用 **开发者模式**
 2. 右键点击：
@@ -142,7 +142,7 @@ Discord 到处使用数字 ID；OpenClaw 配置优先使用 ID。
    - 频道（例如 `#help`）→ **复制频道 ID**
    - 你的用户 → **复制用户 ID**
 
-### 5）配置 OpenClaw
+### 5）配置 CoderClaw
 
 #### 令牌
 
@@ -290,12 +290,12 @@ Discord 到处使用数字 ID；OpenClaw 配置优先使用 ID。
         policy: "pairing", // pairing | allowlist | open | disabled
         allowFrom: ["123456789012345678", "steipete"],
         groupEnabled: false,
-        groupChannels: ["openclaw-dm"],
+        groupChannels: ["coderclaw-dm"],
       },
       guilds: {
         "*": { requireMention: true },
         "123456789012345678": {
-          slug: "friends-of-openclaw",
+          slug: "friends-of-coderclaw",
           requireMention: false,
           reactionNotifications: "own",
           users: ["987654321098765432", "steipete"],
@@ -367,7 +367,7 @@ Discord 到处使用数字 ID；OpenClaw 配置优先使用 ID。
 
 ### PluralKit（PK）支持
 
-启用 PK 查找，以便代理消息解析到底层系统 + 成员。启用后，OpenClaw 使用成员身份进行允许列表匹配，并将发送者标记为 `Member (PK:System)` 以避免意外的 Discord 提及。
+启用 PK 查找，以便代理消息解析到底层系统 + 成员。启用后，CoderClaw 使用成员身份进行允许列表匹配，并将发送者标记为 `Member (PK:System)` 以避免意外的 Discord 提及。
 
 ```json5
 {
@@ -436,13 +436,13 @@ Discord 到处使用数字 ID；OpenClaw 配置优先使用 ID。
 - 当省略 `guilds.<id>.channels` 时，允许列表中服务器的所有频道都被允许。
 - 要**不允许任何频道**，设置 `channels.discord.groupPolicy: "disabled"`（或保持空允许列表）。
 - 配置向导接受 `Guild/Channel` 名称（公开 + 私有）并在可能时将其解析为 ID。
-- 启动时，OpenClaw 将允许列表中的频道/用户名称解析为 ID（当机器人可以搜索成员时）并记录映射；未解析的条目保持原样。
+- 启动时，CoderClaw 将允许列表中的频道/用户名称解析为 ID（当机器人可以搜索成员时）并记录映射；未解析的条目保持原样。
 
 原生命令注意事项：
 
-- 注册的命令镜像 OpenClaw 的聊天命令。
+- 注册的命令镜像 CoderClaw 的聊天命令。
 - 原生命令遵循与私信/服务器消息相同的允许列表（`channels.discord.dm.allowFrom`、`channels.discord.guilds`、每频道规则）。
-- 斜杠命令可能在 Discord UI 中对未在允许列表中的用户仍然可见；OpenClaw 在执行时强制执行允许列表并回复"未授权"。
+- 斜杠命令可能在 Discord UI 中对未在允许列表中的用户仍然可见；CoderClaw 在执行时强制执行允许列表并回复"未授权"。
 
 ## 工具操作
 

@@ -274,12 +274,12 @@ describe("buildServiceEnvironment", () => {
     }
     expect(env.CODERCLAW_GATEWAY_PORT).toBe("18789");
     expect(env.CODERCLAW_GATEWAY_TOKEN).toBe("secret");
-    expect(env.CODERCLAW_SERVICE_MARKER).toBe("openclaw");
+    expect(env.CODERCLAW_SERVICE_MARKER).toBe("coderclaw");
     expect(env.CODERCLAW_SERVICE_KIND).toBe("gateway");
     expect(typeof env.CODERCLAW_SERVICE_VERSION).toBe("string");
-    expect(env.CODERCLAW_SYSTEMD_UNIT).toBe("openclaw-gateway.service");
+    expect(env.CODERCLAW_SYSTEMD_UNIT).toBe("coderclaw-gateway.service");
     if (process.platform === "darwin") {
-      expect(env.CODERCLAW_LAUNCHD_LABEL).toBe("ai.openclaw.gateway");
+      expect(env.CODERCLAW_LAUNCHD_LABEL).toBe("ai.coderclaw.gateway");
     }
   });
 
@@ -304,9 +304,9 @@ describe("buildServiceEnvironment", () => {
       env: { HOME: "/home/user", CODERCLAW_PROFILE: "work" },
       port: 18789,
     });
-    expect(env.CODERCLAW_SYSTEMD_UNIT).toBe("openclaw-gateway-work.service");
+    expect(env.CODERCLAW_SYSTEMD_UNIT).toBe("coderclaw-gateway-work.service");
     if (process.platform === "darwin") {
-      expect(env.CODERCLAW_LAUNCHD_LABEL).toBe("ai.openclaw.work");
+      expect(env.CODERCLAW_LAUNCHD_LABEL).toBe("ai.coderclaw.work");
     }
   });
 });
@@ -351,17 +351,17 @@ describe("resolveGatewayStateDir", () => {
   });
 
   it("uses CODERCLAW_STATE_DIR when provided", () => {
-    const env = { HOME: "/Users/test", CODERCLAW_STATE_DIR: "/var/lib/openclaw" };
-    expect(resolveGatewayStateDir(env)).toBe(path.resolve("/var/lib/openclaw"));
+    const env = { HOME: "/Users/test", CODERCLAW_STATE_DIR: "/var/lib/coderclaw" };
+    expect(resolveGatewayStateDir(env)).toBe(path.resolve("/var/lib/coderclaw"));
   });
 
   it("expands ~ in CODERCLAW_STATE_DIR", () => {
-    const env = { HOME: "/Users/test", CODERCLAW_STATE_DIR: "~/openclaw-state" };
-    expect(resolveGatewayStateDir(env)).toBe(path.resolve("/Users/test/openclaw-state"));
+    const env = { HOME: "/Users/test", CODERCLAW_STATE_DIR: "~/coderclaw-state" };
+    expect(resolveGatewayStateDir(env)).toBe(path.resolve("/Users/test/coderclaw-state"));
   });
 
   it("preserves Windows absolute paths without HOME", () => {
-    const env = { CODERCLAW_STATE_DIR: "C:\\State\\openclaw" };
-    expect(resolveGatewayStateDir(env)).toBe("C:\\State\\openclaw");
+    const env = { CODERCLAW_STATE_DIR: "C:\\State\\coderclaw" };
+    expect(resolveGatewayStateDir(env)).toBe("C:\\State\\coderclaw");
   });
 });

@@ -54,7 +54,7 @@ describe("buildPairingReply", () => {
       expect(text).toContain(`Pairing code: ${testCase.code}`);
       // CLI commands should respect CODERCLAW_PROFILE when set (most tests run with isolated profile)
       const commandRe = new RegExp(
-        `(?:coderclaw|openclaw) --profile isolated pairing approve ${testCase.channel} ${testCase.code}`,
+        `(?:coderclaw|coderclaw) --profile isolated pairing approve ${testCase.channel} ${testCase.code}`,
       );
       expect(text).toMatch(commandRe);
     });

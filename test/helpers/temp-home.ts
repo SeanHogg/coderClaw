@@ -9,7 +9,7 @@ type EnvSnapshot = {
   userProfile: string | undefined;
   homeDrive: string | undefined;
   homePath: string | undefined;
-  openclawHome: string | undefined;
+  coderclawHome: string | undefined;
   stateDir: string | undefined;
 };
 
@@ -19,7 +19,7 @@ function snapshotEnv(): EnvSnapshot {
     userProfile: process.env.USERPROFILE,
     homeDrive: process.env.HOMEDRIVE,
     homePath: process.env.HOMEPATH,
-    openclawHome: process.env.CODERCLAW_HOME,
+    coderclawHome: process.env.CODERCLAW_HOME,
     stateDir: process.env.CODERCLAW_STATE_DIR,
   };
 }
@@ -36,7 +36,7 @@ function restoreEnv(snapshot: EnvSnapshot) {
   restoreKey("USERPROFILE", snapshot.userProfile);
   restoreKey("HOMEDRIVE", snapshot.homeDrive);
   restoreKey("HOMEPATH", snapshot.homePath);
-  restoreKey("CODERCLAW_HOME", snapshot.openclawHome);
+  restoreKey("CODERCLAW_HOME", snapshot.coderclawHome);
   restoreKey("CODERCLAW_STATE_DIR", snapshot.stateDir);
 }
 
@@ -63,7 +63,7 @@ function setTempHome(base: string) {
   process.env.USERPROFILE = base;
   // Ensure tests using HOME isolation aren't affected by leaked CODERCLAW_HOME.
   delete process.env.CODERCLAW_HOME;
-  process.env.CODERCLAW_STATE_DIR = path.join(base, ".openclaw");
+  process.env.CODERCLAW_STATE_DIR = path.join(base, ".coderclaw");
 
   if (process.platform !== "win32") {
     return;
@@ -80,7 +80,7 @@ export async function withTempHome<T>(
   fn: (home: string) => Promise<T>,
   opts: { env?: Record<string, EnvValue>; prefix?: string } = {},
 ): Promise<T> {
-  const base = await fs.mkdtemp(path.join(os.tmpdir(), opts.prefix ?? "openclaw-test-home-"));
+  const base = await fs.mkdtemp(path.join(os.tmpdir(), opts.prefix ?? "coderclaw-test-home-"));
   const snapshot = snapshotEnv();
   const envKeys = Object.keys(opts.env ?? {});
   for (const key of envKeys) {
@@ -91,7 +91,7 @@ export async function withTempHome<T>(
   const envSnapshot = snapshotExtraEnv(envKeys);
 
   setTempHome(base);
-  await fs.mkdir(path.join(base, ".openclaw", "agents", "main", "sessions"), { recursive: true });
+  await fs.mkdir(path.join(base, ".coderclaw", "agents", "main", "sessions"), { recursive: true });
   if (opts.env) {
     for (const [key, raw] of Object.entries(opts.env)) {
       const value = typeof raw === "function" ? raw(base) : raw;

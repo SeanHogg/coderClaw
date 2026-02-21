@@ -26,7 +26,7 @@ x-i18n:
 
 ## 内置提供商（pi-ai 目录）
 
-OpenClaw 附带 pi-ai 目录。这些提供商**不需要** `models.providers` 配置；只需设置认证 + 选择模型。
+CoderClaw 附带 pi-ai 目录。这些提供商**不需要** `models.providers` 配置；只需设置认证 + 选择模型。
 
 ### OpenAI
 
@@ -301,7 +301,7 @@ ollama pull llama3.3
 注意事项：
 
 - 对于自定义提供商，`reasoning`、`input`、`cost`、`contextWindow` 和 `maxTokens` 是可选的。
-  省略时，OpenClaw 默认为：
+  省略时，CoderClaw 默认为：
   - `reasoning: false`
   - `input: ["text"]`
   - `cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }`

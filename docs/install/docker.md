@@ -1,5 +1,5 @@
 ---
-summary: "Optional Docker-based setup and onboarding for OpenClaw"
+summary: "Optional Docker-based setup and onboarding for CoderClaw"
 read_when:
   - You want a containerized gateway instead of local installs
   - You are validating the Docker flow
@@ -12,13 +12,13 @@ Docker is **optional**. Use it only if you want a containerized gateway or to va
 
 ## Is Docker right for me?
 
-- **Yes**: you want an isolated, throwaway gateway environment or to run OpenClaw on a host without local installs.
+- **Yes**: you want an isolated, throwaway gateway environment or to run CoderClaw on a host without local installs.
 - **No**: you’re running on your own machine and just want the fastest dev loop. Use the normal install flow instead.
 - **Sandboxing note**: agent sandboxing uses Docker too, but it does **not** require the full gateway to run in Docker. See [Sandboxing](/gateway/sandboxing).
 
 This guide covers:
 
-- Containerized Gateway (full OpenClaw in Docker)
+- Containerized Gateway (full CoderClaw in Docker)
 - Per-session Agent Sandbox (host gateway + Docker-isolated agent tools)
 
 Sandboxing details: [Sandboxing](/gateway/sandboxing)
@@ -86,7 +86,7 @@ See [`ClawDock` Helper README](https://github.com/SeanHogg/coderClaw/blob/main/s
 ### Manual flow (compose)
 
 ```bash
-docker build -t openclaw:local -f Dockerfile .
+docker build -t coderclaw:local -f Dockerfile .
 docker compose run --rm coderclaw-cli onboard
 docker compose up -d coderclaw-gateway
 ```
@@ -117,7 +117,7 @@ More detail: [Dashboard](/web/dashboard), [Devices](/cli/devices).
 If you want to mount additional host directories into the containers, set
 `CODERCLAW_EXTRA_MOUNTS` before running `docker-setup.sh`. This accepts a
 comma-separated list of Docker bind mounts and applies them to both
-`openclaw-gateway` and `openclaw-cli` by generating `docker-compose.extra.yml`.
+`coderclaw-gateway` and `coderclaw-cli` by generating `docker-compose.extra.yml`.
 
 Example:
 
@@ -144,14 +144,14 @@ named volume here (not a bind path); for bind mounts, use
 Example:
 
 ```bash
-export CODERCLAW_HOME_VOLUME="openclaw_home"
+export CODERCLAW_HOME_VOLUME="coderclaw_home"
 ./docker-setup.sh
 ```
 
 You can combine this with extra mounts:
 
 ```bash
-export CODERCLAW_HOME_VOLUME="openclaw_home"
+export CODERCLAW_HOME_VOLUME="coderclaw_home"
 export CODERCLAW_EXTRA_MOUNTS="$HOME/.codex:/home/node/.codex:ro,$HOME/github:/home/node/github:rw"
 ./docker-setup.sh
 ```
@@ -196,7 +196,7 @@ If you want a more full-featured container, use these opt-in knobs:
 1. **Persist `/home/node`** so browser downloads and tool caches survive:
 
 ```bash
-export CODERCLAW_HOME_VOLUME="openclaw_home"
+export CODERCLAW_HOME_VOLUME="coderclaw_home"
 ./docker-setup.sh
 ```
 
@@ -232,7 +232,7 @@ The image runs as `node` (uid 1000). If you see permission errors on
 Example (Linux host):
 
 ```bash
-sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/coderclaw-workspace
+sudo chown -R 1000:1000 /path/to/coderclaw-config /path/to/coderclaw-workspace
 ```
 
 If you choose to run as root for convenience, you accept the security tradeoff.
@@ -376,7 +376,7 @@ If you plan to install packages in `setupCommand`, note:
 - Default `docker.network` is `"none"` (no egress).
 - `readOnlyRoot: true` blocks package installs.
 - `user` must be root for `apt-get` (omit `user` or set `user: "0:0"`).
-  OpenClaw auto-recreates containers when `setupCommand` (or docker config) changes
+  CoderClaw auto-recreates containers when `setupCommand` (or docker config) changes
   unless the container was **recently used** (within ~5 minutes). Hot containers
   log a warning with the exact `coderclaw sandbox recreate ...` command.
 
@@ -514,7 +514,7 @@ Custom browser image:
 {
   agents: {
     defaults: {
-      sandbox: { browser: { image: "my-openclaw-browser" } },
+      sandbox: { browser: { image: "my-coderclaw-browser" } },
     },
   },
 }
@@ -534,14 +534,14 @@ Prune rules (`agents.defaults.sandbox.prune`) apply to browser containers too.
 Build your own image and point config to it:
 
 ```bash
-docker build -t my-openclaw-sbx -f Dockerfile.sandbox .
+docker build -t my-coderclaw-sbx -f Dockerfile.sandbox .
 ```
 
 ```json5
 {
   agents: {
     defaults: {
-      sandbox: { docker: { image: "my-openclaw-sbx" } },
+      sandbox: { docker: { image: "my-coderclaw-sbx" } },
     },
   },
 }
@@ -579,7 +579,7 @@ Example:
 - Container not running: it will auto-create per session on demand.
 - Permission errors in sandbox: set `docker.user` to a UID:GID that matches your
   mounted workspace ownership (or chown the workspace folder).
-- Custom tools not found: OpenClaw runs commands with `sh -lc` (login shell), which
+- Custom tools not found: CoderClaw runs commands with `sh -lc` (login shell), which
   sources `/etc/profile` and may reset PATH. Set `docker.env.PATH` to prepend your
   custom tool paths (e.g., `/custom/bin:/usr/local/share/npm-global/bin`), or add
   a script under `/etc/profile.d/` in your Dockerfile.

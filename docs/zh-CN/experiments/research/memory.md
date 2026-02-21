@@ -1,7 +1,7 @@
 ---
 read_when:
-  - 设计超越每日 Markdown 日志的工作区记忆（~/.openclaw/workspace）
-  - Deciding: standalone CLI vs deep OpenClaw integration
+  - 设计超越每日 Markdown 日志的工作区记忆（~/.coderclaw/workspace）
+  - Deciding: standalone CLI vs deep CoderClaw integration
   - 添加离线回忆 + 反思（retain/recall/reflect）
 summary: 研究笔记：Clawd 工作区的离线记忆系统（Markdown 作为数据源 + 派生索引）
 title: 工作区记忆研究
@@ -16,7 +16,7 @@ x-i18n:
 
 # 工作区记忆 v2（离线）：研究笔记
 
-目标：Clawd 风格的工作区（`agents.defaults.workspace`，默认 `~/.openclaw/workspace`），其中"记忆"以每天一个 Markdown 文件（`memory/YYYY-MM-DD.md`）加上一小组稳定文件（例如 `memory.md`、`SOUL.md`）的形式存储。
+目标：Clawd 风格的工作区（`agents.defaults.workspace`，默认 `~/.coderclaw/workspace`），其中"记忆"以每天一个 Markdown 文件（`memory/YYYY-MM-DD.md`）加上一小组稳定文件（例如 `memory.md`、`SOUL.md`）的形式存储。
 
 本文档提出一种**离线优先**的记忆架构，保持 Markdown 作为规范的、可审查的数据源，但通过派生索引添加**结构化回忆**（搜索、实体摘要、置信度更新）。
 
@@ -32,7 +32,7 @@ x-i18n:
 但它在以下方面较弱：
 
 - 高召回率检索（"我们对 X 做了什么决定？"、"上次我们尝试 Y 时？"）
-- 以实体为中心的答案（"告诉我关于 Alice / The Castle / warelay 的信息"）而无需重读多个文件
+- 以实体为中心的答案（"告诉我关于 Alice / The Castle / coderclaw 的信息"）而无需重读多个文件
 - 观点/偏好稳定性（以及变化时的证据）
 - 时间约束（"2025 年 11 月期间什么是真实的？"）和冲突解决
 
@@ -65,12 +65,12 @@ x-i18n:
 
 ### 规范存储（git 友好）
 
-保持 `~/.openclaw/workspace` 作为规范的人类可读记忆。
+保持 `~/.coderclaw/workspace` 作为规范的人类可读记忆。
 
 建议的工作区布局：
 
 ```
-~/.openclaw/workspace/
+~/.coderclaw/workspace/
   memory.md                    # 小型：持久事实 + 偏好（类似核心）
   memory/
     YYYY-MM-DD.md              # 每日日志（追加；叙事）
@@ -81,7 +81,7 @@ x-i18n:
     entities/
       Peter.md
       The-Castle.md
-      warelay.md
+      coderclaw.md
       ...
 ```
 
@@ -96,7 +96,7 @@ x-i18n:
 在工作区下添加派生索引（不一定需要 git 跟踪）：
 
 ```
-~/.openclaw/workspace/.memory/index.sqlite
+~/.coderclaw/workspace/.memory/index.sqlite
 ```
 
 后端支持：
@@ -125,14 +125,14 @@ Hindsight 在这里重要的关键洞察：存储**叙事性、自包含的事�
 ```
 ## Retain
 - W @Peter: Currently in Marrakech (Nov 27–Dec 1, 2025) for Andy's birthday.
-- B @warelay: I fixed the Baileys WS crash by wrapping connection.update handlers in try/catch (see memory/2025-11-27.md).
+- B @coderclaw: I fixed the Baileys WS crash by wrapping connection.update handlers in try/catch (see memory/2025-11-27.md).
 - O(c=0.95) @Peter: Prefers concise replies (&lt;1500 chars) on WhatsApp; long content goes into files.
 ```
 
 最小化解析：
 
 - 类型前缀：`W`（世界）、`B`（经历/传记）、`O`（观点）、`S`（观察/摘要；通常是生成的）
-- 实体：`@Peter`、`@warelay` 等（slug 映射到 `bank/entities/*.md`）
+- 实体：`@Peter`、`@coderclaw` 等（slug 映射到 `bank/entities/*.md`）
 - 观点置信度：`O(c=0.0..1.0)` 可选
 
 如果你不想让作者考虑这些：反思任务可以从日志的其余部分推断这些要点，但有一个显式的 `## Retain` 部分是最简单的"质量杠杆"。
@@ -150,7 +150,7 @@ Recall 应支持：
 
 - `kind`（`world|experience|opinion|observation`）
 - `timestamp`（来源日期，或如果存在则提取的时间范围）
-- `entities`（`["Peter","warelay"]`）
+- `entities`（`["Peter","coderclaw"]`）
 - `content`（叙事性事实）
 - `source`（`memory/2025-11-27.md#L12` 等）
 
@@ -175,11 +175,11 @@ Recall 应支持：
 
 ## CLI 集成：独立 vs 深度集成
 
-建议：**深度集成到 OpenClaw**，但保持可分离的核心库。
+建议：**深度集成到 CoderClaw**，但保持可分离的核心库。
 
-### 为什么要集成到 OpenClaw？
+### 为什么要集成到 CoderClaw？
 
-- OpenClaw 已经知道：
+- CoderClaw 已经知道：
   - 工作区路径（`agents.defaults.workspace`）
   - 会话模型 + 心跳
   - 日志记录 + 故障排除模式
@@ -199,7 +199,7 @@ Recall 应支持：
 
 如果"S-Collide"指的是 **SuCo（Subspace Collision）**：这是一种 ANN 检索方法，通过在子空间中使用学习/结构化碰撞来实现强召回/延迟权衡（论文：arXiv 2411.14754，2024）。
 
-对于 `~/.openclaw/workspace` 的务实观点：
+对于 `~/.coderclaw/workspace` 的务实观点：
 
 - **不要从** SuCo 开始。
 - 从 SQLite FTS +（可选的）简单嵌入开始；你会立即获得大部分 UX 收益。

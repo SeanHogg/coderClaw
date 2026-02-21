@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { resolveCoderClawPackageRoot } from "../infra/coderclaw-root.js";
 
-export async function resolveOpenClawDocsPath(params: {
+export async function resolveCoderClawDocsPath(params: {
   workspaceDir?: string;
   argv1?: string;
   cwd?: string;

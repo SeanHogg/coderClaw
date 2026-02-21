@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   parseFrontmatter,
-  resolveOpenClawMetadata,
+  resolveCoderClawMetadata,
   resolveHookInvocationPolicy,
 } from "./frontmatter.js";
 
@@ -41,7 +41,7 @@ name: session-memory
 description: "Save session context"
 metadata:
   {
-    "openclaw": {
+    "coderclaw": {
       "emoji": "💾",
       "events": ["command:new"]
     }
@@ -58,8 +58,8 @@ metadata:
 
     // Verify the metadata is valid JSON
     const parsed = JSON.parse(result.metadata);
-    expect(parsed.openclaw.emoji).toBe("💾");
-    expect(parsed.openclaw.events).toEqual(["command:new"]);
+    expect(parsed.coderclaw.emoji).toBe("💾");
+    expect(parsed.coderclaw.events).toEqual(["command:new"]);
   });
 
   it("parses multi-line metadata with complex nested structure", () => {
@@ -68,7 +68,7 @@ name: command-logger
 description: "Log all command events"
 metadata:
   {
-    "openclaw":
+    "coderclaw":
       {
         "emoji": "📝",
         "events": ["command"],
@@ -83,21 +83,21 @@ metadata:
     expect(result.metadata).toBeDefined();
 
     const parsed = JSON.parse(result.metadata);
-    expect(parsed.openclaw.emoji).toBe("📝");
-    expect(parsed.openclaw.events).toEqual(["command"]);
-    expect(parsed.openclaw.requires.config).toEqual(["workspace.dir"]);
-    expect(parsed.openclaw.install[0].kind).toBe("bundled");
+    expect(parsed.coderclaw.emoji).toBe("📝");
+    expect(parsed.coderclaw.events).toEqual(["command"]);
+    expect(parsed.coderclaw.requires.config).toEqual(["workspace.dir"]);
+    expect(parsed.coderclaw.install[0].kind).toBe("bundled");
   });
 
   it("handles single-line metadata (inline JSON)", () => {
     const content = `---
 name: simple-hook
-metadata: {"openclaw": {"events": ["test"]}}
+metadata: {"coderclaw": {"events": ["test"]}}
 ---
 `;
     const result = parseFrontmatter(content);
     expect(result.name).toBe("simple-hook");
-    expect(result.metadata).toBe('{"openclaw": {"events": ["test"]}}');
+    expect(result.metadata).toBe('{"coderclaw": {"events": ["test"]}}');
   });
 
   it("handles mixed single-line and multi-line values", () => {
@@ -107,7 +107,7 @@ description: "A hook with mixed values"
 homepage: https://example.com
 metadata:
   {
-    "openclaw": {
+    "coderclaw": {
       "events": ["command:new"]
     }
   }
@@ -148,12 +148,12 @@ description: 'single-quoted'
   });
 });
 
-describe("resolveOpenClawMetadata", () => {
-  it("extracts openclaw metadata from parsed frontmatter", () => {
+describe("resolveCoderClawMetadata", () => {
+  it("extracts coderclaw metadata from parsed frontmatter", () => {
     const frontmatter = {
       name: "test-hook",
       metadata: JSON.stringify({
-        openclaw: {
+        coderclaw: {
           emoji: "🔥",
           events: ["command:new", "command:reset"],
           requires: {
@@ -164,7 +164,7 @@ describe("resolveOpenClawMetadata", () => {
       }),
     };
 
-    const result = resolveOpenClawMetadata(frontmatter);
+    const result = resolveCoderClawMetadata(frontmatter);
     expect(result).toBeDefined();
     expect(result?.emoji).toBe("🔥");
     expect(result?.events).toEqual(["command:new", "command:reset"]);
@@ -174,15 +174,15 @@ describe("resolveOpenClawMetadata", () => {
 
   it("returns undefined when metadata is missing", () => {
     const frontmatter = { name: "no-metadata" };
-    const result = resolveOpenClawMetadata(frontmatter);
+    const result = resolveCoderClawMetadata(frontmatter);
     expect(result).toBeUndefined();
   });
 
-  it("returns undefined when openclaw key is missing", () => {
+  it("returns undefined when coderclaw key is missing", () => {
     const frontmatter = {
       metadata: JSON.stringify({ other: "data" }),
     };
-    const result = resolveOpenClawMetadata(frontmatter);
+    const result = resolveCoderClawMetadata(frontmatter);
     expect(result).toBeUndefined();
   });
 
@@ -190,24 +190,24 @@ describe("resolveOpenClawMetadata", () => {
     const frontmatter = {
       metadata: "not valid json {",
     };
-    const result = resolveOpenClawMetadata(frontmatter);
+    const result = resolveCoderClawMetadata(frontmatter);
     expect(result).toBeUndefined();
   });
 
   it("handles install specs", () => {
     const frontmatter = {
       metadata: JSON.stringify({
-        openclaw: {
+        coderclaw: {
           events: ["command"],
           install: [
-            { id: "bundled", kind: "bundled", label: "Bundled with OpenClaw" },
+            { id: "bundled", kind: "bundled", label: "Bundled with CoderClaw" },
             { id: "npm", kind: "npm", package: "@coderclaw/hook" },
           ],
         },
       }),
     };
 
-    const result = resolveOpenClawMetadata(frontmatter);
+    const result = resolveCoderClawMetadata(frontmatter);
     expect(result?.install).toHaveLength(2);
     expect(result?.install?.[0].kind).toBe("bundled");
     expect(result?.install?.[1].kind).toBe("npm");
@@ -217,14 +217,14 @@ describe("resolveOpenClawMetadata", () => {
   it("handles os restrictions", () => {
     const frontmatter = {
       metadata: JSON.stringify({
-        openclaw: {
+        coderclaw: {
           events: ["command"],
           os: ["darwin", "linux"],
         },
       }),
     };
 
-    const result = resolveOpenClawMetadata(frontmatter);
+    const result = resolveCoderClawMetadata(frontmatter);
     expect(result?.os).toEqual(["darwin", "linux"]);
   });
 
@@ -236,12 +236,12 @@ description: "Save session context to memory when /new command is issued"
 homepage: https://docs.coderclaw.ai/automation/hooks#session-memory
 metadata:
   {
-    "openclaw":
+    "coderclaw":
       {
         "emoji": "💾",
         "events": ["command:new"],
         "requires": { "config": ["workspace.dir"] },
-        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with OpenClaw" }],
+        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with CoderClaw" }],
       },
   }
 ---
@@ -253,7 +253,7 @@ metadata:
     expect(frontmatter.name).toBe("session-memory");
     expect(frontmatter.metadata).toBeDefined();
 
-    const coderclaw = resolveOpenClawMetadata(frontmatter);
+    const coderclaw = resolveCoderClawMetadata(frontmatter);
     expect(coderclaw).toBeDefined();
     expect(coderclaw?.emoji).toBe("💾");
     expect(coderclaw?.events).toEqual(["command:new"]);
@@ -265,14 +265,14 @@ metadata:
     const content = `---
 name: yaml-metadata
 metadata:
-  openclaw:
+  coderclaw:
     emoji: disk
     events:
       - command:new
 ---
 `;
     const frontmatter = parseFrontmatter(content);
-    const coderclaw = resolveOpenClawMetadata(frontmatter);
+    const coderclaw = resolveCoderClawMetadata(frontmatter);
     expect(coderclaw?.emoji).toBe("disk");
     expect(coderclaw?.events).toEqual(["command:new"]);
   });

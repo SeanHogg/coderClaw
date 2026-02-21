@@ -8,7 +8,7 @@ title: "Date and Time"
 
 # Date & Time
 
-CoderClaw (built on [OpenClaw](https://github.com/SeanHogg/coderClaw)) defaults to **host-local time for transport timestamps** and **user timezone only in the system prompt**.
+CoderClaw (built on [CoderClaw](https://github.com/SeanHogg/coderClaw)) defaults to **host-local time for transport timestamps** and **user timezone only in the system prompt**.
 Provider timestamps are preserved so tools keep their native semantics (current time is available via `session_status`).
 
 ## Message envelopes (local by default)

@@ -12,6 +12,14 @@ An AI assistant that:
 - **Integrates seamlessly** with your existing development tools and processes
 - **Enables team collaboration** with secure distributed orchestration
 
+## Why CoderClaw?
+
+Unlike closed‑source cloud assistants, CoderClaw is self‑hosted and open‑source (MIT).
+It orchestrates multiple specialized agents, maintains persistent project knowledge, and
+includes enterprise‑grade security (RBAC, audit trails). You stay in control of your data and
+workflows. For a side‑by‑side comparison see [CoderClaw vs Alternatives](coderclaw-vs-alternatives.md).
+
+
 ## Core Capabilities
 
 ### 1. Deep Knowledge & Context Engine

@@ -11,7 +11,7 @@ Last updated: 2026-02-19
 
 ## Overview
 
-CoderClaw extends [OpenClaw](https://github.com/SeanHogg/coderClaw)'s WebSocket gateway with **Phase 2 distributed runtime capabilities**:
+CoderClaw extends [CoderClaw](https://github.com/SeanHogg/coderClaw)'s WebSocket gateway with **Phase 2 distributed runtime capabilities**:
 
 - A single long‑lived **Gateway** owns all messaging surfaces (WhatsApp via
   Baileys, Telegram via grammY, Slack, Discord, Signal, iMessage, WebChat).

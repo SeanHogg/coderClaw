@@ -16,7 +16,7 @@ x-i18n:
 
 # API 用量与费用
 
-本文档列出了**可能调用 API 密钥的功能**及其费用的显示位置。重点介绍 OpenClaw 中可能产生提供商用量或付费 API 调用的功能。
+本文档列出了**可能调用 API 密钥的功能**及其费用的显示位置。重点介绍 CoderClaw 中可能产生提供商用量或付费 API 调用的功能。
 
 ## 费用显示位置（聊天 + CLI）
 
@@ -38,7 +38,7 @@ x-i18n:
 
 ## 密钥的发现方式
 
-OpenClaw 可以从以下来源获取凭据：
+CoderClaw 可以从以下来源获取凭据：
 
 - **认证配置文件**（按智能体配置，存储在 `auth-profiles.json` 中）。
 - **环境变量**（例如 `OPENAI_API_KEY`、`BRAVE_API_KEY`、`FIRECRAWL_API_KEY`）。

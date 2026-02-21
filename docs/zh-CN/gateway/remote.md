@@ -43,7 +43,7 @@ x-i18n:
 
 笔记本电脑**不**运行智能体。它远程连接：
 
-- 使用 macOS 应用的 **Remote over SSH** 模式（设置 → 通用 → "OpenClaw runs"）。
+- 使用 macOS 应用的 **Remote over SSH** 模式（设置 → 通用 → "CoderClaw runs"）。
 - 应用打开并管理隧道，因此 WebChat + 健康检查"直接工作"。
 
 操作手册：[macOS 远程访问](/platforms/mac/remote)。

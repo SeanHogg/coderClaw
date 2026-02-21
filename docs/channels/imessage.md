@@ -42,7 +42,7 @@ imsg rpc --help
 
       </Step>
 
-      <Step title="Configure OpenClaw">
+      <Step title="Configure CoderClaw">
 
 ```json5
 {
@@ -80,7 +80,7 @@ coderclaw pairing approve imessage <CODE>
   </Tab>
 
   <Tab title="Remote Mac over SSH">
-    OpenClaw only requires a stdio-compatible `cliPath`, so you can point `cliPath` at a wrapper script that SSHes to a remote Mac and runs `imsg`.
+    CoderClaw only requires a stdio-compatible `cliPath`, so you can point `cliPath` at a wrapper script that SSHes to a remote Mac and runs `imsg`.
 
 ```bash
 #!/usr/bin/env bash
@@ -102,7 +102,7 @@ exec ssh -T gateway-host imsg "$@"
 }
 ```
 
-    If `remoteHost` is not set, OpenClaw attempts to auto-detect it by parsing the SSH wrapper script.
+    If `remoteHost` is not set, CoderClaw attempts to auto-detect it by parsing the SSH wrapper script.
 
   </Tab>
 </Tabs>
@@ -110,7 +110,7 @@ exec ssh -T gateway-host imsg "$@"
 ## Requirements and permissions (macOS)
 
 - Messages must be signed in on the Mac running `imsg`.
-- Full Disk Access is required for the process context running OpenClaw/`imsg` (Messages DB access).
+- Full Disk Access is required for the process context running CoderClaw/`imsg` (Messages DB access).
 - Automation permission is required to send messages through Messages.app.
 
 <Tip>
@@ -171,7 +171,7 @@ imsg send <handle> "test"
     Group-ish thread behavior:
 
     Some multi-participant iMessage threads can arrive with `is_group=false`.
-    If that `chat_id` is explicitly configured under `channels.imessage.groups`, OpenClaw treats it as group traffic (group gating + group session isolation).
+    If that `chat_id` is explicitly configured under `channels.imessage.groups`, CoderClaw treats it as group traffic (group gating + group session isolation).
 
   </Tab>
 </Tabs>
@@ -187,7 +187,7 @@ imsg send <handle> "test"
     1. Create/sign in a dedicated macOS user.
     2. Sign into Messages with the bot Apple ID in that user.
     3. Install `imsg` in that user.
-    4. Create SSH wrapper so OpenClaw can run `imsg` in that user context.
+    4. Create SSH wrapper so CoderClaw can run `imsg` in that user context.
     5. Point `channels.imessage.accounts.<id>.cliPath` and `.dbPath` to that user profile.
 
     First run may require GUI approvals (Automation + Full Disk Access) in that bot user session.
@@ -338,7 +338,7 @@ imsg chats --limit 1
 imsg send <handle> "test"
 ```
 
-    Confirm Full Disk Access + Automation are granted for the process context that runs OpenClaw/`imsg`.
+    Confirm Full Disk Access + Automation are granted for the process context that runs CoderClaw/`imsg`.
 
   </Accordion>
 </AccordionGroup>

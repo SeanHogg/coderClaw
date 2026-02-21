@@ -2,14 +2,14 @@
  * Twitch onboarding adapter for CLI setup wizard.
  */
 
-import type { OpenClawConfig } from "openclaw/plugin-sdk";
+import type { CoderClawConfig } from "coderclaw/plugin-sdk";
 import {
   formatDocsLink,
   promptChannelAccessConfig,
   type ChannelOnboardingAdapter,
   type ChannelOnboardingDmPolicy,
   type WizardPrompter,
-} from "openclaw/plugin-sdk";
+} from "coderclaw/plugin-sdk";
 import { DEFAULT_ACCOUNT_ID, getAccountConfig } from "./config.js";
 import type { TwitchAccountConfig, TwitchRole } from "./types.js";
 import { isAccountConfigured } from "./utils/twitch.js";
@@ -20,9 +20,9 @@ const channel = "twitch" as const;
  * Set Twitch account configuration
  */
 function setTwitchAccount(
-  cfg: OpenClawConfig,
+  cfg: CoderClawConfig,
   account: Partial<TwitchAccountConfig>,
-): OpenClawConfig {
+): CoderClawConfig {
   const existing = getAccountConfig(cfg, DEFAULT_ACCOUNT_ID);
   const merged: TwitchAccountConfig = {
     username: account.username ?? existing?.username ?? "",
@@ -207,13 +207,13 @@ async function promptRefreshTokenSetup(
  * Configure with env token path (returns early if user chooses env token).
  */
 async function configureWithEnvToken(
-  cfg: OpenClawConfig,
+  cfg: CoderClawConfig,
   prompter: WizardPrompter,
   account: TwitchAccountConfig | null,
   envToken: string,
   forceAllowFrom: boolean,
   dmPolicy: ChannelOnboardingDmPolicy,
-): Promise<{ cfg: OpenClawConfig } | null> {
+): Promise<{ cfg: CoderClawConfig } | null> {
   const useEnv = await prompter.confirm({
     message: "Twitch env var CODERCLAW_TWITCH_ACCESS_TOKEN detected. Use env token?",
     initialValue: true,
@@ -243,10 +243,10 @@ async function configureWithEnvToken(
  * Set Twitch access control (role-based)
  */
 function setTwitchAccessControl(
-  cfg: OpenClawConfig,
+  cfg: CoderClawConfig,
   allowedRoles: TwitchRole[],
   requireMention: boolean,
-): OpenClawConfig {
+): CoderClawConfig {
   const account = getAccountConfig(cfg, DEFAULT_ACCOUNT_ID);
   if (!account) {
     return cfg;

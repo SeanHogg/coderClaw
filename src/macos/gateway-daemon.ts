@@ -29,7 +29,7 @@ type GatewayWsLogStyle = "auto" | "full" | "compact";
 
 async function main() {
   if (hasFlag(args, "--version") || hasFlag(args, "-v")) {
-    // Match `openclaw --version` behavior for Swift env/version checks.
+    // Match `coderclaw --version` behavior for Swift env/version checks.
     // Keep output a single line.
     console.log(BUNDLED_VERSION);
     process.exit(0);
@@ -85,7 +85,7 @@ async function main() {
   const portRaw =
     argValue(args, "--port") ??
     process.env.CODERCLAW_GATEWAY_PORT ??
-    process.env.CLAWDBOT_GATEWAY_PORT ??
+    process.env.CODERCLAW_GATEWAY_PORT ??
     (typeof cfg.gateway?.port === "number" ? String(cfg.gateway.port) : "") ??
     "18789";
   const port = Number.parseInt(portRaw, 10);
@@ -97,7 +97,7 @@ async function main() {
   const bindRaw =
     argValue(args, "--bind") ??
     process.env.CODERCLAW_GATEWAY_BIND ??
-    process.env.CLAWDBOT_GATEWAY_BIND ??
+    process.env.CODERCLAW_GATEWAY_BIND ??
     cfg.gateway?.bind ??
     "loopback";
   const bind =

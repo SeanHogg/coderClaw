@@ -1,6 +1,6 @@
 ---
 read_when:
-  - 你想从 OpenClaw 发起出站语音通话
+  - 你想从 CoderClaw 发起出站语音通话
   - 你正在配置或开发 voice-call 插件
 summary: Voice Call 插件：通过 Twilio/Telnyx/Plivo 进行出站 + 入站通话（插件安装 + 配置 + CLI）
 title: Voice Call 插件
@@ -15,7 +15,7 @@ x-i18n:
 
 # Voice Call（插件）
 
-通过插件为 OpenClaw 提供语音通话。支持出站通知和带有入站策略的多轮对话。
+通过插件为 CoderClaw 提供语音通话。支持出站通知和带有入站策略的多轮对话。
 
 当前提供商：
 
@@ -42,7 +42,7 @@ Voice Call 插件运行在 **Gateway 网关进程内部**。
 ### 选项 A：从 npm 安装（推荐）
 
 ```bash
-coderclaw plugins install @openclaw/voice-call
+coderclaw plugins install @coderclaw/voice-call
 ```
 
 之后重启 Gateway 网关。
@@ -218,7 +218,7 @@ Voice Call 使用核心 `messages.tts` 配置（OpenAI 或 ElevenLabs）进行�
 ## CLI
 
 ```bash
-coderclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
+coderclaw voicecall call --to "+15555550123" --message "Hello from CoderClaw"
 coderclaw voicecall continue --call-id <id> --message "Any questions?"
 coderclaw voicecall speak --call-id <id> --message "One moment"
 coderclaw voicecall end --call-id <id>

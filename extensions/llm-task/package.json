@@ -2,7 +2,7 @@
   "name": "@coderclaw/llm-task",
   "version": "2026.2.21",
   "private": true,
-  "description": "OpenClaw JSON-only LLM task plugin",
+  "description": "CoderClaw JSON-only LLM task plugin",
   "type": "module",
   "devDependencies": {
     "coderclaw": "workspace:*"

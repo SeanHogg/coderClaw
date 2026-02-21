@@ -256,9 +256,9 @@ coderclaw project status
 ### Run Workflows
 
 ```bash
-openclaw agent --message "Create user authentication with tests" --thinking high
-openclaw agent --message "Fix the memory leak in parser" --thinking high
-openclaw agent --message "Refactor the API module" --thinking high
+coderclaw agent --message "Create user authentication with tests" --thinking high
+coderclaw agent --message "Fix the memory leak in parser" --thinking high
+coderclaw agent --message "Refactor the API module" --thinking high
 ```
 
 ### From Messaging Channels
@@ -304,9 +304,9 @@ All new functionality is tested:
 
 ## Integration
 
-CoderClaw integrates seamlessly with OpenClaw:
+CoderClaw integrates seamlessly with CoderClaw:
 
-- ✅ Uses OpenClaw's tool system
+- ✅ Uses CoderClaw's tool system
 - ✅ Leverages subagent spawning
 - ✅ Integrates with session management
 - ✅ Respects security boundaries
@@ -396,7 +396,7 @@ CoderClaw is now a fully-featured, developer-first, multi-agent AI system that:
 - **Understands code deeply** through AST parsing and semantic analysis
 - **Coordinates multiple agents** for complex development workflows
 - **Maintains persistent context** in `.coderClaw/` directories
-- **Integrates seamlessly** with OpenClaw's existing infrastructure
+- **Integrates seamlessly** with CoderClaw's existing infrastructure
 - **Supports extensibility** via custom agents and skills
 - **Provides security** through RBAC and audit trails
 - **Enables team collaboration** with distributed execution

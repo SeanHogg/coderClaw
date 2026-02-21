@@ -1,8 +1,8 @@
 ---
 read_when:
-  - 安装 OpenClaw
+  - 安装 CoderClaw
   - 你想从 GitHub 安装
-summary: 安装 OpenClaw（推荐安装器、全局安装或从源代码安装）
+summary: 安装 CoderClaw（推荐安装器、全局安装或从源代码安装）
 title: 安装
 x-i18n:
   generated_at: "2026-02-03T10:07:43Z"
@@ -20,13 +20,13 @@ x-i18n:
 ## 快速安装（推荐）
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://coderclaw.ai/install.sh | bash
 ```
 
 Windows（PowerShell）：
 
 ```powershell
-iwr -useb https://openclaw.ai/install.ps1 | iex
+iwr -useb https://coderclaw.ai/install.ps1 | iex
 ```
 
 下一步（如果你跳过了新手引导）：
@@ -45,16 +45,16 @@ coderclaw onboard --install-daemon
 
 ### 1）安装器脚本（推荐）
 
-通过 npm 全局安装 `openclaw` 并运行新手引导。
+通过 npm 全局安装 `coderclaw` 并运行新手引导。
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://coderclaw.ai/install.sh | bash
 ```
 
 安装器标志：
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --help
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --help
 ```
 
 详情：[安装器内部原理](/install/installer)。
@@ -62,7 +62,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --help
 非交互式（跳过新手引导）：
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --no-onboard
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --no-onboard
 ```
 
 ### 2）全局安装（手动）
@@ -70,13 +70,13 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --no-onboard
 如果你已经有 Node：
 
 ```bash
-npm install -g openclaw@latest
+npm install -g coderclaw@latest
 ```
 
 如果你全局安装了 libvips（macOS 上通过 Homebrew 安装很常见）且 `sharp` 安装失败，请强制使用预构建二进制文件：
 
 ```bash
-SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
+SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g coderclaw@latest
 ```
 
 如果你看到 `sharp: Please add node-gyp to your dependencies`，要么安装构建工具（macOS：Xcode CLT + `npm install -g node-gyp`），要么使用上面的 `SHARP_IGNORE_GLOBAL_LIBVIPS=1` 变通方法来跳过原生构建。
@@ -84,9 +84,9 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
 或使用 pnpm：
 
 ```bash
-pnpm add -g openclaw@latest
-pnpm approve-builds -g                # 批准 openclaw、node-llama-cpp、sharp 等
-pnpm add -g openclaw@latest           # 重新运行以执行 postinstall 脚本
+pnpm add -g coderclaw@latest
+pnpm approve-builds -g                # 批准 coderclaw、node-llama-cpp、sharp 等
+pnpm add -g coderclaw@latest           # 重新运行以执行 postinstall 脚本
 ```
 
 pnpm 需要显式批准带有构建脚本的包。在首次安装显示"Ignored build scripts"警告后，运行 `pnpm approve-builds -g` 并选择列出的包，然后重新运行安装以执行 postinstall 脚本。
@@ -101,7 +101,7 @@ coderclaw onboard --install-daemon
 
 ```bash
 git clone https://github.com/SeanHogg/coderClaw.git
-cd openclaw
+cd coderclaw
 pnpm install
 pnpm ui:build # 首次运行时自动安装 UI 依赖
 pnpm build
@@ -128,17 +128,17 @@ coderclaw onboard --install-daemon
 
 安装器支持两种方式：
 
-- `npm`（默认）：`npm install -g openclaw@latest`
+- `npm`（默认）：`npm install -g coderclaw@latest`
 - `git`：从 GitHub 克隆/构建并从源代码 checkout 运行
 
 ### CLI 标志
 
 ```bash
 # 显式 npm
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method npm
 
 # 从 GitHub 安装（源代码 checkout）
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git
 ```
 
 常用标志：
@@ -162,7 +162,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
 - `CODERCLAW_NO_ONBOARD=1`
 - `SHARP_IGNORE_GLOBAL_LIBVIPS=0|1`（默认：`1`；避免 `sharp` 针对系统 libvips 构建）
 
-## 故障排除：找不到 `openclaw`（PATH）
+## 故障排除：找不到 `coderclaw`（PATH）
 
 快速诊断：
 
@@ -173,7 +173,7 @@ npm prefix -g
 echo "$PATH"
 ```
 
-如果 `$(npm prefix -g)/bin`（macOS/Linux）或 `$(npm prefix -g)`（Windows）**不**在 `echo "$PATH"` 的输出中，你的 shell 无法找到全局 npm 二进制文件（包括 `openclaw`）。
+如果 `$(npm prefix -g)/bin`（macOS/Linux）或 `$(npm prefix -g)`（Windows）**不**在 `echo "$PATH"` 的输出中，你的 shell 无法找到全局 npm 二进制文件（包括 `coderclaw`）。
 
 修复：将其添加到你的 shell 启动文件（zsh：`~/.zshrc`，bash：`~/.bashrc`）：
 

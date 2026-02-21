@@ -53,31 +53,31 @@ describe("buildWorkspaceSkillsPrompt", () => {
       dir: path.join(skillsDir, "bin-skill"),
       name: "bin-skill",
       description: "Needs a bin",
-      metadata: '{"openclaw":{"requires":{"bins":["fakebin"]}}}',
+      metadata: '{"coderclaw":{"requires":{"bins":["fakebin"]}}}',
     });
     await writeSkill({
       dir: path.join(skillsDir, "anybin-skill"),
       name: "anybin-skill",
       description: "Needs any bin",
-      metadata: '{"openclaw":{"requires":{"anyBins":["missingbin","fakebin"]}}}',
+      metadata: '{"coderclaw":{"requires":{"anyBins":["missingbin","fakebin"]}}}',
     });
     await writeSkill({
       dir: path.join(skillsDir, "config-skill"),
       name: "config-skill",
       description: "Needs config",
-      metadata: '{"openclaw":{"requires":{"config":["browser.enabled"]}}}',
+      metadata: '{"coderclaw":{"requires":{"config":["browser.enabled"]}}}',
     });
     await writeSkill({
       dir: path.join(skillsDir, "always-skill"),
       name: "always-skill",
       description: "Always on",
-      metadata: '{"openclaw":{"always":true,"requires":{"env":["MISSING"]}}}',
+      metadata: '{"coderclaw":{"always":true,"requires":{"env":["MISSING"]}}}',
     });
     await writeSkill({
       dir: path.join(skillsDir, "env-skill"),
       name: "env-skill",
       description: "Needs env",
-      metadata: '{"openclaw":{"requires":{"env":["ENV_KEY"]},"primaryEnv":"ENV_KEY"}}',
+      metadata: '{"coderclaw":{"requires":{"env":["ENV_KEY"]},"primaryEnv":"ENV_KEY"}}',
     });
 
     try {
@@ -119,7 +119,7 @@ describe("buildWorkspaceSkillsPrompt", () => {
       dir: skillDir,
       name: "alias-skill",
       description: "Uses skillKey",
-      metadata: '{"openclaw":{"skillKey":"alias"}}',
+      metadata: '{"coderclaw":{"skillKey":"alias"}}',
     });
 
     const prompt = buildWorkspaceSkillsPrompt(workspaceDir, {

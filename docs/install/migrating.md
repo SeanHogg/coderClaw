@@ -1,14 +1,14 @@
 ---
-summary: "Move (migrate) a OpenClaw install from one machine to another"
+summary: "Move (migrate) a CoderClaw install from one machine to another"
 read_when:
-  - You are moving OpenClaw to a new laptop/server
+  - You are moving CoderClaw to a new laptop/server
   - You want to preserve sessions, auth, and channel logins (WhatsApp, etc.)
 title: "Migration Guide"
 ---
 
-# Migrating OpenClaw to a new machine
+# Migrating CoderClaw to a new machine
 
-This guide migrates a OpenClaw Gateway from one machine to another **without redoing onboarding**.
+This guide migrates a CoderClaw Gateway from one machine to another **without redoing onboarding**.
 
 The migration is simple conceptually:
 
@@ -27,7 +27,7 @@ Most installs use the default:
 
 But it may be different if you use:
 
-- `--profile <name>` (often becomes `~/.openclaw-<profile>/`)
+- `--profile <name>` (often becomes `~/.coderclaw-<profile>/`)
 - `CODERCLAW_STATE_DIR=/some/path`
 
 If you’re not sure, run on the **old** machine:
@@ -80,14 +80,14 @@ coderclaw gateway stop
 ```bash
 # Adjust paths if you use a profile or custom locations
 cd ~
-tar -czf openclaw-state.tgz .openclaw
+tar -czf coderclaw-state.tgz .coderclaw
 
-tar -czf coderclaw-workspace.tgz .openclaw/workspace
+tar -czf coderclaw-workspace.tgz .coderclaw/workspace
 ```
 
 If you have multiple profiles/state dirs (e.g. `~/.coderclaw-main`, `~/.coderclaw-work`), archive each.
 
-### Step 1 — Install OpenClaw on the new machine
+### Step 1 — Install CoderClaw on the new machine
 
 On the **new** machine, install the CLI (and Node if needed):
 
@@ -110,7 +110,7 @@ Common approaches:
 
 After copying, ensure:
 
-- Hidden directories were included (e.g. `.openclaw/`)
+- Hidden directories were included (e.g. `.coderclaw/`)
 - File ownership is correct for the user running the gateway
 
 ### Step 3 — Run Doctor (migrations + service repair)
@@ -189,4 +189,4 @@ On the new machine, confirm:
 
 - [Doctor](/gateway/doctor)
 - [Gateway troubleshooting](/gateway/troubleshooting)
-- [Where does OpenClaw store its data?](/help/faq#where-does-openclaw-store-its-data)
+- [Where does CoderClaw store its data?](/help/faq#where-does-coderclaw-store-its-data)

@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import type { CliBackendConfig } from "../config/types.js";
 import {
   CLI_FRESH_WATCHDOG_DEFAULTS,
@@ -147,7 +147,7 @@ function mergeBackendConfig(base: CliBackendConfig, override?: CliBackendConfig)
   };
 }
 
-export function resolveCliBackendIds(cfg?: OpenClawConfig): Set<string> {
+export function resolveCliBackendIds(cfg?: CoderClawConfig): Set<string> {
   const ids = new Set<string>([
     normalizeBackendKey("claude-cli"),
     normalizeBackendKey("codex-cli"),
@@ -161,7 +161,7 @@ export function resolveCliBackendIds(cfg?: OpenClawConfig): Set<string> {
 
 export function resolveCliBackendConfig(
   provider: string,
-  cfg?: OpenClawConfig,
+  cfg?: CoderClawConfig,
 ): ResolvedCliBackend | null {
   const normalized = normalizeBackendKey(provider);
   const configured = cfg?.agents?.defaults?.cliBackends ?? {};

@@ -1,7 +1,7 @@
 ---
 summary: "Nostr DM channel via NIP-04 encrypted messages"
 read_when:
-  - You want OpenClaw to receive DMs via Nostr
+  - You want CoderClaw to receive DMs via Nostr
   - You're setting up decentralized messaging
 title: "Nostr"
 ---
@@ -10,7 +10,7 @@ title: "Nostr"
 
 **Status:** Optional plugin (disabled by default).
 
-Nostr is a decentralized protocol for social networking. This channel enables OpenClaw to receive and respond to encrypted direct messages (DMs) via NIP-04.
+Nostr is a decentralized protocol for social networking. This channel enables CoderClaw to receive and respond to encrypted direct messages (DMs) via NIP-04.
 
 ## Install (on demand)
 
@@ -35,7 +35,7 @@ coderclaw plugins install @coderclaw/nostr
 Use a local checkout (dev workflows):
 
 ```bash
-coderclaw plugins install --link <path-to-openclaw>/extensions/nostr
+coderclaw plugins install --link <path-to-coderclaw>/extensions/nostr
 ```
 
 Restart the Gateway after installing or enabling plugins.
@@ -93,14 +93,14 @@ Example:
     "nostr": {
       "privateKey": "${NOSTR_PRIVATE_KEY}",
       "profile": {
-        "name": "openclaw",
-        "displayName": "OpenClaw",
+        "name": "coderclaw",
+        "displayName": "CoderClaw",
         "about": "Personal assistant DM bot",
         "picture": "https://example.com/avatar.png",
         "banner": "https://example.com/banner.png",
         "website": "https://example.com",
-        "nip05": "openclaw@example.com",
-        "lud16": "openclaw@example.com"
+        "nip05": "coderclaw@example.com",
+        "lud16": "coderclaw@example.com"
       }
     }
   }

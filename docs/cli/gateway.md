@@ -1,5 +1,5 @@
 ---
-summary: "OpenClaw Gateway CLI (`coderclaw gateway`) — run, query, and discover gateways"
+summary: "CoderClaw Gateway CLI (`coderclaw gateway`) — run, query, and discover gateways"
 read_when:
   - Running the Gateway from the CLI (dev or servers)
   - Debugging Gateway auth, bind modes, and connectivity
@@ -9,7 +9,7 @@ title: "gateway"
 
 # Gateway CLI
 
-The Gateway is OpenClaw’s WebSocket server (channels, nodes, sessions, hooks).
+The Gateway is CoderClaw’s WebSocket server (channels, nodes, sessions, hooks).
 
 Subcommands in this page live under `coderclaw gateway …`.
 

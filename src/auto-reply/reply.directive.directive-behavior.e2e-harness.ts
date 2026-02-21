@@ -60,7 +60,7 @@ export async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise
         CODERCLAW_AGENT_DIR: (home) => path.join(home, ".coderclaw", "agent"),
         PI_CODING_AGENT_DIR: (home) => path.join(home, ".coderclaw", "agent"),
       },
-      prefix: "openclaw-reply-",
+      prefix: "coderclaw-reply-",
     },
   );
 }

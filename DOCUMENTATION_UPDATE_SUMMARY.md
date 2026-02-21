@@ -1,6 +1,6 @@
 # CoderClaw Documentation Update Summary
 
-This document summarizes the documentation updates made to rebrand the project as **CoderClaw** while properly attributing [OpenClaw](https://github.com/openclaw/openclaw) as the foundation.
+This document summarizes the documentation updates made to rebrand the project as **CoderClaw** while properly attributing [CoderClaw](https://github.com/seanhogg/coderclaw) as the foundation.
 
 ## Changes Made
 
@@ -10,11 +10,11 @@ This document summarizes the documentation updates made to rebrand the project a
 
 - `package.json` - Updated metadata, description, URLs, keywords, and author
 - `README.md` - Updated branding, links, and project description
-- `docs/index.md` - Homepage now focuses on CoderClaw with OpenClaw attribution
+- `docs/index.md` - Homepage now focuses on CoderClaw with CoderClaw attribution
 - `docs/start/getting-started.md` - Getting started guide with CoderClaw branding
-- `docs/start/openclaw.md` - Personal assistant setup guide
+- `docs/start/coderclaw.md` - Personal assistant setup guide
 - `docs/concepts/architecture.md` - Gateway architecture with Phase 2 components
-- `docs/phase2.md` - Enhanced with OpenClaw attribution
+- `docs/phase2.md` - Enhanced with CoderClaw attribution
 - `docs/coderclaw.md` - CoderClaw developer guide with Phase 2 integration
 
 ### 2. New Documentation Added
@@ -29,7 +29,7 @@ This document summarizes the documentation updates made to rebrand the project a
 - Configuration reference
 - Troubleshooting section
 
-**OpenClaw vs CoderClaw Comparison** (`docs/openclaw-vs-coderclaw.md`)
+**CoderClaw vs CoderClaw Comparison** (`docs/coderclaw-vs-coderclaw.md`)
 
 - Detailed feature comparison table
 - Architecture diagrams for both projects
@@ -56,16 +56,16 @@ This document summarizes the documentation updates made to rebrand the project a
 Throughout the documentation, we now consistently use:
 
 1. **CoderClaw** - As the primary project name
-2. **OpenClaw** - Credited as the foundation, with link to github.com/openclaw/openclaw
+2. **CoderClaw** - Credited as the foundation, with link to github.com/seanhogg/coderclaw
 3. **Phase 2** - To refer to CoderClaw-specific distributed runtime features
 
 ### Attribution Pattern
 
 When introducing CoderClaw features, we use phrases like:
 
-- "CoderClaw (built on [OpenClaw](https://github.com/openclaw/openclaw))"
-- "Built on OpenClaw's proven multi-channel gateway architecture"
-- "CoderClaw extends OpenClaw with Phase 2 capabilities"
+- "CoderClaw (built on [CoderClaw](https://github.com/seanhogg/coderclaw))"
+- "Built on CoderClaw's proven multi-channel gateway architecture"
+- "CoderClaw extends CoderClaw with Phase 2 capabilities"
 
 This ensures:
 
@@ -107,7 +107,7 @@ The documentation now clearly explains CoderClaw's enhancements:
 
 All repository URLs have been updated from:
 
-- `github.com/openclaw/openclaw` → `github.com/SeanHogg/coderClaw`
+- `github.com/seanhogg/coderclaw` → `github.com/SeanHogg/coderClaw`
 
 This includes:
 
@@ -120,9 +120,9 @@ This includes:
 
 The documentation emphasizes that:
 
-- CoderClaw is 100% backward compatible with OpenClaw
+- CoderClaw is 100% backward compatible with CoderClaw
 - Phase 2 features are opt-in
-- Existing OpenClaw configurations work without changes
+- Existing CoderClaw configurations work without changes
 - No breaking changes for existing users
 
 ## Documentation Structure
@@ -132,7 +132,7 @@ The documentation emphasizes that:
 ```
 Getting Started
   ├─ Quick Start (getting-started.md)
-  ├─ Personal Assistant Setup (openclaw.md)
+  ├─ Personal Assistant Setup (coderclaw.md)
   └─ Phase 2 Quick Start (phase2-quickstart.md) [NEW]
 
 Concepts
@@ -144,7 +144,7 @@ CoderClaw Specific
   ├─ CoderClaw Overview (coderclaw.md) - Enhanced
   ├─ Phase 2 Documentation (phase2.md) - Enhanced
   ├─ Phase 2 Quick Start (phase2-quickstart.md) [NEW]
-  └─ OpenClaw vs CoderClaw (openclaw-vs-coderclaw.md) [NEW]
+  └─ CoderClaw vs CoderClaw (coderclaw-vs-coderclaw.md) [NEW]
 ```
 
 ## Future Work
@@ -164,7 +164,7 @@ CoderClaw Specific
 ⏭️ Bulk update of channel-specific examples - Hundreds of files  
 ⏭️ Bulk update of tool documentation - Hundreds of files
 
-**Note:** The remaining items are bulk updates to secondary documentation. The core transformation is complete, and the existing references to "OpenClaw" in examples will continue to work correctly.
+**Note:** The remaining items are bulk updates to secondary documentation. The core transformation is complete, and the existing references to "CoderClaw" in examples will continue to work correctly.
 
 ## Impact Summary
 
@@ -188,7 +188,7 @@ Before deploying:
 The CoderClaw documentation has been successfully updated to:
 
 - Establish clear project identity
-- Credit OpenClaw appropriately
+- Credit CoderClaw appropriately
 - Document Phase 2 features comprehensively
 - Provide migration guidance
 - Maintain backward compatibility
@@ -196,7 +196,7 @@ The CoderClaw documentation has been successfully updated to:
 Users can now clearly understand:
 
 - What CoderClaw is
-- How it relates to OpenClaw
+- How it relates to CoderClaw
 - When to use each project
 - How to leverage Phase 2 features
 - How to migrate between projects

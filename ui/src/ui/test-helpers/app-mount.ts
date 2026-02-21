@@ -1,9 +1,9 @@
 import { afterEach, beforeEach } from "vitest";
-import { OpenClawApp } from "../app.ts";
+import { CoderClawApp } from "../app.ts";
 
 export function mountApp(pathname: string) {
   window.history.replaceState({}, "", pathname);
-  const app = document.createElement("coderclaw-app") as OpenClawApp;
+  const app = document.createElement("coderclaw-app") as CoderClawApp;
   app.connect = () => {
     // no-op: avoid real gateway WS connections in browser tests
   };

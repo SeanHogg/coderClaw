@@ -219,7 +219,7 @@ describe("discord tool result dispatch", () => {
         },
         messages: {
           responsePrefix: "PFX",
-          groupChat: { mentionPatterns: ["\\bopenclaw\\b"] },
+          groupChat: { mentionPatterns: ["\\bcoderclaw\\b"] },
         },
       } as ReturnType<typeof import("../config/config.js").loadConfig>;
 
@@ -236,7 +236,7 @@ describe("discord tool result dispatch", () => {
         {
           message: {
             id: "m2",
-            content: "openclaw: hello",
+            content: "coderclaw: hello",
             channelId: "c1",
             timestamp: new Date().toISOString(),
             type: MessageType.Default,
@@ -367,7 +367,7 @@ describe("discord tool result dispatch", () => {
             mentionedEveryone: false,
             mentionedUsers: [],
             mentionedRoles: [],
-            author: { id: "bot-id", bot: true, username: "OpenClaw" },
+            author: { id: "bot-id", bot: true, username: "CoderClaw" },
           },
         },
         author: { id: "u1", bot: false, username: "Ada" },

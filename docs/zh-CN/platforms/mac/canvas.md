@@ -22,7 +22,7 @@ macOS 应用使用 `WKWebView` 嵌入一个智能体控制的 **Canvas 面板**�
 
 Canvas 状态存储在 Application Support 下：
 
-- `~/Library/Application Support/OpenClaw/canvas/<session>/...`
+- `~/Library/Application Support/CoderClaw/canvas/<session>/...`
 
 Canvas 面板通过**自定义 URL 方案**提供这些文件：
 

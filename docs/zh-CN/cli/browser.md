@@ -16,7 +16,7 @@ x-i18n:
 
 # `coderclaw browser`
 
-管理 OpenClaw 的浏览器控制服务器并运行浏览器操作（标签页、快照、截图、导航、点击、输入）。
+管理 CoderClaw 的浏览器控制服务器并运行浏览器操作（标签页、快照、截图、导航、点击、输入）。
 
 相关：
 
@@ -44,7 +44,7 @@ coderclaw browser --browser-profile coderclaw snapshot
 
 配置文件是命名的浏览器路由配置。实际上：
 
-- `openclaw`：启动/附加到专用的 OpenClaw 管理的 Chrome 实例（隔离的用户数据目录）。
+- `coderclaw`：启动/附加到专用的 CoderClaw 管理的 Chrome 实例（隔离的用户数据目录）。
 - `chrome`：通过 Chrome 扩展中继控制你现有的 Chrome 标签页。
 
 ```bash

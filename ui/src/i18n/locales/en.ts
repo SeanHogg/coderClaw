@@ -47,7 +47,7 @@ export const en: TranslationMap = {
     skills: "Manage skill availability and API key injection.",
     nodes: "Paired devices, capabilities, and command exposure.",
     chat: "Direct gateway chat session for quick interventions.",
-    config: "Edit ~/.openclaw/coderclaw.json safely.",
+    config: "Edit ~/.coderclaw/coderclaw.json safely.",
     debug: "Gateway snapshots, events, and manual RPC calls.",
     logs: "Live tail of the gateway file logs.",
   },

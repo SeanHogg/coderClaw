@@ -37,7 +37,7 @@ x-i18n:
   "routing": {
     "agents": {
       "main": {
-        "workspace": "~/.openclaw/workspace",
+        "workspace": "~/.coderclaw/workspace",
         "sandbox": { "mode": "off" }
       }
     }
@@ -57,7 +57,7 @@ Windows：使用 **WSL2**（推荐 Ubuntu）。强烈推荐 WSL2；原生 Window
 ## 1) 安装 CLI（推荐）
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://coderclaw.ai/install.sh | bash
 ```
 
 安装程序选项（安装方法、非交互式、从 GitHub）：[安装](/install)。
@@ -65,17 +65,17 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 Windows (PowerShell)：
 
 ```powershell
-iwr -useb https://openclaw.ai/install.ps1 | iex
+iwr -useb https://coderclaw.ai/install.ps1 | iex
 ```
 
 替代方案（全局安装）：
 
 ```bash
-npm install -g openclaw@latest
+npm install -g coderclaw@latest
 ```
 
 ```bash
-pnpm add -g openclaw@latest
+pnpm add -g coderclaw@latest
 ```
 
 ## 2) 运行新手引导向导（并安装服务）
@@ -99,8 +99,8 @@ coderclaw onboard --install-daemon
 
 - **推荐的 Anthropic 路径：**设置 API 密钥（向导可以为服务使用存储它）。如果你想复用 Claude Code 凭证，也支持 `claude setup-token`。
 
-- OAuth 凭证（旧版导入）：`~/.openclaw/credentials/oauth.json`
-- 认证配置文件（OAuth + API 密钥）：`~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- OAuth 凭证（旧版导入）：`~/.coderclaw/credentials/oauth.json`
+- 认证配置文件（OAuth + API 密钥）：`~/.coderclaw/agents/<agentId>/agent/auth-profiles.json`
 
 无头/服务器提示：先在普通机器上完成 OAuth，然后将 `oauth.json` 复制到 Gateway 网关主机。
 
@@ -166,11 +166,11 @@ coderclaw pairing approve whatsapp <code>
 
 ## 从源代码（开发）
 
-如果你正在开发 OpenClaw 本身，从源代码运行：
+如果你正在开发 CoderClaw 本身，从源代码运行：
 
 ```bash
 git clone https://github.com/SeanHogg/coderClaw.git
-cd openclaw
+cd coderclaw
 pnpm install
 pnpm ui:build # 首次运行时自动安装 UI 依赖
 pnpm build
@@ -190,7 +190,7 @@ node coderclaw.mjs gateway --port 18789 --verbose
 在新终端中，发送测试消息：
 
 ```bash
-coderclaw message send --target +15555550123 --message "Hello from OpenClaw"
+coderclaw message send --target +15555550123 --message "Hello from CoderClaw"
 ```
 
 如果 `coderclaw health` 显示"未配置认证"，回到向导设置 OAuth/密钥认证——没有它智能体将无法响应。

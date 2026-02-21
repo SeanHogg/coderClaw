@@ -1,6 +1,6 @@
 ---
 read_when:
-  - 你想从终端搜索实时 OpenClaw 文档
+  - 你想从终端搜索实时 CoderClaw 文档
 summary: "`coderclaw docs` 的 CLI 参考（搜索实时文档索引）"
 title: docs
 x-i18n:

@@ -118,7 +118,7 @@ Open:
 - `https://<magicdns>/` (or your configured `gateway.controlUi.basePath`)
 
 By default, Serve requests can authenticate via Tailscale identity headers
-(`tailscale-user-login`) when `gateway.auth.allowTailscale` is `true`. OpenClaw
+(`tailscale-user-login`) when `gateway.auth.allowTailscale` is `true`. CoderClaw
 verifies the identity by resolving the `x-forwarded-for` address with
 `tailscale whois` and matching it to the header, and only accepts these when the
 request hits loopback with Tailscale’s `x-forwarded-*` headers. Set
@@ -141,7 +141,7 @@ Paste the token into the UI settings (sent as `connect.params.auth.token`).
 
 If you open the dashboard over plain HTTP (`http://<lan-ip>` or `http://<tailscale-ip>`),
 the browser runs in a **non-secure context** and blocks WebCrypto. By default,
-OpenClaw **blocks** Control UI connections without device identity.
+CoderClaw **blocks** Control UI connections without device identity.
 
 **Recommended fix:** use HTTPS (Tailscale Serve) or open the UI locally:
 

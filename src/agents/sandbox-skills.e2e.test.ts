@@ -2,12 +2,12 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { captureFullEnv } from "../test-utils/env.js";
 import { resolveSandboxContext } from "./sandbox.js";
 
 vi.mock("./sandbox/docker.js", () => ({
-  ensureSandboxContainer: vi.fn(async () => "openclaw-sbx-test"),
+  ensureSandboxContainer: vi.fn(async () => "coderclaw-sbx-test"),
 }));
 
 vi.mock("./sandbox/browser.js", () => ({
@@ -52,7 +52,7 @@ describe("sandbox skill mirroring", () => {
       description: "Demo skill",
     });
 
-    const cfg: OpenClawConfig = {
+    const cfg: CoderClawConfig = {
       agents: {
         defaults: {
           sandbox: {

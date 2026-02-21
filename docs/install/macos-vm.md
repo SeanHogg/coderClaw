@@ -1,14 +1,14 @@
 ---
-summary: "Run OpenClaw in a sandboxed macOS VM (local or hosted) when you need isolation or iMessage"
+summary: "Run CoderClaw in a sandboxed macOS VM (local or hosted) when you need isolation or iMessage"
 read_when:
-  - You want OpenClaw isolated from your main macOS environment
+  - You want CoderClaw isolated from your main macOS environment
   - You want iMessage integration (BlueBubbles) in a sandbox
   - You want a resettable macOS environment you can clone
   - You want to compare local vs hosted macOS VM options
 title: "macOS VMs"
 ---
 
-# OpenClaw on macOS VMs (Sandboxing)
+# CoderClaw on macOS VMs (Sandboxing)
 
 ## Recommended default (most users)
 
@@ -22,7 +22,7 @@ Use a macOS VM when you specifically need macOS-only capabilities (iMessage/Blue
 
 ### Local VM on your Apple Silicon Mac (Lume)
 
-Run OpenClaw in a sandboxed macOS VM on your existing Apple Silicon Mac using [Lume](https://cua.ai/docs/lume).
+Run CoderClaw in a sandboxed macOS VM on your existing Apple Silicon Mac using [Lume](https://cua.ai/docs/lume).
 
 This gives you:
 
@@ -48,7 +48,7 @@ Once you have SSH access to a macOS VM, continue at step 6 below.
 2. `lume create coderclaw --os macos --ipsw latest`
 3. Complete Setup Assistant, enable Remote Login (SSH)
 4. `lume run coderclaw --no-display`
-5. SSH in, install OpenClaw, configure channels
+5. SSH in, install CoderClaw, configure channels
 6. Done
 
 ---
@@ -115,7 +115,7 @@ After setup completes, enable SSH:
 ## 4) Get the VM's IP address
 
 ```bash
-lume get openclaw
+lume get coderclaw
 ```
 
 Look for the IP address (usually `192.168.64.x`).
@@ -132,7 +132,7 @@ Replace `youruser` with the account you created, and the IP with your VM's IP.
 
 ---
 
-## 6) Install OpenClaw
+## 6) Install CoderClaw
 
 Inside the VM:
 
@@ -182,11 +182,11 @@ coderclaw channels login
 Stop the VM and restart without display:
 
 ```bash
-lume stop openclaw
+lume stop coderclaw
 lume run coderclaw --no-display
 ```
 
-The VM runs in the background. OpenClaw's daemon keeps the gateway running.
+The VM runs in the background. CoderClaw's daemon keeps the gateway running.
 
 To check status:
 
@@ -198,7 +198,7 @@ ssh youruser@192.168.64.X "coderclaw status"
 
 ## Bonus: iMessage integration
 
-This is the killer feature of running on macOS. Use [BlueBubbles](https://bluebubbles.app) to add iMessage to OpenClaw.
+This is the killer feature of running on macOS. Use [BlueBubbles](https://bluebubbles.app) to add iMessage to CoderClaw.
 
 Inside the VM:
 
@@ -207,7 +207,7 @@ Inside the VM:
 3. Enable the Web API and set a password
 4. Point BlueBubbles webhooks at your gateway (example: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`)
 
-Add to your OpenClaw config:
+Add to your CoderClaw config:
 
 ```json
 {
@@ -232,15 +232,15 @@ Full setup details: [BlueBubbles channel](/channels/bluebubbles)
 Before customizing further, snapshot your clean state:
 
 ```bash
-lume stop openclaw
-lume clone coderclaw openclaw-golden
+lume stop coderclaw
+lume clone coderclaw coderclaw-golden
 ```
 
 Reset anytime:
 
 ```bash
-lume stop coderclaw && lume delete openclaw
-lume clone openclaw-golden openclaw
+lume stop coderclaw && lume delete coderclaw
+lume clone coderclaw-golden coderclaw
 lume run coderclaw --no-display
 ```
 
@@ -263,7 +263,7 @@ For true always-on, consider a dedicated Mac mini or a small VPS. See [VPS hosti
 | Problem                  | Solution                                                                            |
 | ------------------------ | ----------------------------------------------------------------------------------- |
 | Can't SSH into VM        | Check "Remote Login" is enabled in VM's System Settings                             |
-| VM IP not showing        | Wait for VM to fully boot, run `lume get openclaw` again                            |
+| VM IP not showing        | Wait for VM to fully boot, run `lume get coderclaw` again                            |
 | Lume command not found   | Add `~/.local/bin` to your PATH                                                     |
 | WhatsApp QR not scanning | Ensure you're logged into the VM (not host) when running `coderclaw channels login` |
 

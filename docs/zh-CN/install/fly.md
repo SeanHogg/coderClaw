@@ -1,5 +1,5 @@
 ---
-description: Deploy OpenClaw on Fly.io
+description: Deploy CoderClaw on Fly.io
 title: Fly.io
 x-i18n:
   generated_at: "2026-02-03T07:52:55Z"
@@ -12,7 +12,7 @@ x-i18n:
 
 # Fly.io 部署
 
-**目标：** OpenClaw Gateway 网关运行在 [Fly.io](https://fly.io) 机器上，具有持久存储、自动 HTTPS 和 Discord/渠道访问。
+**目标：** CoderClaw Gateway 网关运行在 [Fly.io](https://fly.io) 机器上，具有持久存储、自动 HTTPS 和 Discord/渠道访问。
 
 ## 你需要什么
 
@@ -33,13 +33,13 @@ x-i18n:
 ```bash
 # Clone the repo
 git clone https://github.com/SeanHogg/coderClaw.git
-cd openclaw
+cd coderclaw
 
 # Create a new Fly app (pick your own name)
-fly apps create my-openclaw
+fly apps create my-coderclaw
 
 # Create a persistent volume (1GB is usually enough)
-fly volumes create openclaw_data --size 1 --region iad
+fly volumes create coderclaw_data --size 1 --region iad
 ```
 
 **提示：** 选择离你近的区域。常见选项：`lhr`（伦敦）、`iad`（弗吉尼亚）、`sjc`（圣何塞）。
@@ -51,7 +51,7 @@ fly volumes create openclaw_data --size 1 --region iad
 **安全注意事项：** 默认配置暴露公共 URL。对于没有公共 IP 的加固部署，参见[私有部署](#私有部署加固)或使用 `fly.private.toml`。
 
 ```toml
-app = "my-openclaw"  # Your app name
+app = "my-coderclaw"  # Your app name
 primary_region = "iad"
 
 [build]
@@ -79,7 +79,7 @@ primary_region = "iad"
   memory = "2048mb"
 
 [mounts]
-  source = "openclaw_data"
+  source = "coderclaw_data"
   destination = "/data"
 ```
 
@@ -228,7 +228,7 @@ fly machine restart <machine-id>
 fly open
 ```
 
-或访问 `https://my-openclaw.fly.dev/`
+或访问 `https://my-coderclaw.fly.dev/`
 
 粘贴你的 Gateway 网关 token（来自 `CODERCLAW_GATEWAY_TOKEN` 的那个）进行认证。
 
@@ -385,18 +385,18 @@ fly deploy -c fly.private.toml
 
 ```bash
 # List current IPs
-fly ips list -a my-openclaw
+fly ips list -a my-coderclaw
 
 # Release public IPs
-fly ips release <public-ipv4> -a my-openclaw
-fly ips release <public-ipv6> -a my-openclaw
+fly ips release <public-ipv4> -a my-coderclaw
+fly ips release <public-ipv6> -a my-coderclaw
 
 # Switch to private config so future deploys don't re-allocate public IPs
 # (remove [http_service] or deploy with the private template)
 fly deploy -c fly.private.toml
 
 # Allocate private-only IPv6
-fly ips allocate-v6 --private -a my-openclaw
+fly ips allocate-v6 --private -a my-coderclaw
 ```
 
 此后，`fly ips list` 应该只显示 `private` 类型的 IP：
@@ -414,7 +414,7 @@ v6       fdaa:x:x:x:x::x      private          global
 
 ```bash
 # Forward local port 3000 to the app
-fly proxy 3000:3000 -a my-openclaw
+fly proxy 3000:3000 -a my-coderclaw
 
 # Then open http://localhost:3000 in browser
 ```
@@ -432,7 +432,7 @@ fly wireguard create
 **选项 3：仅 SSH**
 
 ```bash
-fly ssh console -a my-openclaw
+fly ssh console -a my-coderclaw
 ```
 
 ### 私有部署的 Webhooks

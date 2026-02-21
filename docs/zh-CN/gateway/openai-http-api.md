@@ -14,7 +14,7 @@ x-i18n:
 
 # OpenAI Chat Completions（HTTP）
 
-OpenClaw 的 Gateway 网关可以提供一个小型的 OpenAI 兼容 Chat Completions 端点。
+CoderClaw 的 Gateway 网关可以提供一个小型的 OpenAI 兼容 Chat Completions 端点。
 
 此端点**默认禁用**。请先在配置中启用它。
 
@@ -38,16 +38,16 @@ OpenClaw 的 Gateway 网关可以提供一个小型的 OpenAI 兼容 Chat Comple
 
 无需自定义头：在 OpenAI `model` 字段中编码智能体 ID：
 
-- `model: "openclaw:<agentId>"`（例如：`"openclaw:main"`、`"openclaw:beta"`）
+- `model: "coderclaw:<agentId>"`（例如：`"coderclaw:main"`、`"coderclaw:beta"`）
 - `model: "agent:<agentId>"`（别名）
 
-或通过头指定特定的 OpenClaw 智能体：
+或通过头指定特定的 CoderClaw 智能体：
 
-- `x-openclaw-agent-id: <agentId>`（默认：`main`）
+- `x-coderclaw-agent-id: <agentId>`（默认：`main`）
 
 高级选项：
 
-- `x-openclaw-session-key: <sessionKey>` 完全控制会话路由。
+- `x-coderclaw-session-key: <sessionKey>` 完全控制会话路由。
 
 ## 启用端点
 
@@ -103,9 +103,9 @@ OpenClaw 的 Gateway 网关可以提供一个小型的 OpenAI 兼容 Chat Comple
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
   -H 'Authorization: Bearer YOUR_TOKEN' \
   -H 'Content-Type: application/json' \
-  -H 'x-openclaw-agent-id: main' \
+  -H 'x-coderclaw-agent-id: main' \
   -d '{
-    "model": "openclaw",
+    "model": "coderclaw",
     "messages": [{"role":"user","content":"hi"}]
   }'
 ```
@@ -116,9 +116,9 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
 curl -N http://127.0.0.1:18789/v1/chat/completions \
   -H 'Authorization: Bearer YOUR_TOKEN' \
   -H 'Content-Type: application/json' \
-  -H 'x-openclaw-agent-id: main' \
+  -H 'x-coderclaw-agent-id: main' \
   -d '{
-    "model": "openclaw",
+    "model": "coderclaw",
     "stream": true,
     "messages": [{"role":"user","content":"hi"}]
   }'

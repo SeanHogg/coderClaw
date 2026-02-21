@@ -1,6 +1,6 @@
 # Canvas Skill
 
-Display HTML content on connected OpenClaw nodes (Mac app, iOS, Android).
+Display HTML content on connected CoderClaw nodes (Mac app, iOS, Android).
 
 ## Overview
 
@@ -40,7 +40,7 @@ The canvas host server binds based on `gateway.bind` setting:
 **Key insight:** The `canvasHostHostForBridge` is derived from `bridgeHost`. When bound to Tailscale, nodes receive URLs like:
 
 ```
-http://<tailscale-hostname>:18793/__openclaw__/canvas/<file>.html
+http://<tailscale-hostname>:18793/__coderclaw__/canvas/<file>.html
 ```
 
 This is why localhost URLs don't work - the node receives the Tailscale hostname from the bridge!
@@ -57,7 +57,7 @@ This is why localhost URLs don't work - the node receives the Tailscale hostname
 
 ## Configuration
 
-In `~/.openclaw/coderclaw.json`:
+In `~/.coderclaw/coderclaw.json`:
 
 ```json
 {
@@ -106,13 +106,13 @@ HTML
 Check how your gateway is bound:
 
 ```bash
-cat ~/.openclaw/coderclaw.json | jq '.gateway.bind'
+cat ~/.coderclaw/coderclaw.json | jq '.gateway.bind'
 ```
 
 Then construct the URL:
 
-- **loopback**: `http://127.0.0.1:18793/__openclaw__/canvas/<file>.html`
-- **lan/tailnet/auto**: `http://<hostname>:18793/__openclaw__/canvas/<file>.html`
+- **loopback**: `http://127.0.0.1:18793/__coderclaw__/canvas/<file>.html`
+- **lan/tailnet/auto**: `http://<hostname>:18793/__coderclaw__/canvas/<file>.html`
 
 Find your Tailscale hostname:
 
@@ -137,7 +137,7 @@ canvas action:present node:<node-id> target:<full-url>
 **Example:**
 
 ```
-canvas action:present node:mac-63599bc4-b54d-4392-9048-b97abd58343a target:http://peters-mac-studio-1.sheep-coho.ts.net:18793/__openclaw__/canvas/snake.html
+canvas action:present node:mac-63599bc4-b54d-4392-9048-b97abd58343a target:http://peters-mac-studio-1.sheep-coho.ts.net:18793/__coderclaw__/canvas/snake.html
 ```
 
 ### 5. Navigate, snapshot, or hide
@@ -156,9 +156,9 @@ canvas action:hide node:<node-id>
 
 **Debug steps:**
 
-1. Check server bind: `cat ~/.openclaw/coderclaw.json | jq '.gateway.bind'`
+1. Check server bind: `cat ~/.coderclaw/coderclaw.json | jq '.gateway.bind'`
 2. Check what port canvas is on: `lsof -i :18793`
-3. Test URL directly: `curl http://<hostname>:18793/__openclaw__/canvas/<file>.html`
+3. Test URL directly: `curl http://<hostname>:18793/__coderclaw__/canvas/<file>.html`
 
 **Solution:** Use the full hostname matching your bind mode, not localhost.
 
@@ -180,14 +180,14 @@ If live reload isn't working:
 
 ## URL Path Structure
 
-The canvas host serves from `/__openclaw__/canvas/` prefix:
+The canvas host serves from `/__coderclaw__/canvas/` prefix:
 
 ```
-http://<host>:18793/__openclaw__/canvas/index.html  → ~/clawd/canvas/index.html
-http://<host>:18793/__openclaw__/canvas/games/snake.html → ~/clawd/canvas/games/snake.html
+http://<host>:18793/__coderclaw__/canvas/index.html  → ~/clawd/canvas/index.html
+http://<host>:18793/__coderclaw__/canvas/games/snake.html → ~/clawd/canvas/games/snake.html
 ```
 
-The `/__openclaw__/canvas/` prefix is defined by `CANVAS_HOST_PATH` constant.
+The `/__coderclaw__/canvas/` prefix is defined by `CANVAS_HOST_PATH` constant.
 
 ## Tips
 

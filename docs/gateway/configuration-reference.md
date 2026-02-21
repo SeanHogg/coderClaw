@@ -7,7 +7,7 @@ description: "Complete field-by-field reference for ~/.coderclaw/coderclaw.json"
 
 Every field available in `~/.coderclaw/coderclaw.json`. For a task-oriented overview, see [Configuration](/gateway/configuration).
 
-Config format is **JSON5** (comments + trailing commas allowed). All fields are optional — OpenClaw uses safe defaults when omitted.
+Config format is **JSON5** (comments + trailing commas allowed). All fields are optional — CoderClaw uses safe defaults when omitted.
 
 ---
 
@@ -188,10 +188,10 @@ WhatsApp runs through the gateway's web channel (Baileys Web). It starts automat
       replyToMode: "off", // off | first | all
       dmPolicy: "pairing",
       allowFrom: ["1234567890", "steipete"],
-      dm: { enabled: true, groupEnabled: false, groupChannels: ["openclaw-dm"] },
+      dm: { enabled: true, groupEnabled: false, groupChannels: ["coderclaw-dm"] },
       guilds: {
         "123456789012345678": {
-          slug: "friends-of-openclaw",
+          slug: "friends-of-coderclaw",
           requireMention: false,
           reactionNotifications: "own",
           users: ["987654321098765432"],
@@ -310,7 +310,7 @@ WhatsApp runs through the gateway's web channel (Baileys Web). It starts automat
       },
       slashCommand: {
         enabled: true,
-        name: "openclaw",
+        name: "coderclaw",
         sessionPrefix: "slack:slash",
         ephemeral: true,
       },
@@ -380,7 +380,7 @@ Chat modes: `oncall` (respond on @-mention, default), `onmessage` (every message
 
 ### iMessage
 
-OpenClaw spawns `imsg rpc` (JSON-RPC over stdio). No daemon or port required.
+CoderClaw spawns `imsg rpc` (JSON-RPC over stdio). No daemon or port required.
 
 ```json5
 {
@@ -459,7 +459,7 @@ Group messages default to **require mention** (metadata mention or regex pattern
     groupChat: { historyLimit: 50 },
   },
   agents: {
-    list: [{ id: "main", groupChat: { mentionPatterns: ["@openclaw", "openclaw"] } }],
+    list: [{ id: "main", groupChat: { mentionPatterns: ["@coderclaw", "coderclaw"] } }],
   },
 }
 ```
@@ -501,7 +501,7 @@ Include your own number in `allowFrom` to enable self-chat mode (ignores native 
     list: [
       {
         id: "main",
-        groupChat: { mentionPatterns: ["reisponde", "@openclaw"] },
+        groupChat: { mentionPatterns: ["reisponde", "@coderclaw"] },
       },
     ],
   },
@@ -559,11 +559,11 @@ Default: `~/.coderclaw/workspace`.
 
 ### `agents.defaults.repoRoot`
 
-Optional repository root shown in the system prompt's Runtime line. If unset, OpenClaw auto-detects by walking upward from the workspace.
+Optional repository root shown in the system prompt's Runtime line. If unset, CoderClaw auto-detects by walking upward from the workspace.
 
 ```json5
 {
-  agents: { defaults: { repoRoot: "~/Projects/openclaw" } },
+  agents: { defaults: { repoRoot: "~/Projects/coderclaw" } },
 }
 ```
 
@@ -661,7 +661,7 @@ Time format in system prompt. Default: `auto` (OS preference).
 }
 ```
 
-- `model.primary`: format `provider/model` (e.g. `anthropic/claude-opus-4-6`). If you omit the provider, OpenClaw assumes `anthropic` (deprecated).
+- `model.primary`: format `provider/model` (e.g. `anthropic/claude-opus-4-6`). If you omit the provider, CoderClaw assumes `anthropic` (deprecated).
 - `models`: the configured model catalog and allowlist for `/model`. Each entry can include `alias` (shortcut) and `params` (provider-specific: `temperature`, `maxTokens`).
 - `imageModel`: only used if the primary model lacks image input.
 - `maxConcurrent`: max parallel agent runs across sessions (each session still serialized). Default: 1.
@@ -988,7 +988,7 @@ scripts/sandbox-browser-setup.sh   # optional browser image
           emoji: "🦥",
           avatar: "avatars/samantha.png",
         },
-        groupChat: { mentionPatterns: ["@openclaw"] },
+        groupChat: { mentionPatterns: ["@coderclaw"] },
         sandbox: { mode: "off" },
         subagents: { allowAgents: ["*"] },
         tools: {
@@ -1362,7 +1362,7 @@ Defaults for Talk mode (macOS/iOS/Android).
 | `group:automation` | `cron`, `gateway`                                                                        |
 | `group:messaging`  | `message`                                                                                |
 | `group:nodes`      | `nodes`                                                                                  |
-| `group:openclaw`   | All built-in tools (excludes provider plugins)                                           |
+| `group:coderclaw`   | All built-in tools (excludes provider plugins)                                           |
 
 ### `tools.allow` / `tools.deny`
 
@@ -1606,7 +1606,7 @@ Notes:
 
 ## Custom providers and base URLs
 
-OpenClaw uses the pi-coding-agent model catalog. Add custom providers via `models.providers` in config or `~/.coderclaw/agents/<agentId>/agent/models.json`.
+CoderClaw uses the pi-coding-agent model catalog. Add custom providers via `models.providers` in config or `~/.coderclaw/agents/<agentId>/agent/models.json`.
 
 ```json5
 {
@@ -1955,7 +1955,7 @@ See [Plugins](/tools/plugin).
   ui: {
     seamColor: "#FF4500",
     assistant: {
-      name: "OpenClaw",
+      name: "CoderClaw",
       avatar: "CB", // emoji, short text, image URL, or data URI
     },
   },
@@ -2125,7 +2125,7 @@ Auth: `Authorization: Bearer <token>` or `x-coderclaw-token: <token>`.
 {
   hooks: {
     gmail: {
-      account: "openclaw@gmail.com",
+      account: "coderclaw@gmail.com",
       topic: "projects/<project-id>/topics/gog-gmail-watch",
       subscription: "gog-gmail-watch-push",
       pushToken: "shared-push-token",
@@ -2189,7 +2189,7 @@ Auth: `Authorization: Bearer <token>` or `x-coderclaw-token: <token>`.
 
 - `minimal` (default): omit `cliPath` + `sshPort` from TXT records.
 - `full`: include `cliPath` + `sshPort`.
-- Hostname defaults to `openclaw`. Override with `CODERCLAW_MDNS_HOSTNAME`.
+- Hostname defaults to `coderclaw`. Override with `CODERCLAW_MDNS_HOSTNAME`.
 
 ### Wide-area (DNS-SD)
 
@@ -2278,7 +2278,7 @@ Reference env vars in any config string with `${VAR_NAME}`:
 {
   logging: {
     level: "info",
-    file: "/tmp/openclaw/openclaw.log",
+    file: "/tmp/coderclaw/coderclaw.log",
     consoleLevel: "info",
     consoleStyle: "pretty", // pretty | compact | json
     redactSensitive: "tools", // off | tools

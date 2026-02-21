@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { isDiagnosticFlagEnabled, resolveDiagnosticFlags } from "./diagnostic-flags.js";
 import { isMainModule } from "./is-main.js";
 import { buildNodeShellCommand } from "./node-shell.js";
@@ -10,7 +10,7 @@ describe("infra parsing", () => {
     it("merges config + env flags", () => {
       const cfg = {
         diagnostics: { flags: ["telegram.http", "cache.*"] },
-      } as OpenClawConfig;
+      } as CoderClawConfig;
       const env = {
         CODERCLAW_DIAGNOSTICS: "foo,bar",
       } as NodeJS.ProcessEnv;
@@ -59,7 +59,7 @@ describe("infra parsing", () => {
     it("returns false when running under PM2 but this module is imported", () => {
       expect(
         isMainModule({
-          currentFile: "/repo/node_modules/openclaw/dist/index.js",
+          currentFile: "/repo/node_modules/coderclaw/dist/index.js",
           argv: ["node", "/repo/app.js"],
           cwd: "/repo",
           env: { pm_exec_path: "/repo/app.js", pm_id: "0" },

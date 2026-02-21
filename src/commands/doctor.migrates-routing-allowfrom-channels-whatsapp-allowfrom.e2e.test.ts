@@ -86,7 +86,7 @@ describe("doctor command", () => {
     findLegacyGatewayServices.mockResolvedValueOnce([
       {
         platform: "darwin",
-        label: "com.steipete.openclaw.gateway",
+        label: "com.steipete.coderclaw.gateway",
         detail: "loaded",
       },
     ]);

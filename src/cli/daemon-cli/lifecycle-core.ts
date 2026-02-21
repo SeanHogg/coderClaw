@@ -286,7 +286,7 @@ export async function runServiceRestart(params: {
       const configToken =
         cfg.gateway?.auth?.token ||
         process.env.CODERCLAW_GATEWAY_TOKEN ||
-        process.env.CLAWDBOT_GATEWAY_TOKEN;
+        process.env.CODERCLAW_GATEWAY_TOKEN;
       const driftIssue = checkTokenDrift({ serviceToken, configToken });
       if (driftIssue) {
         const warning = driftIssue.detail

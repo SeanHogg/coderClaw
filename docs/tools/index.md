@@ -1,14 +1,14 @@
 ---
-summary: "Agent tool surface for OpenClaw (browser, canvas, nodes, message, cron) replacing legacy `openclaw-*` skills"
+summary: "Agent tool surface for CoderClaw (browser, canvas, nodes, message, cron) replacing legacy `coderclaw-*` skills"
 read_when:
   - Adding or modifying agent tools
   - Retiring or changing `coderclaw-*` skills
 title: "Tools"
 ---
 
-# Tools (OpenClaw)
+# Tools (CoderClaw)
 
-OpenClaw exposes **first-class agent tools** for browser, canvas, nodes, and cron.
+CoderClaw exposes **first-class agent tools** for browser, canvas, nodes, and cron.
 These replace the old `coderclaw-*` skills: the tools are typed, no shelling,
 and the agent should rely on them directly.
 
@@ -27,7 +27,7 @@ Notes:
 
 - Matching is case-insensitive.
 - `*` wildcards are supported (`"*"` means all tools).
-- If `tools.allow` only references unknown or unloaded plugin tool names, OpenClaw logs a warning and ignores the allowlist so core tools stay available.
+- If `tools.allow` only references unknown or unloaded plugin tool names, CoderClaw logs a warning and ignores the allowlist so core tools stay available.
 
 ## Tool profiles (base allowlist)
 
@@ -226,7 +226,7 @@ Notes:
 
 ### `loop-detection` (tool-call loop guardrails)
 
-OpenClaw tracks recent tool-call history and blocks or warns when it detects repetitive no-progress loops.
+CoderClaw tracks recent tool-call history and blocks or warns when it detects repetitive no-progress loops.
 Enable with `tools.loopDetection.enabled: true` (default is `false`).
 
 ```json5
@@ -290,7 +290,7 @@ Notes:
 
 ### `browser`
 
-Control the dedicated OpenClaw-managed browser.
+Control the dedicated CoderClaw-managed browser.
 
 Core actions:
 
@@ -481,7 +481,7 @@ Notes:
 - `sessions_spawn` is non-blocking and returns `status: "accepted"` immediately.
 - `sessions_send` runs a reply‑back ping‑pong (reply `REPLY_SKIP` to stop; max turns via `session.agentToAgent.maxPingPongTurns`, 0–5).
 - After the ping‑pong, the target agent runs an **announce step**; reply `ANNOUNCE_SKIP` to suppress the announcement.
-- Sandbox clamp: when the current session is sandboxed and `agents.defaults.sandbox.sessionToolsVisibility: "spawned"`, OpenClaw clamps `tools.sessions.visibility` to `tree`.
+- Sandbox clamp: when the current session is sandboxed and `agents.defaults.sandbox.sessionToolsVisibility: "spawned"`, CoderClaw clamps `tools.sessions.visibility` to `tree`.
 
 ### `agents_list`
 

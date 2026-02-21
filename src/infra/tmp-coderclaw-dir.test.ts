@@ -29,7 +29,7 @@ function resolveWithMocks(params: {
 }
 
 describe("resolvePreferredCoderClawTmpDir", () => {
-  it("prefers /tmp/openclaw when it already exists and is writable", () => {
+  it("prefers /tmp/coderclaw when it already exists and is writable", () => {
     const lstatSync: NonNullable<TmpDirOptions["lstatSync"]> = vi.fn(() => ({
       isDirectory: () => true,
       isSymbolicLink: () => false,
@@ -44,7 +44,7 @@ describe("resolvePreferredCoderClawTmpDir", () => {
     expect(tmpdir).not.toHaveBeenCalled();
   });
 
-  it("prefers /tmp/openclaw when it does not exist but /tmp is writable", () => {
+  it("prefers /tmp/coderclaw when it does not exist but /tmp is writable", () => {
     const lstatSyncMock = vi.fn<NonNullable<TmpDirOptions["lstatSync"]>>(() => {
       const err = new Error("missing") as Error & { code?: string };
       err.code = "ENOENT";
@@ -74,7 +74,7 @@ describe("resolvePreferredCoderClawTmpDir", () => {
     expect(tmpdir).not.toHaveBeenCalled();
   });
 
-  it("falls back to os.tmpdir()/openclaw when /tmp/openclaw is not a directory", () => {
+  it("falls back to os.tmpdir()/coderclaw when /tmp/coderclaw is not a directory", () => {
     const lstatSync = vi.fn(() => ({
       isDirectory: () => false,
       isSymbolicLink: () => false,
@@ -87,7 +87,7 @@ describe("resolvePreferredCoderClawTmpDir", () => {
     expect(tmpdir).toHaveBeenCalledTimes(1);
   });
 
-  it("falls back to os.tmpdir()/openclaw when /tmp is not writable", () => {
+  it("falls back to os.tmpdir()/coderclaw when /tmp is not writable", () => {
     const accessSync = vi.fn((target: string) => {
       if (target === "/tmp") {
         throw new Error("read-only");
@@ -107,7 +107,7 @@ describe("resolvePreferredCoderClawTmpDir", () => {
     expect(tmpdir).toHaveBeenCalledTimes(1);
   });
 
-  it("falls back when /tmp/openclaw is a symlink", () => {
+  it("falls back when /tmp/coderclaw is a symlink", () => {
     const lstatSync = vi.fn(() => ({
       isDirectory: () => true,
       isSymbolicLink: () => true,
@@ -121,7 +121,7 @@ describe("resolvePreferredCoderClawTmpDir", () => {
     expect(tmpdir).toHaveBeenCalledTimes(1);
   });
 
-  it("falls back when /tmp/openclaw is not owned by the current user", () => {
+  it("falls back when /tmp/coderclaw is not owned by the current user", () => {
     const lstatSync = vi.fn(() => ({
       isDirectory: () => true,
       isSymbolicLink: () => false,
@@ -135,7 +135,7 @@ describe("resolvePreferredCoderClawTmpDir", () => {
     expect(tmpdir).toHaveBeenCalledTimes(1);
   });
 
-  it("falls back when /tmp/openclaw is group/other writable", () => {
+  it("falls back when /tmp/coderclaw is group/other writable", () => {
     const lstatSync = vi.fn(() => ({
       isDirectory: () => true,
       isSymbolicLink: () => false,

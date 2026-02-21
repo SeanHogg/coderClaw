@@ -24,14 +24,14 @@ async function writePluginFixture(params: {
     manifest.channels = params.channels;
   }
   await fs.writeFile(
-    path.join(params.dir, "openclaw.plugin.json"),
+    path.join(params.dir, "coderclaw.plugin.json"),
     JSON.stringify(manifest, null, 2),
     "utf-8",
   );
 }
 
 describe("config plugin validation", () => {
-  const fixtureRoot = path.join(os.tmpdir(), "openclaw-config-plugin-validation");
+  const fixtureRoot = path.join(os.tmpdir(), "coderclaw-config-plugin-validation");
   let caseIndex = 0;
 
   function createCaseHome() {

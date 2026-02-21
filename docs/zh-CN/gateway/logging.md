@@ -17,16 +17,16 @@ x-i18n:
 
 面向用户的概览（CLI + Control UI + 配置），请参阅 [/logging](/logging)。
 
-OpenClaw 有两个日志"界面"：
+CoderClaw 有两个日志"界面"：
 
 - **控制台输出**（你在终端 / Debug UI 中看到的内容）。
 - **文件日志**（JSON 行）由 Gateway 网关日志记录器写入。
 
 ## 基于文件的日志记录器
 
-- 默认滚动日志文件位于 `/tmp/openclaw/` 下（每天一个文件）：`openclaw-YYYY-MM-DD.log`
+- 默认滚动日志文件位于 `/tmp/coderclaw/` 下（每天一个文件）：`coderclaw-YYYY-MM-DD.log`
   - 日期使用 Gateway 网关主机的本地时区。
-- 日志文件路径和级别可以通过 `~/.openclaw/coderclaw.json` 配置：
+- 日志文件路径和级别可以通过 `~/.coderclaw/coderclaw.json` 配置：
   - `logging.file`
   - `logging.level`
 

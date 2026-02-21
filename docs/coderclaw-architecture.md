@@ -148,19 +148,19 @@ Workflow Request → Step Definition → Dependency Analysis
 
 ### Layer 4: Integration Layer
 
-The outer layer connecting to OpenClaw infrastructure.
+The outer layer connecting to CoderClaw infrastructure.
 
 #### Components
 
 **Tool System Integration**
 
-- Uses OpenClaw's `AgentTool` interface
+- Uses CoderClaw's `AgentTool` interface
 - Registers coderClaw tools: `code_analysis`, `project_knowledge`, `git_history`, `orchestrate`, `workflow_status`
-- Follows OpenClaw tool conventions
+- Follows CoderClaw tool conventions
 
 **Subagent Integration**
 
-- Leverages OpenClaw's subagent spawning
+- Leverages CoderClaw's subagent spawning
 - Integrates with session management
 - Respects tool policy and security boundaries
 
@@ -180,10 +180,10 @@ The outer layer connecting to OpenClaw infrastructure.
 #### Integration Points
 
 ```
-CoderClaw Tools ←→ OpenClaw Tool System
-Orchestrator ←→ OpenClaw Subagent Spawning
+CoderClaw Tools ←→ CoderClaw Tool System
+Orchestrator ←→ CoderClaw Subagent Spawning
 Task Engine ←→ Transport Layer
-Security ←→ OpenClaw Security Service
+Security ←→ CoderClaw Security Service
 ```
 
 ## Data Structures
@@ -420,7 +420,7 @@ type TaskState = {
 
 ### RBAC Integration
 
-- Workflow execution respects OpenClaw's tool policy
+- Workflow execution respects CoderClaw's tool policy
 - Agent spawning follows security boundaries
 - Distributed execution requires authentication
 

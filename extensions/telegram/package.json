@@ -2,7 +2,7 @@
   "name": "@coderclaw/telegram",
   "version": "2026.2.21",
   "private": true,
-  "description": "OpenClaw Telegram channel plugin",
+  "description": "CoderClaw Telegram channel plugin",
   "type": "module",
   "devDependencies": {
     "coderclaw": "workspace:*"

@@ -10,7 +10,7 @@ title: "Development Channels"
 
 Last updated: 2026-01-21
 
-OpenClaw ships three update channels:
+CoderClaw ships three update channels:
 
 - **stable**: npm dist-tag `latest`.
 - **beta**: npm dist-tag `beta` (builds under test).
@@ -42,7 +42,7 @@ coderclaw update --channel dev
 
 This updates via the corresponding npm dist-tag (`latest`, `beta`, `dev`).
 
-When you **explicitly** switch channels with `--channel`, OpenClaw also aligns
+When you **explicitly** switch channels with `--channel`, CoderClaw also aligns
 the install method:
 
 - `dev` ensures a git checkout (default `~/coderclaw`, override with `CODERCLAW_GIT_DIR`),
@@ -53,7 +53,7 @@ Tip: if you want stable + dev in parallel, keep two clones and point your gatewa
 
 ## Plugins and channels
 
-When you switch channels with `coderclaw update`, OpenClaw also syncs plugin sources:
+When you switch channels with `coderclaw update`, CoderClaw also syncs plugin sources:
 
 - `dev` prefers bundled plugins from the git checkout.
 - `stable` and `beta` restore npm-installed plugin packages.

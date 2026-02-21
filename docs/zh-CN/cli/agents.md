@@ -25,8 +25,8 @@ x-i18n:
 
 ```bash
 coderclaw agents list
-coderclaw agents add work --workspace ~/.openclaw/workspace-work
-coderclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
+coderclaw agents add work --workspace ~/.coderclaw/workspace-work
+coderclaw agents set-identity --workspace ~/.coderclaw/workspace --from-identity
 coderclaw agents set-identity --agent main --avatar avatars/coderclaw.png
 coderclaw agents delete work
 ```
@@ -35,7 +35,7 @@ coderclaw agents delete work
 
 每个智能体工作区可以在工作区根目录包含一个 `IDENTITY.md`：
 
-- 示例路径：`~/.openclaw/workspace/IDENTITY.md`
+- 示例路径：`~/.coderclaw/workspace/IDENTITY.md`
 - `set-identity --from-identity` 从工作区根目录读取（或从显式指定的 `--identity-file` 读取）
 
 头像路径相对于工作区根目录解析。
@@ -52,13 +52,13 @@ coderclaw agents delete work
 从 `IDENTITY.md` 加载：
 
 ```bash
-coderclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
+coderclaw agents set-identity --workspace ~/.coderclaw/workspace --from-identity
 ```
 
 显式覆盖字段：
 
 ```bash
-coderclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/coderclaw.png
+coderclaw agents set-identity --agent main --name "CoderClaw" --emoji "🦞" --avatar avatars/coderclaw.png
 ```
 
 配置示例：
@@ -70,7 +70,7 @@ coderclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --av
       {
         id: "main",
         identity: {
-          name: "OpenClaw",
+          name: "CoderClaw",
           theme: "space lobster",
           emoji: "🦞",
           avatar: "avatars/coderclaw.png",

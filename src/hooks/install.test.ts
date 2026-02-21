@@ -9,7 +9,7 @@ import {
 } from "../test-utils/exec-assertions.js";
 import { isAddressInUseError } from "./gmail-watcher.js";
 
-const fixtureRoot = path.join(os.tmpdir(), `openclaw-hook-install-${randomUUID()}`);
+const fixtureRoot = path.join(os.tmpdir(), `coderclaw-hook-install-${randomUUID()}`);
 let tempDirIndex = 0;
 
 const fixturesDir = path.resolve(process.cwd(), "test", "fixtures", "hooks-install");
@@ -158,7 +158,7 @@ describe("installHooksFromPath", () => {
       JSON.stringify({
         name: "@coderclaw/test-hooks",
         version: "0.0.1",
-        openclaw: { hooks: ["./hooks/one-hook"] },
+        coderclaw: { hooks: ["./hooks/one-hook"] },
         dependencies: { "left-pad": "1.3.0" },
       }),
       "utf-8",
@@ -169,7 +169,7 @@ describe("installHooksFromPath", () => {
         "---",
         "name: one-hook",
         "description: One hook",
-        'metadata: {"openclaw":{"events":["command:new"]}}',
+        'metadata: {"coderclaw":{"events":["command:new"]}}',
         "---",
         "",
         "# One Hook",
@@ -217,7 +217,7 @@ describe("installHooksFromPath", () => {
         "---",
         "name: my-hook",
         "description: My hook",
-        'metadata: {"openclaw":{"events":["command:new"]}}',
+        'metadata: {"coderclaw":{"events":["command:new"]}}',
         "---",
         "",
         "# My Hook",

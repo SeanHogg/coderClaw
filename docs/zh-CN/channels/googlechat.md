@@ -23,7 +23,7 @@ x-i18n:
    - 如果 API 尚未启用，请启用它。
 2. 创建一个**服务账号**：
    - 点击 **Create Credentials** > **Service Account**。
-   - 随意命名（例如 `openclaw-chat`）。
+   - 随意命名（例如 `coderclaw-chat`）。
    - 权限留空（点击 **Continue**）。
    - 有访问权限的主账号留空（点击 **Done**）。
 3. 创建并下载 **JSON 密钥**：
@@ -31,11 +31,11 @@ x-i18n:
    - 前往 **Keys** 标签页。
    - 点击 **Add Key** > **Create new key**。
    - 选择 **JSON** 并点击 **Create**。
-4. 将下载的 JSON 文件存储在 Gateway 网关主机上（例如 `~/.openclaw/googlechat-service-account.json`）。
+4. 将下载的 JSON 文件存储在 Gateway 网关主机上（例如 `~/.coderclaw/googlechat-service-account.json`）。
 5. 在 [Google Cloud Console Chat Configuration](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat) 中创建一个 Google Chat 应用：
    - 填写 **Application info**：
-     - **App name**：（例如 `OpenClaw`）
-     - **Avatar URL**：（例如 `https://openclaw.ai/logo.png`）
+     - **App name**：（例如 `CoderClaw`）
+     - **Avatar URL**：（例如 `https://coderclaw.ai/logo.png`）
      - **Description**：（例如 `Personal AI Assistant`）
    - 启用 **Interactive features**。
    - 在 **Functionality** 下，勾选 **Join spaces and group conversations**。
@@ -50,7 +50,7 @@ x-i18n:
    - 找到 **App status** 部分（通常在保存后位于顶部或底部附近）。
    - 将状态更改为 **Live - available to users**。
    - 再次点击 **Save**。
-7. 使用服务账号路径和 webhook audience 配置 OpenClaw：
+7. 使用服务账号路径和 webhook audience 配置 CoderClaw：
    - 环境变量：`GOOGLE_CHAT_SERVICE_ACCOUNT_FILE=/path/to/service-account.json`
    - 或配置：`channels.googlechat.serviceAccountFile: "/path/to/service-account.json"`。
 8. 设置 webhook audience 类型和值（与你的 Chat 应用配置匹配）。
@@ -70,7 +70,7 @@ Gateway 网关运行后，且你的邮箱已添加到可见性列表中：
 
 ## 公网 URL（仅 Webhook）
 
-Google Chat webhooks 需要一个公网 HTTPS 端点。为了安全起见，**只将 `/googlechat` 路径暴露到互联网**。将 OpenClaw 仪表板和其他敏感端点保留在你的私有网络上。
+Google Chat webhooks 需要一个公网 HTTPS 端点。为了安全起见，**只将 `/googlechat` 路径暴露到互联网**。将 CoderClaw 仪表板和其他敏感端点保留在你的私有网络上。
 
 ### 方案 A：Tailscale Funnel（推荐）
 
@@ -133,7 +133,7 @@ your-domain.com {
 }
 ```
 
-使用此配置，任何发往 `your-domain.com/` 的请求将被忽略或返回 404，而 `your-domain.com/googlechat` 会安全地路由到 OpenClaw。
+使用此配置，任何发往 `your-domain.com/` 的请求将被忽略或返回 404，而 `your-domain.com/googlechat` 会安全地路由到 CoderClaw。
 
 ### 方案 C：Cloudflare Tunnel
 
@@ -145,7 +145,7 @@ your-domain.com {
 ## 工作原理
 
 1. Google Chat 向 Gateway 网关发送 webhook POST 请求。每个请求都包含一个 `Authorization: Bearer <token>` 头。
-2. OpenClaw 根据配置的 `audienceType` + `audience` 验证令牌：
+2. CoderClaw 根据配置的 `audienceType` + `audience` 验证令牌：
    - `audienceType: "app-url"` → audience 是你的 HTTPS webhook URL。
    - `audienceType: "project-number"` → audience 是 Cloud 项目编号。
 3. 消息按空间路由：

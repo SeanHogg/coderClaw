@@ -8,7 +8,7 @@ title: "Brave Search"
 
 # Brave Search API
 
-CoderClaw (built on [OpenClaw](https://github.com/SeanHogg/coderClaw)) uses Brave Search as the default provider for `web_search`.
+CoderClaw (built on [CoderClaw](https://github.com/SeanHogg/coderClaw)) uses Brave Search as the default provider for `web_search`.
 
 ## Get an API key
 

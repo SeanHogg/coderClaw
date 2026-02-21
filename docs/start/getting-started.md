@@ -49,7 +49,7 @@ Check your Node version with `node --version` if you are unsure.
 
     <Note>
     Other install methods and requirements: [Install](/install).
-    Built on [OpenClaw](https://github.com/SeanHogg/coderClaw)'s multi-channel gateway with Phase 2 enhancements.
+    Built on [CoderClaw](https://github.com/SeanHogg/coderClaw)'s multi-channel gateway with Phase 2 enhancements.
     </Note>
 
   </Step>

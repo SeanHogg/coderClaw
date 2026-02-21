@@ -1,14 +1,14 @@
 ---
 summary: "Community plugins: quality bar, hosting requirements, and PR submission path"
 read_when:
-  - You want to publish a third-party OpenClaw plugin
+  - You want to publish a third-party CoderClaw plugin
   - You want to propose a plugin for docs listing
 title: "Community plugins"
 ---
 
 # Community plugins
 
-This page tracks high-quality **community-maintained plugins** for OpenClaw.
+This page tracks high-quality **community-maintained plugins** for CoderClaw.
 
 We accept PRs that add community plugins here when they meet the quality bar.
 

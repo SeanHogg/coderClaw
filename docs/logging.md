@@ -9,7 +9,7 @@ title: "Logging"
 
 # Logging
 
-CoderClaw (built on [OpenClaw](https://github.com/SeanHogg/coderClaw)) logs in two places:
+CoderClaw (built on [CoderClaw](https://github.com/SeanHogg/coderClaw)) logs in two places:
 
 - **File logs** (JSON lines) written by the Gateway.
 - **Console output** shown in terminals and the Control UI.
@@ -30,7 +30,7 @@ You can override this in `~/.coderclaw/coderclaw.json`:
 ```json
 {
   "logging": {
-    "file": "/path/to/openclaw.log"
+    "file": "/path/to/coderclaw.log"
   }
 }
 ```
@@ -150,7 +150,7 @@ diagnostics + the exporter plugin are enabled.
 
 - **OpenTelemetry (OTel)**: the data model + SDKs for traces, metrics, and logs.
 - **OTLP**: the wire protocol used to export OTel data to a collector/backend.
-- OpenClaw exports via **OTLP/HTTP (protobuf)** today.
+- CoderClaw exports via **OTLP/HTTP (protobuf)** today.
 
 ### Signals exported
 
@@ -240,7 +240,7 @@ works with any OpenTelemetry collector/backend that accepts OTLP/HTTP.
       "enabled": true,
       "endpoint": "http://otel-collector:4318",
       "protocol": "http/protobuf",
-      "serviceName": "openclaw-gateway",
+      "serviceName": "coderclaw-gateway",
       "traces": true,
       "metrics": true,
       "logs": true,
@@ -267,60 +267,60 @@ Notes:
 
 Model usage:
 
-- `openclaw.tokens` (counter, attrs: `openclaw.token`, `openclaw.channel`,
-  `openclaw.provider`, `openclaw.model`)
-- `openclaw.cost.usd` (counter, attrs: `openclaw.channel`, `openclaw.provider`,
-  `openclaw.model`)
-- `openclaw.run.duration_ms` (histogram, attrs: `openclaw.channel`,
-  `openclaw.provider`, `openclaw.model`)
-- `openclaw.context.tokens` (histogram, attrs: `openclaw.context`,
-  `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
+- `coderclaw.tokens` (counter, attrs: `coderclaw.token`, `coderclaw.channel`,
+  `coderclaw.provider`, `coderclaw.model`)
+- `coderclaw.cost.usd` (counter, attrs: `coderclaw.channel`, `coderclaw.provider`,
+  `coderclaw.model`)
+- `coderclaw.run.duration_ms` (histogram, attrs: `coderclaw.channel`,
+  `coderclaw.provider`, `coderclaw.model`)
+- `coderclaw.context.tokens` (histogram, attrs: `coderclaw.context`,
+  `coderclaw.channel`, `coderclaw.provider`, `coderclaw.model`)
 
 Message flow:
 
-- `openclaw.webhook.received` (counter, attrs: `openclaw.channel`,
-  `openclaw.webhook`)
-- `openclaw.webhook.error` (counter, attrs: `openclaw.channel`,
-  `openclaw.webhook`)
-- `openclaw.webhook.duration_ms` (histogram, attrs: `openclaw.channel`,
-  `openclaw.webhook`)
-- `openclaw.message.queued` (counter, attrs: `openclaw.channel`,
-  `openclaw.source`)
-- `openclaw.message.processed` (counter, attrs: `openclaw.channel`,
-  `openclaw.outcome`)
-- `openclaw.message.duration_ms` (histogram, attrs: `openclaw.channel`,
-  `openclaw.outcome`)
+- `coderclaw.webhook.received` (counter, attrs: `coderclaw.channel`,
+  `coderclaw.webhook`)
+- `coderclaw.webhook.error` (counter, attrs: `coderclaw.channel`,
+  `coderclaw.webhook`)
+- `coderclaw.webhook.duration_ms` (histogram, attrs: `coderclaw.channel`,
+  `coderclaw.webhook`)
+- `coderclaw.message.queued` (counter, attrs: `coderclaw.channel`,
+  `coderclaw.source`)
+- `coderclaw.message.processed` (counter, attrs: `coderclaw.channel`,
+  `coderclaw.outcome`)
+- `coderclaw.message.duration_ms` (histogram, attrs: `coderclaw.channel`,
+  `coderclaw.outcome`)
 
 Queues + sessions:
 
-- `openclaw.queue.lane.enqueue` (counter, attrs: `openclaw.lane`)
-- `openclaw.queue.lane.dequeue` (counter, attrs: `openclaw.lane`)
-- `openclaw.queue.depth` (histogram, attrs: `openclaw.lane` or
-  `openclaw.channel=heartbeat`)
-- `openclaw.queue.wait_ms` (histogram, attrs: `openclaw.lane`)
-- `openclaw.session.state` (counter, attrs: `openclaw.state`, `openclaw.reason`)
-- `openclaw.session.stuck` (counter, attrs: `openclaw.state`)
-- `openclaw.session.stuck_age_ms` (histogram, attrs: `openclaw.state`)
-- `openclaw.run.attempt` (counter, attrs: `openclaw.attempt`)
+- `coderclaw.queue.lane.enqueue` (counter, attrs: `coderclaw.lane`)
+- `coderclaw.queue.lane.dequeue` (counter, attrs: `coderclaw.lane`)
+- `coderclaw.queue.depth` (histogram, attrs: `coderclaw.lane` or
+  `coderclaw.channel=heartbeat`)
+- `coderclaw.queue.wait_ms` (histogram, attrs: `coderclaw.lane`)
+- `coderclaw.session.state` (counter, attrs: `coderclaw.state`, `coderclaw.reason`)
+- `coderclaw.session.stuck` (counter, attrs: `coderclaw.state`)
+- `coderclaw.session.stuck_age_ms` (histogram, attrs: `coderclaw.state`)
+- `coderclaw.run.attempt` (counter, attrs: `coderclaw.attempt`)
 
 ### Exported spans (names + key attributes)
 
-- `openclaw.model.usage`
-  - `openclaw.channel`, `openclaw.provider`, `openclaw.model`
-  - `openclaw.sessionKey`, `openclaw.sessionId`
-  - `openclaw.tokens.*` (input/output/cache_read/cache_write/total)
-- `openclaw.webhook.processed`
-  - `openclaw.channel`, `openclaw.webhook`, `openclaw.chatId`
-- `openclaw.webhook.error`
-  - `openclaw.channel`, `openclaw.webhook`, `openclaw.chatId`,
-    `openclaw.error`
-- `openclaw.message.processed`
-  - `openclaw.channel`, `openclaw.outcome`, `openclaw.chatId`,
-    `openclaw.messageId`, `openclaw.sessionKey`, `openclaw.sessionId`,
-    `openclaw.reason`
-- `openclaw.session.stuck`
-  - `openclaw.state`, `openclaw.ageMs`, `openclaw.queueDepth`,
-    `openclaw.sessionKey`, `openclaw.sessionId`
+- `coderclaw.model.usage`
+  - `coderclaw.channel`, `coderclaw.provider`, `coderclaw.model`
+  - `coderclaw.sessionKey`, `coderclaw.sessionId`
+  - `coderclaw.tokens.*` (input/output/cache_read/cache_write/total)
+- `coderclaw.webhook.processed`
+  - `coderclaw.channel`, `coderclaw.webhook`, `coderclaw.chatId`
+- `coderclaw.webhook.error`
+  - `coderclaw.channel`, `coderclaw.webhook`, `coderclaw.chatId`,
+    `coderclaw.error`
+- `coderclaw.message.processed`
+  - `coderclaw.channel`, `coderclaw.outcome`, `coderclaw.chatId`,
+    `coderclaw.messageId`, `coderclaw.sessionKey`, `coderclaw.sessionId`,
+    `coderclaw.reason`
+- `coderclaw.session.stuck`
+  - `coderclaw.state`, `coderclaw.ageMs`, `coderclaw.queueDepth`,
+    `coderclaw.sessionKey`, `coderclaw.sessionId`
 
 ### Sampling + flushing
 

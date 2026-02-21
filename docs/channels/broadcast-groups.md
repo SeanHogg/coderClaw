@@ -18,7 +18,7 @@ Broadcast Groups enable multiple agents to process and respond to the same messa
 
 Current scope: **WhatsApp only** (web channel).
 
-Broadcast groups are evaluated after channel allowlists and group activation rules. In WhatsApp groups, this means broadcasts happen when OpenClaw would normally reply (for example: on mention, depending on your group settings).
+Broadcast groups are evaluated after channel allowlists and group activation rules. In WhatsApp groups, this means broadcasts happen when CoderClaw would normally reply (for example: on mention, depending on your group settings).
 
 ## Use Cases
 
@@ -83,7 +83,7 @@ Add a top-level `broadcast` section (next to `bindings`). Keys are WhatsApp peer
 }
 ```
 
-**Result:** When OpenClaw would reply in this chat, it will run all three agents.
+**Result:** When CoderClaw would reply in this chat, it will run all three agents.
 
 ### Processing Strategy
 
@@ -192,7 +192,7 @@ In group `120363403215116621@g.us` with agents `["alfred", "baerbel"]`:
 ```
 Session: agent:alfred:whatsapp:group:120363403215116621@g.us
 History: [user message, alfred's previous responses]
-Workspace: /Users/pascal/openclaw-alfred/
+Workspace: /Users/pascal/coderclaw-alfred/
 Tools: read, write, exec
 ```
 
@@ -201,7 +201,7 @@ Tools: read, write, exec
 ```
 Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
 History: [user message, baerbel's previous responses]
-Workspace: /Users/pascal/openclaw-baerbel/
+Workspace: /Users/pascal/coderclaw-baerbel/
 Tools: read only
 ```
 
@@ -403,7 +403,7 @@ tail -f ~/.coderclaw/logs/gateway.log | grep broadcast
 ### Config Schema
 
 ```typescript
-interface OpenClawConfig {
+interface CoderClawConfig {
   broadcast?: {
     strategy?: "parallel" | "sequential";
     [peerId: string]: string[];

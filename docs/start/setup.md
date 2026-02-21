@@ -1,5 +1,5 @@
 ---
-summary: "Advanced setup and development workflows for OpenClaw"
+summary: "Advanced setup and development workflows for CoderClaw"
 read_when:
   - Setting up a new machine
   - You want “latest + greatest” without breaking your personal setup
@@ -58,7 +58,7 @@ node coderclaw.mjs gateway --port 18789 --verbose
 
 ## Stable workflow (macOS app first)
 
-1. Install + launch **OpenClaw.app** (menu bar).
+1. Install + launch **CoderClaw.app** (menu bar).
 2. Complete the onboarding/permissions checklist (TCC prompts).
 3. Ensure Gateway is **Local** and running (the app manages it).
 4. Link surfaces (example: WhatsApp):
@@ -100,7 +100,7 @@ pnpm gateway:watch
 
 ### 2) Point the macOS app at your running Gateway
 
-In **OpenClaw.app**:
+In **CoderClaw.app**:
 
 - Connection Mode: **Local**
   The app will attach to the running gateway on the configured port.
@@ -120,7 +120,7 @@ coderclaw health
 - **Where state lives:**
   - Credentials: `~/.coderclaw/credentials/`
   - Sessions: `~/.coderclaw/agents/<agentId>/sessions/`
-  - Logs: `/tmp/openclaw/`
+  - Logs: `/tmp/coderclaw/`
 
 ## Credential storage map
 
@@ -137,7 +137,7 @@ Use this when debugging auth or deciding what to back up:
 
 ## Updating (without wrecking your setup)
 
-- Keep `~/.coderclaw/workspace` and `~/.coderclaw/` as “your stuff”; don’t put personal prompts/config into the `openclaw` repo.
+- Keep `~/.coderclaw/workspace` and `~/.coderclaw/` as “your stuff”; don’t put personal prompts/config into the `coderclaw` repo.
 - Updating source: `git pull` + `pnpm install` (when lockfile changed) + keep using `pnpm gateway:watch`.
 
 ## Linux (systemd user service)
@@ -158,5 +158,5 @@ user service (no lingering needed). See [Gateway runbook](/gateway) for the syst
 - [Gateway runbook](/gateway) (flags, supervision, ports)
 - [Gateway configuration](/gateway/configuration) (config schema + examples)
 - [Discord](/channels/discord) and [Telegram](/channels/telegram) (reply tags + replyToMode settings)
-- [OpenClaw assistant setup](/start/openclaw)
+- [CoderClaw assistant setup](/start/coderclaw)
 - [macOS app](/platforms/macos) (gateway lifecycle)

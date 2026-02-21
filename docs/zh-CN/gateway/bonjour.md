@@ -15,7 +15,7 @@ x-i18n:
 
 # Bonjour / mDNS 设备发现
 
-OpenClaw 使用 Bonjour（mDNS / DNS‑SD）作为**仅限局域网的便捷方式**来发现
+CoderClaw 使用 Bonjour（mDNS / DNS‑SD）作为**仅限局域网的便捷方式**来发现
 活跃的 Gateway 网关（WebSocket 端点）。这是尽力而为的，**不能**替代 SSH 或
 基于 Tailnet 的连接。
 
@@ -33,7 +33,7 @@ OpenClaw 使用 Bonjour（mDNS / DNS‑SD）作为**仅限局域网的便捷方�
 3. 配置 Tailscale **分割 DNS**，使你选择的域名通过该
    DNS 服务器为客户端（包括 iOS）解析。
 
-OpenClaw 支持任何发现域名；`coderclaw.internal.` 只是一个示例。
+CoderClaw 支持任何发现域名；`coderclaw.internal.` 只是一个示例。
 iOS/Android 节点同时浏览 `local.` 和你配置的广域域名。
 
 ### Gateway 网关配置（推荐）
@@ -54,7 +54,7 @@ coderclaw dns setup --apply
 这会安装 CoreDNS 并配置它：
 
 - 仅在 Gateway 网关的 Tailscale 接口上监听 53 端口
-- 从 `~/.openclaw/dns/<domain>.db` 提供你选择的域名服务（示例：`coderclaw.internal.`）
+- 从 `~/.coderclaw/dns/<domain>.db` 提供你选择的域名服务（示例：`coderclaw.internal.`）
 
 从 Tailnet 连接的机器上验证：
 
@@ -80,7 +80,7 @@ Gateway 网关 WS 端口（默认 `18789`）默认绑定到 loopback。对于局
 
 对于仅 Tailnet 的设置：
 
-- 在 `~/.openclaw/coderclaw.json` 中设置 `gateway.bind: "tailnet"`。
+- 在 `~/.coderclaw/coderclaw.json` 中设置 `gateway.bind: "tailnet"`。
 - 重启 Gateway 网关（或重启 macOS 菜单栏应用）。
 
 ## 什么在广播
@@ -104,7 +104,7 @@ Gateway 网关广播小型非机密提示以方便 UI 流程：
 - `canvasPort=<port>`（仅当画布主机启用时；默认 `18793`）
 - `sshPort=<port>`（未覆盖时默认为 22）
 - `transport=gateway`
-- `cliPath=<path>`（可选；可运行的 `openclaw` 入口点的绝对路径）
+- `cliPath=<path>`（可选；可运行的 `coderclaw` 入口点的绝对路径）
 - `tailnetDns=<magicdns>`（当 Tailnet 可用时的可选提示）
 
 ## 在 macOS 上调试
@@ -163,7 +163,7 @@ Bonjour/DNS‑SD 经常将服务实例名称中的字节转义为十进制 `\DDD
 ## 禁用 / 配置
 
 - `CODERCLAW_DISABLE_BONJOUR=1` 禁用广播（旧版：`CODERCLAW_DISABLE_BONJOUR`）。
-- `~/.openclaw/coderclaw.json` 中的 `gateway.bind` 控制 Gateway 网关绑定模式。
+- `~/.coderclaw/coderclaw.json` 中的 `gateway.bind` 控制 Gateway 网关绑定模式。
 - `CODERCLAW_SSH_PORT` 覆盖 TXT 中广播的 SSH 端口（旧版：`CODERCLAW_SSH_PORT`）。
 - `CODERCLAW_TAILNET_DNS` 在 TXT 中发布 MagicDNS 提示（旧版：`CODERCLAW_TAILNET_DNS`）。
 - `CODERCLAW_CLI_PATH` 覆盖广播的 CLI 路径（旧版：`CODERCLAW_CLI_PATH`）。

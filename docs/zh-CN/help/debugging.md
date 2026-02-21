@@ -55,7 +55,7 @@ tsx watch src/entry.ts gateway --force
 
 使用 dev 配置文件来隔离状态，并启动一个安全、可丢弃的调试设置。有**两个** `--dev` 标志：
 
-- **全局 `--dev`（配置文件）：** 将状态隔离到 `~/.openclaw-dev` 下，并将 Gateway 网关端口默认为 `19001`（派生端口随之移动）。
+- **全局 `--dev`（配置文件）：** 将状态隔离到 `~/.coderclaw-dev` 下，并将 Gateway 网关端口默认为 `19001`（派生端口随之移动）。
 - **`gateway --dev`：告诉 Gateway 网关在缺失时自动创建默认配置 + 工作区**（并跳过 BOOTSTRAP.md）。
 
 推荐流程（dev 配置文件 + dev 引导）：
@@ -71,8 +71,8 @@ CODERCLAW_PROFILE=dev coderclaw tui
 
 1. **配置文件隔离**（全局 `--dev`）
    - `CODERCLAW_PROFILE=dev`
-   - `CODERCLAW_STATE_DIR=~/.openclaw-dev`
-   - `CODERCLAW_CONFIG_PATH=~/.openclaw-dev/coderclaw.json`
+   - `CODERCLAW_STATE_DIR=~/.coderclaw-dev`
+   - `CODERCLAW_CONFIG_PATH=~/.coderclaw-dev/coderclaw.json`
    - `CODERCLAW_GATEWAY_PORT=19001`（浏览器/画布相应移动）
 
 2. **Dev 引导**（`gateway --dev`）
@@ -105,9 +105,9 @@ CODERCLAW_PROFILE=dev coderclaw gateway --dev --reset
 coderclaw gateway stop
 ```
 
-## 原始流日志（OpenClaw）
+## 原始流日志（CoderClaw）
 
-OpenClaw 可以在任何过滤/格式化之前记录**原始助手流**。
+CoderClaw 可以在任何过滤/格式化之前记录**原始助手流**。
 这是查看推理是否作为纯文本增量到达（或作为单独的思考块）的最佳方式。
 
 通过 CLI 启用：
@@ -119,19 +119,19 @@ pnpm gateway:watch --force --raw-stream
 可选路径覆盖：
 
 ```bash
-pnpm gateway:watch --force --raw-stream --raw-stream-path ~/.openclaw/logs/raw-stream.jsonl
+pnpm gateway:watch --force --raw-stream --raw-stream-path ~/.coderclaw/logs/raw-stream.jsonl
 ```
 
 等效环境变量：
 
 ```bash
 CODERCLAW_RAW_STREAM=1
-CODERCLAW_RAW_STREAM_PATH=~/.openclaw/logs/raw-stream.jsonl
+CODERCLAW_RAW_STREAM_PATH=~/.coderclaw/logs/raw-stream.jsonl
 ```
 
 默认文件：
 
-`~/.openclaw/logs/raw-stream.jsonl`
+`~/.coderclaw/logs/raw-stream.jsonl`
 
 ## 原始块日志（pi-mono）
 

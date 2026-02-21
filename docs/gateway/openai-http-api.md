@@ -7,7 +7,7 @@ title: "OpenAI Chat Completions"
 
 # OpenAI Chat Completions (HTTP)
 
-OpenClaw’s Gateway can serve a small OpenAI-compatible Chat Completions endpoint.
+CoderClaw’s Gateway can serve a small OpenAI-compatible Chat Completions endpoint.
 
 This endpoint is **disabled by default**. Enable it in config first.
 
@@ -32,16 +32,16 @@ Notes:
 
 No custom headers required: encode the agent id in the OpenAI `model` field:
 
-- `model: "openclaw:<agentId>"` (example: `"openclaw:main"`, `"openclaw:beta"`)
+- `model: "coderclaw:<agentId>"` (example: `"coderclaw:main"`, `"coderclaw:beta"`)
 - `model: "agent:<agentId>"` (alias)
 
-Or target a specific OpenClaw agent by header:
+Or target a specific CoderClaw agent by header:
 
-- `x-openclaw-agent-id: <agentId>` (default: `main`)
+- `x-coderclaw-agent-id: <agentId>` (default: `main`)
 
 Advanced:
 
-- `x-openclaw-session-key: <sessionKey>` to fully control session routing.
+- `x-coderclaw-session-key: <sessionKey>` to fully control session routing.
 
 ## Enabling the endpoint
 
@@ -97,9 +97,9 @@ Non-streaming:
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
   -H 'Authorization: Bearer YOUR_TOKEN' \
   -H 'Content-Type: application/json' \
-  -H 'x-openclaw-agent-id: main' \
+  -H 'x-coderclaw-agent-id: main' \
   -d '{
-    "model": "openclaw",
+    "model": "coderclaw",
     "messages": [{"role":"user","content":"hi"}]
   }'
 ```
@@ -110,9 +110,9 @@ Streaming:
 curl -N http://127.0.0.1:18789/v1/chat/completions \
   -H 'Authorization: Bearer YOUR_TOKEN' \
   -H 'Content-Type: application/json' \
-  -H 'x-openclaw-agent-id: main' \
+  -H 'x-coderclaw-agent-id: main' \
   -d '{
-    "model": "openclaw",
+    "model": "coderclaw",
     "stream": true,
     "messages": [{"role":"user","content":"hi"}]
   }'

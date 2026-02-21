@@ -61,7 +61,7 @@ Client                    Gateway
 - 服务器握手 + 方法分发：`src/gateway/server.ts`
 - 节点客户端：`src/gateway/client.ts`
 - 生成的 JSON Schema：`dist/protocol.schema.json`
-- 生成的 Swift 模型：`apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- 生成的 Swift 模型：`apps/macos/Sources/CoderClawProtocol/GatewayModels.swift`
 
 ## 当前流程
 
@@ -91,7 +91,7 @@ Connect（第一条消息）：
     "minProtocol": 2,
     "maxProtocol": 2,
     "client": {
-      "id": "openclaw-macos",
+      "id": "coderclaw-macos",
       "displayName": "macos",
       "version": "1.0.0",
       "platform": "macos 15.1",

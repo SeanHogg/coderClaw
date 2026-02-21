@@ -3,11 +3,11 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 let modelsListCommand: typeof import("./models/list.list-command.js").modelsListCommand;
 
 const loadConfig = vi.fn();
-const ensureOpenClawModelsJson = vi.fn().mockResolvedValue(undefined);
+const ensureCoderClawModelsJson = vi.fn().mockResolvedValue(undefined);
 const ensurePiAuthJsonFromAuthProfiles = vi
   .fn()
   .mockResolvedValue({ wrote: false, authPath: "/tmp/coderclaw-agent/auth.json" });
-const resolveOpenClawAgentDir = vi.fn().mockReturnValue("/tmp/coderclaw-agent");
+const resolveCoderClawAgentDir = vi.fn().mockReturnValue("/tmp/coderclaw-agent");
 const ensureAuthProfileStore = vi.fn().mockReturnValue({ version: 1, profiles: {} });
 const listProfilesForProvider = vi.fn().mockReturnValue([]);
 const resolveAuthProfileDisplayLabel = vi.fn(({ profileId }: { profileId: string }) => profileId);
@@ -33,7 +33,7 @@ vi.mock("../config/config.js", () => ({
 }));
 
 vi.mock("../agents/models-config.js", () => ({
-  ensureOpenClawModelsJson,
+  ensureCoderClawModelsJson,
 }));
 
 vi.mock("../agents/pi-auth-json.js", () => ({
@@ -41,7 +41,7 @@ vi.mock("../agents/pi-auth-json.js", () => ({
 }));
 
 vi.mock("../agents/agent-paths.js", () => ({
-  resolveOpenClawAgentDir,
+  resolveCoderClawAgentDir,
 }));
 
 vi.mock("../agents/auth-profiles.js", () => ({

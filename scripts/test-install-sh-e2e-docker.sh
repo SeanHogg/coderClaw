@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-IMAGE_NAME="${CODERCLAW_INSTALL_E2E_IMAGE:-${CODERCLAW_INSTALL_E2E_IMAGE:-openclaw-install-e2e:local}}"
+IMAGE_NAME="${CODERCLAW_INSTALL_E2E_IMAGE:-${CODERCLAW_INSTALL_E2E_IMAGE:-coderclaw-install-e2e:local}}"
 INSTALL_URL="${CODERCLAW_INSTALL_URL:-${CODERCLAW_INSTALL_URL:-https://coderclaw.ai/install.sh}}"
 
 OPENAI_API_KEY="${OPENAI_API_KEY:-}"

@@ -2,7 +2,7 @@
 summary: "Research notes: offline memory system for Clawd workspaces (Markdown source-of-truth + derived index)"
 read_when:
   - Designing workspace memory (~/.coderclaw/workspace) beyond daily Markdown logs
-  - Deciding: standalone CLI vs deep OpenClaw integration
+  - Deciding: standalone CLI vs deep CoderClaw integration
   - Adding offline recall + reflection (retain/recall/reflect)
 title: "Workspace Memory Research"
 ---
@@ -25,7 +25,7 @@ The current setup (one file per day) is excellent for:
 It’s weak for:
 
 - high-recall retrieval (“what did we decide about X?”, “last time we tried Y?”)
-- entity-centric answers (“tell me about Alice / The Castle / warelay”) without rereading many files
+- entity-centric answers (“tell me about Alice / The Castle / coderclaw”) without rereading many files
 - opinion/preference stability (and evidence when it changes)
 - time constraints (“what was true during Nov 2025?”) and conflict resolution
 
@@ -74,7 +74,7 @@ Suggested workspace layout:
     entities/
       Peter.md
       The-Castle.md
-      warelay.md
+      coderclaw.md
       ...
 ```
 
@@ -118,14 +118,14 @@ Example:
 ```
 ## Retain
 - W @Peter: Currently in Marrakech (Nov 27–Dec 1, 2025) for Andy’s birthday.
-- B @warelay: I fixed the Baileys WS crash by wrapping connection.update handlers in try/catch (see memory/2025-11-27.md).
+- B @coderclaw: I fixed the Baileys WS crash by wrapping connection.update handlers in try/catch (see memory/2025-11-27.md).
 - O(c=0.95) @Peter: Prefers concise replies (&lt;1500 chars) on WhatsApp; long content goes into files.
 ```
 
 Minimal parsing:
 
 - Type prefix: `W` (world), `B` (experience/biographical), `O` (opinion), `S` (observation/summary; usually generated)
-- Entities: `@Peter`, `@warelay`, etc (slugs map to `bank/entities/*.md`)
+- Entities: `@Peter`, `@coderclaw`, etc (slugs map to `bank/entities/*.md`)
 - Opinion confidence: `O(c=0.0..1.0)` optional
 
 If you don’t want authors to think about it: the reflect job can infer these bullets from the rest of the log, but having an explicit `## Retain` section is the easiest “quality lever”.
@@ -143,7 +143,7 @@ Return format should be agent-friendly and cite sources:
 
 - `kind` (`world|experience|opinion|observation`)
 - `timestamp` (source day, or extracted time range if present)
-- `entities` (`["Peter","warelay"]`)
+- `entities` (`["Peter","coderclaw"]`)
 - `content` (the narrative fact)
 - `source` (`memory/2025-11-27.md#L12` etc)
 
@@ -168,11 +168,11 @@ Opinion evolution (simple, explainable):
 
 ## CLI integration: standalone vs deep integration
 
-Recommendation: **deep integration in OpenClaw**, but keep a separable core library.
+Recommendation: **deep integration in CoderClaw**, but keep a separable core library.
 
-### Why integrate into OpenClaw?
+### Why integrate into CoderClaw?
 
-- OpenClaw already knows:
+- CoderClaw already knows:
   - the workspace path (`agents.defaults.workspace`)
   - the session model + heartbeats
   - logging + troubleshooting patterns

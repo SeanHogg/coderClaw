@@ -6,10 +6,10 @@ describe("formatPluginSourceForTable", () => {
     const out = formatPluginSourceForTable(
       {
         origin: "bundled",
-        source: "/opt/homebrew/lib/node_modules/openclaw/extensions/bluebubbles/index.ts",
+        source: "/opt/homebrew/lib/node_modules/coderclaw/extensions/bluebubbles/index.ts",
       },
       {
-        stock: "/opt/homebrew/lib/node_modules/openclaw/extensions",
+        stock: "/opt/homebrew/lib/node_modules/coderclaw/extensions",
         global: "/Users/x/.coderclaw/extensions",
         workspace: "/Users/x/ws/.coderclaw/extensions",
       },
@@ -25,7 +25,7 @@ describe("formatPluginSourceForTable", () => {
         source: "/Users/x/ws/.coderclaw/extensions/matrix/index.ts",
       },
       {
-        stock: "/opt/homebrew/lib/node_modules/openclaw/extensions",
+        stock: "/opt/homebrew/lib/node_modules/coderclaw/extensions",
         global: "/Users/x/.coderclaw/extensions",
         workspace: "/Users/x/ws/.coderclaw/extensions",
       },
@@ -41,7 +41,7 @@ describe("formatPluginSourceForTable", () => {
         source: "/Users/x/.coderclaw/extensions/zalo/index.js",
       },
       {
-        stock: "/opt/homebrew/lib/node_modules/openclaw/extensions",
+        stock: "/opt/homebrew/lib/node_modules/coderclaw/extensions",
         global: "/Users/x/.coderclaw/extensions",
         workspace: "/Users/x/ws/.coderclaw/extensions",
       },

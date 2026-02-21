@@ -36,7 +36,7 @@ function replyText(res: Awaited<ReturnType<typeof getReplyFromConfig>>) {
 describe("trigger handling", () => {
   it("runs /compact as a gated command", async () => {
     await withTempHome(async (home) => {
-      const storePath = join(tmpdir(), `openclaw-session-test-${Date.now()}.json`);
+      const storePath = join(tmpdir(), `coderclaw-session-test-${Date.now()}.json`);
       mockSuccessfulCompaction();
 
       const res = await getReplyFromConfig(

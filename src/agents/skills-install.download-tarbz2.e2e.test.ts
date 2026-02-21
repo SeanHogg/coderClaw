@@ -85,7 +85,7 @@ async function writeTarBz2Skill(params: {
   });
 }
 
-function restoreOpenClawStateDir(originalValue: string | undefined): void {
+function restoreCoderClawStateDir(originalValue: string | undefined): void {
   if (originalValue === undefined) {
     delete process.env.CODERCLAW_STATE_DIR;
     return;
@@ -96,7 +96,7 @@ function restoreOpenClawStateDir(originalValue: string | undefined): void {
 const originalStateDir = process.env.CODERCLAW_STATE_DIR;
 
 afterEach(() => {
-  restoreOpenClawStateDir(originalStateDir);
+  restoreCoderClawStateDir(originalStateDir);
 });
 
 vi.mock("../process/exec.js", () => ({

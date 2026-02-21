@@ -269,7 +269,7 @@ capabilities:
 
 ### With Existing Skills
 
-Combine coderClaw with other OpenClaw skills:
+Combine coderClaw with other CoderClaw skills:
 
 \`\`\`bash
 
@@ -284,7 +284,7 @@ orchestrate workflow:feature description:"Feature X"
 
 ### With Memory System
 
-coderClaw integrates with OpenClaw's memory:
+coderClaw integrates with CoderClaw's memory:
 
 - Project knowledge stored in `.coderClaw/memory/`
 - Semantic search available via memory tool

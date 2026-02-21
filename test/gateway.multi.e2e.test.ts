@@ -93,8 +93,8 @@ const spawnGatewayInstance = async (name: string): Promise<GatewayInstance> => {
   const port = await getFreePort();
   const hookToken = `token-${name}-${randomUUID()}`;
   const gatewayToken = `gateway-${name}-${randomUUID()}`;
-  const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), `openclaw-e2e-${name}-`));
-  const configDir = path.join(homeDir, ".openclaw");
+  const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), `coderclaw-e2e-${name}-`));
+  const configDir = path.join(homeDir, ".coderclaw");
   await fs.mkdir(configDir, { recursive: true });
   const configPath = path.join(configDir, "coderclaw.json");
   const stateDir = path.join(configDir, "state");
@@ -356,7 +356,7 @@ describe("gateway multi-instance e2e", () => {
             text: "wake a",
             mode: "now",
           },
-          { "x-openclaw-token": gwA.hookToken },
+          { "x-coderclaw-token": gwA.hookToken },
         ),
         postJson(
           `http://127.0.0.1:${gwB.port}/hooks/wake`,
@@ -364,7 +364,7 @@ describe("gateway multi-instance e2e", () => {
             text: "wake b",
             mode: "now",
           },
-          { "x-openclaw-token": gwB.hookToken },
+          { "x-coderclaw-token": gwB.hookToken },
         ),
       ]);
       expect(hookResA.status).toBe(200);

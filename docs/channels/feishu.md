@@ -8,7 +8,7 @@ title: Feishu
 
 # Feishu bot
 
-Feishu (Lark) is a team chat platform used by companies for messaging and collaboration. This plugin connects OpenClaw to a Feishu/Lark bot using the platform’s WebSocket event subscription so messages can be received without exposing a public webhook URL.
+Feishu (Lark) is a team chat platform used by companies for messaging and collaboration. This plugin connects CoderClaw to a Feishu/Lark bot using the platform’s WebSocket event subscription so messages can be received without exposing a public webhook URL.
 
 ---
 
@@ -34,7 +34,7 @@ There are two ways to add the Feishu channel:
 
 ### Method 1: onboarding wizard (recommended)
 
-If you just installed OpenClaw, run the wizard:
+If you just installed CoderClaw, run the wizard:
 
 ```bash
 coderclaw onboard
@@ -43,7 +43,7 @@ coderclaw onboard
 The wizard guides you through:
 
 1. Creating a Feishu app and collecting credentials
-2. Configuring app credentials in OpenClaw
+2. Configuring app credentials in CoderClaw
 3. Starting the gateway
 
 ✅ **After configuration**, check gateway status:
@@ -161,7 +161,7 @@ In **Event Subscription**:
 
 ---
 
-## Step 2: Configure OpenClaw
+## Step 2: Configure CoderClaw
 
 ### Configure with the wizard (recommended)
 
@@ -476,12 +476,12 @@ Use `bindings` to route Feishu DMs or groups to different agents.
       {
         id: "clawd-fan",
         workspace: "/home/user/clawd-fan",
-        agentDir: "/home/user/.openclaw/agents/clawd-fan/agent",
+        agentDir: "/home/user/.coderclaw/agents/clawd-fan/agent",
       },
       {
         id: "clawd-xi",
         workspace: "/home/user/clawd-xi",
-        agentDir: "/home/user/.openclaw/agents/clawd-xi/agent",
+        agentDir: "/home/user/.coderclaw/agents/clawd-xi/agent",
       },
     ],
   },

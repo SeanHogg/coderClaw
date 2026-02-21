@@ -6,8 +6,8 @@ import {
 } from "./redact-snapshot.js";
 import { __test__ } from "./schema.hints.js";
 import type { ConfigUiHints } from "./schema.js";
-import type { ConfigFileSnapshot } from "./types.openclaw.js";
-import { OpenClawSchema } from "./zod-schema.js";
+import type { ConfigFileSnapshot } from "./types.coderclaw.js";
+import { CoderClawSchema } from "./zod-schema.js";
 
 const { mapSensitivePaths } = __test__;
 
@@ -192,9 +192,9 @@ describe("redactConfigSnapshot", () => {
     const snapshot = makeSnapshot({
       channels: {
         irc: {
-          passwordFile: "/etc/openclaw/irc-password.txt",
+          passwordFile: "/etc/coderclaw/irc-password.txt",
           nickserv: {
-            passwordFile: "/etc/openclaw/nickserv-password.txt",
+            passwordFile: "/etc/coderclaw/nickserv-password.txt",
             password: "super-secret-nickserv-password",
           },
         },
@@ -206,8 +206,8 @@ describe("redactConfigSnapshot", () => {
     const irc = channels.irc;
     const nickserv = irc.nickserv as Record<string, unknown>;
 
-    expect(irc.passwordFile).toBe("/etc/openclaw/irc-password.txt");
-    expect(nickserv.passwordFile).toBe("/etc/openclaw/nickserv-password.txt");
+    expect(irc.passwordFile).toBe("/etc/coderclaw/irc-password.txt");
+    expect(nickserv.passwordFile).toBe("/etc/coderclaw/nickserv-password.txt");
     expect(nickserv.password).toBe(REDACTED_SENTINEL);
   });
 
@@ -899,12 +899,12 @@ describe("restoreRedactedValues", () => {
 
 describe("realredactConfigSnapshot_real", () => {
   it("main schema redact works (samples)", () => {
-    const schema = OpenClawSchema.toJSONSchema({
+    const schema = CoderClawSchema.toJSONSchema({
       target: "draft-07",
       unrepresentable: "any",
     });
-    schema.title = "OpenClawConfig";
-    const hints = mapSensitivePaths(OpenClawSchema, "", {});
+    schema.title = "CoderClawConfig";
+    const hints = mapSensitivePaths(CoderClawSchema, "", {});
 
     const snapshot = makeSnapshot({
       agents: {

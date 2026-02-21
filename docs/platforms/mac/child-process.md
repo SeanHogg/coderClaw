@@ -19,7 +19,7 @@ If you need tighter coupling to the UI, run the Gateway manually in a terminal.
 ## Default behavior (launchd)
 
 - The app installs a per‑user LaunchAgent labeled `bot.molt.gateway`
-  (or `bot.molt.<profile>` when using `--profile`/`CODERCLAW_PROFILE`; legacy `com.openclaw.*` is supported).
+  (or `bot.molt.<profile>` when using `--profile`/`CODERCLAW_PROFILE`; legacy `com.coderclaw.*` is supported).
 - When Local mode is enabled, the app ensures the LaunchAgent is loaded and
   starts the Gateway if needed.
 - Logs are written to the launchd gateway log path (visible in Debug Settings).

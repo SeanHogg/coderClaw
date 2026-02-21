@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
-import { createOpenClawCodingTools } from "./pi-tools.js";
+import type { CoderClawConfig } from "../config/config.js";
+import { createCoderClawCodingTools } from "./pi-tools.js";
 import type { SandboxContext } from "./sandbox.js";
 import type { SandboxFsBridge, SandboxResolvedPath } from "./sandbox/fs-bridge.js";
 import { createSandboxFsBridgeFromResolver } from "./test-helpers/host-sandbox-fs-bridge.js";
@@ -69,12 +69,12 @@ function createSandbox(params: {
     workspaceDir: params.sandboxRoot,
     agentWorkspaceDir: params.agentRoot,
     workspaceAccess: "rw",
-    containerName: "openclaw-sbx-test",
+    containerName: "coderclaw-sbx-test",
     containerWorkdir: "/workspace",
     fsBridge: params.fsBridge,
     docker: {
-      image: "openclaw-sandbox:bookworm-slim",
-      containerPrefix: "openclaw-sbx-",
+      image: "coderclaw-sandbox:bookworm-slim",
+      containerPrefix: "coderclaw-sbx-",
       workdir: "/workspace",
       readOnlyRoot: true,
       tmpfs: [],
@@ -110,7 +110,7 @@ describe("tools.fs.workspaceOnly", () => {
     await withUnsafeMountedSandboxHarness(async ({ sandboxRoot, agentRoot, sandbox }) => {
       await fs.writeFile(path.join(agentRoot, "secret.txt"), "shh", "utf8");
 
-      const tools = createOpenClawCodingTools({ sandbox, workspaceDir: sandboxRoot });
+      const tools = createCoderClawCodingTools({ sandbox, workspaceDir: sandboxRoot });
       const readTool = tools.find((tool) => tool.name === "read");
       const writeTool = tools.find((tool) => tool.name === "write");
       expect(readTool).toBeDefined();
@@ -128,8 +128,8 @@ describe("tools.fs.workspaceOnly", () => {
     await withUnsafeMountedSandboxHarness(async ({ sandboxRoot, agentRoot, sandbox }) => {
       await fs.writeFile(path.join(agentRoot, "secret.txt"), "shh", "utf8");
 
-      const cfg = { tools: { fs: { workspaceOnly: true } } } as unknown as OpenClawConfig;
-      const tools = createOpenClawCodingTools({ sandbox, workspaceDir: sandboxRoot, config: cfg });
+      const cfg = { tools: { fs: { workspaceOnly: true } } } as unknown as CoderClawConfig;
+      const tools = createCoderClawCodingTools({ sandbox, workspaceDir: sandboxRoot, config: cfg });
       const readTool = tools.find((tool) => tool.name === "read");
       const writeTool = tools.find((tool) => tool.name === "write");
       const editTool = tools.find((tool) => tool.name === "edit");

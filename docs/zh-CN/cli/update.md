@@ -15,7 +15,7 @@ x-i18n:
 
 # `coderclaw update`
 
-安全更新 OpenClaw 并在 stable/beta/dev 渠道之间切换。
+安全更新 CoderClaw 并在 stable/beta/dev 渠道之间切换。
 
 如果你通过 **npm/pnpm** 安装（全局安装，无 git 元数据），更新通过 [更新](/install/updating) 中的包管理器流程进行。
 
@@ -64,7 +64,7 @@ coderclaw update status --timeout 10
 
 ## 工作原理
 
-当你显式切换渠道（`--channel ...`）时，OpenClaw 也会保持安装方式一致：
+当你显式切换渠道（`--channel ...`）时，CoderClaw 也会保持安装方式一致：
 
 - `dev` → 确保存在 git 检出（默认：`~/coderclaw`，可通过 `CODERCLAW_GIT_DIR` 覆盖），更新它，并从该检出安装全局 CLI。
 - `stable`/`beta` → 使用匹配的 dist-tag 从 npm 安装。
@@ -91,7 +91,7 @@ coderclaw update status --timeout 10
 
 ## `--update` 简写
 
-`openclaw --update` 会重写为 `coderclaw update`（便于 shell 和启动脚本使用）。
+`coderclaw --update` 会重写为 `coderclaw update`（便于 shell 和启动脚本使用）。
 
 ## 另请参阅
 

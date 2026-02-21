@@ -115,8 +115,8 @@ function applyGatewaySkipEnv() {
   process.env.CODERCLAW_SKIP_CRON = "1";
   process.env.CODERCLAW_TEST_MINIMAL_GATEWAY = "1";
   process.env.CODERCLAW_BUNDLED_PLUGINS_DIR = tempHome
-    ? path.join(tempHome, "openclaw-test-no-bundled-extensions")
-    : "openclaw-test-no-bundled-extensions";
+    ? path.join(tempHome, "coderclaw-test-no-bundled-extensions")
+    : "coderclaw-test-no-bundled-extensions";
 }
 
 async function resetGatewayTestState(options: { uniqueConfigRoot: boolean }) {
@@ -128,7 +128,7 @@ async function resetGatewayTestState(options: { uniqueConfigRoot: boolean }) {
   }
   applyGatewaySkipEnv();
   if (options.uniqueConfigRoot) {
-    tempConfigRoot = await fs.mkdtemp(path.join(tempHome, "openclaw-test-"));
+    tempConfigRoot = await fs.mkdtemp(path.join(tempHome, "coderclaw-test-"));
   } else {
     tempConfigRoot = path.join(tempHome, ".coderclaw-test");
     await fs.rm(tempConfigRoot, { recursive: true, force: true });

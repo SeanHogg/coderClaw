@@ -1,7 +1,7 @@
 ---
 read_when:
   - 添加或更改 webhook 端点
-  - 将外部系统接入 OpenClaw
+  - 将外部系统接入 CoderClaw
 summary: 用于唤醒和隔离智能体运行的 Webhook 入口
 title: Webhooks
 x-i18n:
@@ -39,7 +39,7 @@ Gateway 网关可以暴露一个小型 HTTP webhook 端点用于外部触发。
 每个请求必须包含 hook 令牌。推荐使用请求头：
 
 - `Authorization: Bearer <token>`（推荐）
-- `x-openclaw-token: <token>`
+- `x-coderclaw-token: <token>`
 - `?token=<token>`（已弃用；会记录警告日志，将在未来的主要版本中移除）
 
 ## 端点
@@ -130,7 +130,7 @@ curl -X POST http://127.0.0.1:18789/hooks/wake \
 
 ```bash
 curl -X POST http://127.0.0.1:18789/hooks/agent \
-  -H 'x-openclaw-token: SECRET' \
+  -H 'x-coderclaw-token: SECRET' \
   -H 'Content-Type: application/json' \
   -d '{"message":"Summarize inbox","name":"Email","wakeMode":"next-heartbeat"}'
 ```
@@ -141,7 +141,7 @@ curl -X POST http://127.0.0.1:18789/hooks/agent \
 
 ```bash
 curl -X POST http://127.0.0.1:18789/hooks/agent \
-  -H 'x-openclaw-token: SECRET' \
+  -H 'x-coderclaw-token: SECRET' \
   -H 'Content-Type: application/json' \
   -d '{"message":"Summarize inbox","name":"Email","model":"openai/gpt-5.2-mini"}'
 ```

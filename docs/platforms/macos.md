@@ -1,14 +1,14 @@
 ---
-summary: "OpenClaw macOS companion app (menu bar + gateway broker)"
+summary: "CoderClaw macOS companion app (menu bar + gateway broker)"
 read_when:
   - Implementing macOS app features
   - Changing gateway lifecycle or node bridging on macOS
 title: "macOS App"
 ---
 
-# OpenClaw macOS Companion (menu bar + gateway broker)
+# CoderClaw macOS Companion (menu bar + gateway broker)
 
-The macOS app is the **menu‑bar companion** for OpenClaw. It owns permissions,
+The macOS app is the **menu‑bar companion** for CoderClaw. It owns permissions,
 manages/attaches to the Gateway locally (launchd or manual), and exposes macOS
 capabilities to the agent as a node.
 
@@ -135,7 +135,7 @@ Safety:
 
 ## Onboarding flow (typical)
 
-1. Install and launch **OpenClaw.app**.
+1. Install and launch **CoderClaw.app**.
 2. Complete the permissions checklist (TCC prompts).
 3. Ensure **Local** mode is active and the Gateway is running.
 4. Install the CLI if you want terminal access.
@@ -143,7 +143,7 @@ Safety:
 ## Build & dev workflow (native)
 
 - `cd apps/macos && swift build`
-- `swift run OpenClaw` (or Xcode)
+- `swift run CoderClaw` (or Xcode)
 - Package app: `scripts/package-mac-app.sh`
 
 ## Debug gateway connectivity (macOS CLI)
@@ -153,8 +153,8 @@ logic that the macOS app uses, without launching the app.
 
 ```bash
 cd apps/macos
-swift run openclaw-mac connect --json
-swift run openclaw-mac discover --timeout 3000 --json
+swift run coderclaw-mac connect --json
+swift run coderclaw-mac discover --timeout 3000 --json
 ```
 
 Connect options:

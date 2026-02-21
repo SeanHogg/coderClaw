@@ -42,7 +42,7 @@ async function expectResetBlockedForNonOwner(params: {
         },
       },
       session: {
-        store: join(tmpdir(), `openclaw-session-test-${Date.now()}.json`),
+        store: join(tmpdir(), `coderclaw-session-test-${Date.now()}.json`),
       },
     },
   );

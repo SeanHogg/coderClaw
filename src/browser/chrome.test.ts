@@ -4,13 +4,13 @@ import os from "node:os";
 import path from "node:path";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import {
-  decorateOpenClawProfile,
+  decorateCoderClawProfile,
   ensureProfileCleanExit,
   findChromeExecutableMac,
   findChromeExecutableWindows,
   isChromeReachable,
   resolveBrowserExecutableForPlatform,
-  stopOpenClawChrome,
+  stopCoderClawChrome,
 } from "./chrome.js";
 import {
   DEFAULT_CODERCLAW_BROWSER_COLOR,
@@ -49,7 +49,7 @@ describe("browser chrome profile decoration", () => {
 
   it("writes expected name + signed ARGB seed to Chrome prefs", async () => {
     const userDataDir = await createUserDataDir();
-    decorateOpenClawProfile(userDataDir, { color: DEFAULT_CODERCLAW_BROWSER_COLOR });
+    decorateCoderClawProfile(userDataDir, { color: DEFAULT_CODERCLAW_BROWSER_COLOR });
 
     const expectedSignedArgb = ((0xff << 24) | 0xff4500) >> 0;
 
@@ -83,7 +83,7 @@ describe("browser chrome profile decoration", () => {
 
   it("best-effort writes name when color is invalid", async () => {
     const userDataDir = await createUserDataDir();
-    decorateOpenClawProfile(userDataDir, { color: "lobster-orange" });
+    decorateCoderClawProfile(userDataDir, { color: "lobster-orange" });
     const localState = await readJson(path.join(userDataDir, "Local State"));
     const profile = localState.profile as Record<string, unknown>;
     const infoCache = profile.info_cache as Record<string, unknown>;
@@ -103,7 +103,7 @@ describe("browser chrome profile decoration", () => {
       "utf-8",
     );
 
-    decorateOpenClawProfile(userDataDir, { color: DEFAULT_CODERCLAW_BROWSER_COLOR });
+    decorateCoderClawProfile(userDataDir, { color: DEFAULT_CODERCLAW_BROWSER_COLOR });
 
     const localState = await readJson(path.join(userDataDir, "Local State"));
     expect(typeof localState.profile).toBe("object");
@@ -122,8 +122,8 @@ describe("browser chrome profile decoration", () => {
 
   it("is idempotent when rerun on an existing profile", async () => {
     const userDataDir = await createUserDataDir();
-    decorateOpenClawProfile(userDataDir, { color: DEFAULT_CODERCLAW_BROWSER_COLOR });
-    decorateOpenClawProfile(userDataDir, { color: DEFAULT_CODERCLAW_BROWSER_COLOR });
+    decorateCoderClawProfile(userDataDir, { color: DEFAULT_CODERCLAW_BROWSER_COLOR });
+    decorateCoderClawProfile(userDataDir, { color: DEFAULT_CODERCLAW_BROWSER_COLOR });
 
     const prefs = await readJson(path.join(userDataDir, "Default", "Preferences"));
     const profile = prefs.profile as Record<string, unknown>;
@@ -231,26 +231,26 @@ describe("browser chrome helpers", () => {
     await expect(isChromeReachable("http://127.0.0.1:12345", 50)).resolves.toBe(false);
   });
 
-  it("stopOpenClawChrome no-ops when process is already killed", async () => {
+  it("stopCoderClawChrome no-ops when process is already killed", async () => {
     const proc = { killed: true, exitCode: null, kill: vi.fn() };
-    await stopOpenClawChrome(
+    await stopCoderClawChrome(
       {
         proc,
         cdpPort: 12345,
-      } as unknown as Parameters<typeof stopOpenClawChrome>[0],
+      } as unknown as Parameters<typeof stopCoderClawChrome>[0],
       10,
     );
     expect(proc.kill).not.toHaveBeenCalled();
   });
 
-  it("stopOpenClawChrome sends SIGTERM and returns once CDP is down", async () => {
+  it("stopCoderClawChrome sends SIGTERM and returns once CDP is down", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
     const proc = { killed: false, exitCode: null, kill: vi.fn() };
-    await stopOpenClawChrome(
+    await stopCoderClawChrome(
       {
         proc,
         cdpPort: 12345,
-      } as unknown as Parameters<typeof stopOpenClawChrome>[0],
+      } as unknown as Parameters<typeof stopCoderClawChrome>[0],
       10,
     );
     expect(proc.kill).toHaveBeenCalledWith("SIGTERM");

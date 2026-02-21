@@ -178,7 +178,7 @@ export function getLaunchCalls() {
 vi.mock("./chrome.js", () => ({
   isChromeCdpReady: vi.fn(async () => state.reachable),
   isChromeReachable: vi.fn(async () => state.reachable),
-  launchOpenClawChrome: vi.fn(async (_resolved: unknown, profile: { cdpPort: number }) => {
+  launchCoderClawChrome: vi.fn(async (_resolved: unknown, profile: { cdpPort: number }) => {
     launchCalls.push({ port: profile.cdpPort });
     state.reachable = true;
     return {
@@ -190,8 +190,8 @@ vi.mock("./chrome.js", () => ({
       proc,
     };
   }),
-  resolveOpenClawUserDataDir: vi.fn(() => chromeUserDataDir.dir),
-  stopOpenClawChrome: vi.fn(async () => {
+  resolveCoderClawUserDataDir: vi.fn(() => chromeUserDataDir.dir),
+  stopCoderClawChrome: vi.fn(async () => {
     state.reachable = false;
   }),
 }));

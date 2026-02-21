@@ -7,7 +7,7 @@ title: "Tlon"
 
 # Tlon (plugin)
 
-Tlon is a decentralized messenger built on Urbit. OpenClaw connects to your Urbit ship and can
+Tlon is a decentralized messenger built on Urbit. CoderClaw connects to your Urbit ship and can
 respond to DMs and group chat messages. Group replies require an @ mention by default and can
 be further restricted via allowlists.
 
@@ -57,7 +57,7 @@ Minimal config (single account):
 
 Private/LAN ship URLs (advanced):
 
-By default, OpenClaw blocks private/internal hostnames and IP ranges for this plugin (SSRF hardening).
+By default, CoderClaw blocks private/internal hostnames and IP ranges for this plugin (SSRF hardening).
 If your ship URL is on a private network (for example `http://192.168.1.50:8080` or `http://localhost:8080`),
 you must explicitly opt in:
 
@@ -144,5 +144,5 @@ Use these with `coderclaw message send` or cron delivery:
 ## Notes
 
 - Group replies require a mention (e.g. `~your-bot-ship`) to respond.
-- Thread replies: if the inbound message is in a thread, OpenClaw replies in-thread.
+- Thread replies: if the inbound message is in a thread, CoderClaw replies in-thread.
 - Media: `sendMedia` falls back to text + URL (no native upload).

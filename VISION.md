@@ -1,6 +1,6 @@
-## OpenClaw Vision
+## CoderClaw Vision
 
-OpenClaw is the AI that actually does things.
+CoderClaw is the AI that actually does things.
 It runs on your devices, in your channels, with your rules.
 
 **CoderClaw** extends this vision with a developer-first, multi-agent AI system for comprehensive software development workflows.
@@ -11,9 +11,9 @@ Project overview and developer docs: [`README.md`](README.md)
 Multi-agent system: [`docs/coderclaw.md`](docs/coderclaw.md)
 Contribution guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
-OpenClaw started as a personal playground to learn AI and build something genuinely useful:
+CoderClaw started as a personal playground to learn AI and build something genuinely useful:
 an assistant that can run real tasks on a real computer.
-It evolved through several names and shells: Warelay -> Clawdbot -> Moltbot -> OpenClaw.
+It evolved through several names and shells: CoderClaw -> CoderClaw -> CoderClaw -> CoderClaw.
 
 **CoderClaw** represents the next evolution: an orchestration engine for code creation, review, testing, debugging, refactoring, and deep codebase understanding.
 
@@ -65,7 +65,7 @@ Contribution rules:
 
 ## Security
 
-Security in OpenClaw is a deliberate tradeoff: strong defaults without killing capability.
+Security in CoderClaw is a deliberate tradeoff: strong defaults without killing capability.
 The goal is to stay powerful for real work while making risky paths explicit and operator-controlled.
 
 Canonical security policy and reporting:
@@ -76,14 +76,14 @@ We prioritize secure defaults, but also expose clear knobs for trusted high-powe
 
 ## Plugins & Memory
 
-OpenClaw has an extensive plugin API.
+CoderClaw has an extensive plugin API.
 Core stays lean; optional capability should usually ship as plugins.
 
 Preferred plugin path is npm package distribution plus local extension loading for development.
 If you build a plugin, host and maintain it in your own repository.
 The bar for adding optional plugins to core is intentionally high.
 Plugin docs: [`docs/tools/plugin.md`](docs/tools/plugin.md)
-Community plugin listing + PR bar: https://docs.openclaw.ai/plugins/community
+Community plugin listing + PR bar: https://docs.coderclaw.ai/plugins/community
 
 Memory is a special plugin slot where only one memory plugin can be active at a time.
 Today we ship multiple memory options; over time we plan to converge on one recommended default path.
@@ -96,7 +96,7 @@ Core skill additions should be rare and require a strong product or security rea
 
 ### MCP Support
 
-OpenClaw supports MCP through `mcporter`: https://github.com/steipete/mcporter
+CoderClaw supports MCP through `mcporter`: https://github.com/steipete/mcporter
 
 This keeps MCP integration flexible and decoupled from core runtime:
 
@@ -109,7 +109,7 @@ If there is an MCP server or feature `mcporter` does not support yet, please ope
 
 ### Setup
 
-OpenClaw is currently terminal-first by design.
+CoderClaw is currently terminal-first by design.
 This keeps setup explicit: users see docs, auth, permissions, and security posture up front.
 
 Long term, we want easier onboarding flows as hardening matures.
@@ -117,8 +117,8 @@ We do not want convenience wrappers that hide critical security decisions from u
 
 ### Why TypeScript?
 
-OpenClaw is primarily an orchestration system: prompts, tools, protocols, and integrations.
-TypeScript was chosen to keep OpenClaw hackable by default.
+CoderClaw is primarily an orchestration system: prompts, tools, protocols, and integrations.
+TypeScript was chosen to keep CoderClaw hackable by default.
 It is widely known, fast to iterate in, and easy to read, modify, and extend.
 
 ## What We Will Not Merge (For Now)

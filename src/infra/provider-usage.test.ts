@@ -299,7 +299,7 @@ describe("provider usage loading", () => {
         env: {
           CODERCLAW_STATE_DIR: (home) => path.join(home, ".coderclaw"),
         },
-        prefix: "openclaw-provider-usage-",
+        prefix: "coderclaw-provider-usage-",
       },
     );
   });

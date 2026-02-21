@@ -1,11 +1,11 @@
 import * as http from "http";
 import * as Lark from "@larksuiteoapi/node-sdk";
 import {
-  type ClawdbotConfig,
+  type CoderClawConfig,
   type RuntimeEnv,
   type HistoryEntry,
   installRequestBodyLimitGuard,
-} from "openclaw/plugin-sdk";
+} from "coderclaw/plugin-sdk";
 import { resolveFeishuAccount, listEnabledFeishuAccounts } from "./accounts.js";
 import { handleFeishuMessage, type FeishuMessageEvent, type FeishuBotAddedEvent } from "./bot.js";
 import { createFeishuWSClient, createEventDispatcher } from "./client.js";
@@ -13,7 +13,7 @@ import { probeFeishu } from "./probe.js";
 import type { ResolvedFeishuAccount } from "./types.js";
 
 export type MonitorFeishuOpts = {
-  config?: ClawdbotConfig;
+  config?: CoderClawConfig;
   runtime?: RuntimeEnv;
   abortSignal?: AbortSignal;
   accountId?: string;
@@ -43,7 +43,7 @@ async function fetchBotOpenId(account: ResolvedFeishuAccount): Promise<string | 
 function registerEventHandlers(
   eventDispatcher: Lark.EventDispatcher,
   context: {
-    cfg: ClawdbotConfig;
+    cfg: CoderClawConfig;
     accountId: string;
     runtime?: RuntimeEnv;
     chatHistories: Map<string, HistoryEntry[]>;
@@ -100,7 +100,7 @@ function registerEventHandlers(
 }
 
 type MonitorAccountParams = {
-  cfg: ClawdbotConfig;
+  cfg: CoderClawConfig;
   account: ResolvedFeishuAccount;
   runtime?: RuntimeEnv;
   abortSignal?: AbortSignal;

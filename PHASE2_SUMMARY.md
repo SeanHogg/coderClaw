@@ -285,14 +285,14 @@ Phase 2 is **fully backward compatible** with Phase 1:
 **Phase 1 (still works):**
 
 ```typescript
-import { globalOrchestrator } from "openclaw/coderclaw";
+import { globalOrchestrator } from "coderclaw/coderclaw";
 const workflow = globalOrchestrator.createWorkflow(steps);
 ```
 
 **Phase 2 (new features):**
 
 ```typescript
-import { CoderClawRuntime, LocalTransportAdapter } from "openclaw/transport";
+import { CoderClawRuntime, LocalTransportAdapter } from "coderclaw/transport";
 const runtime = new CoderClawRuntime(adapter, "local-only");
 const task = await runtime.submitTask(request);
 ```

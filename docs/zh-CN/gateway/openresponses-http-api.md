@@ -15,7 +15,7 @@ x-i18n:
 
 # OpenResponses API（HTTP）
 
-OpenClaw 的 Gateway 网关可以提供兼容 OpenResponses 的 `POST /v1/responses` 端点。
+CoderClaw 的 Gateway 网关可以提供兼容 OpenResponses 的 `POST /v1/responses` 端点。
 
 此端点**默认禁用**。请先在配置中启用。
 
@@ -39,16 +39,16 @@ OpenClaw 的 Gateway 网关可以提供兼容 OpenResponses 的 `POST /v1/respon
 
 无需自定义头：在 OpenResponses `model` 字段中编码智能体 id：
 
-- `model: "openclaw:<agentId>"`（示例：`"openclaw:main"`、`"openclaw:beta"`）
+- `model: "coderclaw:<agentId>"`（示例：`"coderclaw:main"`、`"coderclaw:beta"`）
 - `model: "agent:<agentId>"`（别名）
 
-或通过头指定特定的 OpenClaw 智能体：
+或通过头指定特定的 CoderClaw 智能体：
 
-- `x-openclaw-agent-id: <agentId>`（默认：`main`）
+- `x-coderclaw-agent-id: <agentId>`（默认：`main`）
 
 高级：
 
-- `x-openclaw-session-key: <sessionKey>` 完全控制会话路由。
+- `x-coderclaw-session-key: <sessionKey>` 完全控制会话路由。
 
 ## 启用端点
 
@@ -295,9 +295,9 @@ URL 获取默认值：
 curl -sS http://127.0.0.1:18789/v1/responses \
   -H 'Authorization: Bearer YOUR_TOKEN' \
   -H 'Content-Type: application/json' \
-  -H 'x-openclaw-agent-id: main' \
+  -H 'x-coderclaw-agent-id: main' \
   -d '{
-    "model": "openclaw",
+    "model": "coderclaw",
     "input": "hi"
   }'
 ```
@@ -308,9 +308,9 @@ curl -sS http://127.0.0.1:18789/v1/responses \
 curl -N http://127.0.0.1:18789/v1/responses \
   -H 'Authorization: Bearer YOUR_TOKEN' \
   -H 'Content-Type: application/json' \
-  -H 'x-openclaw-agent-id: main' \
+  -H 'x-coderclaw-agent-id: main' \
   -d '{
-    "model": "openclaw",
+    "model": "coderclaw",
     "stream": true,
     "input": "hi"
   }'

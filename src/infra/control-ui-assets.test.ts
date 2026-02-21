@@ -112,15 +112,15 @@ describe("control UI assets helpers (fs-mocked)", () => {
   });
 
   it("uses resolveCoderClawPackageRoot when available", async () => {
-    const openclawRoot = await import("./coderclaw-root.js");
+    const coderclawRoot = await import("./coderclaw-root.js");
     const { resolveControlUiDistIndexPath } = await import("./control-ui-assets.js");
 
-    const pkgRoot = abs("fixtures/openclaw");
+    const pkgRoot = abs("fixtures/coderclaw");
     (
-      openclawRoot.resolveCoderClawPackageRoot as unknown as ReturnType<typeof vi.fn>
+      coderclawRoot.resolveCoderClawPackageRoot as unknown as ReturnType<typeof vi.fn>
     ).mockResolvedValueOnce(pkgRoot);
 
-    await expect(resolveControlUiDistIndexPath(abs("fixtures/bin/openclaw"))).resolves.toBe(
+    await expect(resolveControlUiDistIndexPath(abs("fixtures/bin/coderclaw"))).resolves.toBe(
       path.join(pkgRoot, "dist", "control-ui", "index.html"),
     );
   });
@@ -140,7 +140,7 @@ describe("control UI assets helpers (fs-mocked)", () => {
   it("returns null when fallback package name does not match", async () => {
     const { resolveControlUiDistIndexPath } = await import("./control-ui-assets.js");
 
-    const root = abs("fixtures/not-openclaw");
+    const root = abs("fixtures/not-coderclaw");
     setFile(path.join(root, "package.json"), JSON.stringify({ name: "malicious-pkg" }));
     setFile(path.join(root, "dist", "control-ui", "index.html"), "<html></html>\n");
 
@@ -181,12 +181,12 @@ describe("control UI assets helpers (fs-mocked)", () => {
   });
 
   it("resolves control-ui root for dist bundle argv1 and moduleUrl candidates", async () => {
-    const openclawRoot = await import("./coderclaw-root.js");
+    const coderclawRoot = await import("./coderclaw-root.js");
     const { resolveControlUiRootSync } = await import("./control-ui-assets.js");
 
-    const pkgRoot = abs("fixtures/openclaw-bundle");
+    const pkgRoot = abs("fixtures/coderclaw-bundle");
     (
-      openclawRoot.resolveCoderClawPackageRootSync as unknown as ReturnType<typeof vi.fn>
+      coderclawRoot.resolveCoderClawPackageRootSync as unknown as ReturnType<typeof vi.fn>
     ).mockReturnValueOnce(pkgRoot);
 
     const uiDir = path.join(pkgRoot, "dist", "control-ui");

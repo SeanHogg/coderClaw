@@ -4,7 +4,7 @@ title: "Pi Development Workflow"
 
 # Pi Development Workflow
 
-This guide summarizes a sane workflow for working on the pi integration in OpenClaw.
+This guide summarizes a sane workflow for working on the pi integration in CoderClaw.
 
 ## Type Checking and Linting
 
@@ -51,7 +51,7 @@ For tool call behavior, prompt for a `read` or `exec` action so you can see tool
 
 ## Clean Slate Reset
 
-State lives under the OpenClaw state directory. Default is `~/.coderclaw`. If `CODERCLAW_STATE_DIR` is set, use that directory instead.
+State lives under the CoderClaw state directory. Default is `~/.coderclaw`. If `CODERCLAW_STATE_DIR` is set, use that directory instead.
 
 To reset everything:
 

@@ -128,7 +128,7 @@ describe("docker-setup.sh", () => {
     const envFile = await readFile(join(sandbox.rootDir, ".env"), "utf8");
     expect(envFile).toContain("CODERCLAW_DOCKER_APT_PACKAGES=ffmpeg build-essential");
     expect(envFile).toContain("CODERCLAW_EXTRA_MOUNTS=");
-    expect(envFile).toContain("CODERCLAW_HOME_VOLUME=openclaw-home");
+    expect(envFile).toContain("CODERCLAW_HOME_VOLUME=coderclaw-home");
     const extraCompose = await readFile(join(sandbox.rootDir, "docker-compose.extra.yml"), "utf8");
     expect(extraCompose).toContain("coderclaw-home:/home/node");
     expect(extraCompose).toContain("volumes:");

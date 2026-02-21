@@ -1,7 +1,7 @@
 ---
 summary: "Zalo personal account support via zca-cli (QR login), capabilities, and configuration"
 read_when:
-  - Setting up Zalo Personal for OpenClaw
+  - Setting up Zalo Personal for CoderClaw
   - Debugging Zalo Personal login or message flow
 title: "Zalo Personal"
 ---
@@ -92,7 +92,7 @@ Approve via:
   - `channels.zalouser.groups` (keys are group IDs or names)
 - Block all groups: `channels.zalouser.groupPolicy = "disabled"`.
 - The configure wizard can prompt for group allowlists.
-- On startup, OpenClaw resolves group/user names in allowlists to IDs and logs the mapping; unresolved entries are kept as typed.
+- On startup, CoderClaw resolves group/user names in allowlists to IDs and logs the mapping; unresolved entries are kept as typed.
 
 Example:
 

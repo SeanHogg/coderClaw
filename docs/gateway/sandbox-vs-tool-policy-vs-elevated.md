@@ -7,7 +7,7 @@ status: active
 
 # Sandbox vs Tool Policy vs Elevated
 
-OpenClaw has three related (but different) controls:
+CoderClaw has three related (but different) controls:
 
 1. **Sandbox** (`agents.defaults.sandbox.*` / `agents.list[].sandbox.*`) decides **where tools run** (Docker vs host).
 2. **Tool policy** (`tools.*`, `tools.sandbox.tools.*`, `agents.list[].tools.*`) decides **which tools are available/allowed**.
@@ -15,7 +15,7 @@ OpenClaw has three related (but different) controls:
 
 ## Quick debug
 
-Use the inspector to see what OpenClaw is _actually_ doing:
+Use the inspector to see what CoderClaw is _actually_ doing:
 
 ```bash
 coderclaw sandbox explain

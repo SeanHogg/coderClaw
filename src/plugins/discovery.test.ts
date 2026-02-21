@@ -3,12 +3,12 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { discoverOpenClawPlugins } from "./discovery.js";
+import { discoverCoderClawPlugins } from "./discovery.js";
 
 const tempDirs: string[] = [];
 
 function makeTempDir() {
-  const dir = path.join(os.tmpdir(), `openclaw-plugins-${randomUUID()}`);
+  const dir = path.join(os.tmpdir(), `coderclaw-plugins-${randomUUID()}`);
   fs.mkdirSync(dir, { recursive: true });
   tempDirs.push(dir);
   return dir;
@@ -45,7 +45,7 @@ afterEach(() => {
   }
 });
 
-describe("discoverOpenClawPlugins", () => {
+describe("discoverCoderClawPlugins", () => {
   it("discovers global and workspace extensions", async () => {
     const stateDir = makeTempDir();
     const workspaceDir = path.join(stateDir, "workspace");
@@ -59,7 +59,7 @@ describe("discoverOpenClawPlugins", () => {
     fs.writeFileSync(path.join(workspaceExt, "beta.ts"), "export default function () {}", "utf-8");
 
     const { candidates } = await withStateDir(stateDir, async () => {
-      return discoverOpenClawPlugins({ workspaceDir });
+      return discoverCoderClawPlugins({ workspaceDir });
     });
 
     const ids = candidates.map((c) => c.idHint);
@@ -76,7 +76,7 @@ describe("discoverOpenClawPlugins", () => {
       path.join(globalExt, "package.json"),
       JSON.stringify({
         name: "pack",
-        openclaw: { extensions: ["./src/one.ts", "./src/two.ts"] },
+        coderclaw: { extensions: ["./src/one.ts", "./src/two.ts"] },
       }),
       "utf-8",
     );
@@ -92,7 +92,7 @@ describe("discoverOpenClawPlugins", () => {
     );
 
     const { candidates } = await withStateDir(stateDir, async () => {
-      return discoverOpenClawPlugins({});
+      return discoverCoderClawPlugins({});
     });
 
     const ids = candidates.map((c) => c.idHint);
@@ -109,7 +109,7 @@ describe("discoverOpenClawPlugins", () => {
       path.join(globalExt, "package.json"),
       JSON.stringify({
         name: "@coderclaw/voice-call",
-        openclaw: { extensions: ["./src/index.ts"] },
+        coderclaw: { extensions: ["./src/index.ts"] },
       }),
       "utf-8",
     );
@@ -120,7 +120,7 @@ describe("discoverOpenClawPlugins", () => {
     );
 
     const { candidates } = await withStateDir(stateDir, async () => {
-      return discoverOpenClawPlugins({});
+      return discoverCoderClawPlugins({});
     });
 
     const ids = candidates.map((c) => c.idHint);
@@ -136,14 +136,14 @@ describe("discoverOpenClawPlugins", () => {
       path.join(packDir, "package.json"),
       JSON.stringify({
         name: "@coderclaw/demo-plugin-dir",
-        openclaw: { extensions: ["./index.js"] },
+        coderclaw: { extensions: ["./index.js"] },
       }),
       "utf-8",
     );
     fs.writeFileSync(path.join(packDir, "index.js"), "module.exports = {}", "utf-8");
 
     const { candidates } = await withStateDir(stateDir, async () => {
-      return discoverOpenClawPlugins({ extraPaths: [packDir] });
+      return discoverCoderClawPlugins({ extraPaths: [packDir] });
     });
 
     const ids = candidates.map((c) => c.idHint);

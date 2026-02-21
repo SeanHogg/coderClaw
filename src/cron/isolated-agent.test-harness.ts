@@ -1,11 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { withTempHome as withTempHomeBase } from "../../test/helpers/temp-home.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import type { CronJob } from "./types.js";
 
 export async function withTempCronHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
-  return withTempHomeBase(fn, { prefix: "openclaw-cron-" });
+  return withTempHomeBase(fn, { prefix: "coderclaw-cron-" });
 }
 
 export async function writeSessionStore(
@@ -36,9 +36,9 @@ export async function writeSessionStore(
 export function makeCfg(
   home: string,
   storePath: string,
-  overrides: Partial<OpenClawConfig> = {},
-): OpenClawConfig {
-  const base: OpenClawConfig = {
+  overrides: Partial<CoderClawConfig> = {},
+): CoderClawConfig {
+  const base: CoderClawConfig = {
     agents: {
       defaults: {
         model: "anthropic/claude-opus-4-5",
@@ -46,7 +46,7 @@ export function makeCfg(
       },
     },
     session: { store: storePath, mainKey: "main" },
-  } as OpenClawConfig;
+  } as CoderClawConfig;
   return { ...base, ...overrides };
 }
 

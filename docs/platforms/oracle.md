@@ -1,19 +1,19 @@
 ---
-summary: "OpenClaw on Oracle Cloud (Always Free ARM)"
+summary: "CoderClaw on Oracle Cloud (Always Free ARM)"
 read_when:
-  - Setting up OpenClaw on Oracle Cloud
-  - Looking for low-cost VPS hosting for OpenClaw
-  - Want 24/7 OpenClaw on a small server
+  - Setting up CoderClaw on Oracle Cloud
+  - Looking for low-cost VPS hosting for CoderClaw
+  - Want 24/7 CoderClaw on a small server
 title: "Oracle Cloud"
 ---
 
-# OpenClaw on Oracle Cloud (OCI)
+# CoderClaw on Oracle Cloud (OCI)
 
 ## Goal
 
-Run a persistent OpenClaw Gateway on Oracle Cloud's **Always Free** ARM tier.
+Run a persistent CoderClaw Gateway on Oracle Cloud's **Always Free** ARM tier.
 
-Oracle’s free tier can be a great fit for OpenClaw (especially if you already have an OCI account), but it comes with tradeoffs:
+Oracle’s free tier can be a great fit for CoderClaw (especially if you already have an OCI account), but it comes with tradeoffs:
 
 - ARM architecture (most things work, but some binaries may be x86-only)
 - Capacity and signup can be finicky
@@ -96,10 +96,10 @@ tailscale status
 
 **From now on, connect via Tailscale:** `ssh ubuntu@coderclaw` (or use the Tailscale IP).
 
-## 5) Install OpenClaw
+## 5) Install CoderClaw
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://coderclaw.ai/install.sh | bash
 source ~/.bashrc
 ```
 
@@ -289,7 +289,7 @@ All state lives in:
 Back up periodically:
 
 ```bash
-tar -czvf openclaw-backup.tar.gz ~/.coderclaw ~/.coderclaw/workspace
+tar -czvf coderclaw-backup.tar.gz ~/.coderclaw ~/.coderclaw/workspace
 ```
 
 ---

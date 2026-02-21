@@ -8,7 +8,7 @@ export function buildPairingReply(params: {
 }): string {
   const { channel, idLine, code } = params;
   return [
-    "OpenClaw: access not configured.",
+    "CoderClaw: access not configured.",
     "",
     idLine,
     "",

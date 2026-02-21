@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { PluginRuntime } from "openclaw/plugin-sdk";
+import type { PluginRuntime } from "coderclaw/plugin-sdk";
 import { describe, expect, it } from "vitest";
 import {
   readNostrBusState,
@@ -12,19 +12,19 @@ import { setNostrRuntime } from "./runtime.js";
 
 async function withTempStateDir<T>(fn: (dir: string) => Promise<T>) {
   const previous = process.env.CODERCLAW_STATE_DIR;
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-nostr-"));
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-nostr-"));
   process.env.CODERCLAW_STATE_DIR = dir;
   setNostrRuntime({
     state: {
       resolveStateDir: (env, homedir) => {
         const stateEnv = env ?? process.env;
         const override =
-          stateEnv.CODERCLAW_STATE_DIR?.trim() || stateEnv.CLAWDBOT_STATE_DIR?.trim();
+          stateEnv.CODERCLAW_STATE_DIR?.trim() || stateEnv.CODERCLAW_STATE_DIR?.trim();
         if (override) {
           return override;
         }
         const resolveHome = homedir ?? os.homedir;
-        return path.join(resolveHome(), ".openclaw");
+        return path.join(resolveHome(), ".coderclaw");
       },
     },
   } as PluginRuntime);

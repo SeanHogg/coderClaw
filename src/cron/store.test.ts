@@ -21,11 +21,11 @@ describe("resolveCronStorePath", () => {
   });
 
   it("uses CODERCLAW_HOME for tilde expansion", () => {
-    vi.stubEnv("CODERCLAW_HOME", "/srv/openclaw-home");
+    vi.stubEnv("CODERCLAW_HOME", "/srv/coderclaw-home");
     vi.stubEnv("HOME", "/home/other");
 
     const result = resolveCronStorePath("~/cron/jobs.json");
-    expect(result).toBe(path.resolve("/srv/openclaw-home", "cron", "jobs.json"));
+    expect(result).toBe(path.resolve("/srv/coderclaw-home", "cron", "jobs.json"));
   });
 });
 

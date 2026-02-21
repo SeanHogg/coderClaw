@@ -15,7 +15,7 @@ function createDeps() {
       shell: "zsh" as const,
       profileInstalled: false,
       cacheExists: false,
-      cachePath: "/tmp/openclaw.zsh",
+      cachePath: "/tmp/coderclaw.zsh",
       usesSlowPattern: false,
     })),
     ensureCompletionCacheExists: vi.fn(async (_binName: string) => true),

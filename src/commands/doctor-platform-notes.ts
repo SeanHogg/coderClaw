@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { note } from "../terminal/note.js";
 import { shortenHomePath } from "../utils.js";
 
@@ -43,7 +43,7 @@ async function launchctlGetenv(name: string): Promise<string | undefined> {
   }
 }
 
-function hasConfigGatewayCreds(cfg: OpenClawConfig): boolean {
+function hasConfigGatewayCreds(cfg: CoderClawConfig): boolean {
   const localToken =
     typeof cfg.gateway?.auth?.token === "string" ? cfg.gateway?.auth?.token.trim() : "";
   const localPassword =
@@ -56,7 +56,7 @@ function hasConfigGatewayCreds(cfg: OpenClawConfig): boolean {
 }
 
 export async function noteMacLaunchctlGatewayEnvOverrides(
-  cfg: OpenClawConfig,
+  cfg: CoderClawConfig,
   deps?: {
     platform?: NodeJS.Platform;
     getenv?: (name: string) => Promise<string | undefined>;
@@ -73,8 +73,8 @@ export async function noteMacLaunchctlGatewayEnvOverrides(
 
   const getenv = deps?.getenv ?? launchctlGetenv;
   const deprecatedLaunchctlEntries = [
-    ["CLAWDBOT_GATEWAY_TOKEN", await getenv("CLAWDBOT_GATEWAY_TOKEN")],
-    ["CLAWDBOT_GATEWAY_PASSWORD", await getenv("CLAWDBOT_GATEWAY_PASSWORD")],
+    ["CODERCLAW_GATEWAY_TOKEN", await getenv("CODERCLAW_GATEWAY_TOKEN")],
+    ["CODERCLAW_GATEWAY_PASSWORD", await getenv("CODERCLAW_GATEWAY_PASSWORD")],
   ].filter((entry): entry is [string, string] => Boolean(entry[1]?.trim()));
   if (deprecatedLaunchctlEntries.length > 0) {
     const lines = [
@@ -124,7 +124,7 @@ export function noteDeprecatedLegacyEnvVars(
   deps?: { noteFn?: typeof note },
 ) {
   const entries = Object.entries(env)
-    .filter(([key, value]) => key.startsWith("CLAWDBOT_") && value?.trim())
+    .filter(([key, value]) => key.startsWith("CODERCLAW_") && value?.trim())
     .map(([key]) => key);
   if (entries.length === 0) {
     return;

@@ -1,10 +1,10 @@
 import { formatCliCommand } from "../cli/command-format.js";
-import { type OpenClawConfig, readConfigFileSnapshot } from "../config/config.js";
+import { type CoderClawConfig, readConfigFileSnapshot } from "../config/config.js";
 import type { RuntimeEnv } from "../runtime.js";
 
 export async function requireValidConfigSnapshot(
   runtime: RuntimeEnv,
-): Promise<OpenClawConfig | null> {
+): Promise<CoderClawConfig | null> {
   const snapshot = await readConfigFileSnapshot();
   if (snapshot.exists && !snapshot.valid) {
     const issues =

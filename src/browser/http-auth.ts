@@ -51,7 +51,7 @@ export function isAuthorizedBrowserRequest(
     // Accept both current and legacy header names for backward compatibility.
     const passwordHeader = (
       firstHeaderValue(req.headers["x-coderclaw-password"]) ||
-      firstHeaderValue(req.headers["x-openclaw-password"])
+      firstHeaderValue(req.headers["x-coderclaw-password"])
     ).trim();
     if (passwordHeader && safeEqualSecret(passwordHeader, auth.password)) {
       return true;

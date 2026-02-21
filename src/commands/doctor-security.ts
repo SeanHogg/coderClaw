@@ -2,13 +2,13 @@ import { resolveChannelDefaultAccountId } from "../channels/plugins/helpers.js";
 import { listChannelPlugins } from "../channels/plugins/index.js";
 import type { ChannelId } from "../channels/plugins/types.js";
 import { formatCliCommand } from "../cli/command-format.js";
-import type { OpenClawConfig, GatewayBindMode } from "../config/config.js";
+import type { CoderClawConfig, GatewayBindMode } from "../config/config.js";
 import { resolveGatewayAuth } from "../gateway/auth.js";
 import { isLoopbackHost, resolveGatewayBindHost } from "../gateway/net.js";
 import { resolveDmAllowState } from "../security/dm-policy-shared.js";
 import { note } from "../terminal/note.js";
 
-export async function noteSecurityWarnings(cfg: OpenClawConfig) {
+export async function noteSecurityWarnings(cfg: CoderClawConfig) {
   const warnings: string[] = [];
   const auditHint = `- Run: ${formatCliCommand("coderclaw security audit --deep")}`;
 
@@ -54,7 +54,7 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
           : [
               `  Fix: ${formatCliCommand("coderclaw doctor --fix")} to generate a token`,
               `  Or set token directly: ${formatCliCommand(
-                "openclaw config set gateway.auth.mode token",
+                "coderclaw config set gateway.auth.mode token",
               )}`,
             ];
       warnings.push(

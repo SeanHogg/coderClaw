@@ -407,7 +407,7 @@ describe("chrome extension relay server", () => {
     }
   });
 
-  it("does not swallow EADDRINUSE when occupied port is not an openclaw relay", async () => {
+  it("does not swallow EADDRINUSE when occupied port is not an coderclaw relay", async () => {
     const port = await getFreePort();
     const blocker = createServer((_, res) => {
       res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });

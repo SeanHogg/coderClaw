@@ -458,7 +458,7 @@ describe("runGatewayUpdate", () => {
     }
   });
 
-  it("rejects git roots that are not a openclaw checkout", async () => {
+  it("rejects git roots that are not a coderclaw checkout", async () => {
     await fs.mkdir(path.join(tempDir, ".git"));
     const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(tempDir);
     const { runner, calls } = createRunner({

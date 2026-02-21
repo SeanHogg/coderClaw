@@ -1,13 +1,13 @@
 ---
 summary: "Twitch chat bot configuration and setup"
 read_when:
-  - Setting up Twitch chat integration for OpenClaw
+  - Setting up Twitch chat integration for CoderClaw
 title: "Twitch"
 ---
 
 # Twitch (plugin)
 
-Twitch chat support via IRC connection. OpenClaw connects as a Twitch user (bot account) to receive and send messages in channels.
+Twitch chat support via IRC connection. CoderClaw connects as a Twitch user (bot account) to receive and send messages in channels.
 
 ## Plugin required
 
@@ -50,7 +50,7 @@ Minimal config:
   channels: {
     twitch: {
       enabled: true,
-      username: "openclaw", // Bot's Twitch account
+      username: "coderclaw", // Bot's Twitch account
       accessToken: "oauth:abc123...", // OAuth Access Token (or use CODERCLAW_TWITCH_ACCESS_TOKEN env var)
       clientId: "xyz789...", // Client ID from Token Generator
       channel: "vevisk", // Which Twitch channel's chat to join (required)
@@ -94,7 +94,7 @@ CODERCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
   channels: {
     twitch: {
       enabled: true,
-      username: "openclaw",
+      username: "coderclaw",
       accessToken: "oauth:abc123...",
       clientId: "xyz789...",
       channel: "vevisk",
@@ -156,13 +156,13 @@ Example (one bot account in two channels):
     twitch: {
       accounts: {
         channel1: {
-          username: "openclaw",
+          username: "coderclaw",
           accessToken: "oauth:abc123...",
           clientId: "xyz789...",
           channel: "vevisk",
         },
         channel2: {
-          username: "openclaw",
+          username: "coderclaw",
           accessToken: "oauth:def456...",
           clientId: "uvw012...",
           channel: "secondchannel",
@@ -317,7 +317,7 @@ Full example:
   channels: {
     twitch: {
       enabled: true,
-      username: "openclaw",
+      username: "coderclaw",
       accessToken: "oauth:abc123...",
       clientId: "xyz789...",
       channel: "vevisk",

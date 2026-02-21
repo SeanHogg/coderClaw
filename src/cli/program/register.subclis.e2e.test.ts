@@ -42,7 +42,7 @@ describe("registerSubCliCommands", () => {
   });
 
   it("registers only the primary placeholder and dispatches", async () => {
-    process.argv = ["node", "openclaw", "acp"];
+    process.argv = ["node", "coderclaw", "acp"];
     const program = new Command();
     registerSubCliCommands(program, process.argv);
 
@@ -55,7 +55,7 @@ describe("registerSubCliCommands", () => {
   });
 
   it("registers placeholders for all subcommands when no primary", () => {
-    process.argv = ["node", "openclaw"];
+    process.argv = ["node", "coderclaw"];
     const program = new Command();
     registerSubCliCommands(program, process.argv);
 
@@ -67,9 +67,9 @@ describe("registerSubCliCommands", () => {
   });
 
   it("re-parses argv for lazy subcommands", async () => {
-    process.argv = ["node", "openclaw", "nodes", "list"];
+    process.argv = ["node", "coderclaw", "nodes", "list"];
     const program = new Command();
-    program.name("openclaw");
+    program.name("coderclaw");
     registerSubCliCommands(program, process.argv);
 
     expect(program.commands.map((cmd) => cmd.name())).toEqual(["nodes"]);
@@ -81,9 +81,9 @@ describe("registerSubCliCommands", () => {
   });
 
   it("replaces placeholder when registering a subcommand by name", async () => {
-    process.argv = ["node", "openclaw", "acp", "--help"];
+    process.argv = ["node", "coderclaw", "acp", "--help"];
     const program = new Command();
-    program.name("openclaw");
+    program.name("coderclaw");
     registerSubCliCommands(program, process.argv);
 
     await registerSubCliByName(program, "acp");
@@ -91,7 +91,7 @@ describe("registerSubCliCommands", () => {
     const names = program.commands.map((cmd) => cmd.name());
     expect(names.filter((name) => name === "acp")).toHaveLength(1);
 
-    await program.parseAsync(["node", "openclaw", "acp"], { from: "user" });
+    await program.parseAsync(["node", "coderclaw", "acp"], { from: "user" });
     expect(registerAcpCli).toHaveBeenCalledTimes(1);
     expect(acpAction).toHaveBeenCalledTimes(1);
   });

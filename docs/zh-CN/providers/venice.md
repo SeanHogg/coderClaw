@@ -1,8 +1,8 @@
 ---
 read_when:
-  - 你想在 OpenClaw 中使用注重隐私的推理服务
+  - 你想在 CoderClaw 中使用注重隐私的推理服务
   - 你需要 Venice AI 设置指导
-summary: 在 OpenClaw 中使用 Venice AI 注重隐私的模型
+summary: 在 CoderClaw 中使用 Venice AI 注重隐私的模型
 title: Venice AI
 x-i18n:
   generated_at: "2026-02-01T21:36:03Z"
@@ -19,7 +19,7 @@ x-i18n:
 
 Venice AI 提供注重隐私的 AI 推理服务，支持无审查模型，并可通过其匿名代理访问主流专有模型。所有推理默认私密——不会用你的数据训练，不会记录日志。
 
-## 为什么在 OpenClaw 中使用 Venice
+## 为什么在 CoderClaw 中使用 Venice
 
 - **私密推理**，适用于开源模型（无日志记录）。
 - 需要时可使用**无审查模型**。
@@ -54,7 +54,7 @@ Venice 提供两种隐私级别——理解这一点是选择模型的关键：
 2. 前往 **Settings → API Keys → Create new key**
 3. 复制你的 API 密钥（格式：`vapi_xxxxxxxxxxxx`）
 
-### 2. 配置 OpenClaw
+### 2. 配置 CoderClaw
 
 **方案 A：环境变量**
 
@@ -91,7 +91,7 @@ coderclaw chat --model venice/llama-3.3-70b "Hello, are you working?"
 
 ## 模型选择
 
-设置完成后，OpenClaw 会显示所有可用的 Venice 模型。根据你的需求选择：
+设置完成后，CoderClaw 会显示所有可用的 Venice 模型。根据你的需求选择：
 
 - **默认（我们的推荐）**：`venice/llama-3.3-70b`，私密且性能均衡。
 - **最佳整体质量**：`venice/claude-opus-45`，适合复杂任务（Opus 仍然是最强的）。
@@ -169,7 +169,7 @@ coderclaw models list | grep venice
 
 ## 模型发现
 
-当设置了 `VENICE_API_KEY` 时，OpenClaw 会自动从 Venice API 发现模型。如果 API 不可达，则回退到静态目录。
+当设置了 `VENICE_API_KEY` 时，CoderClaw 会自动从 Venice API 发现模型。如果 API 不可达，则回退到静态目录。
 
 `/models` 端点是公开的（列出模型无需认证），但推理需要有效的 API 密钥。
 

@@ -1,5 +1,5 @@
 ---
-summary: "Frequently asked questions about OpenClaw setup, configuration, and usage"
+summary: "Frequently asked questions about CoderClaw setup, configuration, and usage"
 title: "FAQ"
 ---
 
@@ -11,7 +11,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
 
 - [Quick start and first-run setup]
   - [Im stuck whats the fastest way to get unstuck?](#im-stuck-whats-the-fastest-way-to-get-unstuck)
-  - [What's the recommended way to install and set up OpenClaw?](#whats-the-recommended-way-to-install-and-set-up-openclaw)
+  - [What's the recommended way to install and set up CoderClaw?](#whats-the-recommended-way-to-install-and-set-up-coderclaw)
   - [How do I open the dashboard after onboarding?](#how-do-i-open-the-dashboard-after-onboarding)
   - [How do I authenticate the dashboard (token) on localhost vs remote?](#how-do-i-authenticate-the-dashboard-token-on-localhost-vs-remote)
   - [What runtime do I need?](#what-runtime-do-i-need)
@@ -20,18 +20,18 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [It is stuck on "wake up my friend" / onboarding will not hatch. What now?](#it-is-stuck-on-wake-up-my-friend-onboarding-will-not-hatch-what-now)
   - [Can I migrate my setup to a new machine (Mac mini) without redoing onboarding?](#can-i-migrate-my-setup-to-a-new-machine-mac-mini-without-redoing-onboarding)
   - [Where do I see what is new in the latest version?](#where-do-i-see-what-is-new-in-the-latest-version)
-  - [I can't access docs.coderclaw.ai (SSL error). What now?](#i-cant-access-docsopenclawai-ssl-error-what-now)
+  - [I can't access docs.coderclaw.ai (SSL error). What now?](#i-cant-access-docscoderclawai-ssl-error-what-now)
   - [What's the difference between stable and beta?](#whats-the-difference-between-stable-and-beta)
   - [How do I install the beta version, and what's the difference between beta and dev?](#how-do-i-install-the-beta-version-and-whats-the-difference-between-beta-and-dev)
   - [How do I try the latest bits?](#how-do-i-try-the-latest-bits)
   - [How long does install and onboarding usually take?](#how-long-does-install-and-onboarding-usually-take)
   - [Installer stuck? How do I get more feedback?](#installer-stuck-how-do-i-get-more-feedback)
-  - [Windows install says git not found or coderclaw not recognized](#windows-install-says-git-not-found-or-openclaw-not-recognized)
+  - [Windows install says git not found or coderclaw not recognized](#windows-install-says-git-not-found-or-coderclaw-not-recognized)
   - [The docs didn't answer my question - how do I get a better answer?](#the-docs-didnt-answer-my-question-how-do-i-get-a-better-answer)
-  - [How do I install OpenClaw on Linux?](#how-do-i-install-openclaw-on-linux)
-  - [How do I install OpenClaw on a VPS?](#how-do-i-install-openclaw-on-a-vps)
+  - [How do I install CoderClaw on Linux?](#how-do-i-install-coderclaw-on-linux)
+  - [How do I install CoderClaw on a VPS?](#how-do-i-install-coderclaw-on-a-vps)
   - [Where are the cloud/VPS install guides?](#where-are-the-cloudvps-install-guides)
-  - [Can I ask OpenClaw to update itself?](#can-i-ask-openclaw-to-update-itself)
+  - [Can I ask CoderClaw to update itself?](#can-i-ask-coderclaw-to-update-itself)
   - [What does the onboarding wizard actually do?](#what-does-the-onboarding-wizard-actually-do)
   - [Do I need a Claude or OpenAI subscription to run this?](#do-i-need-a-claude-or-openai-subscription-to-run-this)
   - [Can I use Claude Max subscription without an API key](#can-i-use-claude-max-subscription-without-an-api-key)
@@ -47,24 +47,24 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [How do I keep hosted model traffic in a specific region?](#how-do-i-keep-hosted-model-traffic-in-a-specific-region)
   - [Do I have to buy a Mac Mini to install this?](#do-i-have-to-buy-a-mac-mini-to-install-this)
   - [Do I need a Mac mini for iMessage support?](#do-i-need-a-mac-mini-for-imessage-support)
-  - [If I buy a Mac mini to run OpenClaw, can I connect it to my MacBook Pro?](#if-i-buy-a-mac-mini-to-run-openclaw-can-i-connect-it-to-my-macbook-pro)
+  - [If I buy a Mac mini to run CoderClaw, can I connect it to my MacBook Pro?](#if-i-buy-a-mac-mini-to-run-coderclaw-can-i-connect-it-to-my-macbook-pro)
   - [Can I use Bun?](#can-i-use-bun)
   - [Telegram: what goes in `allowFrom`?](#telegram-what-goes-in-allowfrom)
-  - [Can multiple people use one WhatsApp number with different OpenClaw instances?](#can-multiple-people-use-one-whatsapp-number-with-different-openclaw-instances)
+  - [Can multiple people use one WhatsApp number with different CoderClaw instances?](#can-multiple-people-use-one-whatsapp-number-with-different-coderclaw-instances)
   - [Can I run a "fast chat" agent and an "Opus for coding" agent?](#can-i-run-a-fast-chat-agent-and-an-opus-for-coding-agent)
   - [Does Homebrew work on Linux?](#does-homebrew-work-on-linux)
   - [What's the difference between the hackable (git) install and npm install?](#whats-the-difference-between-the-hackable-git-install-and-npm-install)
   - [Can I switch between npm and git installs later?](#can-i-switch-between-npm-and-git-installs-later)
   - [Should I run the Gateway on my laptop or a VPS?](#should-i-run-the-gateway-on-my-laptop-or-a-vps)
-  - [How important is it to run OpenClaw on a dedicated machine?](#how-important-is-it-to-run-openclaw-on-a-dedicated-machine)
+  - [How important is it to run CoderClaw on a dedicated machine?](#how-important-is-it-to-run-coderclaw-on-a-dedicated-machine)
   - [What are the minimum VPS requirements and recommended OS?](#what-are-the-minimum-vps-requirements-and-recommended-os)
-  - [Can I run OpenClaw in a VM and what are the requirements](#can-i-run-openclaw-in-a-vm-and-what-are-the-requirements)
-- [What is OpenClaw?](#what-is-openclaw)
-  - [What is OpenClaw, in one paragraph?](#what-is-openclaw-in-one-paragraph)
+  - [Can I run CoderClaw in a VM and what are the requirements](#can-i-run-coderclaw-in-a-vm-and-what-are-the-requirements)
+- [What is CoderClaw?](#what-is-coderclaw)
+  - [What is CoderClaw, in one paragraph?](#what-is-coderclaw-in-one-paragraph)
   - [What's the value proposition?](#whats-the-value-proposition)
   - [I just set it up what should I do first](#i-just-set-it-up-what-should-i-do-first)
-  - [What are the top five everyday use cases for OpenClaw](#what-are-the-top-five-everyday-use-cases-for-openclaw)
-  - [Can OpenClaw help with lead gen outreach ads and blogs for a SaaS](#can-openclaw-help-with-lead-gen-outreach-ads-and-blogs-for-a-saas)
+  - [What are the top five everyday use cases for CoderClaw](#what-are-the-top-five-everyday-use-cases-for-coderclaw)
+  - [Can CoderClaw help with lead gen outreach ads and blogs for a SaaS](#can-coderclaw-help-with-lead-gen-outreach-ads-and-blogs-for-a-saas)
   - [What are the advantages vs Claude Code for web development?](#what-are-the-advantages-vs-claude-code-for-web-development)
 - [Skills and automation](#skills-and-automation)
   - [How do I customize skills without keeping the repo dirty?](#how-do-i-customize-skills-without-keeping-the-repo-dirty)
@@ -73,7 +73,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [The bot freezes while doing heavy work. How do I offload that?](#the-bot-freezes-while-doing-heavy-work-how-do-i-offload-that)
   - [Cron or reminders do not fire. What should I check?](#cron-or-reminders-do-not-fire-what-should-i-check)
   - [How do I install skills on Linux?](#how-do-i-install-skills-on-linux)
-  - [Can OpenClaw run tasks on a schedule or continuously in the background?](#can-openclaw-run-tasks-on-a-schedule-or-continuously-in-the-background)
+  - [Can CoderClaw run tasks on a schedule or continuously in the background?](#can-coderclaw-run-tasks-on-a-schedule-or-continuously-in-the-background)
   - [Can I run Apple macOS-only skills from Linux?](#can-i-run-apple-macos-only-skills-from-linux)
   - [Do you have a Notion or HeyGen integration?](#do-you-have-a-notion-or-heygen-integration)
   - [How do I install the Chrome extension for browser takeover?](#how-do-i-install-the-chrome-extension-for-browser-takeover)
@@ -85,11 +85,11 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [Does memory persist forever? What are the limits?](#does-memory-persist-forever-what-are-the-limits)
   - [Does semantic memory search require an OpenAI API key?](#does-semantic-memory-search-require-an-openai-api-key)
 - [Where things live on disk](#where-things-live-on-disk)
-  - [Is all data used with OpenClaw saved locally?](#is-all-data-used-with-openclaw-saved-locally)
-  - [Where does OpenClaw store its data?](#where-does-openclaw-store-its-data)
+  - [Is all data used with CoderClaw saved locally?](#is-all-data-used-with-coderclaw-saved-locally)
+  - [Where does CoderClaw store its data?](#where-does-coderclaw-store-its-data)
   - [Where should AGENTS.md / SOUL.md / USER.md / MEMORY.md live?](#where-should-agentsmd-soulmd-usermd-memorymd-live)
   - [What's the recommended backup strategy?](#whats-the-recommended-backup-strategy)
-  - [How do I completely uninstall OpenClaw?](#how-do-i-completely-uninstall-openclaw)
+  - [How do I completely uninstall CoderClaw?](#how-do-i-completely-uninstall-coderclaw)
   - [Can agents work outside the workspace?](#can-agents-work-outside-the-workspace)
   - [I'm in remote mode - where is the session store?](#im-in-remote-mode-where-is-the-session-store)
 - [Config basics](#config-basics)
@@ -100,13 +100,13 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [How do I enable web search (and web fetch)?](#how-do-i-enable-web-search-and-web-fetch)
   - [config.apply wiped my config. How do I recover and avoid this?](#configapply-wiped-my-config-how-do-i-recover-and-avoid-this)
   - [How do I run a central Gateway with specialized workers across devices?](#how-do-i-run-a-central-gateway-with-specialized-workers-across-devices)
-  - [Can the OpenClaw browser run headless?](#can-the-openclaw-browser-run-headless)
+  - [Can the CoderClaw browser run headless?](#can-the-coderclaw-browser-run-headless)
   - [How do I use Brave for browser control?](#how-do-i-use-brave-for-browser-control)
 - [Remote gateways and nodes](#remote-gateways-and-nodes)
   - [How do commands propagate between Telegram, the gateway, and nodes?](#how-do-commands-propagate-between-telegram-the-gateway-and-nodes)
   - [How can my agent access my computer if the Gateway is hosted remotely?](#how-can-my-agent-access-my-computer-if-the-gateway-is-hosted-remotely)
   - [Tailscale is connected but I get no replies. What now?](#tailscale-is-connected-but-i-get-no-replies-what-now)
-  - [Can two OpenClaw instances talk to each other (local + VPS)?](#can-two-openclaw-instances-talk-to-each-other-local-vps)
+  - [Can two CoderClaw instances talk to each other (local + VPS)?](#can-two-coderclaw-instances-talk-to-each-other-local-vps)
   - [Do I need separate VPSes for multiple agents](#do-i-need-separate-vpses-for-multiple-agents)
   - [Is there a benefit to using a node on my personal laptop instead of SSH from a VPS?](#is-there-a-benefit-to-using-a-node-on-my-personal-laptop-instead-of-ssh-from-a-vps)
   - [Do nodes run a gateway service?](#do-nodes-run-a-gateway-service)
@@ -116,21 +116,21 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [How do I connect a Mac node to a remote Gateway (Tailscale Serve)?](#how-do-i-connect-a-mac-node-to-a-remote-gateway-tailscale-serve)
   - [Should I install on a second laptop or just add a node?](#should-i-install-on-a-second-laptop-or-just-add-a-node)
 - [Env vars and .env loading](#env-vars-and-env-loading)
-  - [How does OpenClaw load environment variables?](#how-does-coderclaw-load-environment-variables)
+  - [How does CoderClaw load environment variables?](#how-does-coderclaw-load-environment-variables)
   - ["I started the Gateway via the service and my env vars disappeared." What now?](#i-started-the-gateway-via-the-service-and-my-env-vars-disappeared-what-now)
   - [I set `COPILOT_GITHUB_TOKEN`, but models status shows "Shell env: off." Why?](#i-set-copilotgithubtoken-but-models-status-shows-shell-env-off-why)
 - [Sessions and multiple chats](#sessions-and-multiple-chats)
   - [How do I start a fresh conversation?](#how-do-i-start-a-fresh-conversation)
   - [Do sessions reset automatically if I never send `/new`?](#do-sessions-reset-automatically-if-i-never-send-new)
-  - [Is there a way to make a team of OpenClaw instances one CEO and many agents](#is-there-a-way-to-make-a-team-of-openclaw-instances-one-ceo-and-many-agents)
+  - [Is there a way to make a team of CoderClaw instances one CEO and many agents](#is-there-a-way-to-make-a-team-of-coderclaw-instances-one-ceo-and-many-agents)
   - [Why did context get truncated mid-task? How do I prevent it?](#why-did-context-get-truncated-midtask-how-do-i-prevent-it)
-  - [How do I completely reset OpenClaw but keep it installed?](#how-do-i-completely-reset-openclaw-but-keep-it-installed)
+  - [How do I completely reset CoderClaw but keep it installed?](#how-do-i-completely-reset-coderclaw-but-keep-it-installed)
   - [I'm getting "context too large" errors - how do I reset or compact?](#im-getting-context-too-large-errors-how-do-i-reset-or-compact)
   - [Why am I seeing "LLM request rejected: messages.N.content.X.tool_use.input: Field required"?](#why-am-i-seeing-llm-request-rejected-messagesncontentxtooluseinput-field-required)
   - [Why am I getting heartbeat messages every 30 minutes?](#why-am-i-getting-heartbeat-messages-every-30-minutes)
   - [Do I need to add a "bot account" to a WhatsApp group?](#do-i-need-to-add-a-bot-account-to-a-whatsapp-group)
   - [How do I get the JID of a WhatsApp group?](#how-do-i-get-the-jid-of-a-whatsapp-group)
-  - [Why doesn't OpenClaw reply in a group?](#why-doesnt-openclaw-reply-in-a-group)
+  - [Why doesn't CoderClaw reply in a group?](#why-doesnt-coderclaw-reply-in-a-group)
   - [Do groups/threads share context with DMs?](#do-groupsthreads-share-context-with-dms)
   - [How many workspaces and agents can I create?](#how-many-workspaces-and-agents-can-i-create)
   - [Can I run multiple bots or chats at the same time (Slack), and how should I set that up?](#can-i-run-multiple-bots-or-chats-at-the-same-time-slack-and-how-should-i-set-that-up)
@@ -139,7 +139,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [What model do you recommend?](#what-model-do-you-recommend)
   - [How do I switch models without wiping my config?](#how-do-i-switch-models-without-wiping-my-config)
   - [Can I use self-hosted models (llama.cpp, vLLM, Ollama)?](#can-i-use-selfhosted-models-llamacpp-vllm-ollama)
-  - [What do OpenClaw, Flawd, and Krill use for models?](#what-do-openclaw-flawd-and-krill-use-for-models)
+  - [What do CoderClaw, Flawd, and Krill use for models?](#what-do-coderclaw-flawd-and-krill-use-for-models)
   - [How do I switch models on the fly (without restarting)?](#how-do-i-switch-models-on-the-fly-without-restarting)
   - [Can I use GPT 5.2 for daily tasks and Codex 5.3 for coding](#can-i-use-gpt-52-for-daily-tasks-and-codex-53-for-coding)
   - [Why do I see "Model … is not allowed" and then no reply?](#why-do-i-see-model-is-not-allowed-and-then-no-reply)
@@ -160,10 +160,10 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [OAuth vs API key: what's the difference?](#oauth-vs-api-key-whats-the-difference)
 - [Gateway: ports, "already running", and remote mode](#gateway-ports-already-running-and-remote-mode)
   - [What port does the Gateway use?](#what-port-does-the-gateway-use)
-  - [Why does `coderclaw gateway status` say `Runtime: running` but `RPC probe: failed`?](#why-does-openclaw-gateway-status-say-runtime-running-but-rpc-probe-failed)
-  - [Why does `coderclaw gateway status` show `Config (cli)` and `Config (service)` different?](#why-does-openclaw-gateway-status-show-config-cli-and-config-service-different)
+  - [Why does `coderclaw gateway status` say `Runtime: running` but `RPC probe: failed`?](#why-does-coderclaw-gateway-status-say-runtime-running-but-rpc-probe-failed)
+  - [Why does `coderclaw gateway status` show `Config (cli)` and `Config (service)` different?](#why-does-coderclaw-gateway-status-show-config-cli-and-config-service-different)
   - [What does "another gateway instance is already listening" mean?](#what-does-another-gateway-instance-is-already-listening-mean)
-  - [How do I run OpenClaw in remote mode (client connects to a Gateway elsewhere)?](#how-do-i-run-openclaw-in-remote-mode-client-connects-to-a-gateway-elsewhere)
+  - [How do I run CoderClaw in remote mode (client connects to a Gateway elsewhere)?](#how-do-i-run-coderclaw-in-remote-mode-client-connects-to-a-gateway-elsewhere)
   - [The Control UI says "unauthorized" (or keeps reconnecting). What now?](#the-control-ui-says-unauthorized-or-keeps-reconnecting-what-now)
   - [I set `gateway.bind: "tailnet"` but it can't bind / nothing listens](#i-set-gatewaybind-tailnet-but-it-cant-bind-nothing-listens)
   - [Can I run multiple Gateways on the same host?](#can-i-run-multiple-gateways-on-the-same-host)
@@ -171,18 +171,18 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
 - [Logging and debugging](#logging-and-debugging)
   - [Where are logs?](#where-are-logs)
   - [How do I start/stop/restart the Gateway service?](#how-do-i-startstoprestart-the-gateway-service)
-  - [I closed my terminal on Windows - how do I restart OpenClaw?](#i-closed-my-terminal-on-windows-how-do-i-restart-openclaw)
+  - [I closed my terminal on Windows - how do I restart CoderClaw?](#i-closed-my-terminal-on-windows-how-do-i-restart-coderclaw)
   - [The Gateway is up but replies never arrive. What should I check?](#the-gateway-is-up-but-replies-never-arrive-what-should-i-check)
   - ["Disconnected from gateway: no reason" - what now?](#disconnected-from-gateway-no-reason-what-now)
   - [Telegram setMyCommands fails with network errors. What should I check?](#telegram-setmycommands-fails-with-network-errors-what-should-i-check)
   - [TUI shows no output. What should I check?](#tui-shows-no-output-what-should-i-check)
   - [How do I completely stop then start the Gateway?](#how-do-i-completely-stop-then-start-the-gateway)
-  - [ELI5: `coderclaw gateway restart` vs `coderclaw gateway`](#eli5-openclaw-gateway-restart-vs-openclaw-gateway)
+  - [ELI5: `coderclaw gateway restart` vs `coderclaw gateway`](#eli5-coderclaw-gateway-restart-vs-coderclaw-gateway)
   - [What's the fastest way to get more details when something fails?](#whats-the-fastest-way-to-get-more-details-when-something-fails)
 - [Media and attachments](#media-and-attachments)
   - [My skill generated an image/PDF, but nothing was sent](#my-skill-generated-an-imagepdf-but-nothing-was-sent)
 - [Security and access control](#security-and-access-control)
-  - [Is it safe to expose OpenClaw to inbound DMs?](#is-it-safe-to-expose-openclaw-to-inbound-dms)
+  - [Is it safe to expose CoderClaw to inbound DMs?](#is-it-safe-to-expose-coderclaw-to-inbound-dms)
   - [Is prompt injection only a concern for public bots?](#is-prompt-injection-only-a-concern-for-public-bots)
   - [Should my bot have its own email GitHub account or phone number](#should-my-bot-have-its-own-email-github-account-or-phone-number)
   - [Can I give it autonomy over my text messages and is that safe](#can-i-give-it-autonomy-over-my-text-messages-and-is-that-safe)
@@ -276,10 +276,10 @@ setup (PATH, services, permissions, auth files). Give them the **full source che
 the hackable (git) install:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git
 ```
 
-This installs OpenClaw **from a git checkout**, so the agent can read the code + docs and
+This installs CoderClaw **from a git checkout**, so the agent can read the code + docs and
 reason about the exact version you are running. You can always switch back to stable later
 by re-running the installer without `--install-method git`.
 
@@ -310,12 +310,12 @@ Other useful CLI checks: `coderclaw status --all`, `coderclaw logs --follow`,
 Quick debug loop: [First 60 seconds if something's broken](#first-60-seconds-if-somethings-broken).
 Install docs: [Install](/install), [Installer flags](/install/installer), [Updating](/install/updating).
 
-### What's the recommended way to install and set up OpenClaw
+### What's the recommended way to install and set up CoderClaw
 
 The repo recommends running from source and using the onboarding wizard:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://coderclaw.ai/install.sh | bash
 coderclaw onboard --install-daemon
 ```
 
@@ -415,7 +415,7 @@ Yes. Copy the **state directory** and **workspace**, then run Doctor once. This
 keeps your bot "exactly the same" (memory, session history, auth, and channel
 state) as long as you copy **both** locations:
 
-1. Install OpenClaw on the new machine.
+1. Install CoderClaw on the new machine.
 2. Copy `$CODERCLAW_STATE_DIR` (default: `~/.coderclaw`) from the old machine.
 3. Copy your workspace (default: `~/.coderclaw/workspace`).
 4. Run `coderclaw doctor` and restart the Gateway service.
@@ -427,7 +427,7 @@ remote mode, remember the gateway host owns the session store and workspace.
 up **memory + bootstrap files**, but **not** session history or auth. Those live
 under `~/.coderclaw/` (for example `~/.coderclaw/agents/<agentId>/sessions/`).
 
-Related: [Migrating](/install/migrating), [Where things live on disk](/help/faq#where-does-openclaw-store-its-data),
+Related: [Migrating](/install/migrating), [Where things live on disk](/help/faq#where-does-coderclaw-store-its-data),
 [Agent workspace](/concepts/agent-workspace), [Doctor](/gateway/doctor),
 [Remote mode](/gateway/remote).
 
@@ -444,7 +444,7 @@ section is the latest shipped version. Entries are grouped by **Highlights**, **
 
 Some Comcast/Xfinity connections incorrectly block `docs.coderclaw.ai` via Xfinity
 Advanced Security. Disable it or allowlist `docs.coderclaw.ai`, then retry. More
-detail: [Troubleshooting](/help/troubleshooting#docsopenclawai-shows-an-ssl-error-comcastxfinity).
+detail: [Troubleshooting](/help/troubleshooting#docscoderclawai-shows-an-ssl-error-comcastxfinity).
 Please help us unblock it by reporting here: [https://spa.xfinity.com/check_url_status](https://spa.xfinity.com/check_url_status).
 
 If you still can't reach the site, the docs are mirrored on GitHub:
@@ -472,15 +472,15 @@ See what changed:
 One-liners (macOS/Linux):
 
 ```bash
-curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --beta
+curl -fsSL --proto '=https' --tlsv1.2 https://coderclaw.ai/install.sh | bash -s -- --beta
 ```
 
 ```bash
-curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
+curl -fsSL --proto '=https' --tlsv1.2 https://coderclaw.ai/install.sh | bash -s -- --install-method git
 ```
 
 Windows installer (PowerShell):
-[https://openclaw.ai/install.ps1](https://openclaw.ai/install.ps1)
+[https://coderclaw.ai/install.ps1](https://coderclaw.ai/install.ps1)
 
 More detail: [Development channels](/install/development-channels) and [Installer flags](/install/installer).
 
@@ -509,7 +509,7 @@ This switches to the `main` branch and updates from source.
 2. **Hackable install (from the installer site):**
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git
 ```
 
 That gives you a local repo you can edit, then update via git.
@@ -531,19 +531,19 @@ Docs: [Update](/cli/update), [Development channels](/install/development-channel
 Re-run the installer with **verbose output**:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --verbose
 ```
 
 Beta install with verbose:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --beta --verbose
 ```
 
 For a hackable (git) install:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --verbose
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git --verbose
 ```
 
 Windows (PowerShell) equivalent:
@@ -551,7 +551,7 @@ Windows (PowerShell) equivalent:
 ```powershell
 # install.ps1 has no dedicated -Verbose flag yet.
 Set-PSDebug -Trace 1
-& ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
+& ([scriptblock]::Create((iwr -useb https://coderclaw.ai/install.ps1))) -NoOnboard
 Set-PSDebug -Trace 0
 ```
 
@@ -587,12 +587,12 @@ Use the **hackable (git) install** so you have the full source and docs locally,
 your bot (or Claude/Codex) _from that folder_ so it can read the repo and answer precisely.
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git
 ```
 
 More detail: [Install](/install) and [Installer flags](/install/installer).
 
-### How do I install OpenClaw on Linux
+### How do I install CoderClaw on Linux
 
 Short answer: follow the Linux guide, then run the onboarding wizard.
 
@@ -600,7 +600,7 @@ Short answer: follow the Linux guide, then run the onboarding wizard.
 - Full walkthrough: [Getting Started](/start/getting-started).
 - Installer + updates: [Install & updates](/install/updating).
 
-### How do I install OpenClaw on a VPS
+### How do I install CoderClaw on a VPS
 
 Any Linux VPS works. Install on the server, then use SSH/Tailscale to reach the Gateway.
 
@@ -627,7 +627,7 @@ Gateway in the cloud.
 Hub: [Platforms](/platforms). Remote access: [Gateway remote](/gateway/remote).
 Nodes: [Nodes](/nodes), [Nodes CLI](/cli/nodes).
 
-### Can I ask OpenClaw to update itself
+### Can I ask CoderClaw to update itself
 
 Short answer: **possible, not recommended**. The update flow can restart the
 Gateway (which drops the active session), may need a clean git checkout, and
@@ -667,7 +667,7 @@ It also warns if your configured model is unknown or missing auth.
 
 ### Do I need a Claude or OpenAI subscription to run this
 
-No. You can run OpenClaw with **API keys** (Anthropic/OpenAI/others) or with
+No. You can run CoderClaw with **API keys** (Anthropic/OpenAI/others) or with
 **local-only models** so your data stays on your device. Subscriptions (Claude
 Pro/Max or OpenAI Codex) are optional ways to authenticate those providers.
 
@@ -700,7 +700,7 @@ Copy the token it prints, then choose **Anthropic token (paste setup-token)** in
 
 ### Do you support Claude subscription auth (Claude Pro or Max)
 
-Yes - via **setup-token**. OpenClaw no longer reuses Claude Code CLI OAuth tokens; use a setup-token or an Anthropic API key. Generate the token anywhere and paste it on the gateway host. See [Anthropic](/providers/anthropic) and [OAuth](/concepts/oauth).
+Yes - via **setup-token**. CoderClaw no longer reuses Claude Code CLI OAuth tokens; use a setup-token or an Anthropic API key. Generate the token anywhere and paste it on the gateway host. See [Anthropic](/providers/anthropic) and [OAuth](/concepts/oauth).
 
 Note: Claude subscription access is governed by Anthropic's terms. For production or multi-user workloads, API keys are usually the safer choice.
 
@@ -711,7 +711,7 @@ use a **Claude subscription** (setup-token or Claude Code OAuth), wait for the w
 reset or upgrade your plan. If you use an **Anthropic API key**, check the Anthropic Console
 for usage/billing and raise limits as needed.
 
-Tip: set a **fallback model** so OpenClaw can keep replying while a provider is rate-limited.
+Tip: set a **fallback model** so CoderClaw can keep replying while a provider is rate-limited.
 See [Models](/cli/models) and [OAuth](/concepts/oauth).
 
 ### Is AWS Bedrock supported
@@ -720,11 +720,11 @@ Yes - via pi-ai's **Amazon Bedrock (Converse)** provider with **manual config**.
 
 ### How does Codex auth work
 
-OpenClaw supports **OpenAI Code (Codex)** via OAuth (ChatGPT sign-in). The wizard can run the OAuth flow and will set the default model to `openai-codex/gpt-5.3-codex` when appropriate. See [Model providers](/concepts/model-providers) and [Wizard](/start/wizard).
+CoderClaw supports **OpenAI Code (Codex)** via OAuth (ChatGPT sign-in). The wizard can run the OAuth flow and will set the default model to `openai-codex/gpt-5.3-codex` when appropriate. See [Model providers](/concepts/model-providers) and [Wizard](/start/wizard).
 
 ### Do you support OpenAI subscription auth Codex OAuth
 
-Yes. OpenClaw fully supports **OpenAI Code (Codex) subscription OAuth**. The onboarding wizard
+Yes. CoderClaw fully supports **OpenAI Code (Codex) subscription OAuth**. The onboarding wizard
 can run the OAuth flow for you.
 
 See [OAuth](/concepts/oauth), [Model providers](/concepts/model-providers), and [Wizard](/start/wizard).
@@ -742,7 +742,7 @@ This stores OAuth tokens in auth profiles on the gateway host. Details: [Model p
 
 ### Is a local model OK for casual chats
 
-Usually no. OpenClaw needs large context + strong safety; small cards truncate and leak. If you must, run the **largest** MiniMax M2.1 build you can locally (LM Studio) and see [/gateway/local-models](/gateway/local-models). Smaller/quantized models increase prompt-injection risk - see [Security](/gateway/security).
+Usually no. CoderClaw needs large context + strong safety; small cards truncate and leak. If you must, run the **largest** MiniMax M2.1 build you can locally (LM Studio) and see [/gateway/local-models](/gateway/local-models). Smaller/quantized models increase prompt-injection risk - see [Security](/gateway/security).
 
 ### How do I keep hosted model traffic in a specific region
 
@@ -750,7 +750,7 @@ Pick region-pinned endpoints. OpenRouter exposes US-hosted options for MiniMax, 
 
 ### Do I have to buy a Mac Mini to install this
 
-No. OpenClaw runs on macOS or Linux (Windows via WSL2). A Mac mini is optional - some people
+No. CoderClaw runs on macOS or Linux (Windows via WSL2). A Mac mini is optional - some people
 buy one as an always-on host, but a small VPS, home server, or Raspberry Pi-class box works too.
 
 You only need a Mac **for macOS-only tools**. For iMessage, use [BlueBubbles](/channels/bluebubbles) (recommended) - the BlueBubbles server runs on any Mac, and the Gateway can run on Linux or elsewhere. If you want other macOS-only tools, run the Gateway on a Mac or pair a macOS node.
@@ -770,7 +770,7 @@ Common setups:
 Docs: [BlueBubbles](/channels/bluebubbles), [Nodes](/nodes),
 [Mac remote mode](/platforms/mac/remote).
 
-### If I buy a Mac mini to run OpenClaw can I connect it to my MacBook Pro
+### If I buy a Mac mini to run CoderClaw can I connect it to my MacBook Pro
 
 Yes. The **Mac mini can run the Gateway**, and your MacBook Pro can connect as a
 **node** (companion device). Nodes don't run the Gateway - they provide extra
@@ -796,7 +796,7 @@ without WhatsApp/Telegram.
 
 `channels.telegram.allowFrom` is **the human sender's Telegram user ID** (numeric). It is not the bot username.
 
-The onboarding wizard accepts `@username` input and resolves it to a numeric ID, but OpenClaw authorization uses numeric IDs only.
+The onboarding wizard accepts `@username` input and resolves it to a numeric ID, but CoderClaw authorization uses numeric IDs only.
 
 Safer (no third-party bot):
 
@@ -812,7 +812,7 @@ Third-party (less private):
 
 See [/channels/telegram](/channels/telegram#access-control-dms--groups).
 
-### Can multiple people use one WhatsApp number with different OpenClaw instances
+### Can multiple people use one WhatsApp number with different CoderClaw instances
 
 Yes, via **multi-agent routing**. Bind each sender's WhatsApp **DM** (peer `kind: "direct"`, sender E.164 like `+15551234567`) to a different `agentId`, so each person gets their own workspace and session store. Replies still come from the **same WhatsApp account**, and DM access control (`channels.whatsapp.dmPolicy` / `channels.whatsapp.allowFrom`) is global per WhatsApp account. See [Multi-Agent Routing](/concepts/multi-agent) and [WhatsApp](/channels/whatsapp).
 
@@ -831,7 +831,7 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 brew install <formula>
 ```
 
-If you run OpenClaw via systemd, ensure the service PATH includes `/home/linuxbrew/.linuxbrew/bin` (or your brew prefix) so `brew`-installed tools resolve in non-login shells.
+If you run CoderClaw via systemd, ensure the service PATH includes `/home/linuxbrew/.linuxbrew/bin` (or your brew prefix) so `brew`-installed tools resolve in non-login shells.
 Recent builds also prepend common user bin dirs on Linux systemd services (for example `~/.local/bin`, `~/.npm-global/bin`, `~/.local/share/pnpm`, `~/.bun/bin`) and honor `PNPM_HOME`, `NPM_CONFIG_PREFIX`, `BUN_INSTALL`, `VOLTA_HOME`, `ASDF_DATA_DIR`, `NVM_DIR`, and `FNM_DIR` when set.
 
 ### What's the difference between the hackable git install and npm install
@@ -846,7 +846,7 @@ Docs: [Getting started](/start/getting-started), [Updating](/install/updating).
 ### Can I switch between npm and git installs later
 
 Yes. Install the other flavor, then run Doctor so the gateway service points at the new entrypoint.
-This **does not delete your data** - it only changes the OpenClaw code install. Your state
+This **does not delete your data** - it only changes the CoderClaw code install. Your state
 (`~/.coderclaw`) and workspace (`~/.coderclaw/workspace`) stay untouched.
 
 From npm → git:
@@ -887,11 +887,11 @@ lowest friction and you're okay with sleep/restarts, run it locally.
 - **Pros:** always-on, stable network, no laptop sleep issues, easier to keep running.
 - **Cons:** often run headless (use screenshots), remote file access only, you must SSH for updates.
 
-**OpenClaw-specific note:** WhatsApp/Telegram/Slack/Mattermost (plugin)/Discord all work fine from a VPS. The only real trade-off is **headless browser** vs a visible window. See [Browser](/tools/browser).
+**CoderClaw-specific note:** WhatsApp/Telegram/Slack/Mattermost (plugin)/Discord all work fine from a VPS. The only real trade-off is **headless browser** vs a visible window. See [Browser](/tools/browser).
 
 **Recommended default:** VPS if you had gateway disconnects before. Local is great when you're actively using the Mac and want local file access or UI automation with a visible browser.
 
-### How important is it to run OpenClaw on a dedicated machine
+### How important is it to run CoderClaw on a dedicated machine
 
 Not required, but **recommended for reliability and isolation**.
 
@@ -903,7 +903,7 @@ For security guidance, read [Security](/gateway/security).
 
 ### What are the minimum VPS requirements and recommended OS
 
-OpenClaw is lightweight. For a basic Gateway + one chat channel:
+CoderClaw is lightweight. For a basic Gateway + one chat channel:
 
 - **Absolute minimum:** 1 vCPU, 1GB RAM, ~500MB disk.
 - **Recommended:** 1-2 vCPU, 2GB RAM or more for headroom (logs, media, multiple channels). Node tools and browser automation can be resource hungry.
@@ -912,7 +912,7 @@ OS: use **Ubuntu LTS** (or any modern Debian/Ubuntu). The Linux install path is 
 
 Docs: [Linux](/platforms/linux), [VPS hosting](/vps).
 
-### Can I run OpenClaw in a VM and what are the requirements
+### Can I run CoderClaw in a VM and what are the requirements
 
 Yes. Treat a VM the same as a VPS: it needs to be always on, reachable, and have enough
 RAM for the Gateway and any channels you enable.
@@ -927,15 +927,15 @@ If you are on Windows, **WSL2 is the easiest VM style setup** and has the best t
 compatibility. See [Windows](/platforms/windows), [VPS hosting](/vps).
 If you are running macOS in a VM, see [macOS VM](/install/macos-vm).
 
-## What is OpenClaw?
+## What is CoderClaw?
 
-### What is OpenClaw in one paragraph
+### What is CoderClaw in one paragraph
 
-OpenClaw is a personal AI assistant you run on your own devices. It replies on the messaging surfaces you already use (WhatsApp, Telegram, Slack, Mattermost (plugin), Discord, Google Chat, Signal, iMessage, WebChat) and can also do voice + a live Canvas on supported platforms. The **Gateway** is the always-on control plane; the assistant is the product.
+CoderClaw is a personal AI assistant you run on your own devices. It replies on the messaging surfaces you already use (WhatsApp, Telegram, Slack, Mattermost (plugin), Discord, Google Chat, Signal, iMessage, WebChat) and can also do voice + a live Canvas on supported platforms. The **Gateway** is the always-on control plane; the assistant is the product.
 
 ### What's the value proposition
 
-OpenClaw is not "just a Claude wrapper." It's a **local-first control plane** that lets you run a
+CoderClaw is not "just a Claude wrapper." It's a **local-first control plane** that lets you run a
 capable assistant on **your own hardware**, reachable from the chat apps you already use, with
 stateful sessions, memory, and tools - without handing control of your workflows to a hosted
 SaaS.
@@ -968,7 +968,7 @@ Good first projects:
 It can handle large tasks, but it works best when you split them into phases and
 use sub agents for parallel work.
 
-### What are the top five everyday use cases for OpenClaw
+### What are the top five everyday use cases for CoderClaw
 
 Everyday wins usually look like:
 
@@ -978,21 +978,21 @@ Everyday wins usually look like:
 - **Browser automation:** filling forms, collecting data, and repeating web tasks.
 - **Cross device coordination:** send a task from your phone, let the Gateway run it on a server, and get the result back in chat.
 
-### Can OpenClaw help with lead gen outreach ads and blogs for a SaaS
+### Can CoderClaw help with lead gen outreach ads and blogs for a SaaS
 
 Yes for **research, qualification, and drafting**. It can scan sites, build shortlists,
 summarize prospects, and write outreach or ad copy drafts.
 
 For **outreach or ad runs**, keep a human in the loop. Avoid spam, follow local laws and
 platform policies, and review anything before it is sent. The safest pattern is to let
-OpenClaw draft and you approve.
+CoderClaw draft and you approve.
 
 Docs: [Security](/gateway/security).
 
 ### What are the advantages vs Claude Code for web development
 
-OpenClaw is a **personal assistant** and coordination layer, not an IDE replacement. Use
-Claude Code or Codex for the fastest direct coding loop inside a repo. Use OpenClaw when you
+CoderClaw is a **personal assistant** and coordination layer, not an IDE replacement. Use
+Claude Code or Codex for the fastest direct coding loop inside a repo. Use CoderClaw when you
 want durable memory, cross-device access, and tool orchestration.
 
 Advantages:
@@ -1003,7 +1003,7 @@ Advantages:
 - **Always-on Gateway** (run on a VPS, interact from anywhere)
 - **Nodes** for local browser/screen/camera/exec
 
-Showcase: [https://openclaw.ai/showcase](https://openclaw.ai/showcase)
+Showcase: [https://coderclaw.ai/showcase](https://coderclaw.ai/showcase)
 
 ## Skills and automation
 
@@ -1013,7 +1013,7 @@ Use managed overrides instead of editing the repo copy. Put your changes in `~/.
 
 ### Can I load skills from a custom folder
 
-Yes. Add extra directories via `skills.load.extraDirs` in `~/.coderclaw/coderclaw.json` (lowest precedence). Default precedence remains: `<workspace>/skills` → `~/.coderclaw/skills` → bundled → `skills.load.extraDirs`. `clawhub` installs into `./skills` by default, which OpenClaw treats as `<workspace>/skills`.
+Yes. Add extra directories via `skills.load.extraDirs` in `~/.coderclaw/coderclaw.json` (lowest precedence). Default precedence remains: `<workspace>/skills` → `~/.coderclaw/skills` → bundled → `skills.load.extraDirs`. `clawhub` installs into `./skills` by default, which CoderClaw treats as `<workspace>/skills`.
 
 ### How can I use different models for different tasks
 
@@ -1073,7 +1073,7 @@ npm i -g clawhub
 pnpm add -g clawhub
 ```
 
-### Can OpenClaw run tasks on a schedule or continuously in the background
+### Can CoderClaw run tasks on a schedule or continuously in the background
 
 Yes. Use the Gateway scheduler:
 
@@ -1091,10 +1091,10 @@ Not directly. macOS skills are gated by `metadata.coderclaw.os` plus required bi
 You have three supported patterns:
 
 **Option A - run the Gateway on a Mac (simplest).**
-Run the Gateway where the macOS binaries exist, then connect from Linux in [remote mode](#how-do-i-run-openclaw-in-remote-mode-client-connects-to-a-gateway-elsewhere) or over Tailscale. The skills load normally because the Gateway host is macOS.
+Run the Gateway where the macOS binaries exist, then connect from Linux in [remote mode](#how-do-i-run-coderclaw-in-remote-mode-client-connects-to-a-gateway-elsewhere) or over Tailscale. The skills load normally because the Gateway host is macOS.
 
 **Option B - use a macOS node (no SSH).**
-Run the Gateway on Linux, pair a macOS node (menubar app), and set **Node Run Commands** to "Always Ask" or "Always Allow" on the Mac. OpenClaw can treat macOS-only skills as eligible when the required binaries exist on the node. The agent runs those skills via the `nodes` tool. If you choose "Always Ask", approving "Always Allow" in the prompt adds that command to the allowlist.
+Run the Gateway on Linux, pair a macOS node (menubar app), and set **Node Run Commands** to "Always Ask" or "Always Allow" on the Mac. CoderClaw can treat macOS-only skills as eligible when the required binaries exist on the node. The agent runs those skills via the `nodes` tool. If you choose "Always Ask", approving "Always Allow" in the prompt adds that command to the allowlist.
 
 **Option C - proxy macOS binaries over SSH (advanced).**
 Keep the Gateway on Linux, but make the required CLI binaries resolve to SSH wrappers that run on a Mac. Then override the skill to allow Linux so it stays eligible.
@@ -1144,7 +1144,7 @@ clawhub install <skill-slug>
 clawhub update --all
 ```
 
-ClawHub installs into `./skills` under your current directory (or falls back to your configured OpenClaw workspace); OpenClaw treats that as `<workspace>/skills` on the next session. For shared skills across agents, place them in `~/.coderclaw/skills/<name>/SKILL.md`. Some skills expect binaries installed via Homebrew; on Linux that means Linuxbrew (see the Homebrew Linux FAQ entry above). See [Skills](/tools/skills) and [ClawHub](/tools/clawhub).
+ClawHub installs into `./skills` under your current directory (or falls back to your configured CoderClaw workspace); CoderClaw treats that as `<workspace>/skills` on the next session. For shared skills across agents, place them in `~/.coderclaw/skills/<name>/SKILL.md`. Some skills expect binaries installed via Homebrew; on Linux that means Linuxbrew (see the Homebrew Linux FAQ entry above). See [Skills](/tools/skills) and [ClawHub](/tools/clawhub).
 
 ### How do I install the Chrome extension for browser takeover
 
@@ -1198,12 +1198,12 @@ Set `agents.defaults.sandbox.docker.binds` to `["host:path:mode"]` (e.g., `"/hom
 
 ### How does memory work
 
-OpenClaw memory is just Markdown files in the agent workspace:
+CoderClaw memory is just Markdown files in the agent workspace:
 
 - Daily notes in `memory/YYYY-MM-DD.md`
 - Curated long-term notes in `MEMORY.md` (main/private sessions only)
 
-OpenClaw also runs a **silent pre-compaction memory flush** to remind the model
+CoderClaw also runs a **silent pre-compaction memory flush** to remind the model
 to write durable notes before auto-compaction. This only runs when the workspace
 is writable (read-only sandboxes skip it). See [Memory](/concepts/memory).
 
@@ -1225,11 +1225,11 @@ does **not** grant embeddings access, so **signing in with Codex (OAuth or the
 Codex CLI login)** does not help for semantic memory search. OpenAI embeddings
 still need a real API key (`OPENAI_API_KEY` or `models.providers.openai.apiKey`).
 
-If you don't set a provider explicitly, OpenClaw auto-selects a provider when it
+If you don't set a provider explicitly, CoderClaw auto-selects a provider when it
 can resolve an API key (auth profiles, `models.providers.*.apiKey`, or env vars).
 It prefers OpenAI if an OpenAI key resolves, otherwise Gemini if a Gemini key
 resolves. If neither key is available, memory search stays disabled until you
-configure it. If you have a local model path configured and present, OpenClaw
+configure it. If you have a local model path configured and present, CoderClaw
 prefers `local`.
 
 If you'd rather stay local, set `memorySearch.provider = "local"` (and optionally
@@ -1249,9 +1249,9 @@ Docs: [Memory](/concepts/memory), [Context](/concepts/context).
 
 ## Where things live on disk
 
-### Is all data used with OpenClaw saved locally
+### Is all data used with CoderClaw saved locally
 
-No - **OpenClaw's state is local**, but **external services still see what you send them**.
+No - **CoderClaw's state is local**, but **external services still see what you send them**.
 
 - **Local by default:** sessions, memory files, config, and workspace live on the Gateway host
   (`~/.coderclaw` + your workspace directory).
@@ -1263,7 +1263,7 @@ No - **OpenClaw's state is local**, but **external services still see what you s
 
 Related: [Agent workspace](/concepts/agent-workspace), [Memory](/concepts/memory).
 
-### Where does OpenClaw store its data
+### Where does CoderClaw store its data
 
 Everything lives under `$CODERCLAW_STATE_DIR` (default: `~/.coderclaw`):
 
@@ -1320,7 +1320,7 @@ separately (see the migration question above).
 
 Docs: [Agent workspace](/concepts/agent-workspace).
 
-### How do I completely uninstall OpenClaw
+### How do I completely uninstall CoderClaw
 
 See the dedicated guide: [Uninstall](/install/uninstall).
 
@@ -1331,7 +1331,7 @@ Relative paths resolve inside the workspace, but absolute paths can access other
 host locations unless sandboxing is enabled. If you need isolation, use
 [`agents.defaults.sandbox`](/gateway/sandboxing) or per-agent sandbox settings. If you
 want a repo to be the default working directory, point that agent's
-`workspace` to the repo root. The OpenClaw repo is just source code; keep the
+`workspace` to the repo root. The CoderClaw repo is just source code; keep the
 workspace separate unless you intentionally want the agent to work inside it.
 
 Example (repo as default cwd):
@@ -1354,7 +1354,7 @@ Session state is owned by the **gateway host**. If you're in remote mode, the se
 
 ### What format is the config Where is it
 
-OpenClaw reads an optional **JSON5** config from `$CODERCLAW_CONFIG_PATH` (default: `~/.coderclaw/coderclaw.json`):
+CoderClaw reads an optional **JSON5** config from `$CODERCLAW_CONFIG_PATH` (default: `~/.coderclaw/coderclaw.json`):
 
 ```
 $CODERCLAW_CONFIG_PATH
@@ -1440,7 +1440,7 @@ The common pattern is **one Gateway** (e.g. Raspberry Pi) plus **nodes** and **a
 
 Docs: [Nodes](/nodes), [Remote access](/gateway/remote), [Multi-Agent Routing](/concepts/multi-agent), [Sub-agents](/tools/subagents), [TUI](/web/tui).
 
-### Can the OpenClaw browser run headless
+### Can the CoderClaw browser run headless
 
 Yes. It's a config option:
 
@@ -1521,7 +1521,7 @@ Then verify auth and routing:
 
 Docs: [Tailscale](/gateway/tailscale), [Remote access](/gateway/remote), [Channels](/channels).
 
-### Can two OpenClaw instances talk to each other local VPS
+### Can two CoderClaw instances talk to each other local VPS
 
 Yes. There is no built-in "bot-to-bot" bridge, but you can wire it up in a few
 reliable ways:
@@ -1672,9 +1672,9 @@ Docs: [Gateway protocol](/gateway/protocol), [Discovery](/gateway/discovery), [m
 
 ## Env vars and .env loading
 
-### How does OpenClaw load environment variables
+### How does CoderClaw load environment variables
 
-OpenClaw reads env vars from the parent process (shell, launchd/systemd, CI, etc.) and additionally loads:
+CoderClaw reads env vars from the parent process (shell, launchd/systemd, CI, etc.) and additionally loads:
 
 - `.env` from the current working directory
 - a global fallback `.env` from `~/.coderclaw/.env` (aka `$CODERCLAW_STATE_DIR/.env`)
@@ -1718,7 +1718,7 @@ This runs your login shell and imports only missing expected keys (never overrid
 ### I set COPILOTGITHUBTOKEN but models status shows Shell env off Why
 
 `coderclaw models status` reports whether **shell env import** is enabled. "Shell env: off"
-does **not** mean your env vars are missing - it just means OpenClaw won't load
+does **not** mean your env vars are missing - it just means CoderClaw won't load
 your login shell automatically.
 
 If the Gateway runs as a service (launchd/systemd), it won't inherit your shell
@@ -1762,7 +1762,7 @@ transcripts - it just starts a new session.
 }
 ```
 
-### Is there a way to make a team of OpenClaw instances one CEO and many agents
+### Is there a way to make a team of CoderClaw instances one CEO and many agents
 
 Yes, via **multi-agent routing** and **sub-agents**. You can create one coordinator
 agent and several worker agents with their own workspaces and models.
@@ -1787,7 +1787,7 @@ What helps:
 - Use sub-agents for long or parallel work so the main chat stays smaller.
 - Pick a model with a larger context window if this happens often.
 
-### How do I completely reset OpenClaw but keep it installed
+### How do I completely reset CoderClaw but keep it installed
 
 Use the reset command:
 
@@ -1810,7 +1810,7 @@ coderclaw onboard --install-daemon
 Notes:
 
 - The onboarding wizard also offers **Reset** if it sees an existing config. See [Wizard](/start/wizard).
-- If you used profiles (`--profile` / `CODERCLAW_PROFILE`), reset each state dir (defaults are `~/.openclaw-<profile>`).
+- If you used profiles (`--profile` / `CODERCLAW_PROFILE`), reset each state dir (defaults are `~/.coderclaw-<profile>`).
 - Dev reset: `coderclaw gateway --dev --reset` (dev-only; wipes dev config + credentials + sessions + workspace).
 
 ### Im getting context too large errors how do I reset or compact
@@ -1864,14 +1864,14 @@ Heartbeats run every **30m** by default. Tune or disable them:
 ```
 
 If `HEARTBEAT.md` exists but is effectively empty (only blank lines and markdown
-headers like `# Heading`), OpenClaw skips the heartbeat run to save API calls.
+headers like `# Heading`), CoderClaw skips the heartbeat run to save API calls.
 If the file is missing, the heartbeat still runs and the model decides what to do.
 
 Per-agent overrides use `agents.list[].heartbeat`. Docs: [Heartbeat](/gateway/heartbeat).
 
 ### Do I need to add a bot account to a WhatsApp group
 
-No. OpenClaw runs on **your own account**, so if you're in the group, OpenClaw can see it.
+No. CoderClaw runs on **your own account**, so if you're in the group, CoderClaw can see it.
 By default, group replies are blocked until you allow senders (`groupPolicy: "allowlist"`).
 
 If you want only **you** to be able to trigger group replies:
@@ -1906,7 +1906,7 @@ coderclaw directory groups list --channel whatsapp
 
 Docs: [WhatsApp](/channels/whatsapp), [Directory](/cli/directory), [Logs](/cli/logs).
 
-### Why doesnt OpenClaw reply in a group
+### Why doesnt CoderClaw reply in a group
 
 Two common causes:
 
@@ -1956,13 +1956,13 @@ Docs: [Multi-Agent Routing](/concepts/multi-agent), [Slack](/channels/slack),
 
 ### What is the default model
 
-OpenClaw's default model is whatever you set as:
+CoderClaw's default model is whatever you set as:
 
 ```
 agents.defaults.model.primary
 ```
 
-Models are referenced as `provider/model` (example: `anthropic/claude-opus-4-6`). If you omit the provider, OpenClaw currently assumes `anthropic` as a temporary deprecation fallback - but you should still **explicitly** set `provider/model`.
+Models are referenced as `provider/model` (example: `anthropic/claude-opus-4-6`). If you omit the provider, CoderClaw currently assumes `anthropic` as a temporary deprecation fallback - but you should still **explicitly** set `provider/model`.
 
 ### What model do you recommend
 
@@ -2013,9 +2013,9 @@ If you did overwrite config, restore from backup or re-run `coderclaw doctor` to
 
 Docs: [Models](/concepts/models), [Configure](/cli/configure), [Config](/cli/config), [Doctor](/gateway/doctor).
 
-### What do OpenClaw, Flawd, and Krill use for models
+### What do CoderClaw, Flawd, and Krill use for models
 
-- **OpenClaw + Flawd:** Anthropic Opus (`anthropic/claude-opus-4-6`) - see [Anthropic](/providers/anthropic).
+- **CoderClaw + Flawd:** Anthropic Opus (`anthropic/claude-opus-4-6`) - see [Anthropic](/providers/anthropic).
 - **Krill:** MiniMax M2.1 (`minimax/MiniMax-M2.1`) - see [MiniMax](/providers/minimax).
 
 ### How do I switch models on the fly without restarting
@@ -2144,7 +2144,7 @@ Docs: [Models](/concepts/models), [Multi-Agent Routing](/concepts/multi-agent), 
 
 ### Are opus sonnet gpt builtin shortcuts
 
-Yes. OpenClaw ships a few default shorthands (only applied when the model exists in `agents.defaults.models`):
+Yes. CoderClaw ships a few default shorthands (only applied when the model exists in `agents.defaults.models`):
 
 - `opus` → `anthropic/claude-opus-4-6`
 - `sonnet` → `anthropic/claude-sonnet-4-5`
@@ -2233,7 +2233,7 @@ Failover happens in two stages:
 1. **Auth profile rotation** within the same provider.
 2. **Model fallback** to the next model in `agents.defaults.model.fallbacks`.
 
-Cooldowns apply to failing profiles (exponential backoff), so OpenClaw can keep responding even when a provider is rate-limited or temporarily failing.
+Cooldowns apply to failing profiles (exponential backoff), so CoderClaw can keep responding even when a provider is rate-limited or temporarily failing.
 
 ### What does this error mean
 
@@ -2276,7 +2276,7 @@ can't find it in its auth store.
 
 ### Why did it also try Google Gemini and fail
 
-If your model config includes Google Gemini as a fallback (or you switched to a Gemini shorthand), OpenClaw will try it during model fallback. If you haven't configured Google credentials, you'll see `No API key found for provider "google"`.
+If your model config includes Google Gemini as a fallback (or you switched to a Gemini shorthand), CoderClaw will try it during model fallback. If you haven't configured Google credentials, you'll see `No API key found for provider "google"`.
 
 Fix: either provide Google auth, or remove/avoid Google models in `agents.defaults.model.fallbacks` / aliases so fallback doesn't route there.
 
@@ -2285,7 +2285,7 @@ Fix: either provide Google auth, or remove/avoid Google models in `agents.defaul
 Cause: the session history contains **thinking blocks without signatures** (often from
 an aborted/partial stream). Google Antigravity requires signatures for thinking blocks.
 
-Fix: OpenClaw now strips unsigned thinking blocks for Google Antigravity Claude. If it still appears, start a **new session** or set `/thinking off` for that agent.
+Fix: CoderClaw now strips unsigned thinking blocks for Google Antigravity Claude. If it still appears, start a **new session** or set `/thinking off` for that agent.
 
 ## Auth profiles: what they are and how to manage them
 
@@ -2301,7 +2301,7 @@ An auth profile is a named credential record (OAuth or API key) tied to a provid
 
 ### What are typical profile IDs
 
-OpenClaw uses provider-prefixed IDs like:
+CoderClaw uses provider-prefixed IDs like:
 
 - `anthropic:default` (common when no email identity exists)
 - `anthropic:<email>` for OAuth identities
@@ -2311,7 +2311,7 @@ OpenClaw uses provider-prefixed IDs like:
 
 Yes. Config supports optional metadata for profiles and an ordering per provider (`auth.order.<provider>`). This does **not** store secrets; it maps IDs to provider/mode and sets rotation order.
 
-OpenClaw may temporarily skip a profile if it's in a short **cooldown** (rate limits/timeouts/auth failures) or a longer **disabled** state (billing/insufficient credits). To inspect this, run `coderclaw models status --json` and check `auth.unusableProfiles`. Tuning: `auth.cooldowns.billingBackoffHours*`.
+CoderClaw may temporarily skip a profile if it's in a short **cooldown** (rate limits/timeouts/auth failures) or a longer **disabled** state (billing/insufficient credits). To inspect this, run `coderclaw models status --json` and check `auth.unusableProfiles`. Tuning: `auth.cooldowns.billingBackoffHours*`.
 
 You can also set a **per-agent** order override (stored in that agent's `auth-profiles.json`) via the CLI:
 
@@ -2337,7 +2337,7 @@ coderclaw models auth order set --provider anthropic --agent main anthropic:defa
 
 ### OAuth vs API key whats the difference
 
-OpenClaw supports both:
+CoderClaw supports both:
 
 - **OAuth** often leverages subscription access (where applicable).
 - **API keys** use pay-per-token billing.
@@ -2380,11 +2380,11 @@ Run that from the same `--profile` / environment you want the service to use.
 
 ### What does another gateway instance is already listening mean
 
-OpenClaw enforces a runtime lock by binding the WebSocket listener immediately on startup (default `ws://127.0.0.1:18789`). If the bind fails with `EADDRINUSE`, it throws `GatewayLockError` indicating another instance is already listening.
+CoderClaw enforces a runtime lock by binding the WebSocket listener immediately on startup (default `ws://127.0.0.1:18789`). If the bind fails with `EADDRINUSE`, it throws `GatewayLockError` indicating another instance is already listening.
 
 Fix: stop the other instance, free the port, or run with `coderclaw gateway --port <port>`.
 
-### How do I run OpenClaw in remote mode client connects to a Gateway elsewhere
+### How do I run CoderClaw in remote mode client connects to a Gateway elsewhere
 
 Set `gateway.mode: "remote"` and point to a remote WebSocket URL, optionally with a token/password:
 
@@ -2412,7 +2412,7 @@ Your gateway is running with auth enabled (`gateway.auth.*`), but the UI is not 
 
 Facts (from code):
 
-- The Control UI stores the token in browser localStorage key `openclaw.control.settings.v1`.
+- The Control UI stores the token in browser localStorage key `coderclaw.control.settings.v1`.
 
 Fix:
 
@@ -2447,11 +2447,11 @@ Yes, but you must isolate:
 
 Quick setup (recommended):
 
-- Use `openclaw --profile <name> …` per instance (auto-creates `~/.coderclaw-<name>`).
+- Use `coderclaw --profile <name> …` per instance (auto-creates `~/.coderclaw-<name>`).
 - Set a unique `gateway.port` in each profile config (or pass `--port` for manual runs).
-- Install a per-profile service: `openclaw --profile <name> gateway install`.
+- Install a per-profile service: `coderclaw --profile <name> gateway install`.
 
-Profiles also suffix service names (`bot.molt.<profile>`; legacy `com.openclaw.*`, `openclaw-gateway-<profile>.service`, `OpenClaw Gateway (<profile>)`).
+Profiles also suffix service names (`bot.molt.<profile>`; legacy `com.coderclaw.*`, `coderclaw-gateway-<profile>.service`, `CoderClaw Gateway (<profile>)`).
 Full guide: [Multiple gateways](/gateway/multiple-gateways).
 
 ### What does invalid handshake code 1008 mean
@@ -2500,9 +2500,9 @@ coderclaw logs --follow
 
 Service/supervisor logs (when the gateway runs via launchd/systemd):
 
-- macOS: `$CODERCLAW_STATE_DIR/logs/gateway.log` and `gateway.err.log` (default: `~/.coderclaw/logs/...`; profiles use `~/.openclaw-<profile>/logs/...`)
-- Linux: `journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`
-- Windows: `schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST`
+- macOS: `$CODERCLAW_STATE_DIR/logs/gateway.log` and `gateway.err.log` (default: `~/.coderclaw/logs/...`; profiles use `~/.coderclaw-<profile>/logs/...`)
+- Linux: `journalctl --user -u coderclaw-gateway[-<profile>].service -n 200 --no-pager`
+- Windows: `schtasks /Query /TN "CoderClaw Gateway (<profile>)" /V /FO LIST`
 
 See [Troubleshooting](/gateway/troubleshooting#log-locations) for more.
 
@@ -2517,7 +2517,7 @@ coderclaw gateway restart
 
 If you run the gateway manually, `coderclaw gateway --force` can reclaim the port. See [Gateway](/gateway).
 
-### I closed my terminal on Windows how do I restart OpenClaw
+### I closed my terminal on Windows how do I restart CoderClaw
 
 There are **two Windows install modes**:
 
@@ -2658,7 +2658,7 @@ Start the Gateway with `--verbose` to get more console detail. Then inspect the 
 
 ### My skill generated an imagePDF but nothing was sent
 
-Outbound attachments from the agent must include a `MEDIA:<path-or-url>` line (on its own line). See [OpenClaw assistant setup](/start/openclaw) and [Agent send](/tools/agent-send).
+Outbound attachments from the agent must include a `MEDIA:<path-or-url>` line (on its own line). See [CoderClaw assistant setup](/start/coderclaw) and [Agent send](/tools/agent-send).
 
 CLI sending:
 
@@ -2675,7 +2675,7 @@ See [Images](/nodes/images).
 
 ## Security and access control
 
-### Is it safe to expose OpenClaw to inbound DMs
+### Is it safe to expose CoderClaw to inbound DMs
 
 Treat inbound DMs as untrusted input. Defaults are designed to reduce risk:
 
@@ -2748,7 +2748,7 @@ for that account.
 
 ### WhatsApp will it message my contacts How does pairing work
 
-No. Default WhatsApp DM policy is **pairing**. Unknown senders only get a pairing code and their message is **not processed**. OpenClaw only replies to chats it receives or to explicit sends you trigger.
+No. Default WhatsApp DM policy is **pairing**. Unknown senders only get a pairing code and their message is **not processed**. CoderClaw only replies to chats it receives or to explicit sends you trigger.
 
 Approve pairing with:
 
@@ -2811,7 +2811,7 @@ Most commands must be sent as a **standalone** message that starts with `/`, but
 
 ### How do I send a Discord message from Telegram Crosscontext messaging denied
 
-OpenClaw blocks **cross-provider** messaging by default. If a tool call is bound
+CoderClaw blocks **cross-provider** messaging by default. If a tool call is bound
 to Telegram, it won't send to Discord unless you explicitly allow it.
 
 Enable cross-provider messaging for the agent:
@@ -2852,8 +2852,8 @@ You can add options like `debounce:2s cap:25 drop:summarize` for followup modes.
 
 **Q: "What's the default model for Anthropic with an API key?"**
 
-**A:** In OpenClaw, credentials and model selection are separate. Setting `ANTHROPIC_API_KEY` (or storing an Anthropic API key in auth profiles) enables authentication, but the actual default model is whatever you configure in `agents.defaults.model.primary` (for example, `anthropic/claude-sonnet-4-5` or `anthropic/claude-opus-4-6`). If you see `No credentials found for profile "anthropic:default"`, it means the Gateway couldn't find Anthropic credentials in the expected `auth-profiles.json` for the agent that's running.
+**A:** In CoderClaw, credentials and model selection are separate. Setting `ANTHROPIC_API_KEY` (or storing an Anthropic API key in auth profiles) enables authentication, but the actual default model is whatever you configure in `agents.defaults.model.primary` (for example, `anthropic/claude-sonnet-4-5` or `anthropic/claude-opus-4-6`). If you see `No credentials found for profile "anthropic:default"`, it means the Gateway couldn't find Anthropic credentials in the expected `auth-profiles.json` for the agent that's running.
 
 ---
 
-Still stuck? Ask in [Discord](https://discord.com/invite/clawd) or open a [GitHub discussion](https://github.com/SeanHogg/coderClaw/discussions).
+Still stuck? Ask in [Discord](https://discord.gg/coderclaw) or open a [GitHub discussion](https://github.com/SeanHogg/coderClaw/discussions).

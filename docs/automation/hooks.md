@@ -8,14 +8,14 @@ title: "Hooks"
 
 # Hooks
 
-Hooks provide an extensible event-driven system for automating actions in response to agent commands and events. Hooks are automatically discovered from directories and can be managed via CLI commands, similar to how skills work in OpenClaw.
+Hooks provide an extensible event-driven system for automating actions in response to agent commands and events. Hooks are automatically discovered from directories and can be managed via CLI commands, similar to how skills work in CoderClaw.
 
 ## Getting Oriented
 
 Hooks are small scripts that run when something happens. There are two kinds:
 
 - **Hooks** (this page): run inside the Gateway when agent events fire, like `/new`, `/reset`, `/stop`, or lifecycle events.
-- **Webhooks**: external HTTP webhooks that let other systems trigger work in OpenClaw. See [Webhook Hooks](/automation/webhook) or use `coderclaw webhooks` for Gmail helper commands.
+- **Webhooks**: external HTTP webhooks that let other systems trigger work in CoderClaw. See [Webhook Hooks](/automation/webhook) or use `coderclaw webhooks` for Gmail helper commands.
 
 Hooks can also be bundled inside plugins; see [Plugins](/tools/plugin#plugin-hooks).
 
@@ -35,13 +35,13 @@ The hooks system allows you to:
 - Save session context to memory when `/new` is issued
 - Log all commands for auditing
 - Trigger custom automations on agent lifecycle events
-- Extend OpenClaw's behavior without modifying core code
+- Extend CoderClaw's behavior without modifying core code
 
 ## Getting Started
 
 ### Bundled Hooks
 
-OpenClaw ships with four bundled hooks that are automatically discovered:
+CoderClaw ships with four bundled hooks that are automatically discovered:
 
 - **💾 session-memory**: Saves session context to your agent workspace (default `~/.coderclaw/workspace/memory/`) when you issue `/new`
 - **📎 bootstrap-extra-files**: Injects additional workspace bootstrap files from configured glob/path patterns during `agent:bootstrap`
@@ -82,7 +82,7 @@ Hooks are automatically discovered from three directories (in order of precedenc
 
 1. **Workspace hooks**: `<workspace>/hooks/` (per-agent, highest precedence)
 2. **Managed hooks**: `~/.coderclaw/hooks/` (user-installed, shared across workspaces)
-3. **Bundled hooks**: `<openclaw>/dist/hooks/bundled/` (shipped with OpenClaw)
+3. **Bundled hooks**: `<coderclaw>/dist/hooks/bundled/` (shipped with CoderClaw)
 
 Managed hook directories can be either a **single hook** or a **hook pack** (package directory).
 
@@ -221,7 +221,7 @@ Each event includes:
     senderId?: string,
     workspaceDir?: string,
     bootstrapFiles?: WorkspaceBootstrapFile[],
-    cfg?: OpenClawConfig,
+    cfg?: CoderClawConfig,
     // Message events (see Message Events section for full details):
     from?: string,             // message:received
     to?: string,               // message:sent
@@ -319,7 +319,7 @@ export default handler;
 
 ### Tool Result Hooks (Plugin API)
 
-These hooks are not event-stream listeners; they let plugins synchronously adjust tool results before OpenClaw persists them.
+These hooks are not event-stream listeners; they let plugins synchronously adjust tool results before CoderClaw persists them.
 
 - **`tool_result_persist`**: transform tool results before they are written to the session transcript. Must be synchronous; return the updated tool result payload or `undefined` to keep it as-is. See [Agent Loop](/concepts/agent-loop).
 

@@ -1,8 +1,8 @@
 ---
 read_when:
   - 你想用一个 API 密钥访问多种 LLM
-  - 你想在 OpenClaw 中通过 OpenRouter 运行模型
-summary: 使用 OpenRouter 的统一 API 在 OpenClaw 中访问多种模型
+  - 你想在 CoderClaw 中通过 OpenRouter 运行模型
+summary: 使用 OpenRouter 的统一 API 在 CoderClaw 中访问多种模型
 title: OpenRouter
 x-i18n:
   generated_at: "2026-02-01T21:35:19Z"

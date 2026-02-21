@@ -2,7 +2,7 @@
   "name": "@coderclaw/memory-lancedb",
   "version": "2026.2.21",
   "private": true,
-  "description": "OpenClaw LanceDB-backed long-term memory plugin with auto-recall/capture",
+  "description": "CoderClaw LanceDB-backed long-term memory plugin with auto-recall/capture",
   "type": "module",
   "dependencies": {
     "@lancedb/lancedb": "^0.26.2",

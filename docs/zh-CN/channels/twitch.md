@@ -1,6 +1,6 @@
 ---
 read_when:
-  - 为 OpenClaw 设置 Twitch 聊天集成
+  - 为 CoderClaw 设置 Twitch 聊天集成
 summary: Twitch 聊天机器人配置和设置
 title: Twitch
 x-i18n:
@@ -14,7 +14,7 @@ x-i18n:
 
 # Twitch（插件）
 
-通过 IRC 连接支持 Twitch 聊天。OpenClaw 以 Twitch 用户（机器人账户）身份连接，在频道中接收和发送消息。
+通过 IRC 连接支持 Twitch 聊天。CoderClaw 以 Twitch 用户（机器人账户）身份连接，在频道中接收和发送消息。
 
 ## 需要插件
 
@@ -23,7 +23,7 @@ Twitch 作为插件发布，未与核心安装捆绑。
 通过 CLI 安装（npm 注册表）：
 
 ```bash
-coderclaw plugins install @openclaw/twitch
+coderclaw plugins install @coderclaw/twitch
 ```
 
 本地检出（从 git 仓库运行时）：
@@ -57,7 +57,7 @@ coderclaw plugins install ./extensions/twitch
   channels: {
     twitch: {
       enabled: true,
-      username: "openclaw", // 机器人的 Twitch 账户
+      username: "coderclaw", // 机器人的 Twitch 账户
       accessToken: "oauth:abc123...", // OAuth Access Token（或使用 CODERCLAW_TWITCH_ACCESS_TOKEN 环境变量）
       clientId: "xyz789...", // Token Generator 中的 Client ID
       channel: "vevisk", // 要加入的 Twitch 频道聊天（必填）
@@ -101,7 +101,7 @@ CODERCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
   channels: {
     twitch: {
       enabled: true,
-      username: "openclaw",
+      username: "coderclaw",
       accessToken: "oauth:abc123...",
       clientId: "xyz789...",
       channel: "vevisk",
@@ -163,13 +163,13 @@ CODERCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
     twitch: {
       accounts: {
         channel1: {
-          username: "openclaw",
+          username: "coderclaw",
           accessToken: "oauth:abc123...",
           clientId: "xyz789...",
           channel: "vevisk",
         },
         channel2: {
-          username: "openclaw",
+          username: "coderclaw",
           accessToken: "oauth:def456...",
           clientId: "uvw012...",
           channel: "secondchannel",
@@ -323,7 +323,7 @@ Access token refreshed for user 123456 (expires in 14400s)
   channels: {
     twitch: {
       enabled: true,
-      username: "openclaw",
+      username: "coderclaw",
       accessToken: "oauth:abc123...",
       clientId: "xyz789...",
       channel: "vevisk",

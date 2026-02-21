@@ -15,7 +15,7 @@ x-i18n:
 
 # `coderclaw setup`
 
-初始化 `~/.openclaw/coderclaw.json` 和智能体工作区。
+初始化 `~/.coderclaw/coderclaw.json` 和智能体工作区。
 
 相关内容：
 
@@ -26,7 +26,7 @@ x-i18n:
 
 ```bash
 coderclaw setup
-coderclaw setup --workspace ~/.openclaw/workspace
+coderclaw setup --workspace ~/.coderclaw/workspace
 ```
 
 通过 setup 运行向导：

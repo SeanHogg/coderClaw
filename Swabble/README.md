@@ -66,7 +66,7 @@ All commands accept Commander runtime flags (`-v/--verbose`, `--json-output`, `-
 ```json
 {
   "audio": {"deviceName": "", "deviceIndex": -1, "sampleRate": 16000, "channels": 1},
-  "wake": {"enabled": true, "word": "clawd", "aliases": ["claude"]},
+  "wake": {"enabled": true, "word": "coderclaw", "aliases": ["claude"]},
   "hook": {
     "command": "",
     "args": [],

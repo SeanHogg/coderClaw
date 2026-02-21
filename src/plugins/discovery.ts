@@ -4,7 +4,7 @@ import { resolveConfigDir, resolveUserPath } from "../utils.js";
 import { resolveBundledPluginsDir } from "./bundled-dir.js";
 import {
   getPackageManifestMetadata,
-  type OpenClawPackageManifest,
+  type CoderClawPackageManifest,
   type PackageManifest,
 } from "./manifest.js";
 import type { PluginDiagnostic, PluginOrigin } from "./types.js";
@@ -21,7 +21,7 @@ export type PluginCandidate = {
   packageVersion?: string;
   packageDescription?: string;
   packageDir?: string;
-  packageManifest?: OpenClawPackageManifest;
+  packageManifest?: CoderClawPackageManifest;
 };
 
 export type PluginDiscoveryResult = {
@@ -298,7 +298,7 @@ function discoverFromPath(params: {
   }
 }
 
-export function discoverOpenClawPlugins(params: {
+export function discoverCoderClawPlugins(params: {
   workspaceDir?: string;
   extraPaths?: string[];
 }): PluginDiscoveryResult {

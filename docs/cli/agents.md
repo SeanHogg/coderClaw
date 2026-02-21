@@ -51,7 +51,7 @@ coderclaw agents set-identity --workspace ~/.coderclaw/workspace --from-identity
 Override fields explicitly:
 
 ```bash
-coderclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/coderclaw.png
+coderclaw agents set-identity --agent main --name "CoderClaw" --emoji "🦞" --avatar avatars/coderclaw.png
 ```
 
 Config sample:
@@ -63,7 +63,7 @@ Config sample:
       {
         id: "main",
         identity: {
-          name: "OpenClaw",
+          name: "CoderClaw",
           theme: "space lobster",
           emoji: "🦞",
           avatar: "avatars/coderclaw.png",

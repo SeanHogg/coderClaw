@@ -112,7 +112,7 @@ x-i18n:
 - `/new <model>` 接受模型别名、`provider/model` 或提供商名称（模糊匹配）；如果没有匹配，文本被视为消息正文。
 - 要获取完整的提供商使用量分解，使用 `coderclaw status --usage`。
 - `/allowlist add|remove` 需要 `commands.config=true` 并遵循渠道 `configWrites`。
-- `/usage` 控制每响应使用量页脚；`/usage cost` 从 OpenClaw 会话日志打印本地成本摘要。
+- `/usage` 控制每响应使用量页脚；`/usage cost` 从 CoderClaw 会话日志打印本地成本摘要。
 - `/restart` 默认禁用；设置 `commands.restart: true` 启用它。
 - `/verbose` 用于调试和额外可见性；在正常使用中保持**关闭**。
 - `/reasoning`（和 `/verbose`）在群组设置中有风险：它们可能会暴露你不打算公开的内部推理或工具输出。最好保持关闭，尤其是在群聊中。
@@ -202,4 +202,4 @@ x-i18n:
   - Slack：`agent:<agentId>:slack:slash:<userId>`（前缀可通过 `channels.slack.slashCommand.sessionPrefix` 配置）
   - Telegram：`telegram:slash:<userId>`（通过 `CommandTargetSessionKey` 定向到聊天会话）
 - **`/stop`** 定向到活动聊天会话，因此可以中止当前运行。
-- **Slack：** `channels.slack.slashCommand` 仍然支持单个 `/openclaw` 风格的命令。如果你启用 `commands.native`，你必须为每个内置命令创建一个 Slack 斜杠命令（与 `/help` 相同的名称）。Slack 的命令参数菜单以临时 Block Kit 按钮形式发送。
+- **Slack：** `channels.slack.slashCommand` 仍然支持单个 `/coderclaw` 风格的命令。如果你启用 `commands.native`，你必须为每个内置命令创建一个 Slack 斜杠命令（与 `/help` 相同的名称）。Slack 的命令参数菜单以临时 Block Kit 按钮形式发送。

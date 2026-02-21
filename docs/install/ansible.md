@@ -1,5 +1,5 @@
 ---
-summary: "Automated, hardened OpenClaw installation with Ansible, Tailscale VPN, and firewall isolation"
+summary: "Automated, hardened CoderClaw installation with Ansible, Tailscale VPN, and firewall isolation"
 read_when:
   - You want automated server deployment with security hardening
   - You need firewall-isolated setup with VPN access
@@ -9,7 +9,7 @@ title: "Ansible"
 
 # Ansible Installation
 
-The recommended way to deploy OpenClaw to production servers is via **[openclaw-ansible](https://github.com/SeanHogg/coderClaw-ansible)** — an automated installer with security-first architecture.
+The recommended way to deploy CoderClaw to production servers is via **[coderclaw-ansible](https://github.com/SeanHogg/coderClaw-ansible)** — an automated installer with security-first architecture.
 
 ## Quick Start
 
@@ -21,7 +21,7 @@ curl -fsSL https://raw.githubusercontent.com/SeanHogg/coderClaw-ansible/main/ins
 
 > **📦 Full guide: [github.com/SeanHogg/coderClaw-ansible](https://github.com/SeanHogg/coderClaw-ansible)**
 >
-> The openclaw-ansible repo is the source of truth for Ansible deployment. This page is a quick overview.
+> The coderclaw-ansible repo is the source of truth for Ansible deployment. This page is a quick overview.
 
 ## What You Get
 
@@ -47,7 +47,7 @@ The Ansible playbook installs and configures:
 2. **UFW firewall** (SSH + Tailscale ports only)
 3. **Docker CE + Compose V2** (for agent sandboxes)
 4. **Node.js 22.x + pnpm** (runtime dependencies)
-5. **OpenClaw** (host-based, not containerized)
+5. **CoderClaw** (host-based, not containerized)
 6. **Systemd service** (auto-start with security hardening)
 
 Note: The gateway runs **directly on the host** (not in Docker), but agent sandboxes use Docker for isolation. See [Sandboxing](/gateway/sandboxing) for details.
@@ -57,12 +57,12 @@ Note: The gateway runs **directly on the host** (not in Docker), but agent sandb
 After installation completes, switch to the coderclaw user:
 
 ```bash
-sudo -i -u openclaw
+sudo -i -u coderclaw
 ```
 
 The post-install script will guide you through:
 
-1. **Onboarding wizard**: Configure OpenClaw settings
+1. **Onboarding wizard**: Configure CoderClaw settings
 2. **Provider login**: Connect WhatsApp/Telegram/Discord/Signal
 3. **Gateway testing**: Verify the installation
 4. **Tailscale setup**: Connect to your VPN mesh
@@ -71,16 +71,16 @@ The post-install script will guide you through:
 
 ```bash
 # Check service status
-sudo systemctl status openclaw
+sudo systemctl status coderclaw
 
 # View live logs
 sudo journalctl -u coderclaw -f
 
 # Restart gateway
-sudo systemctl restart openclaw
+sudo systemctl restart coderclaw
 
 # Provider login (run as coderclaw user)
-sudo -i -u openclaw
+sudo -i -u coderclaw
 coderclaw channels login
 ```
 
@@ -127,13 +127,13 @@ ansible-galaxy collection install -r requirements.yml
 # 4. Run playbook
 ./run-playbook.sh
 
-# Or run directly (then manually execute /tmp/openclaw-setup.sh after)
+# Or run directly (then manually execute /tmp/coderclaw-setup.sh after)
 # ansible-playbook playbook.yml --ask-become-pass
 ```
 
-## Updating OpenClaw
+## Updating CoderClaw
 
-The Ansible installer sets up OpenClaw for manual updates. See [Updating](/install/updating) for the standard update flow.
+The Ansible installer sets up CoderClaw for manual updates. See [Updating](/install/updating) for the standard update flow.
 
 To re-run the Ansible playbook (e.g., for configuration changes):
 
@@ -161,10 +161,10 @@ If you're locked out:
 sudo journalctl -u coderclaw -n 100
 
 # Verify permissions
-sudo ls -la /opt/openclaw
+sudo ls -la /opt/coderclaw
 
 # Test manual start
-sudo -i -u openclaw
+sudo -i -u coderclaw
 cd ~/coderclaw
 pnpm start
 ```
@@ -179,16 +179,16 @@ sudo systemctl status docker
 sudo docker images | grep coderclaw-sandbox
 
 # Build sandbox image if missing
-cd /opt/openclaw/openclaw
+cd /opt/coderclaw/coderclaw
 sudo -u coderclaw ./scripts/sandbox-setup.sh
 ```
 
 ### Provider login fails
 
-Make sure you're running as the `openclaw` user:
+Make sure you're running as the `coderclaw` user:
 
 ```bash
-sudo -i -u openclaw
+sudo -i -u coderclaw
 coderclaw channels login
 ```
 
@@ -202,7 +202,7 @@ For detailed security architecture and troubleshooting:
 
 ## Related
 
-- [openclaw-ansible](https://github.com/SeanHogg/coderClaw-ansible) — full deployment guide
+- [coderclaw-ansible](https://github.com/SeanHogg/coderClaw-ansible) — full deployment guide
 - [Docker](/install/docker) — containerized gateway setup
 - [Sandboxing](/gateway/sandboxing) — agent sandbox configuration
 - [Multi-Agent Sandbox & Tools](/tools/multi-agent-sandbox-tools) — per-agent isolation

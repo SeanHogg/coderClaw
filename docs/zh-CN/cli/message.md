@@ -45,7 +45,7 @@ coderclaw message <subcommand> [flags]
 名称查找：
 
 - 对于支持的提供商（Discord/Slack 等），如 `Help` 或 `#help` 之类的频道名称会通过目录缓存进行解析。
-- 缓存未命中时，如果提供商支持，OpenClaw 将尝试实时目录查找。
+- 缓存未命中时，如果提供商支持，CoderClaw 将尝试实时目录查找。
 
 ## 通用标志
 

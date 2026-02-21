@@ -8,7 +8,7 @@ title: "Doctor"
 
 # Doctor
 
-`coderclaw doctor` is the repair + migration tool for OpenClaw. It fixes stale
+`coderclaw doctor` is the repair + migration tool for CoderClaw. It fixes stale
 config/state, checks health, and provides actionable repair steps.
 
 ## Quick start
@@ -202,9 +202,9 @@ switch to legacy names if the current image is missing.
 ### 8) Gateway service migrations and cleanup hints
 
 Doctor detects legacy gateway services (launchd/systemd/schtasks) and
-offers to remove them and install the OpenClaw service using the current gateway
+offers to remove them and install the CoderClaw service using the current gateway
 port. It can also scan for extra gateway-like services and print cleanup hints.
-Profile-named OpenClaw gateway services are considered first-class and are not
+Profile-named CoderClaw gateway services are considered first-class and are not
 flagged as "extra."
 
 ### 9) Security warnings

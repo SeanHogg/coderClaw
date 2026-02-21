@@ -40,12 +40,12 @@ function isDisabledByEnv() {
 
 function safeServiceName(name: string) {
   const trimmed = name.trim();
-  return trimmed.length > 0 ? trimmed : "OpenClaw";
+  return trimmed.length > 0 ? trimmed : "CoderClaw";
 }
 
 function prettifyInstanceName(name: string) {
   const normalized = name.trim().replace(/\s+/g, " ");
-  return normalized.replace(/\s+\(OpenClaw\)\s*$/i, "").trim() || normalized;
+  return normalized.replace(/\s+\(CoderClaw\)\s*$/i, "").trim() || normalized;
 }
 
 type BonjourService = {
@@ -96,17 +96,17 @@ export async function startGatewayBonjourAdvertiser(
   // Keep only the first label and normalize away a trailing `.local`.
   const hostnameRaw =
     process.env.CODERCLAW_MDNS_HOSTNAME?.trim() ||
-    process.env.CLAWDBOT_MDNS_HOSTNAME?.trim() ||
-    "openclaw";
+    process.env.CODERCLAW_MDNS_HOSTNAME?.trim() ||
+    "coderclaw";
   const hostname =
     hostnameRaw
       .replace(/\.local$/i, "")
       .split(".")[0]
-      .trim() || "openclaw";
+      .trim() || "coderclaw";
   const instanceName =
     typeof opts.instanceName === "string" && opts.instanceName.trim()
       ? opts.instanceName.trim()
-      : `${hostname} (OpenClaw)`;
+      : `${hostname} (CoderClaw)`;
   const displayName = prettifyInstanceName(instanceName);
 
   const txtBase: Record<string, string> = {
@@ -147,7 +147,7 @@ export async function startGatewayBonjourAdvertiser(
 
   const gateway = responder.createService({
     name: safeServiceName(instanceName),
-    type: "openclaw-gw",
+    type: "coderclaw-gw",
     protocol: Protocol.TCP,
     port: opts.gatewayPort,
     domain: "local",

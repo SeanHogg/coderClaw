@@ -23,9 +23,9 @@ echo "Running plugins Docker E2E..."
 
 	  home_dir=$(mktemp -d "/tmp/coderclaw-plugins-e2e.XXXXXX")
 	  export HOME="$home_dir"
-  mkdir -p "$HOME/.openclaw/extensions/demo-plugin"
+  mkdir -p "$HOME/.coderclaw/extensions/demo-plugin"
 
-  cat > "$HOME/.openclaw/extensions/demo-plugin/index.js" <<'"'"'JS'"'"'
+  cat > "$HOME/.coderclaw/extensions/demo-plugin/index.js" <<'"'"'JS'"'"'
 module.exports = {
   id: "demo-plugin",
   name: "Demo Plugin",
@@ -38,7 +38,7 @@ module.exports = {
   },
 };
 JS
-  cat > "$HOME/.openclaw/extensions/demo-plugin/openclaw.plugin.json" <<'"'"'JSON'"'"'
+  cat > "$HOME/.coderclaw/extensions/demo-plugin/coderclaw.plugin.json" <<'"'"'JSON'"'"'
 {
   "id": "demo-plugin",
   "configSchema": {
@@ -80,13 +80,13 @@ console.log("ok");
 NODE
 
   echo "Testing tgz install flow..."
-  pack_dir="$(mktemp -d "/tmp/openclaw-plugin-pack.XXXXXX")"
+  pack_dir="$(mktemp -d "/tmp/coderclaw-plugin-pack.XXXXXX")"
   mkdir -p "$pack_dir/package"
   cat > "$pack_dir/package/package.json" <<'"'"'JSON'"'"'
 {
-  "name": "@openclaw/demo-plugin-tgz",
+  "name": "@coderclaw/demo-plugin-tgz",
   "version": "0.0.1",
-  "openclaw": { "extensions": ["./index.js"] }
+  "coderclaw": { "extensions": ["./index.js"] }
 }
 JSON
   cat > "$pack_dir/package/index.js" <<'"'"'JS'"'"'
@@ -98,7 +98,7 @@ module.exports = {
   },
 };
 JS
-  cat > "$pack_dir/package/openclaw.plugin.json" <<'"'"'JSON'"'"'
+  cat > "$pack_dir/package/coderclaw.plugin.json" <<'"'"'JSON'"'"'
 {
   "id": "demo-plugin-tgz",
   "configSchema": {
@@ -128,12 +128,12 @@ console.log("ok");
 NODE
 
   echo "Testing install from local folder (plugins.load.paths)..."
-  dir_plugin="$(mktemp -d "/tmp/openclaw-plugin-dir.XXXXXX")"
+  dir_plugin="$(mktemp -d "/tmp/coderclaw-plugin-dir.XXXXXX")"
   cat > "$dir_plugin/package.json" <<'"'"'JSON'"'"'
 {
-  "name": "@openclaw/demo-plugin-dir",
+  "name": "@coderclaw/demo-plugin-dir",
   "version": "0.0.1",
-  "openclaw": { "extensions": ["./index.js"] }
+  "coderclaw": { "extensions": ["./index.js"] }
 }
 JSON
   cat > "$dir_plugin/index.js" <<'"'"'JS'"'"'
@@ -145,7 +145,7 @@ module.exports = {
   },
 };
 JS
-  cat > "$dir_plugin/openclaw.plugin.json" <<'"'"'JSON'"'"'
+  cat > "$dir_plugin/coderclaw.plugin.json" <<'"'"'JSON'"'"'
 {
   "id": "demo-plugin-dir",
   "configSchema": {
@@ -174,13 +174,13 @@ console.log("ok");
 NODE
 
   echo "Testing install from npm spec (file:)..."
-  file_pack_dir="$(mktemp -d "/tmp/openclaw-plugin-filepack.XXXXXX")"
+  file_pack_dir="$(mktemp -d "/tmp/coderclaw-plugin-filepack.XXXXXX")"
   mkdir -p "$file_pack_dir/package"
   cat > "$file_pack_dir/package/package.json" <<'"'"'JSON'"'"'
 {
-  "name": "@openclaw/demo-plugin-file",
+  "name": "@coderclaw/demo-plugin-file",
   "version": "0.0.1",
-  "openclaw": { "extensions": ["./index.js"] }
+  "coderclaw": { "extensions": ["./index.js"] }
 }
 JSON
   cat > "$file_pack_dir/package/index.js" <<'"'"'JS'"'"'
@@ -192,7 +192,7 @@ module.exports = {
   },
 };
 JS
-  cat > "$file_pack_dir/package/openclaw.plugin.json" <<'"'"'JSON'"'"'
+  cat > "$file_pack_dir/package/coderclaw.plugin.json" <<'"'"'JSON'"'"'
 {
   "id": "demo-plugin-file",
   "configSchema": {

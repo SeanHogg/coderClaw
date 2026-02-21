@@ -1,5 +1,5 @@
 ---
-summary: "Where OpenClaw loads environment variables and the precedence order"
+summary: "Where CoderClaw loads environment variables and the precedence order"
 read_when:
   - You need to know which env vars are loaded, and in what order
   - You are debugging missing API keys in the Gateway
@@ -9,7 +9,7 @@ title: "Environment Variables"
 
 # Environment variables
 
-OpenClaw pulls environment variables from multiple sources. The rule is **never override existing values**.
+CoderClaw pulls environment variables from multiple sources. The rule is **never override existing values**.
 
 ## Precedence (highest → lowest)
 
@@ -78,7 +78,7 @@ See [Configuration: Env var substitution](/gateway/configuration#env-var-substit
 
 | Variable                | Purpose                                                                                                                                                                           |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CODERCLAW_HOME`        | Override the home directory used for all internal path resolution (`~/.coderclaw/`, agent dirs, sessions, credentials). Useful when running OpenClaw as a dedicated service user. |
+| `CODERCLAW_HOME`        | Override the home directory used for all internal path resolution (`~/.coderclaw/`, agent dirs, sessions, credentials). Useful when running CoderClaw as a dedicated service user. |
 | `CODERCLAW_STATE_DIR`   | Override the state directory (default `~/.coderclaw`).                                                                                                                            |
 | `CODERCLAW_CONFIG_PATH` | Override the config file path (default `~/.coderclaw/coderclaw.json`).                                                                                                            |
 

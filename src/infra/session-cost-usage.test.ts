@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import {
   discoverAllSessions,
   loadCostUsageSummary,
@@ -96,7 +96,7 @@ describe("session cost usage", () => {
           },
         },
       },
-    } as unknown as OpenClawConfig;
+    } as unknown as CoderClawConfig;
 
     const originalState = process.env.CODERCLAW_STATE_DIR;
     process.env.CODERCLAW_STATE_DIR = root;

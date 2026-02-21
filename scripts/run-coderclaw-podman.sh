@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Rootless OpenClaw in Podman: run after one-time setup.
+# Rootless CoderClaw in Podman: run after one-time setup.
 #
 # One-time setup (from repo root): ./setup-podman.sh
 # Then:
@@ -7,14 +7,14 @@
 #   ./scripts/run-coderclaw-podman.sh launch setup      # Onboarding wizard
 #
 # As the coderclaw user (no repo needed):
-#   sudo -u openclaw /home/openclaw/run-coderclaw-podman.sh
-#   sudo -u openclaw /home/openclaw/run-coderclaw-podman.sh setup
+#   sudo -u coderclaw /home/coderclaw/run-coderclaw-podman.sh
+#   sudo -u coderclaw /home/coderclaw/run-coderclaw-podman.sh setup
 #
 # Legacy: "setup-host" delegates to ../setup-podman.sh
 
 set -euo pipefail
 
-CODERCLAW_USER="${CODERCLAW_PODMAN_USER:-openclaw}"
+CODERCLAW_USER="${CODERCLAW_PODMAN_USER:-coderclaw}"
 
 resolve_user_home() {
   local user="$1"
@@ -47,18 +47,18 @@ if [[ "${1:-}" == "setup-host" ]]; then
   exit 1
 fi
 
-# --- Step 2: launch (from repo: re-exec as openclaw in safe cwd; from openclaw home: run container) ---
+# --- Step 2: launch (from repo: re-exec as coderclaw in safe cwd; from coderclaw home: run container) ---
 if [[ "${1:-}" == "launch" ]]; then
   shift
   if [[ -n "${CODERCLAW_UID:-}" && "$(id -u)" -ne "$CODERCLAW_UID" ]]; then
-    # Exec as openclaw with cwd=/tmp so a nologin user never inherits an invalid cwd.
+    # Exec as coderclaw with cwd=/tmp so a nologin user never inherits an invalid cwd.
     exec sudo -u "$CODERCLAW_USER" env HOME="$CODERCLAW_HOME" PATH="$PATH" TERM="${TERM:-}" \
       bash -c 'cd /tmp && exec '"$LAUNCH_SCRIPT"' "$@"' _ "$@"
   fi
-  # Already openclaw; fall through to container run (with remaining args, e.g. "setup")
+  # Already coderclaw; fall through to container run (with remaining args, e.g. "setup")
 fi
 
-# --- Container run (script in openclaw home, run as openclaw) ---
+# --- Container run (script in coderclaw home, run as coderclaw) ---
 EFFECTIVE_HOME="${HOME:-}"
 if [[ -n "${CODERCLAW_UID:-}" && "$(id -u)" -eq "$CODERCLAW_UID" ]]; then
   EFFECTIVE_HOME="$CODERCLAW_HOME"
@@ -67,17 +67,17 @@ fi
 if [[ -z "${EFFECTIVE_HOME:-}" ]]; then
   EFFECTIVE_HOME="${CODERCLAW_HOME:-/tmp}"
 fi
-CONFIG_DIR="${CODERCLAW_CONFIG_DIR:-$EFFECTIVE_HOME/.openclaw}"
+CONFIG_DIR="${CODERCLAW_CONFIG_DIR:-$EFFECTIVE_HOME/.coderclaw}"
 ENV_FILE="${CODERCLAW_PODMAN_ENV:-$CONFIG_DIR/.env}"
 WORKSPACE_DIR="${CODERCLAW_WORKSPACE_DIR:-$CONFIG_DIR/workspace}"
-CONTAINER_NAME="${CODERCLAW_PODMAN_CONTAINER:-openclaw}"
-CODERCLAW_IMAGE="${CODERCLAW_PODMAN_IMAGE:-openclaw:local}"
+CONTAINER_NAME="${CODERCLAW_PODMAN_CONTAINER:-coderclaw}"
+CODERCLAW_IMAGE="${CODERCLAW_PODMAN_IMAGE:-coderclaw:local}"
 PODMAN_PULL="${CODERCLAW_PODMAN_PULL:-never}"
 HOST_GATEWAY_PORT="${CODERCLAW_PODMAN_GATEWAY_HOST_PORT:-${CODERCLAW_GATEWAY_PORT:-18789}}"
 HOST_BRIDGE_PORT="${CODERCLAW_PODMAN_BRIDGE_HOST_PORT:-${CODERCLAW_BRIDGE_PORT:-18790}}"
 GATEWAY_BIND="${CODERCLAW_GATEWAY_BIND:-lan}"
 
-# Safe cwd for podman (openclaw is nologin; avoid inherited cwd from sudo)
+# Safe cwd for podman (coderclaw is nologin; avoid inherited cwd from sudo)
 cd "$EFFECTIVE_HOME" 2>/dev/null || cd /tmp 2>/dev/null || true
 
 RUN_SETUP=false
@@ -185,8 +185,8 @@ if [[ "$RUN_SETUP" == true ]]; then
     "${USERNS_ARGS[@]}" "${RUN_USER_ARGS[@]}" \
     -e HOME=/home/node -e TERM=xterm-256color -e BROWSER=echo \
     -e CODERCLAW_GATEWAY_TOKEN="$CODERCLAW_GATEWAY_TOKEN" \
-    -v "$CONFIG_DIR:/home/node/.openclaw:rw" \
-    -v "$WORKSPACE_DIR:/home/node/.openclaw/workspace:rw" \
+    -v "$CONFIG_DIR:/home/node/.coderclaw:rw" \
+    -v "$WORKSPACE_DIR:/home/node/.coderclaw/workspace:rw" \
     "${ENV_FILE_ARGS[@]}" \
     "$CODERCLAW_IMAGE" \
     node dist/index.js onboard "$@"
@@ -199,8 +199,8 @@ podman run --pull="$PODMAN_PULL" -d --replace \
   -e HOME=/home/node -e TERM=xterm-256color \
   -e CODERCLAW_GATEWAY_TOKEN="$CODERCLAW_GATEWAY_TOKEN" \
   "${ENV_FILE_ARGS[@]}" \
-  -v "$CONFIG_DIR:/home/node/.openclaw:rw" \
-  -v "$WORKSPACE_DIR:/home/node/.openclaw/workspace:rw" \
+  -v "$CONFIG_DIR:/home/node/.coderclaw:rw" \
+  -v "$WORKSPACE_DIR:/home/node/.coderclaw/workspace:rw" \
   -p "${HOST_GATEWAY_PORT}:18789" \
   -p "${HOST_BRIDGE_PORT}:18790" \
   "$CODERCLAW_IMAGE" \

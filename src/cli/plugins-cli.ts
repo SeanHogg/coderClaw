@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import type { Command } from "commander";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { loadConfig, writeConfigFile } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import { resolveArchiveKind } from "../infra/archive.js";
@@ -111,9 +111,9 @@ function formatPluginLine(plugin: PluginRecord, verbose = false): string {
 }
 
 function applySlotSelectionForPlugin(
-  config: OpenClawConfig,
+  config: CoderClawConfig,
   pluginId: string,
-): { config: OpenClawConfig; warnings: string[] } {
+): { config: CoderClawConfig; warnings: string[] } {
   const report = buildPluginStatusReport({ config });
   const plugin = report.plugins.find((entry) => entry.id === pluginId);
   if (!plugin) {
@@ -135,7 +135,7 @@ function createPluginInstallLogger(): { info: (msg: string) => void; warn: (msg:
   };
 }
 
-function enablePluginInConfig(config: OpenClawConfig, pluginId: string): OpenClawConfig {
+function enablePluginInConfig(config: CoderClawConfig, pluginId: string): CoderClawConfig {
   return {
     ...config,
     plugins: {
@@ -163,7 +163,7 @@ function logSlotWarnings(warnings: string[]) {
 export function registerPluginsCli(program: Command) {
   const plugins = program
     .command("plugins")
-    .description("Manage OpenClaw plugins and extensions")
+    .description("Manage CoderClaw plugins and extensions")
     .addHelpText(
       "after",
       () =>
@@ -352,7 +352,7 @@ export function registerPluginsCli(program: Command) {
     .argument("<id>", "Plugin id")
     .action(async (id: string) => {
       const cfg = loadConfig();
-      let next: OpenClawConfig = {
+      let next: CoderClawConfig = {
         ...cfg,
         plugins: {
           ...cfg.plugins,
@@ -555,7 +555,7 @@ export function registerPluginsCli(program: Command) {
             process.exit(1);
           }
 
-          let next: OpenClawConfig = enablePluginInConfig(
+          let next: CoderClawConfig = enablePluginInConfig(
             {
               ...cfg,
               plugins: {

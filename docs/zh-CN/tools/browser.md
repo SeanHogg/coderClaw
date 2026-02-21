@@ -4,7 +4,7 @@ read_when:
   - 调试 coderclaw 干扰你自己 Chrome 的问题
   - 在 macOS 应用中实现浏览器设置和生命周期管理
 summary: 集成浏览器控制服务 + 操作命令
-title: 浏览器（OpenClaw 托管）
+title: 浏览器（CoderClaw 托管）
 x-i18n:
   generated_at: "2026-02-03T09:26:06Z"
   model: claude-opus-4-5
@@ -14,24 +14,24 @@ x-i18n:
   workflow: 15
 ---
 
-# 浏览器（openclaw 托管）
+# 浏览器（coderclaw 托管）
 
-OpenClaw 可以运行一个由智能体控制的**专用 Chrome/Brave/Edge/Chromium 配置文件**。
+CoderClaw 可以运行一个由智能体控制的**专用 Chrome/Brave/Edge/Chromium 配置文件**。
 它与你的个人浏览器隔离，通过 Gateway 网关内部的小型本地控制服务进行管理（仅限 loopback）。
 
 新手视角：
 
 - 把它想象成一个**独立的、仅供智能体使用的浏览器**。
-- `openclaw` 配置文件**不会**触及你的个人浏览器配置文件。
+- `coderclaw` 配置文件**不会**触及你的个人浏览器配置文件。
 - 智能体可以在安全的通道中**打开标签页、读取页面、点击和输入**。
-- 默认的 `chrome` 配置文件通过扩展中继使用**系统默认的 Chromium 浏览器**；切换到 `openclaw` 可使用隔离的托管浏览器。
+- 默认的 `chrome` 配置文件通过扩展中继使用**系统默认的 Chromium 浏览器**；切换到 `coderclaw` 可使用隔离的托管浏览器。
 
 ## 功能概览
 
-- 一个名为 **openclaw** 的独立浏览器配置文件（默认橙色主题）。
+- 一个名为 **coderclaw** 的独立浏览器配置文件（默认橙色主题）。
 - 确定性标签页控制（列出/打开/聚焦/关闭）。
 - 智能体操作（点击/输入/拖动/选择）、快照、截图、PDF。
-- 可选的多配置文件支持（`openclaw`、`work`、`remote` 等）。
+- 可选的多配置文件支持（`coderclaw`、`work`、`remote` 等）。
 
 此浏览器**不是**你的日常浏览器。它是一个安全、隔离的界面，用于智能体自动化和验证。
 
@@ -46,16 +46,16 @@ coderclaw browser --browser-profile coderclaw snapshot
 
 如果出现"Browser disabled"，请在配置中启用它（见下文）并重启 Gateway 网关。
 
-## 配置文件：`openclaw` 与 `chrome`
+## 配置文件：`coderclaw` 与 `chrome`
 
-- `openclaw`：托管的隔离浏览器（无需扩展）。
-- `chrome`：到你**系统浏览器**的扩展中继（需要将 OpenClaw 扩展附加到标签页）。
+- `coderclaw`：托管的隔离浏览器（无需扩展）。
+- `chrome`：到你**系统浏览器**的扩展中继（需要将 CoderClaw 扩展附加到标签页）。
 
 如果你希望默认使用托管模式，请设置 `browser.defaultProfile: "coderclaw"`。
 
 ## 配置
 
-浏览器设置位于 `~/.openclaw/coderclaw.json`。
+浏览器设置位于 `~/.coderclaw/coderclaw.json`。
 
 ```json5
 {
@@ -71,7 +71,7 @@ coderclaw browser --browser-profile coderclaw snapshot
     attachOnly: false,
     executablePath: "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
     profiles: {
-      openclaw: { cdpPort: 18800, color: "#FF4500" },
+      coderclaw: { cdpPort: 18800, color: "#FF4500" },
       work: { cdpPort: 18801, color: "#0066CC" },
       remote: { cdpUrl: "http://10.0.0.42:9222", color: "#00AA00" },
     },
@@ -90,11 +90,11 @@ coderclaw browser --browser-profile coderclaw snapshot
 - `color` + 每个配置文件的 `color` 为浏览器 UI 着色，以便你能看到哪个配置文件处于活动状态。
 - 默认配置文件是 `chrome`（扩展中继）。使用 `defaultProfile: "coderclaw"` 来使用托管浏览器。
 - 自动检测顺序：如果系统默认浏览器是基于 Chromium 的则使用它；否则 Chrome → Brave → Edge → Chromium → Chrome Canary。
-- 本地 `openclaw` 配置文件会自动分配 `cdpPort`/`cdpUrl` — 仅为远程 CDP 设置这些。
+- 本地 `coderclaw` 配置文件会自动分配 `cdpPort`/`cdpUrl` — 仅为远程 CDP 设置这些。
 
 ## 使用 Brave（或其他基于 Chromium 的浏览器）
 
-如果你的**系统默认**浏览器是基于 Chromium 的（Chrome/Brave/Edge 等），OpenClaw 会自动使用它。设置 `browser.executablePath` 可覆盖自动检测：
+如果你的**系统默认**浏览器是基于 Chromium 的（Chrome/Brave/Edge 等），CoderClaw 会自动使用它。设置 `browser.executablePath` 可覆盖自动检测：
 
 CLI 示例：
 
@@ -129,18 +129,18 @@ coderclaw config set browser.executablePath "/usr/bin/google-chrome"
 
 - **本地控制（默认）：** Gateway 网关启动 loopback 控制服务，可以启动本地浏览器。
 - **远程控制（节点主机）：** 在有浏览器的机器上运行节点主机；Gateway 网关将浏览器操作代理到该节点。
-- **远程 CDP：** 设置 `browser.profiles.<name>.cdpUrl`（或 `browser.cdpUrl`）以附加到远程的基于 Chromium 的浏览器。在这种情况下，OpenClaw 不会启动本地浏览器。
+- **远程 CDP：** 设置 `browser.profiles.<name>.cdpUrl`（或 `browser.cdpUrl`）以附加到远程的基于 Chromium 的浏览器。在这种情况下，CoderClaw 不会启动本地浏览器。
 
 远程 CDP URL 可以包含认证信息：
 
 - 查询令牌（例如 `https://provider.example?token=<token>`）
 - HTTP Basic 认证（例如 `https://user:pass@provider.example`）
 
-OpenClaw 在调用 `/json/*` 端点和连接 CDP WebSocket 时会保留认证信息。建议使用环境变量或密钥管理器存储令牌，而不是将其提交到配置文件中。
+CoderClaw 在调用 `/json/*` 端点和连接 CDP WebSocket 时会保留认证信息。建议使用环境变量或密钥管理器存储令牌，而不是将其提交到配置文件中。
 
 ## 节点浏览器代理（零配置默认）
 
-如果你在有浏览器的机器上运行**节点主机**，OpenClaw 可以自动将浏览器工具调用路由到该节点，无需任何额外的浏览器配置。这是远程 Gateway 网关的默认路径。
+如果你在有浏览器的机器上运行**节点主机**，CoderClaw 可以自动将浏览器工具调用路由到该节点，无需任何额外的浏览器配置。这是远程 Gateway 网关的默认路径。
 
 注意事项：
 
@@ -152,7 +152,7 @@ OpenClaw 在调用 `/json/*` 端点和连接 CDP WebSocket 时会保留认证信
 
 ## Browserless（托管远程 CDP）
 
-[Browserless](https://browserless.io) 是一个托管的 Chromium 服务，通过 HTTPS 暴露 CDP 端点。你可以将 OpenClaw 浏览器配置文件指向 Browserless 区域端点，并使用你的 API 密钥进行认证。
+[Browserless](https://browserless.io) 是一个托管的 Chromium 服务，通过 HTTPS 暴露 CDP 端点。你可以将 CoderClaw 浏览器配置文件指向 Browserless 区域端点，并使用你的 API 密钥进行认证。
 
 示例：
 
@@ -193,15 +193,15 @@ OpenClaw 在调用 `/json/*` 端点和连接 CDP WebSocket 时会保留认证信
 
 ## 配置文件（多浏览器）
 
-OpenClaw 支持多个命名配置文件（路由配置）。配置文件可以是：
+CoderClaw 支持多个命名配置文件（路由配置）。配置文件可以是：
 
-- **openclaw 托管**：具有独立用户数据目录和 CDP 端口的专用基于 Chromium 的浏览器实例
+- **coderclaw 托管**：具有独立用户数据目录和 CDP 端口的专用基于 Chromium 的浏览器实例
 - **远程**：显式 CDP URL（在其他地方运行的基于 Chromium 的浏览器）
 - **扩展中继**：通过本地中继 + Chrome 扩展访问你现有的 Chrome 标签页
 
 默认值：
 
-- 如果缺少 `openclaw` 配置文件，会自动创建。
+- 如果缺少 `coderclaw` 配置文件，会自动创建。
 - `chrome` 配置文件是内置的，用于 Chrome 扩展中继（默认指向 `http://127.0.0.1:18792`）。
 - 本地 CDP 端口默认从 **18800–18899** 分配。
 - 删除配置文件会将其本地数据目录移至回收站。
@@ -210,7 +210,7 @@ OpenClaw 支持多个命名配置文件（路由配置）。配置文件可以�
 
 ## Chrome 扩展中继（使用你现有的 Chrome）
 
-OpenClaw 还可以通过本地 CDP 中继 + Chrome 扩展驱动**你现有的 Chrome 标签页**（无需单独的"openclaw"Chrome 实例）。
+CoderClaw 还可以通过本地 CDP 中继 + Chrome 扩展驱动**你现有的 Chrome 标签页**（无需单独的"coderclaw"Chrome 实例）。
 
 完整指南：[Chrome 扩展](/tools/chrome-extension)
 
@@ -218,7 +218,7 @@ OpenClaw 还可以通过本地 CDP 中继 + Chrome 扩展驱动**你现有的 Ch
 
 - Gateway 网关在本地运行（同一台机器）或节点主机在浏览器所在机器上运行。
 - 本地**中继服务器**在 loopback 的 `cdpUrl` 上监听（默认：`http://127.0.0.1:18792`）。
-- 你点击标签页上的 **OpenClaw Browser Relay** 扩展图标来附加（它不会自动附加）。
+- 你点击标签页上的 **CoderClaw Browser Relay** 扩展图标来附加（它不会自动附加）。
 - 智能体通过选择正确的配置文件，使用普通的 `browser` 工具控制该标签页。
 
 如果 Gateway 网关在其他地方运行，请在浏览器所在机器上运行节点主机，以便 Gateway 网关可以代理浏览器操作。
@@ -271,7 +271,7 @@ coderclaw browser create-profile \
 
 ## 浏览器选择
 
-本地启动时，OpenClaw 选择第一个可用的：
+本地启动时，CoderClaw 选择第一个可用的：
 
 1. Chrome
 2. Brave
@@ -310,14 +310,14 @@ coderclaw browser create-profile \
 
 某些功能（navigate/act/AI 快照/角色快照、元素截图、PDF）需要 Playwright。如果未安装 Playwright，这些端点会返回明确的 501 错误。ARIA 快照和基本截图对于 coderclaw 托管的 Chrome 仍然有效。对于 Chrome 扩展中继驱动程序，ARIA 快照和截图需要 Playwright。
 
-如果你看到 `Playwright is not available in this gateway build`，请安装完整的 Playwright 包（不是 `playwright-core`）并重启 Gateway 网关，或者重新安装带浏览器支持的 OpenClaw。
+如果你看到 `Playwright is not available in this gateway build`，请安装完整的 Playwright 包（不是 `playwright-core`）并重启 Gateway 网关，或者重新安装带浏览器支持的 CoderClaw。
 
 #### Docker Playwright 安装
 
 如果你的 Gateway 网关在 Docker 中运行，避免使用 `npx playwright`（npm 覆盖冲突）。改用捆绑的 CLI：
 
 ```bash
-docker compose run --rm openclaw-cli \
+docker compose run --rm coderclaw-cli \
   node /app/node_modules/playwright-core/cli.js install chromium
 ```
 
@@ -423,7 +423,7 @@ docker compose run --rm openclaw-cli \
   - `--format ai`（安装 Playwright 时的默认值）：返回带有数字 ref 的 AI 快照（`aria-ref="<n>"`）。
   - `--format aria`：返回无障碍树（无 ref；仅供检查）。
   - `--efficient`（或 `--mode efficient`）：紧凑角色快照预设（interactive + compact + depth + 较低的 maxChars）。
-  - 配置默认值（仅限工具/CLI）：设置 `browser.snapshotDefaults.mode: "efficient"` 以在调用者未传递模式时使用高效快照（参见 [Gateway 网关配置](/gateway/configuration#browser-openclaw-managed-browser)）。
+  - 配置默认值（仅限工具/CLI）：设置 `browser.snapshotDefaults.mode: "efficient"` 以在调用者未传递模式时使用高效快照（参见 [Gateway 网关配置](/gateway/configuration#browser-coderclaw-managed-browser)）。
   - 角色快照选项（`--interactive`、`--compact`、`--depth`、`--selector`）强制使用带有 `ref=e12` 等 ref 的基于角色的快照。
   - `--frame "<iframe selector>"` 将角色快照范围限定到 iframe（与 `e12` 等角色 ref 配合使用）。
   - `--interactive` 输出一个扁平的、易于选择的交互元素列表（最适合驱动操作）。
@@ -433,7 +433,7 @@ docker compose run --rm openclaw-cli \
 
 ## 快照和 ref
 
-OpenClaw 支持两种"快照"风格：
+CoderClaw 支持两种"快照"风格：
 
 - **AI 快照（数字 ref）**：`coderclaw browser snapshot`（默认；`--format ai`）
   - 输出：包含数字 ref 的文本快照。
@@ -544,7 +544,7 @@ JSON 格式的角色快照包含 `refs` 加上一个小的 `stats` 块（lines/c
 - `browser act` 使用快照 `ref` ID 来点击/输入/拖动/选择。
 - `browser screenshot` 捕获像素（整页或元素）。
 - `browser` 接受：
-  - `profile` 来选择命名的浏览器配置文件（openclaw、chrome 或远程 CDP）。
+  - `profile` 来选择命名的浏览器配置文件（coderclaw、chrome 或远程 CDP）。
   - `target`（`sandbox` | `host` | `node`）来选择浏览器所在位置。
   - 在沙箱会话中，`target: "host"` 需要 `agents.defaults.sandbox.browser.allowHostControl=true`。
   - 如果省略 `target`：沙箱会话默认为 `sandbox`，非沙箱会话默认为 `host`。

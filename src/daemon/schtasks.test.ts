@@ -7,7 +7,7 @@ import { parseSchtasksQuery, readScheduledTaskCommand, resolveTaskScriptPath } f
 describe("schtasks runtime parsing", () => {
   it("parses status and last run info", () => {
     const output = [
-      "TaskName: \\OpenClaw Gateway",
+      "TaskName: \\CoderClaw Gateway",
       "Status: Ready",
       "Last Run Time: 1/8/2026 1:23:45 AM",
       "Last Run Result: 0x0",
@@ -21,7 +21,7 @@ describe("schtasks runtime parsing", () => {
 
   it("parses running status", () => {
     const output = [
-      "TaskName: \\OpenClaw Gateway",
+      "TaskName: \\CoderClaw Gateway",
       "Status: Running",
       "Last Run Time: 1/8/2026 1:23:45 AM",
       "Last Run Result: 0x0",
@@ -53,9 +53,9 @@ describe("resolveTaskScriptPath", () => {
     const env = {
       USERPROFILE: "C:\\Users\\test",
       CODERCLAW_PROFILE: "rescue",
-      CODERCLAW_STATE_DIR: "C:\\State\\openclaw",
+      CODERCLAW_STATE_DIR: "C:\\State\\coderclaw",
     };
-    expect(resolveTaskScriptPath(env)).toBe(path.join("C:\\State\\openclaw", "gateway.cmd"));
+    expect(resolveTaskScriptPath(env)).toBe(path.join("C:\\State\\coderclaw", "gateway.cmd"));
   });
 
   it("falls back to HOME when USERPROFILE is not set", () => {
@@ -130,8 +130,8 @@ describe("readScheduledTaskCommand", () => {
       {
         scriptLines: [
           "@echo off",
-          "rem OpenClaw Gateway",
-          "cd /d C:\\Projects\\openclaw",
+          "rem CoderClaw Gateway",
+          "cd /d C:\\Projects\\coderclaw",
           "set NODE_ENV=production",
           "set CODERCLAW_PORT=18789",
           "node gateway.js --verbose",
@@ -141,7 +141,7 @@ describe("readScheduledTaskCommand", () => {
         const result = await readScheduledTaskCommand(env);
         expect(result).toEqual({
           programArguments: ["node", "gateway.js", "--verbose"],
-          workingDirectory: "C:\\Projects\\openclaw",
+          workingDirectory: "C:\\Projects\\coderclaw",
           environment: {
             NODE_ENV: "production",
             CODERCLAW_PORT: "18789",
@@ -156,7 +156,7 @@ describe("readScheduledTaskCommand", () => {
       {
         scriptLines: [
           "@echo off",
-          '"C:\\Program Files\\nodejs\\node.exe" C:\\Users\\test\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\index.js gateway --port 18789',
+          '"C:\\Program Files\\nodejs\\node.exe" C:\\Users\\test\\AppData\\Roaming\\npm\\node_modules\\coderclaw\\dist\\index.js gateway --port 18789',
         ],
       },
       async (env) => {
@@ -164,7 +164,7 @@ describe("readScheduledTaskCommand", () => {
         expect(result).toEqual({
           programArguments: [
             "C:\\Program Files\\nodejs\\node.exe",
-            "C:\\Users\\test\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\index.js",
+            "C:\\Users\\test\\AppData\\Roaming\\npm\\node_modules\\coderclaw\\dist\\index.js",
             "gateway",
             "--port",
             "18789",
@@ -179,15 +179,15 @@ describe("readScheduledTaskCommand", () => {
       {
         scriptLines: [
           "@echo off",
-          '"\\\\fileserver\\OpenClaw Share\\node.exe" "\\\\fileserver\\OpenClaw Share\\dist\\index.js" gateway --port 18789',
+          '"\\\\fileserver\\CoderClaw Share\\node.exe" "\\\\fileserver\\CoderClaw Share\\dist\\index.js" gateway --port 18789',
         ],
       },
       async (env) => {
         const result = await readScheduledTaskCommand(env);
         expect(result).toEqual({
           programArguments: [
-            "\\\\fileserver\\OpenClaw Share\\node.exe",
-            "\\\\fileserver\\OpenClaw Share\\dist\\index.js",
+            "\\\\fileserver\\CoderClaw Share\\node.exe",
+            "\\\\fileserver\\CoderClaw Share\\dist\\index.js",
             "gateway",
             "--port",
             "18789",

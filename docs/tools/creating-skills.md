@@ -4,7 +4,7 @@ title: "Creating Skills"
 
 # Creating Custom Skills 🛠
 
-OpenClaw is designed to be easily extensible. "Skills" are the primary way to add new capabilities to your assistant.
+CoderClaw is designed to be easily extensible. "Skills" are the primary way to add new capabilities to your assistant.
 
 ## What is a Skill?
 
@@ -39,9 +39,9 @@ When the user asks for a greeting, use the `echo` tool to say "Hello from your c
 
 You can define custom tools in the frontmatter or instruct the agent to use existing system tools (like `bash` or `browser`).
 
-### 4. Refresh OpenClaw
+### 4. Refresh CoderClaw
 
-Ask your agent to "refresh skills" or restart the gateway. OpenClaw will discover the new directory and index the `SKILL.md`.
+Ask your agent to "refresh skills" or restart the gateway. CoderClaw will discover the new directory and index the `SKILL.md`.
 
 ## Best Practices
 

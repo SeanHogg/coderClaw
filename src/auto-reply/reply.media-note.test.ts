@@ -3,7 +3,7 @@ import "./reply.directive.directive-behavior.e2e-mocks.js";
 import { describe, expect, it, vi } from "vitest";
 import { withTempHome as withTempHomeBase } from "../../test/helpers/temp-home.js";
 import { runEmbeddedPiAgent } from "../agents/pi-embedded.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { getReplyFromConfig } from "./reply.js";
 
 function makeResult(text: string) {
@@ -26,7 +26,7 @@ async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
       env: {
         CODERCLAW_BUNDLED_SKILLS_DIR: (home) => path.join(home, "bundled-skills"),
       },
-      prefix: "openclaw-media-note-",
+      prefix: "coderclaw-media-note-",
     },
   );
 }
@@ -41,7 +41,7 @@ function makeCfg(home: string) {
     },
     channels: { whatsapp: { allowFrom: ["*"] } },
     session: { store: path.join(home, "sessions.json") },
-  } as unknown as OpenClawConfig;
+  } as unknown as CoderClawConfig;
 }
 
 describe("getReplyFromConfig media note plumbing", () => {

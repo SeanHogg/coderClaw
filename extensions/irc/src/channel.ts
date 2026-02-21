@@ -7,7 +7,7 @@ import {
   setAccountEnabledInConfigSection,
   deleteAccountFromConfigSection,
   type ChannelPlugin,
-} from "openclaw/plugin-sdk";
+} from "coderclaw/plugin-sdk";
 import {
   listIrcAccountIds,
   resolveDefaultIrcAccountId,

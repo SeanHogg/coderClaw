@@ -9,7 +9,7 @@ title: "Discovery and Transports"
 
 # Discovery & transports
 
-OpenClaw has two distinct problems that look similar on the surface:
+CoderClaw has two distinct problems that look similar on the surface:
 
 1. **Operator remote control**: the macOS menu bar app controlling a gateway running elsewhere.
 2. **Node pairing**: iOS/Android (and future nodes) finding a gateway and pairing securely.
@@ -65,7 +65,7 @@ Troubleshooting and beacon details: [Bonjour](/gateway/bonjour).
   - `gatewayTls=1` (only when TLS is enabled)
   - `gatewayTlsSha256=<sha256>` (only when TLS is enabled and fingerprint is available)
   - `canvasPort=<port>` (canvas host port; currently the same as `gatewayPort` when the canvas host is enabled)
-  - `cliPath=<path>` (optional; absolute path to a runnable `openclaw` entrypoint or binary)
+  - `cliPath=<path>` (optional; absolute path to a runnable `coderclaw` entrypoint or binary)
   - `tailnetDns=<magicdns>` (optional hint; auto-detected when Tailscale is available)
 
 Security notes:

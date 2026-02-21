@@ -1,8 +1,8 @@
 ---
 read_when:
-  - 新規ユーザーにOpenClawを紹介するとき
-summary: OpenClawは、あらゆるOSで動作するAIエージェント向けのマルチチャネルgatewayです。
-title: OpenClaw
+  - 新規ユーザーにCoderClawを紹介するとき
+summary: CoderClawは、あらゆるOSで動作するAIエージェント向けのマルチチャネルgatewayです。
+title: CoderClaw
 x-i18n:
   generated_at: "2026-02-08T17:15:47Z"
   model: claude-opus-4-5
@@ -38,7 +38,7 @@ x-i18n:
 
 <Columns>
   <Card title="はじめに" href="/start/getting-started" icon="rocket">
-    OpenClawをインストールし、数分でGatewayを起動できます。
+    CoderClawをインストールし、数分でGatewayを起動できます。
   </Card>
   <Card title="ウィザードを実行" href="/start/wizard" icon="sparkles">
     `coderclaw onboard`とペアリングフローによるガイド付きセットアップ。
@@ -48,7 +48,7 @@ x-i18n:
   </Card>
 </Columns>
 
-OpenClawは、単一のGatewayプロセスを通じてチャットアプリをPiのようなコーディングエージェントに接続します。OpenClawアシスタントを駆動し、ローカルまたはリモートのセットアップをサポートします。
+CoderClawは、単一のGatewayプロセスを通じてチャットアプリをPiのようなコーディングエージェントに接続します。CoderClawアシスタントを駆動し、ローカルまたはリモートのセットアップをサポートします。
 
 ## 仕組み
 
@@ -90,7 +90,7 @@ Gatewayは、セッション、ルーティング、チャネル接続の信頼�
 ## クイックスタート
 
 <Steps>
-  <Step title="OpenClawをインストール">
+  <Step title="CoderClawをインストール">
     ```bash
     npm install -g coderclaw@latest
     ```
@@ -118,14 +118,14 @@ Gatewayの起動後、ブラウザでControl UIを開きます。
 - リモートアクセス: [Webサーフェス](/web)および[Tailscale](/gateway/tailscale)
 
 <p align="center">
-  <img src="whatsapp-openclaw.jpg" alt="OpenClaw" width="420" />
+  <img src="whatsapp-coderclaw.jpg" alt="CoderClaw" width="420" />
 </p>
 
 ## 設定（オプション）
 
 設定は`~/.coderclaw/coderclaw.json`にあります。
 
-- **何もしなければ**、OpenClawはバンドルされたPiバイナリをRPCモードで使用し、送信者ごとのセッションを作成します。
+- **何もしなければ**、CoderClawはバンドルされたPiバイナリをRPCモードで使用し、送信者ごとのセッションを作成します。
 - 制限を設けたい場合は、`channels.whatsapp.allowFrom`と（グループの場合）メンションルールから始めてください。
 
 例：
@@ -138,7 +138,7 @@ Gatewayの起動後、ブラウザでControl UIを開きます。
       groups: { "*": { requireMention: true } },
     },
   },
-  messages: { groupChat: { mentionPatterns: ["@openclaw"] } },
+  messages: { groupChat: { mentionPatterns: ["@coderclaw"] } },
 }
 ```
 

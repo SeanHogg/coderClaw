@@ -1,7 +1,7 @@
 {
   "name": "@coderclaw/discord",
   "version": "2026.2.21",
-  "description": "OpenClaw Discord channel plugin",
+  "description": "CoderClaw Discord channel plugin",
   "type": "module",
   "devDependencies": {
     "coderclaw": "workspace:*"

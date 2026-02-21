@@ -107,7 +107,7 @@ describe("web media loading", () => {
       path.parse(os.tmpdir()).root,
       "var",
       "lib",
-      "openclaw-media-state-test",
+      "coderclaw-media-state-test",
     );
   });
 
@@ -360,7 +360,7 @@ describe("local media root guard", () => {
     ).rejects.toThrow(/refuses filesystem root/i);
   });
 
-  it("allows default OpenClaw state workspace and sandbox roots", async () => {
+  it("allows default CoderClaw state workspace and sandbox roots", async () => {
     const { resolveStateDir } = await import("../config/paths.js");
     const stateDir = resolveStateDir();
     const readFile = vi.fn(async () => Buffer.from("generated-media"));
@@ -388,7 +388,7 @@ describe("local media root guard", () => {
     );
   });
 
-  it("rejects default OpenClaw state per-agent workspace-* roots without explicit local roots", async () => {
+  it("rejects default CoderClaw state per-agent workspace-* roots without explicit local roots", async () => {
     const { resolveStateDir } = await import("../config/paths.js");
     const stateDir = resolveStateDir();
     const readFile = vi.fn(async () => Buffer.from("generated-media"));

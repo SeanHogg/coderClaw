@@ -1,6 +1,6 @@
-name: OpenClaw
+name: CoderClaw
 options:
-  bundleIdPrefix: ai.openclaw
+  bundleIdPrefix: ai.coderclaw
   deploymentTarget:
     iOS: "18.0"
   xcodeVersion: "16.0"
@@ -10,23 +10,23 @@ settings:
     SWIFT_VERSION: "6.0"
 
 packages:
-  OpenClawKit:
-    path: ../shared/OpenClawKit
+  CoderClawKit:
+    path: ../shared/CoderClawKit
   Swabble:
     path: ../../Swabble
 
 schemes:
-  OpenClaw:
+  CoderClaw:
     shared: true
     build:
       targets:
-        OpenClaw: all
+        CoderClaw: all
     test:
       targets:
-        - OpenClawTests
+        - CoderClawTests
 
 targets:
-  OpenClaw:
+  CoderClaw:
     type: application
     platform: iOS
     configFiles:
@@ -35,14 +35,14 @@ targets:
     sources:
       - path: Sources
     dependencies:
-      - target: OpenClawShareExtension
+      - target: CoderClawShareExtension
         embed: true
-      - target: OpenClawWatchApp
-      - package: OpenClawKit
-      - package: OpenClawKit
-        product: OpenClawChatUI
-      - package: OpenClawKit
-        product: OpenClawProtocol
+      - target: CoderClawWatchApp
+      - package: CoderClawKit
+      - package: CoderClawKit
+        product: CoderClawChatUI
+      - package: CoderClawKit
+        product: CoderClawProtocol
       - package: Swabble
         product: SwabbleKit
       - sdk: AppIntents.framework
@@ -75,7 +75,7 @@ targets:
     settings:
       base:
         CODE_SIGN_IDENTITY: "Apple Development"
-        CODE_SIGN_ENTITLEMENTS: Sources/OpenClaw.entitlements
+        CODE_SIGN_ENTITLEMENTS: Sources/CoderClaw.entitlements
         CODE_SIGN_STYLE: "$(CODERCLAW_CODE_SIGN_STYLE)"
         DEVELOPMENT_TEAM: "$(CODERCLAW_DEVELOPMENT_TEAM)"
         PRODUCT_BUNDLE_IDENTIFIER: "$(CODERCLAW_APP_BUNDLE_ID)"
@@ -86,12 +86,12 @@ targets:
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleDisplayName: OpenClaw
+        CFBundleDisplayName: CoderClaw
         CFBundleIconName: AppIcon
         CFBundleURLTypes:
-          - CFBundleURLName: ai.openclaw.ios
+          - CFBundleURLName: ai.coderclaw.ios
             CFBundleURLSchemes:
-              - openclaw
+              - coderclaw
         CFBundleShortVersionString: "2026.2.20"
         CFBundleVersion: "20260220"
         UILaunchScreen: {}
@@ -100,16 +100,16 @@ targets:
         UIBackgroundModes:
           - audio
           - remote-notification
-        NSLocalNetworkUsageDescription: OpenClaw discovers and connects to your OpenClaw gateway on the local network.
+        NSLocalNetworkUsageDescription: CoderClaw discovers and connects to your CoderClaw gateway on the local network.
         NSAppTransportSecurity:
           NSAllowsArbitraryLoadsInWebContent: true
         NSBonjourServices:
-          - _openclaw-gw._tcp
-        NSCameraUsageDescription: OpenClaw can capture photos or short video clips when requested via the gateway.
-        NSLocationWhenInUseUsageDescription: OpenClaw uses your location when you allow location sharing.
-        NSLocationAlwaysAndWhenInUseUsageDescription: OpenClaw can share your location in the background when you enable Always.
-        NSMicrophoneUsageDescription: OpenClaw needs microphone access for voice wake.
-        NSSpeechRecognitionUsageDescription: OpenClaw uses on-device speech recognition for voice wake.
+          - _coderclaw-gw._tcp
+        NSCameraUsageDescription: CoderClaw can capture photos or short video clips when requested via the gateway.
+        NSLocationWhenInUseUsageDescription: CoderClaw uses your location when you allow location sharing.
+        NSLocationAlwaysAndWhenInUseUsageDescription: CoderClaw can share your location in the background when you enable Always.
+        NSMicrophoneUsageDescription: CoderClaw needs microphone access for voice wake.
+        NSSpeechRecognitionUsageDescription: CoderClaw uses on-device speech recognition for voice wake.
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationPortraitUpsideDown
@@ -121,7 +121,7 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
 
-  OpenClawShareExtension:
+  CoderClawShareExtension:
     type: app-extension
     platform: iOS
     configFiles:
@@ -130,7 +130,7 @@ targets:
     sources:
       - path: ShareExtension
     dependencies:
-      - package: OpenClawKit
+      - package: CoderClawKit
     settings:
       base:
         CODE_SIGN_IDENTITY: "Apple Development"
@@ -143,7 +143,7 @@ targets:
     info:
       path: ShareExtension/Info.plist
       properties:
-        CFBundleDisplayName: OpenClaw Share
+        CFBundleDisplayName: CoderClaw Share
         CFBundleShortVersionString: "2026.2.20"
         CFBundleVersion: "20260220"
         NSExtension:
@@ -156,14 +156,14 @@ targets:
               NSExtensionActivationSupportsImageWithMaxCount: 10
               NSExtensionActivationSupportsMovieWithMaxCount: 1
 
-  OpenClawWatchApp:
+  CoderClawWatchApp:
     type: application.watchapp2
     platform: watchOS
     deploymentTarget: "11.0"
     sources:
       - path: WatchApp
     dependencies:
-      - target: OpenClawWatchExtension
+      - target: CoderClawWatchExtension
     configFiles:
       Debug: Config/Signing.xcconfig
       Release: Config/Signing.xcconfig
@@ -173,13 +173,13 @@ targets:
     info:
       path: WatchApp/Info.plist
       properties:
-        CFBundleDisplayName: OpenClaw
+        CFBundleDisplayName: CoderClaw
         CFBundleShortVersionString: "2026.2.20"
         CFBundleVersion: "20260220"
         WKCompanionAppBundleIdentifier: "$(CODERCLAW_APP_BUNDLE_ID)"
         WKWatchKitApp: true
 
-  OpenClawWatchExtension:
+  CoderClawWatchExtension:
     type: watchkit2-extension
     platform: watchOS
     deploymentTarget: "11.0"
@@ -197,7 +197,7 @@ targets:
     info:
       path: WatchExtension/Info.plist
       properties:
-        CFBundleDisplayName: OpenClaw
+        CFBundleDisplayName: CoderClaw
         CFBundleShortVersionString: "2026.2.20"
         CFBundleVersion: "20260220"
         NSExtension:
@@ -205,26 +205,26 @@ targets:
             WKAppBundleIdentifier: "$(CODERCLAW_WATCH_APP_BUNDLE_ID)"
           NSExtensionPointIdentifier: com.apple.watchkit
 
-  OpenClawTests:
+  CoderClawTests:
     type: bundle.unit-test
     platform: iOS
     sources:
       - path: Tests
     dependencies:
-      - target: OpenClaw
+      - target: CoderClaw
       - package: Swabble
         product: SwabbleKit
       - sdk: AppIntents.framework
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: ai.openclaw.ios.tests
+        PRODUCT_BUNDLE_IDENTIFIER: ai.coderclaw.ios.tests
         SWIFT_VERSION: "6.0"
         SWIFT_STRICT_CONCURRENCY: complete
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/OpenClaw.app/OpenClaw"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/CoderClaw.app/CoderClaw"
         BUNDLE_LOADER: "$(TEST_HOST)"
     info:
       path: Tests/Info.plist
       properties:
-        CFBundleDisplayName: OpenClawTests
+        CFBundleDisplayName: CoderClawTests
         CFBundleShortVersionString: "2026.2.20"
         CFBundleVersion: "20260220"

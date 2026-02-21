@@ -2,7 +2,7 @@
   "name": "@coderclaw/memory-core",
   "version": "2026.2.21",
   "private": true,
-  "description": "OpenClaw core memory search plugin",
+  "description": "CoderClaw core memory search plugin",
   "type": "module",
   "devDependencies": {
     "coderclaw": "workspace:*"

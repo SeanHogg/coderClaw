@@ -4,7 +4,7 @@ import { enqueueSystemEvent } from "../../../infra/system-events.js";
 import { parseSlackModalPrivateMetadata } from "../../modal-metadata.js";
 import type { SlackMonitorContext } from "../context.js";
 
-// Prefix for OpenClaw-generated action IDs to scope our handler
+// Prefix for CoderClaw-generated action IDs to scope our handler
 const CODERCLAW_ACTION_PREFIX = "coderclaw:";
 
 type InteractionMessageBlock = {
@@ -380,7 +380,7 @@ export function registerSlackInteractionEvents(params: { ctx: SlackMonitorContex
     return;
   }
 
-  // Handle Block Kit button clicks from OpenClaw-generated messages
+  // Handle Block Kit button clicks from CoderClaw-generated messages
   // Only matches action_ids that start with our prefix to avoid interfering
   // with other Slack integrations or future features
   ctx.app.action(
@@ -538,7 +538,7 @@ export function registerSlackInteractionEvents(params: { ctx: SlackMonitorContex
     return;
   }
 
-  // Handle OpenClaw modal submissions with callback_ids scoped by our prefix.
+  // Handle CoderClaw modal submissions with callback_ids scoped by our prefix.
   ctx.app.view(
     new RegExp(`^${CODERCLAW_ACTION_PREFIX}`),
     async ({ ack, body }: { ack: () => Promise<void>; body: unknown }) => {

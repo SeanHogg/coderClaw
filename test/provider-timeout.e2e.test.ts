@@ -117,7 +117,7 @@ describe("provider timeouts (e2e)", () => {
       };
       (globalThis as unknown as { fetch: unknown }).fetch = fetchImpl;
 
-      const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-timeout-e2e-"));
+      const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-timeout-e2e-"));
       process.env.HOME = tempHome;
       process.env.CODERCLAW_SKIP_CHANNELS = "1";
       process.env.CODERCLAW_SKIP_GMAIL_WATCHER = "1";
@@ -127,7 +127,7 @@ describe("provider timeouts (e2e)", () => {
       const token = `test-${randomUUID()}`;
       process.env.CODERCLAW_GATEWAY_TOKEN = token;
 
-      const configDir = path.join(tempHome, ".openclaw");
+      const configDir = path.join(tempHome, ".coderclaw");
       await fs.mkdir(configDir, { recursive: true });
       const configPath = path.join(configDir, "coderclaw.json");
 

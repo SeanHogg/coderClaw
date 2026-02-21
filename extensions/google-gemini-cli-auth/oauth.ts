@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, realpathSync } from "node:fs";
 import { createServer } from "node:http";
 import { delimiter, dirname, join } from "node:path";
-import { isWSL2Sync } from "openclaw/plugin-sdk";
+import { isWSL2Sync } from "coderclaw/plugin-sdk";
 
 const CLIENT_ID_KEYS = ["CODERCLAW_GEMINI_OAUTH_CLIENT_ID", "GEMINI_CLI_OAUTH_CLIENT_ID"];
 const CLIENT_SECRET_KEYS = [
@@ -286,7 +286,7 @@ async function waitForLocalCallback(params: {
         res.end(
           "<!doctype html><html><head><meta charset='utf-8'/></head>" +
             "<body><h2>Gemini CLI OAuth complete</h2>" +
-            "<p>You can close this window and return to OpenClaw.</p></body></html>",
+            "<p>You can close this window and return to CoderClaw.</p></body></html>",
         );
 
         finish(undefined, { code, state });
@@ -396,7 +396,7 @@ async function discoverProject(accessToken: string): Promise<string> {
     Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
     "User-Agent": "google-api-nodejs-client/9.15.1",
-    "X-Goog-Api-Client": "gl-node/openclaw",
+    "X-Goog-Api-Client": "gl-node/coderclaw",
   };
 
   const loadBody = {

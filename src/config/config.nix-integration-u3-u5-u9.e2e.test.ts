@@ -78,7 +78,7 @@ describe("Nix integration (U3, U5, U9)", () => {
         resolveConfigPathCandidate(
           envWith({ CODERCLAW_CONFIG_PATH: undefined, CODERCLAW_STATE_DIR: undefined }),
         ),
-      ).toMatch(/\.coderclaw[\\/]openclaw\.json$/);
+      ).toMatch(/\.coderclaw[\\/]coderclaw\.json$/);
     });
 
     it("CONFIG_PATH respects CODERCLAW_CONFIG_PATH override", () => {
@@ -120,7 +120,7 @@ describe("Nix integration (U3, U5, U9)", () => {
           "utf-8",
         );
         await fs.writeFile(
-          path.join(pluginDir, "openclaw.plugin.json"),
+          path.join(pluginDir, "coderclaw.plugin.json"),
           JSON.stringify(
             {
               id: "demo-plugin",

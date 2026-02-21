@@ -2,7 +2,7 @@
   "name": "@coderclaw/google-gemini-cli-auth",
   "version": "2026.2.21",
   "private": true,
-  "description": "OpenClaw Gemini CLI OAuth provider plugin",
+  "description": "CoderClaw Gemini CLI OAuth provider plugin",
   "type": "module",
   "devDependencies": {
     "coderclaw": "workspace:*"

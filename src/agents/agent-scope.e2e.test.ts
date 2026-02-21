@@ -1,6 +1,6 @@
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import {
   resolveAgentConfig,
   resolveAgentDir,
@@ -16,15 +16,15 @@ afterEach(() => {
 
 describe("resolveAgentConfig", () => {
   it("should return undefined when no agents config exists", () => {
-    const cfg: OpenClawConfig = {};
+    const cfg: CoderClawConfig = {};
     const result = resolveAgentConfig(cfg, "main");
     expect(result).toBeUndefined();
   });
 
   it("should return undefined when agent id does not exist", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CoderClawConfig = {
       agents: {
-        list: [{ id: "main", workspace: "~/openclaw" }],
+        list: [{ id: "main", workspace: "~/coderclaw" }],
       },
     };
     const result = resolveAgentConfig(cfg, "nonexistent");
@@ -32,13 +32,13 @@ describe("resolveAgentConfig", () => {
   });
 
   it("should return basic agent config", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CoderClawConfig = {
       agents: {
         list: [
           {
             id: "main",
             name: "Main Agent",
-            workspace: "~/openclaw",
+            workspace: "~/coderclaw",
             agentDir: "~/.coderclaw/agents/main",
             model: "anthropic/claude-opus-4",
           },
@@ -48,7 +48,7 @@ describe("resolveAgentConfig", () => {
     const result = resolveAgentConfig(cfg, "main");
     expect(result).toEqual({
       name: "Main Agent",
-      workspace: "~/openclaw",
+      workspace: "~/coderclaw",
       agentDir: "~/.coderclaw/agents/main",
       model: "anthropic/claude-opus-4",
       identity: undefined,
@@ -60,7 +60,7 @@ describe("resolveAgentConfig", () => {
   });
 
   it("supports per-agent model primary+fallbacks", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CoderClawConfig = {
       agents: {
         defaults: {
           model: {
@@ -84,7 +84,7 @@ describe("resolveAgentConfig", () => {
     expect(resolveAgentModelFallbacksOverride(cfg, "linus")).toEqual(["openai/gpt-5.2"]);
 
     // If fallbacks isn't present, we don't override the global fallbacks.
-    const cfgNoOverride: OpenClawConfig = {
+    const cfgNoOverride: CoderClawConfig = {
       agents: {
         list: [
           {
@@ -99,7 +99,7 @@ describe("resolveAgentConfig", () => {
     expect(resolveAgentModelFallbacksOverride(cfgNoOverride, "linus")).toBe(undefined);
 
     // Explicit empty list disables global fallbacks for that agent.
-    const cfgDisable: OpenClawConfig = {
+    const cfgDisable: CoderClawConfig = {
       agents: {
         list: [
           {
@@ -136,7 +136,7 @@ describe("resolveAgentConfig", () => {
       }),
     ).toEqual([]);
 
-    const cfgInheritDefaults: OpenClawConfig = {
+    const cfgInheritDefaults: CoderClawConfig = {
       agents: {
         defaults: {
           model: {
@@ -170,7 +170,7 @@ describe("resolveAgentConfig", () => {
   });
 
   it("should return agent-specific sandbox config", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CoderClawConfig = {
       agents: {
         list: [
           {
@@ -198,12 +198,12 @@ describe("resolveAgentConfig", () => {
   });
 
   it("should return agent-specific tools config", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CoderClawConfig = {
       agents: {
         list: [
           {
             id: "restricted",
-            workspace: "~/openclaw-restricted",
+            workspace: "~/coderclaw-restricted",
             tools: {
               allow: ["read"],
               deny: ["exec", "write", "edit"],
@@ -228,12 +228,12 @@ describe("resolveAgentConfig", () => {
   });
 
   it("should return both sandbox and tools config", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CoderClawConfig = {
       agents: {
         list: [
           {
             id: "family",
-            workspace: "~/openclaw-family",
+            workspace: "~/coderclaw-family",
             sandbox: {
               mode: "all",
               scope: "agent",
@@ -252,22 +252,22 @@ describe("resolveAgentConfig", () => {
   });
 
   it("should normalize agent id", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CoderClawConfig = {
       agents: {
-        list: [{ id: "main", workspace: "~/openclaw" }],
+        list: [{ id: "main", workspace: "~/coderclaw" }],
       },
     };
     // Should normalize to "main" (default)
     const result = resolveAgentConfig(cfg, "");
     expect(result).toBeDefined();
-    expect(result?.workspace).toBe("~/openclaw");
+    expect(result?.workspace).toBe("~/coderclaw");
   });
 
   it("uses CODERCLAW_HOME for default agent workspace", () => {
     const home = path.join(path.sep, "srv", "coderclaw-home");
     vi.stubEnv("CODERCLAW_HOME", home);
 
-    const workspace = resolveAgentWorkspaceDir({} as OpenClawConfig, "main");
+    const workspace = resolveAgentWorkspaceDir({} as CoderClawConfig, "main");
     expect(workspace).toBe(path.join(path.resolve(home), ".coderclaw", "workspace"));
   });
 
@@ -277,7 +277,7 @@ describe("resolveAgentConfig", () => {
     // Clear state dir so it falls back to CODERCLAW_HOME
     vi.stubEnv("CODERCLAW_STATE_DIR", "");
 
-    const agentDir = resolveAgentDir({} as OpenClawConfig, "main");
+    const agentDir = resolveAgentDir({} as CoderClawConfig, "main");
     expect(agentDir).toBe(path.join(path.resolve(home), ".coderclaw", "agents", "main", "agent"));
   });
 });

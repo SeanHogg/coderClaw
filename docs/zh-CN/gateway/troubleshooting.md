@@ -1,7 +1,7 @@
 ---
 read_when:
   - 调查运行时问题或故障
-summary: OpenClaw 常见故障的快速故障排除指南
+summary: CoderClaw 常见故障的快速故障排除指南
 title: 故障排除
 x-i18n:
   generated_at: "2026-02-03T10:09:42Z"
@@ -14,7 +14,7 @@ x-i18n:
 
 # 故障排除 🔧
 
-当 OpenClaw 出现异常时，以下是解决方法。
+当 CoderClaw 出现异常时，以下是解决方法。
 
 如果你只想快速分类问题，请先查看常见问题的[最初的六十秒](/help/faq#first-60-seconds-if-somethings-broken)。本页深入介绍运行时故障和诊断。
 
@@ -119,10 +119,10 @@ Doctor/service 将显示运行时状态（PID/最后退出）和日志提示。
 **日志：**
 
 - 优先：`coderclaw logs --follow`
-- 文件日志（始终）：`/tmp/openclaw/openclaw-YYYY-MM-DD.log`（或你配置的 `logging.file`）
+- 文件日志（始终）：`/tmp/coderclaw/coderclaw-YYYY-MM-DD.log`（或你配置的 `logging.file`）
 - macOS LaunchAgent（如果已安装）：`$CODERCLAW_STATE_DIR/logs/gateway.log` 和 `gateway.err.log`
-- Linux systemd（如果已安装）：`journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`
-- Windows：`schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST`
+- Linux systemd（如果已安装）：`journalctl --user -u coderclaw-gateway[-<profile>].service -n 200 --no-pager`
+- Windows：`schtasks /Query /TN "CoderClaw Gateway (<profile>)" /V /FO LIST`
 
 **启用更多日志：**
 
@@ -177,7 +177,7 @@ Gateway 网关服务使用**最小 PATH** 运行以避免 shell/管理器的干�
 
 这有意排除版本管理器（nvm/fnm/volta/asdf）和包
 管理器（pnpm/npm），因为服务不加载你的 shell 初始化。运行时
-变量如 `DISPLAY` 应该放在 `~/.openclaw/.env` 中（由 Gateway 网关早期加载）。
+变量如 `DISPLAY` 应该放在 `~/.coderclaw/.env` 中（由 Gateway 网关早期加载）。
 在 `host=gateway` 上的 Exec 运行会将你的登录 shell `PATH` 合并到 exec 环境中，
 所以缺少的工具通常意味着你的 shell 初始化没有导出它们（或设置
 `tools.exec.pathPrepend`）。参见 [/tools/exec](/tools/exec)。
@@ -269,7 +269,7 @@ coderclaw gateway status
 
 ### 主聊天在沙箱工作区中运行
 
-症状：`pwd` 或文件工具显示 `~/.openclaw/sandboxes/...` 即使你
+症状：`pwd` 或文件工具显示 `~/.coderclaw/sandboxes/...` 即使你
 期望的是主机工作区。
 
 **原因：** `agents.defaults.sandbox.mode: "non-main"` 基于 `session.mainKey`（默认 `"main"`）判断。
@@ -295,7 +295,7 @@ coderclaw gateway status
 
 ### "Agent failed before reply: Unknown model: anthropic/claude-haiku-3-5"
 
-OpenClaw 有意拒绝**较旧/不安全的模型**（尤其是那些更容易受到提示词注入攻击的模型）。如果你看到此错误，该模型名称已不再支持。
+CoderClaw 有意拒绝**较旧/不安全的模型**（尤其是那些更容易受到提示词注入攻击的模型）。如果你看到此错误，该模型名称已不再支持。
 
 **修复：**
 
@@ -322,7 +322,7 @@ coderclaw status
 # 消息必须匹配 mentionPatterns 或显式提及；默认值在渠道 groups/guilds 中。
 # 多智能体：`agents.list[].groupChat.mentionPatterns` 覆盖全局模式。
 grep -n "agents\\|groupChat\\|mentionPatterns\\|channels\\.whatsapp\\.groups\\|channels\\.telegram\\.groups\\|channels\\.imessage\\.groups\\|channels\\.discord\\.guilds" \
-  "${CODERCLAW_CONFIG_PATH:-$HOME/.openclaw/coderclaw.json}"
+  "${CODERCLAW_CONFIG_PATH:-$HOME/.coderclaw/coderclaw.json}"
 ```
 
 **检查 3：** 检查日志
@@ -330,7 +330,7 @@ grep -n "agents\\|groupChat\\|mentionPatterns\\|channels\\.whatsapp\\.groups\\|c
 ```bash
 coderclaw logs --follow
 # 或者如果你想快速过滤：
-tail -f "$(ls -t /tmp/openclaw/openclaw-*.log | head -1)" | grep "blocked\\|skip\\|unauthorized"
+tail -f "$(ls -t /tmp/coderclaw/coderclaw-*.log | head -1)" | grep "blocked\\|skip\\|unauthorized"
 ```
 
 ### 配对码未到达
@@ -359,15 +359,15 @@ coderclaw logs --follow | grep "pairing request"
 
 **变通方法：** 在提及时添加一些文字：
 
-- ❌ `@openclaw` + 图片
-- ✅ `@openclaw check this` + 图片
+- ❌ `@coderclaw` + 图片
+- ✅ `@coderclaw check this` + 图片
 
 ### 会话未恢复
 
 **检查 1：** 会话文件是否存在？
 
 ```bash
-ls -la ~/.openclaw/agents/<agentId>/sessions/
+ls -la ~/.coderclaw/agents/<agentId>/sessions/
 ```
 
 **检查 2：** 重置窗口是否太短？
@@ -422,7 +422,7 @@ coderclaw gateway --verbose
 
 ```bash
 coderclaw channels logout
-trash "${CODERCLAW_STATE_DIR:-$HOME/.openclaw}/credentials" # 如果 logout 无法完全清除所有内容
+trash "${CODERCLAW_STATE_DIR:-$HOME/.coderclaw}/credentials" # 如果 logout 无法完全清除所有内容
 coderclaw channels login --verbose       # 重新扫描二维码
 ```
 
@@ -443,12 +443,12 @@ ls -la /path/to/your/image.jpg
 **检查 3：** 检查媒体日志
 
 ```bash
-grep "media\\|fetch\\|download" "$(ls -t /tmp/openclaw/openclaw-*.log | head -1)" | tail -20
+grep "media\\|fetch\\|download" "$(ls -t /tmp/coderclaw/coderclaw-*.log | head -1)" | tail -20
 ```
 
 ### 高内存使用
 
-OpenClaw 在内存中保留对话历史。
+CoderClaw 在内存中保留对话历史。
 
 **修复：** 定期重启或设置会话限制：
 
@@ -464,7 +464,7 @@ OpenClaw 在内存中保留对话历史。
 
 ### "Gateway won't start — configuration invalid"
 
-当配置包含未知键、格式错误的值或无效类型时，OpenClaw 现在拒绝启动。
+当配置包含未知键、格式错误的值或无效类型时，CoderClaw 现在拒绝启动。
 这是为了安全而故意设计的。
 
 用 Doctor 修复：
@@ -484,7 +484,7 @@ coderclaw doctor --fix
 
 - **凭证**存在于正在尝试的提供商（认证配置文件 + 环境变量）。
 - **模型路由**：确认 `agents.defaults.model.primary` 和回退是你可以访问的模型。
-- `/tmp/openclaw/…` 中的 **Gateway 网关日志**以获取确切的提供商错误。
+- `/tmp/coderclaw/…` 中的 **Gateway 网关日志**以获取确切的提供商错误。
 - **模型状态**：使用 `/model status`（聊天）或 `coderclaw models status`（CLI）。
 
 ### 我在我的个人 WhatsApp 号码上运行 — 为什么自聊天很奇怪？
@@ -545,13 +545,13 @@ coderclaw gateway restart
 切换**到 git 安装**：
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --no-onboard
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git --no-onboard
 ```
 
 切换**到 npm 全局**：
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://coderclaw.ai/install.sh | bash
 ```
 
 注意事项：
@@ -602,13 +602,13 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 ### Cloud Code Assist API 错误：invalid tool schema（400）。现在怎么办？
 
 这几乎总是**工具模式兼容性**问题。Cloud Code Assist
-端点接受 JSON Schema 的严格子集。OpenClaw 在当前 `main` 中清理/规范化工具
+端点接受 JSON Schema 的严格子集。CoderClaw 在当前 `main` 中清理/规范化工具
 模式，但修复尚未包含在最后一个版本中（截至
 2026 年 1 月 13 日）。
 
 修复清单：
 
-1. **更新 OpenClaw**：
+1. **更新 CoderClaw**：
    - 如果你可以从源代码运行，拉取 `main` 并重启 Gateway 网关。
    - 否则，等待包含模式清理器的下一个版本。
 2. 避免不支持的关键字如 `anyOf/oneOf/allOf`、`patternProperties`、
@@ -643,7 +643,7 @@ tccutil reset All bot.molt.mac.debug
 ```bash
 coderclaw gateway status
 coderclaw gateway stop
-# 或：launchctl bootout gui/$UID/bot.molt.gateway（用 bot.molt.<profile> 替换；旧版 com.openclaw.* 仍然有效）
+# 或：launchctl bootout gui/$UID/bot.molt.gateway（用 bot.molt.<profile> 替换；旧版 com.coderclaw.* 仍然有效）
 ```
 
 **修复 2：端口被占用（查找监听器）**
@@ -661,11 +661,11 @@ kill -9 <PID> # 最后手段
 ```
 
 **修复 3：检查 CLI 安装**
-确保全局 `openclaw` CLI 已安装且与应用版本匹配：
+确保全局 `coderclaw` CLI 已安装且与应用版本匹配：
 
 ```bash
 coderclaw --version
-npm install -g openclaw@<version>
+npm install -g coderclaw@<version>
 ```
 
 ## 调试模式
@@ -674,7 +674,7 @@ npm install -g openclaw@<version>
 
 ```bash
 # 在配置中打开跟踪日志：
-#   ${CODERCLAW_CONFIG_PATH:-$HOME/.openclaw/coderclaw.json} -> { logging: { level: "trace" } }
+#   ${CODERCLAW_CONFIG_PATH:-$HOME/.coderclaw/coderclaw.json} -> { logging: { level: "trace" } }
 #
 # 然后运行详细命令将调试输出镜像到标准输出：
 coderclaw gateway --verbose
@@ -685,8 +685,8 @@ coderclaw channels login --verbose
 
 | 日志                             | 位置                                                                                                                                                                                                                                                                                                                       |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Gateway 网关文件日志（结构化）   | `/tmp/openclaw/openclaw-YYYY-MM-DD.log`（或 `logging.file`）                                                                                                                                                                                                                                                               |
-| Gateway 网关服务日志（监管程序） | macOS：`$CODERCLAW_STATE_DIR/logs/gateway.log` + `gateway.err.log`（默认：`~/.openclaw/logs/...`；配置文件使用 `~/.openclaw-<profile>/logs/...`）<br />Linux：`journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`<br />Windows：`schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST` |
+| Gateway 网关文件日志（结构化）   | `/tmp/coderclaw/coderclaw-YYYY-MM-DD.log`（或 `logging.file`）                                                                                                                                                                                                                                                               |
+| Gateway 网关服务日志（监管程序） | macOS：`$CODERCLAW_STATE_DIR/logs/gateway.log` + `gateway.err.log`（默认：`~/.coderclaw/logs/...`；配置文件使用 `~/.coderclaw-<profile>/logs/...`）<br />Linux：`journalctl --user -u coderclaw-gateway[-<profile>].service -n 200 --no-pager`<br />Windows：`schtasks /Query /TN "CoderClaw Gateway (<profile>)" /V /FO LIST` |
 | 会话文件                         | `$CODERCLAW_STATE_DIR/agents/<agentId>/sessions/`                                                                                                                                                                                                                                                                          |
 | 媒体缓存                         | `$CODERCLAW_STATE_DIR/media/`                                                                                                                                                                                                                                                                                              |
 | 凭证                             | `$CODERCLAW_STATE_DIR/credentials/`                                                                                                                                                                                                                                                                                        |
@@ -710,7 +710,7 @@ lsof -nP -iTCP:18789 -sTCP:LISTEN
 # 最近活动（RPC 日志尾部）
 coderclaw logs --follow
 # 如果 RPC 宕机的备用方案
-tail -20 /tmp/openclaw/openclaw-*.log
+tail -20 /tmp/coderclaw/coderclaw-*.log
 ```
 
 ## 重置所有内容
@@ -722,19 +722,19 @@ coderclaw gateway stop
 # 如果你安装了服务并想要干净安装：
 # coderclaw gateway uninstall
 
-trash "${CODERCLAW_STATE_DIR:-$HOME/.openclaw}"
+trash "${CODERCLAW_STATE_DIR:-$HOME/.coderclaw}"
 coderclaw channels login         # 重新配对 WhatsApp
-coderclaw gateway restart           # 或：openclaw gateway
+coderclaw gateway restart           # 或：coderclaw gateway
 ```
 
 ⚠️ 这会丢失所有会话并需要重新配对 WhatsApp。
 
 ## 获取帮助
 
-1. 首先检查日志：`/tmp/openclaw/`（默认：`openclaw-YYYY-MM-DD.log`，或你配置的 `logging.file`）
+1. 首先检查日志：`/tmp/coderclaw/`（默认：`coderclaw-YYYY-MM-DD.log`，或你配置的 `logging.file`）
 2. 在 GitHub 上搜索现有问题
 3. 提交新问题时包含：
-   - OpenClaw 版本
+   - CoderClaw 版本
    - 相关日志片段
    - 重现步骤
    - 你的配置（隐藏密钥！）

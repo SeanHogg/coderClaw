@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { OAuthCredentials } from "@mariozechner/pi-ai";
 import { afterEach, describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import {
   applyAuthProfileConfig,
   applyLitellmProviderConfig,
@@ -42,7 +42,7 @@ function createLegacyProviderConfig(params: {
   modelName?: string;
   baseUrl?: string;
   apiKey?: string;
-}): OpenClawConfig {
+}): CoderClawConfig {
   return {
     models: {
       providers: {
@@ -64,7 +64,7 @@ function createLegacyProviderConfig(params: {
         },
       },
     },
-  } as OpenClawConfig;
+  } as CoderClawConfig;
 }
 
 const EXPECTED_FALLBACKS = ["anthropic/claude-opus-4-5"] as const;

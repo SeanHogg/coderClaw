@@ -34,7 +34,7 @@ describe("buildAgentSystemPrompt", () => {
         "<available_skills>\n  <skill>\n    <name>demo</name>\n  </skill>\n</available_skills>",
       heartbeatPrompt: "ping",
       toolNames: ["message", "memory_search"],
-      docsPath: "/tmp/openclaw/docs",
+      docsPath: "/tmp/coderclaw/docs",
       extraSystemPrompt: "Subagent details",
       ttsHint: "Voice (TTS) is enabled.",
     });
@@ -103,8 +103,8 @@ describe("buildAgentSystemPrompt", () => {
       workspaceDir: "/tmp/coderclaw",
     });
 
-    expect(prompt).toContain("## OpenClaw CLI Quick Reference");
-    expect(prompt).toContain("openclaw gateway restart");
+    expect(prompt).toContain("## CoderClaw CLI Quick Reference");
+    expect(prompt).toContain("coderclaw gateway restart");
     expect(prompt).toContain("Do not invent commands");
   });
 
@@ -149,7 +149,7 @@ describe("buildAgentSystemPrompt", () => {
       toolNames: ["Read", "Exec", "process"],
       skillsPrompt:
         "<available_skills>\n  <skill>\n    <name>demo</name>\n  </skill>\n</available_skills>",
-      docsPath: "/tmp/openclaw/docs",
+      docsPath: "/tmp/coderclaw/docs",
     });
 
     expect(prompt).toContain("- Read: Read file contents");
@@ -157,22 +157,22 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain(
       "- If exactly one skill clearly applies: read its SKILL.md at <location> with `Read`, then follow it.",
     );
-    expect(prompt).toContain("OpenClaw docs: /tmp/openclaw/docs");
+    expect(prompt).toContain("CoderClaw docs: /tmp/coderclaw/docs");
     expect(prompt).toContain(
-      "For OpenClaw behavior, commands, config, or architecture: consult local docs first.",
+      "For CoderClaw behavior, commands, config, or architecture: consult local docs first.",
     );
   });
 
   it("includes docs guidance when docsPath is provided", () => {
     const prompt = buildAgentSystemPrompt({
       workspaceDir: "/tmp/coderclaw",
-      docsPath: "/tmp/openclaw/docs",
+      docsPath: "/tmp/coderclaw/docs",
     });
 
     expect(prompt).toContain("## Documentation");
-    expect(prompt).toContain("OpenClaw docs: /tmp/openclaw/docs");
+    expect(prompt).toContain("CoderClaw docs: /tmp/coderclaw/docs");
     expect(prompt).toContain(
-      "For OpenClaw behavior, commands, config, or architecture: consult local docs first.",
+      "For CoderClaw behavior, commands, config, or architecture: consult local docs first.",
     );
   });
 
@@ -232,10 +232,10 @@ describe("buildAgentSystemPrompt", () => {
 
   // The system prompt intentionally does NOT include the current date/time.
   // Only the timezone is included, to keep the prompt stable for caching.
-  // See: https://github.com/moltbot/moltbot/commit/66eec295b894bce8333886cfbca3b960c57c4946
+  // See: https://github.com/coderclaw/coderclaw/commit/66eec295b894bce8333886cfbca3b960c57c4946
   // Agents should use session_status or message timestamps to determine the date/time.
-  // Related: https://github.com/moltbot/moltbot/issues/1897
-  //          https://github.com/moltbot/moltbot/issues/3658
+  // Related: https://github.com/coderclaw/coderclaw/issues/1897
+  //          https://github.com/coderclaw/coderclaw/issues/3658
   it("does NOT include a date or time in the system prompt (cache stability)", () => {
     const prompt = buildAgentSystemPrompt({
       workspaceDir: "/tmp/clawd",
@@ -247,7 +247,7 @@ describe("buildAgentSystemPrompt", () => {
     // The prompt should contain the timezone but NOT the formatted date/time string.
     // This is intentional for prompt cache stability — the date/time was removed in
     // commit 66eec295b. If you're here because you want to add it back, please see
-    // https://github.com/moltbot/moltbot/issues/3658 for the preferred approach:
+    // https://github.com/coderclaw/coderclaw/issues/3658 for the preferred approach:
     // gateway-level timestamp injection into messages, not the system prompt.
     expect(prompt).toContain("Time zone: America/Chicago");
     expect(prompt).not.toContain("Monday, January 5th, 2026");
@@ -275,7 +275,7 @@ describe("buildAgentSystemPrompt", () => {
       toolNames: ["gateway", "exec"],
     });
 
-    expect(prompt).toContain("## OpenClaw Self-Update");
+    expect(prompt).toContain("## CoderClaw Self-Update");
     expect(prompt).toContain("config.apply");
     expect(prompt).toContain("update.run");
   });
@@ -469,7 +469,7 @@ describe("buildAgentSystemPrompt", () => {
 
     expect(prompt).toContain("Your working directory is: /workspace");
     expect(prompt).toContain(
-      "For read/write/edit/apply_patch, file paths resolve against host workspace: /tmp/openclaw. For bash/exec commands, use sandbox container paths under /workspace (or relative paths from that workdir), not host paths.",
+      "For read/write/edit/apply_patch, file paths resolve against host workspace: /tmp/coderclaw. For bash/exec commands, use sandbox container paths under /workspace (or relative paths from that workdir), not host paths.",
     );
     expect(prompt).toContain("Sandbox container workdir: /workspace");
     expect(prompt).toContain(

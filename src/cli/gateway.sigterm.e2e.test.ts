@@ -94,7 +94,7 @@ describe("gateway SIGTERM", () => {
       CODERCLAW_SKIP_BROWSER_CONTROL_SERVER: "1",
       CODERCLAW_SKIP_CANVAS_HOST: "1",
     };
-    const bootstrapPath = path.join(stateDir, "openclaw-entry-bootstrap.mjs");
+    const bootstrapPath = path.join(stateDir, "coderclaw-entry-bootstrap.mjs");
     const runLoopPath = path.resolve("src/cli/gateway-cli/run-loop.ts");
     const runtimePath = path.resolve("src/runtime.ts");
     fs.writeFileSync(

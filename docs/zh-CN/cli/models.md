@@ -43,7 +43,7 @@ coderclaw models scan
 
 - `models set <model-or-alias>` 接受 `provider/model` 或别名。
 - 模型引用通过在**第一个** `/` 处拆分来解析。如果模型 ID 包含 `/`（OpenRouter 风格），需包含提供商前缀（示例：`openrouter/moonshotai/kimi-k2`）。
-- 如果省略提供商，OpenClaw 会将输入视为别名或**默认提供商**的模型（仅在模型 ID 不包含 `/` 时有效）。
+- 如果省略提供商，CoderClaw 会将输入视为别名或**默认提供商**的模型（仅在模型 ID 不包含 `/` 时有效）。
 
 ### `models status`
 

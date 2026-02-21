@@ -1,7 +1,7 @@
 import "./reply.directive.directive-behavior.e2e-mocks.js";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import {
   assertModelSelection,
   installDirectiveBehaviorE2EHooks,
@@ -46,7 +46,7 @@ function makeMoonshotConfig(home: string, storePath: string) {
       },
     },
     session: { store: storePath },
-  } as unknown as OpenClawConfig;
+  } as unknown as CoderClawConfig;
 }
 
 describe("directive behavior", () => {
@@ -153,7 +153,7 @@ describe("directive behavior", () => {
             },
           },
           session: { store: storePath },
-        } as unknown as OpenClawConfig,
+        } as unknown as CoderClawConfig,
       );
 
       assertModelSelection(storePath);
@@ -193,7 +193,7 @@ describe("directive behavior", () => {
             },
           },
           session: { store: storePath },
-        } as unknown as OpenClawConfig,
+        } as unknown as CoderClawConfig,
       );
 
       assertModelSelection(storePath);

@@ -3,7 +3,7 @@ read_when:
   - 从 CLI 运行 Gateway 网关（开发或服务器）
   - 调试 Gateway 网关认证、绑定模式和连接性
   - 通过 Bonjour 发现 Gateway 网关（局域网 + tailnet）
-summary: OpenClaw Gateway 网关 CLI（`coderclaw gateway`）— 运行、查询和发现 Gateway 网关
+summary: CoderClaw Gateway 网关 CLI（`coderclaw gateway`）— 运行、查询和发现 Gateway 网关
 title: gateway
 x-i18n:
   generated_at: "2026-02-03T07:45:15Z"
@@ -16,7 +16,7 @@ x-i18n:
 
 # Gateway 网关 CLI
 
-Gateway 网关是 OpenClaw 的 WebSocket 服务器（渠道、节点、会话、hooks）。
+Gateway 网关是 CoderClaw 的 WebSocket 服务器（渠道、节点、会话、hooks）。
 
 本页中的子命令位于 `coderclaw gateway …` 下。
 
@@ -42,7 +42,7 @@ coderclaw gateway run
 
 注意事项：
 
-- 默认情况下，除非在 `~/.openclaw/coderclaw.json` 中设置了 `gateway.mode=local`，否则 Gateway 网关将拒绝启动。使用 `--allow-unconfigured` 进行临时/开发运行。
+- 默认情况下，除非在 `~/.coderclaw/coderclaw.json` 中设置了 `gateway.mode=local`，否则 Gateway 网关将拒绝启动。使用 `--allow-unconfigured` 进行临时/开发运行。
 - 在没有认证的情况下绑定到 loopback 之外的地址会被阻止（安全护栏）。
 - `SIGUSR1` 在授权时触发进程内重启（启用 `commands.restart` 或使用 gateway 工具/config apply/update）。
 - `SIGINT`/`SIGTERM` 处理程序会停止 Gateway 网关进程，但不会恢复任何自定义终端状态。如果你用 TUI 或 raw-mode 输入包装 CLI，请在退出前恢复终端。

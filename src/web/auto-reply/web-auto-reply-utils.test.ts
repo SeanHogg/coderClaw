@@ -25,11 +25,11 @@ const makeMsg = (overrides: Partial<WebInboundMsg>): WebInboundMsg =>
   }) as WebInboundMsg;
 
 describe("isBotMentionedFromTargets", () => {
-  const mentionCfg = { mentionRegexes: [/\bopenclaw\b/i] };
+  const mentionCfg = { mentionRegexes: [/\bcoderclaw\b/i] };
 
   it("ignores regex matches when other mentions are present", () => {
     const msg = makeMsg({
-      body: "@OpenClaw please help",
+      body: "@CoderClaw please help",
       mentionedJids: ["19998887777@s.whatsapp.net"],
       selfE164: "+15551234567",
       selfJid: "15551234567@s.whatsapp.net",
@@ -51,7 +51,7 @@ describe("isBotMentionedFromTargets", () => {
 
   it("falls back to regex when no mentions are present", () => {
     const msg = makeMsg({
-      body: "openclaw can you help?",
+      body: "coderclaw can you help?",
       selfE164: "+15551234567",
       selfJid: "15551234567@s.whatsapp.net",
     });
@@ -60,7 +60,7 @@ describe("isBotMentionedFromTargets", () => {
   });
 
   it("ignores JID mentions in self-chat mode", () => {
-    const cfg = { mentionRegexes: [/\bopenclaw\b/i], allowFrom: ["+999"] };
+    const cfg = { mentionRegexes: [/\bcoderclaw\b/i], allowFrom: ["+999"] };
     const msg = makeMsg({
       body: "@owner ping",
       mentionedJids: ["999@s.whatsapp.net"],
@@ -71,7 +71,7 @@ describe("isBotMentionedFromTargets", () => {
     expect(isBotMentionedFromTargets(msg, cfg, targets)).toBe(false);
 
     const msgTextMention = makeMsg({
-      body: "openclaw ping",
+      body: "coderclaw ping",
       selfE164: "+999",
       selfJid: "999@s.whatsapp.net",
     });

@@ -12,7 +12,7 @@ async function setupWorkspaceWithProsePlugin() {
 
   await fs.mkdir(path.join(pluginRoot, "skills", "prose"), { recursive: true });
   await fs.writeFile(
-    path.join(pluginRoot, "openclaw.plugin.json"),
+    path.join(pluginRoot, "coderclaw.plugin.json"),
     JSON.stringify(
       {
         id: "open-prose",

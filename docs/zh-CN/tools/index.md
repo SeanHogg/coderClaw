@@ -1,8 +1,8 @@
 ---
 read_when:
   - 添加或修改智能体工具
-  - 停用或更改 `openclaw-*` Skills
-summary: OpenClaw 的智能体工具接口（browser、canvas、nodes、message、cron），替代旧版 `openclaw-*` Skills
+  - 停用或更改 `coderclaw-*` Skills
+summary: CoderClaw 的智能体工具接口（browser、canvas、nodes、message、cron），替代旧版 `coderclaw-*` Skills
 title: 工具
 x-i18n:
   generated_at: "2026-02-03T10:12:41Z"
@@ -13,10 +13,10 @@ x-i18n:
   workflow: 15
 ---
 
-# 工具（OpenClaw）
+# 工具（CoderClaw）
 
-OpenClaw 为 browser、canvas、nodes 和 cron 暴露**一流的智能体工具**。
-这些工具取代了旧的 `openclaw-*` Skills：工具是类型化的，无需调用 shell，
+CoderClaw 为 browser、canvas、nodes 和 cron 暴露**一流的智能体工具**。
+这些工具取代了旧的 `coderclaw-*` Skills：工具是类型化的，无需调用 shell，
 智能体应该直接依赖它们。
 
 ## 禁用工具
@@ -34,7 +34,7 @@ OpenClaw 为 browser、canvas、nodes 和 cron 暴露**一流的智能体工具*
 
 - 匹配不区分大小写。
 - 支持 `*` 通配符（`"*"` 表示所有工具）。
-- 如果 `tools.allow` 仅引用未知或未加载的插件工具名称，OpenClaw 会记录警告并忽略允许列表，以确保核心工具保持可用。
+- 如果 `tools.allow` 仅引用未知或未加载的插件工具名称，CoderClaw 会记录警告并忽略允许列表，以确保核心工具保持可用。
 
 ## 工具配置文件（基础允许列表）
 
@@ -158,7 +158,7 @@ OpenClaw 为 browser、canvas、nodes 和 cron 暴露**一流的智能体工具*
 - `group:automation`：`cron`、`gateway`
 - `group:messaging`：`message`
 - `group:nodes`：`nodes`
-- `group:openclaw`：所有内置 OpenClaw 工具（不包括提供商插件）
+- `group:coderclaw`：所有内置 CoderClaw 工具（不包括提供商插件）
 
 示例（仅允许文件工具 + browser）：
 
@@ -266,7 +266,7 @@ OpenClaw 为 browser、canvas、nodes 和 cron 暴露**一流的智能体工具*
 
 ### `browser`
 
-控制专用的 OpenClaw 管理的浏览器。
+控制专用的 CoderClaw 管理的浏览器。
 
 核心操作：
 

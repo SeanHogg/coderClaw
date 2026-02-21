@@ -22,8 +22,8 @@ x-i18n:
 1. 为 bot 使用**单独的 Signal 号码**（推荐）。
 2. 安装 `signal-cli`（需要 Java）。
 3. 链接 bot 设备并启动守护进程：
-   - `signal-cli link -n "OpenClaw"`
-4. 配置 OpenClaw 并启动 Gateway 网关。
+   - `signal-cli link -n "CoderClaw"`
+4. 配置 CoderClaw 并启动 Gateway 网关。
 
 最小配置：
 
@@ -69,7 +69,7 @@ x-i18n:
 
 1. 安装 `signal-cli`（需要 Java）。
 2. 链接 bot 账户：
-   - `signal-cli link -n "OpenClaw"` 然后在 Signal 中扫描二维码。
+   - `signal-cli link -n "CoderClaw"` 然后在 Signal 中扫描二维码。
 3. 配置 Signal 并启动 Gateway 网关。
 
 示例：
@@ -92,7 +92,7 @@ x-i18n:
 
 ## 外部守护进程模式（httpUrl）
 
-如果你想自己管理 `signal-cli`（JVM 冷启动慢、容器初始化或共享 CPU），请单独运行守护进程并将 OpenClaw 指向它：
+如果你想自己管理 `signal-cli`（JVM 冷启动慢、容器初始化或共享 CPU），请单独运行守护进程并将 CoderClaw 指向它：
 
 ```json5
 {
@@ -105,7 +105,7 @@ x-i18n:
 }
 ```
 
-这会跳过自动启动和 OpenClaw 内部的启动等待。对于自动启动时的慢启动，请设置 `channels.signal.startupTimeoutMs`。
+这会跳过自动启动和 CoderClaw 内部的启动等待。对于自动启动时的慢启动，请设置 `channels.signal.startupTimeoutMs`。
 
 ## 访问控制（私信 + 群组）
 
@@ -141,8 +141,8 @@ x-i18n:
 
 ## 输入指示器 + 已读回执
 
-- **输入指示器**：OpenClaw 通过 `signal-cli sendTyping` 发送输入信号，并在回复运行时刷新它们。
-- **已读回执**：当 `channels.signal.sendReadReceipts` 为 true 时，OpenClaw 为允许的私信转发已读回执。
+- **输入指示器**：CoderClaw 通过 `signal-cli sendTyping` 发送输入信号，并在回复运行时刷新它们。
+- **已读回执**：当 `channels.signal.sendReadReceipts` 为 true 时，CoderClaw 为允许的私信转发已读回执。
 - Signal-cli 不暴露群组的已读回执。
 
 ## 表情回应（message 工具）

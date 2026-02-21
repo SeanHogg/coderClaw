@@ -11,7 +11,7 @@ x-i18n:
 
 # 创建自定义 Skills 🛠
 
-OpenClaw 被设计为易于扩展。"Skills"是为你的助手添加新功能的主要方式。
+CoderClaw 被设计为易于扩展。"Skills"是为你的助手添加新功能的主要方式。
 
 ## 什么是 Skill？
 
@@ -21,10 +21,10 @@ Skill 是一个包含 `SKILL.md` 文件（为 LLM 提供指令和工具定义）
 
 ### 1. 创建目录
 
-Skills 位于你的工作区中，通常是 `~/.openclaw/workspace/skills/`。为你的 Skill 创建一个新文件夹：
+Skills 位于你的工作区中，通常是 `~/.coderclaw/workspace/skills/`。为你的 Skill 创建一个新文件夹：
 
 ```bash
-mkdir -p ~/.openclaw/workspace/skills/hello-world
+mkdir -p ~/.coderclaw/workspace/skills/hello-world
 ```
 
 ### 2. 定义 `SKILL.md`
@@ -46,9 +46,9 @@ When the user asks for a greeting, use the `echo` tool to say "Hello from your c
 
 你可以在 frontmatter 中定义自定义工具，或指示智能体使用现有的系统工具（如 `bash` 或 `browser`）。
 
-### 4. 刷新 OpenClaw
+### 4. 刷新 CoderClaw
 
-让你的智能体"刷新 skills"或重启 Gateway 网关。OpenClaw 将发现新目录并索引 `SKILL.md`。
+让你的智能体"刷新 skills"或重启 Gateway 网关。CoderClaw 将发现新目录并索引 `SKILL.md`。
 
 ## 最佳实践
 

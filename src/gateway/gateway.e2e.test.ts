@@ -51,7 +51,7 @@ describe("gateway e2e", () => {
       const token = `test-${randomUUID()}`;
       process.env.CODERCLAW_GATEWAY_TOKEN = token;
 
-      const workspaceDir = path.join(tempHome, "openclaw");
+      const workspaceDir = path.join(tempHome, "coderclaw");
       await fs.mkdir(workspaceDir, { recursive: true });
 
       const nonceA = randomUUID();

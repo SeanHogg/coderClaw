@@ -1,13 +1,13 @@
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { ensurePluginAllowlisted } from "../config/plugins-allowlist.js";
 
 export type PluginEnableResult = {
-  config: OpenClawConfig;
+  config: CoderClawConfig;
   enabled: boolean;
   reason?: string;
 };
 
-export function enablePluginInConfig(cfg: OpenClawConfig, pluginId: string): PluginEnableResult {
+export function enablePluginInConfig(cfg: CoderClawConfig, pluginId: string): PluginEnableResult {
   if (cfg.plugins?.enabled === false) {
     return { config: cfg, enabled: false, reason: "plugins disabled" };
   }
@@ -22,7 +22,7 @@ export function enablePluginInConfig(cfg: OpenClawConfig, pluginId: string): Plu
       enabled: true,
     },
   };
-  let next: OpenClawConfig = {
+  let next: CoderClawConfig = {
     ...cfg,
     plugins: {
       ...cfg.plugins,

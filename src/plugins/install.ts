@@ -65,7 +65,7 @@ function validatePluginId(pluginId: string): string | null {
   return null;
 }
 
-async function ensureOpenClawExtensions(manifest: PackageManifest) {
+async function ensureCoderClawExtensions(manifest: PackageManifest) {
   // Check current key first, then fall back to legacy keys for backward compatibility.
   const meta =
     manifest[MANIFEST_KEY] ??
@@ -167,7 +167,7 @@ async function installPluginFromPackageDir(params: {
 
   let extensions: string[];
   try {
-    extensions = await ensureOpenClawExtensions(manifest);
+    extensions = await ensureCoderClawExtensions(manifest);
   } catch (err) {
     return { ok: false, error: String(err) };
   }
@@ -216,12 +216,12 @@ async function installPluginFromPackageDir(params: {
       );
     } else if (scanSummary.warn > 0) {
       logger.warn?.(
-        `Plugin "${pluginId}" has ${scanSummary.warn} suspicious code pattern(s). Run "openclaw security audit --deep" for details.`,
+        `Plugin "${pluginId}" has ${scanSummary.warn} suspicious code pattern(s). Run "coderclaw security audit --deep" for details.`,
       );
     }
   } catch (err) {
     logger.warn?.(
-      `Plugin "${pluginId}" code safety scan failed (${String(err)}). Installation continues; run "openclaw security audit --deep" after install.`,
+      `Plugin "${pluginId}" code safety scan failed (${String(err)}). Installation continues; run "coderclaw security audit --deep" after install.`,
     );
   }
 
@@ -314,7 +314,7 @@ export async function installPluginFromArchive(params: {
   }
   const archivePath = archivePathResult.path;
 
-  return await withTempDir("openclaw-plugin-", async (tmpDir) => {
+  return await withTempDir("coderclaw-plugin-", async (tmpDir) => {
     const extractDir = path.join(tmpDir, "extract");
     await fs.mkdir(extractDir, { recursive: true });
 
@@ -436,7 +436,7 @@ export async function installPluginFromNpmSpec(params: {
     return { ok: false, error: specError };
   }
 
-  return await withTempDir("openclaw-npm-pack-", async (tmpDir) => {
+  return await withTempDir("coderclaw-npm-pack-", async (tmpDir) => {
     logger.info?.(`Downloading ${spec}…`);
     const packedResult = await packNpmSpecToArchive({
       spec,

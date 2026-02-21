@@ -1,7 +1,7 @@
 ---
 summary: "Together AI setup (auth + model selection)"
 read_when:
-  - You want to use Together AI with OpenClaw
+  - You want to use Together AI with CoderClaw
   - You need the API key env var or CLI auth choice
 ---
 
@@ -47,7 +47,7 @@ This will set `together/moonshotai/Kimi-K2.5` as the default model.
 ## Environment note
 
 If the Gateway runs as a daemon (launchd/systemd), make sure `TOGETHER_API_KEY`
-is available to that process (for example, in `~/.clawdbot/.env` or via
+is available to that process (for example, in `~/.coderclaw/.env` or via
 `env.shellEnv`).
 
 ## Available models

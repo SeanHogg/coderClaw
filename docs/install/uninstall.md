@@ -1,7 +1,7 @@
 ---
-summary: "Uninstall OpenClaw completely (CLI, service, state, workspace)"
+summary: "Uninstall CoderClaw completely (CLI, service, state, workspace)"
 read_when:
-  - You want to remove OpenClaw from a machine
+  - You want to remove CoderClaw from a machine
   - The gateway service is still running after uninstall
 title: "Uninstall"
 ---
@@ -10,7 +10,7 @@ title: "Uninstall"
 
 Two paths:
 
-- **Easy path** if `openclaw` is still installed.
+- **Easy path** if `coderclaw` is still installed.
 - **Manual service removal** if the CLI is gone but the service is still running.
 
 ## Easy path (CLI still installed)
@@ -59,69 +59,69 @@ rm -rf ~/.coderclaw/workspace
 5. Remove the CLI install (pick the one you used):
 
 ```bash
-npm rm -g openclaw
-pnpm remove -g openclaw
-bun remove -g openclaw
+npm rm -g coderclaw
+pnpm remove -g coderclaw
+bun remove -g coderclaw
 ```
 
 6. If you installed the macOS app:
 
 ```bash
-rm -rf /Applications/OpenClaw.app
+rm -rf /Applications/CoderClaw.app
 ```
 
 Notes:
 
-- If you used profiles (`--profile` / `CODERCLAW_PROFILE`), repeat step 3 for each state dir (defaults are `~/.openclaw-<profile>`).
+- If you used profiles (`--profile` / `CODERCLAW_PROFILE`), repeat step 3 for each state dir (defaults are `~/.coderclaw-<profile>`).
 - In remote mode, the state dir lives on the **gateway host**, so run steps 1-4 there too.
 
 ## Manual service removal (CLI not installed)
 
-Use this if the gateway service keeps running but `openclaw` is missing.
+Use this if the gateway service keeps running but `coderclaw` is missing.
 
 ### macOS (launchd)
 
-Default label is `bot.molt.gateway` (or `bot.molt.<profile>`; legacy `com.openclaw.*` may still exist):
+Default label is `bot.molt.gateway` (or `bot.molt.<profile>`; legacy `com.coderclaw.*` may still exist):
 
 ```bash
 launchctl bootout gui/$UID/bot.molt.gateway
 rm -f ~/Library/LaunchAgents/bot.molt.gateway.plist
 ```
 
-If you used a profile, replace the label and plist name with `bot.molt.<profile>`. Remove any legacy `com.openclaw.*` plists if present.
+If you used a profile, replace the label and plist name with `bot.molt.<profile>`. Remove any legacy `com.coderclaw.*` plists if present.
 
 ### Linux (systemd user unit)
 
-Default unit name is `openclaw-gateway.service` (or `openclaw-gateway-<profile>.service`):
+Default unit name is `coderclaw-gateway.service` (or `coderclaw-gateway-<profile>.service`):
 
 ```bash
-systemctl --user disable --now openclaw-gateway.service
-rm -f ~/.config/systemd/user/openclaw-gateway.service
+systemctl --user disable --now coderclaw-gateway.service
+rm -f ~/.config/systemd/user/coderclaw-gateway.service
 systemctl --user daemon-reload
 ```
 
 ### Windows (Scheduled Task)
 
-Default task name is `OpenClaw Gateway` (or `OpenClaw Gateway (<profile>)`).
+Default task name is `CoderClaw Gateway` (or `CoderClaw Gateway (<profile>)`).
 The task script lives under your state dir.
 
 ```powershell
-schtasks /Delete /F /TN "OpenClaw Gateway"
-Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd"
+schtasks /Delete /F /TN "CoderClaw Gateway"
+Remove-Item -Force "$env:USERPROFILE\.coderclaw\gateway.cmd"
 ```
 
-If you used a profile, delete the matching task name and `~\.openclaw-<profile>\gateway.cmd`.
+If you used a profile, delete the matching task name and `~\.coderclaw-<profile>\gateway.cmd`.
 
 ## Normal install vs source checkout
 
 ### Normal install (install.sh / npm / pnpm / bun)
 
-If you used `https://openclaw.ai/install.sh` or `install.ps1`, the CLI was installed with `npm install -g coderclaw@latest`.
-Remove it with `npm rm -g openclaw` (or `pnpm remove -g` / `bun remove -g` if you installed that way).
+If you used `https://coderclaw.ai/install.sh` or `install.ps1`, the CLI was installed with `npm install -g coderclaw@latest`.
+Remove it with `npm rm -g coderclaw` (or `pnpm remove -g` / `bun remove -g` if you installed that way).
 
 ### Source checkout (git clone)
 
-If you run from a repo checkout (`git clone` + `openclaw ...` / `bun run coderclaw ...`):
+If you run from a repo checkout (`git clone` + `coderclaw ...` / `bun run coderclaw ...`):
 
 1. Uninstall the gateway service **before** deleting the repo (use the easy path above or manual service removal).
 2. Delete the repo directory.

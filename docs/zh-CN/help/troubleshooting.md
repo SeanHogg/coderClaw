@@ -35,7 +35,7 @@ coderclaw status --deep
 
 ## 常见的“它坏了”情况
 
-### `openclaw: command not found`
+### `coderclaw: command not found`
 
 几乎总是 Node/npm PATH 问题。从这里开始：
 
@@ -46,13 +46,13 @@ coderclaw status --deep
 以详细模式重新运行安装程序以查看完整跟踪和 npm 输出：
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --verbose
 ```
 
 对于 beta 安装：
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose
+curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --beta --verbose
 ```
 
 你也可以设置 `CODERCLAW_VERBOSE=1` 代替标志。

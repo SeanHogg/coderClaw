@@ -66,7 +66,7 @@ Local TTS using the sherpa-onnx offline CLI.
 1. Download the runtime for your OS (extracts into `~/.coderclaw/tools/sherpa-onnx-tts/runtime`)
 2. Download a voice model (extracts into `~/.coderclaw/tools/sherpa-onnx-tts/models`)
 
-Update `~/.openclaw/coderclaw.json`:
+Update `~/.coderclaw/coderclaw.json`:
 
 ```json5
 {

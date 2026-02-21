@@ -15,7 +15,7 @@ x-i18n:
 
 # 平台
 
-OpenClaw 核心使用 TypeScript 编写。**Node 是推荐的运行时**。
+CoderClaw 核心使用 TypeScript 编写。**Node 是推荐的运行时**。
 不推荐 Bun 用于 Gateway 网关（WhatsApp/Telegram 存在 bug）。
 
 配套应用适用于 macOS（菜单栏应用）和移动节点（iOS/Android）。Windows 和
@@ -56,5 +56,5 @@ Windows 原生配套应用也在计划中；推荐通过 WSL2 使用 Gateway 网
 
 服务目标取决于操作系统：
 
-- macOS：LaunchAgent（`bot.molt.gateway` 或 `bot.molt.<profile>`；旧版 `com.openclaw.*`）
-- Linux/WSL2：systemd 用户服务（`openclaw-gateway[-<profile>].service`）
+- macOS：LaunchAgent（`bot.molt.gateway` 或 `bot.molt.<profile>`；旧版 `com.coderclaw.*`）
+- Linux/WSL2：systemd 用户服务（`coderclaw-gateway[-<profile>].service`）

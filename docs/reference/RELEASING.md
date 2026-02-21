@@ -24,7 +24,7 @@ When the operator says “release”, immediately do this preflight (no extra qu
 - [ ] Bump `package.json` version (e.g., `2026.1.29`).
 - [ ] Run `pnpm plugins:sync` to align extension package versions + changelogs.
 - [ ] Update CLI/version strings: [`src/cli/program.ts`](https://github.com/SeanHogg/coderClaw/blob/main/src/cli/program.ts) and the Baileys user agent in [`src/provider-web.ts`](https://github.com/SeanHogg/coderClaw/blob/main/src/provider-web.ts).
-- [ ] Confirm package metadata (name, description, repository, keywords, license) and `bin` map points to [`coderclaw.mjs`](https://github.com/SeanHogg/coderClaw/blob/main/coderclaw.mjs) for `openclaw`.
+- [ ] Confirm package metadata (name, description, repository, keywords, license) and `bin` map points to [`coderclaw.mjs`](https://github.com/SeanHogg/coderClaw/blob/main/coderclaw.mjs) for `coderclaw`.
 - [ ] If dependencies changed, run `pnpm install` so `pnpm-lock.yaml` is current.
 
 2. **Build & artifacts**
@@ -49,7 +49,7 @@ When the operator says “release”, immediately do this preflight (no extra qu
 - [ ] `CODERCLAW_INSTALL_SMOKE_SKIP_NONROOT=1 pnpm test:install:smoke` (Docker install smoke test, fast path; required before release)
   - If the immediate previous npm release is known broken, set `CODERCLAW_INSTALL_SMOKE_PREVIOUS=<last-good-version>` or `CODERCLAW_INSTALL_SMOKE_SKIP_PREVIOUS=1` for the preinstall step.
 - [ ] (Optional) Full installer smoke (adds non-root + CLI coverage): `pnpm test:install:smoke`
-- [ ] (Optional) Installer E2E (Docker, runs `curl -fsSL https://openclaw.ai/install.sh | bash`, onboards, then runs real tool calls):
+- [ ] (Optional) Installer E2E (Docker, runs `curl -fsSL https://coderclaw.ai/install.sh | bash`, onboards, then runs real tool calls):
   - `pnpm test:install:e2e:openai` (requires `OPENAI_API_KEY`)
   - `pnpm test:install:e2e:anthropic` (requires `ANTHROPIC_API_KEY`)
   - `pnpm test:install:e2e` (requires both keys; runs both providers)
@@ -73,9 +73,9 @@ When the operator says “release”, immediately do this preflight (no extra qu
 
 ### Troubleshooting (notes from 2.0.0-beta2 release)
 
-- **npm pack/publish hangs or produces huge tarball**: the macOS app bundle in `dist/OpenClaw.app` (and release zips) get swept into the package. Fix by whitelisting publish contents via `package.json` `files` (include dist subdirs, docs, skills; exclude app bundles). Confirm with `npm pack --dry-run` that `dist/OpenClaw.app` is not listed.
+- **npm pack/publish hangs or produces huge tarball**: the macOS app bundle in `dist/CoderClaw.app` (and release zips) get swept into the package. Fix by whitelisting publish contents via `package.json` `files` (include dist subdirs, docs, skills; exclude app bundles). Confirm with `npm pack --dry-run` that `dist/CoderClaw.app` is not listed.
 - **npm auth web loop for dist-tags**: use legacy auth to get an OTP prompt:
-  - `NPM_CONFIG_AUTH_TYPE=legacy npm dist-tag add openclaw@X.Y.Z latest`
+  - `NPM_CONFIG_AUTH_TYPE=legacy npm dist-tag add coderclaw@X.Y.Z latest`
 - **`npx` verification fails with `ECOMPROMISED: Lock compromised`**: retry with a fresh cache:
   - `NPM_CONFIG_CACHE=/tmp/npm-cache-$(date +%s) npx -y coderclaw@X.Y.Z --version`
 - **Tag needs repointing after a late fix**: force-update and push the tag, then ensure the GitHub release assets still match:
@@ -85,7 +85,7 @@ When the operator says “release”, immediately do this preflight (no extra qu
 
 - [ ] Tag and push: `git tag vX.Y.Z && git push origin vX.Y.Z` (or `git push --tags`).
 - [ ] Create/refresh the GitHub release for `vX.Y.Z` with **title `coderclaw X.Y.Z`** (not just the tag); body should include the **full** changelog section for that version (Highlights + Changes + Fixes), inline (no bare links), and **must not repeat the title inside the body**.
-- [ ] Attach artifacts: `npm pack` tarball (optional), `OpenClaw-X.Y.Z.zip`, and `OpenClaw-X.Y.Z.dSYM.zip` (if generated).
+- [ ] Attach artifacts: `npm pack` tarball (optional), `CoderClaw-X.Y.Z.zip`, and `CoderClaw-X.Y.Z.dSYM.zip` (if generated).
 - [ ] Commit the updated `appcast.xml` and push it (Sparkle feeds from main).
 - [ ] From a clean temp directory (no `package.json`), run `npx -y coderclaw@X.Y.Z send --help` to confirm install/CLI entrypoints work.
 - [ ] Announce/share release notes.

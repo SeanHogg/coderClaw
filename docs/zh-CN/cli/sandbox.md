@@ -18,7 +18,7 @@ x-i18n:
 
 ## 概述
 
-OpenClaw 可以在隔离的 Docker 容器中运行智能体以确保安全。`sandbox` 命令帮助你管理这些容器，特别是在更新或配置更改后。
+CoderClaw 可以在隔离的 Docker 容器中运行智能体以确保安全。`sandbox` 命令帮助你管理这些容器，特别是在更新或配置更改后。
 
 ## 命令
 
@@ -127,7 +127,7 @@ coderclaw sandbox recreate --agent alfred
 
 ## 配置
 
-沙箱设置位于 `~/.openclaw/coderclaw.json` 的 `agents.defaults.sandbox` 下（每个智能体的覆盖设置在 `agents.list[].sandbox` 中）：
+沙箱设置位于 `~/.coderclaw/coderclaw.json` 的 `agents.defaults.sandbox` 下（每个智能体的覆盖设置在 `agents.list[].sandbox` 中）：
 
 ```jsonc
 {

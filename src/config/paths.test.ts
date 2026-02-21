@@ -47,10 +47,10 @@ describe("state + config path candidates", () => {
 
   it("uses CODERCLAW_HOME for default state/config locations", () => {
     const env = {
-      CODERCLAW_HOME: "/srv/openclaw-home",
+      CODERCLAW_HOME: "/srv/coderclaw-home",
     } as NodeJS.ProcessEnv;
 
-    const resolvedHome = path.resolve("/srv/openclaw-home");
+    const resolvedHome = path.resolve("/srv/coderclaw-home");
     expect(resolveStateDir(env)).toBe(path.join(resolvedHome, ".coderclaw"));
 
     const candidates = resolveDefaultConfigCandidates(env);
@@ -59,11 +59,11 @@ describe("state + config path candidates", () => {
 
   it("prefers CODERCLAW_HOME over HOME for default state/config locations", () => {
     const env = {
-      CODERCLAW_HOME: "/srv/openclaw-home",
+      CODERCLAW_HOME: "/srv/coderclaw-home",
       HOME: "/home/other",
     } as NodeJS.ProcessEnv;
 
-    const resolvedHome = path.resolve("/srv/openclaw-home");
+    const resolvedHome = path.resolve("/srv/coderclaw-home");
     expect(resolveStateDir(env)).toBe(path.join(resolvedHome, ".coderclaw"));
 
     const candidates = resolveDefaultConfigCandidates(env);
@@ -76,25 +76,25 @@ describe("state + config path candidates", () => {
     const candidates = resolveDefaultConfigCandidates({} as NodeJS.ProcessEnv, () => home);
     const expected = [
       path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
-      path.join(resolvedHome, ".coderclaw", "openclaw.json"),
-      path.join(resolvedHome, ".coderclaw", "clawdbot.json"),
-      path.join(resolvedHome, ".coderclaw", "moldbot.json"),
-      path.join(resolvedHome, ".coderclaw", "moltbot.json"),
-      path.join(resolvedHome, ".clawdbot", "coderclaw.json"),
-      path.join(resolvedHome, ".clawdbot", "openclaw.json"),
-      path.join(resolvedHome, ".clawdbot", "clawdbot.json"),
-      path.join(resolvedHome, ".clawdbot", "moldbot.json"),
-      path.join(resolvedHome, ".clawdbot", "moltbot.json"),
-      path.join(resolvedHome, ".moldbot", "coderclaw.json"),
-      path.join(resolvedHome, ".moldbot", "openclaw.json"),
-      path.join(resolvedHome, ".moldbot", "clawdbot.json"),
-      path.join(resolvedHome, ".moldbot", "moldbot.json"),
-      path.join(resolvedHome, ".moldbot", "moltbot.json"),
-      path.join(resolvedHome, ".moltbot", "coderclaw.json"),
-      path.join(resolvedHome, ".moltbot", "openclaw.json"),
-      path.join(resolvedHome, ".moltbot", "clawdbot.json"),
-      path.join(resolvedHome, ".moltbot", "moldbot.json"),
-      path.join(resolvedHome, ".moltbot", "moltbot.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
+      path.join(resolvedHome, ".coderclaw", "coderclaw.json"),
     ];
     expect(candidates).toEqual(expected);
   });

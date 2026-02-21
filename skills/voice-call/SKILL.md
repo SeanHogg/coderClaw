@@ -1,6 +1,6 @@
 ---
 name: voice-call
-description: Start voice calls via the OpenClaw voice-call plugin.
+description: Start voice calls via the CoderClaw voice-call plugin.
 metadata:
   {
     "coderclaw":
@@ -19,7 +19,7 @@ Use the voice-call plugin to start or inspect calls (Twilio, Telnyx, Plivo, or m
 ## CLI
 
 ```bash
-coderclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
+coderclaw voicecall call --to "+15555550123" --message "Hello from CoderClaw"
 coderclaw voicecall status --call-id <id>
 ```
 

@@ -104,7 +104,7 @@ function resolveOnboardingMode(): boolean {
 }
 
 @customElement("coderclaw-app")
-export class OpenClawApp extends LitElement {
+export class CoderClawApp extends LitElement {
   private i18nController = new I18nController(this);
   @state() settings: UiSettings = loadSettings();
   constructor() {

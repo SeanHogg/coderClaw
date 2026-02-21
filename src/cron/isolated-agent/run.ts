@@ -34,7 +34,7 @@ import {
 } from "../../auto-reply/thinking.js";
 import { SILENT_REPLY_TOKEN } from "../../auto-reply/tokens.js";
 import { createOutboundSendDeps, type CliDeps } from "../../cli/outbound-send-deps.js";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { CoderClawConfig } from "../../config/config.js";
 import {
   resolveAgentMainSessionKey,
   resolveSessionTranscriptPath,
@@ -102,7 +102,7 @@ function resolveCronDeliveryBestEffort(job: CronJob): boolean {
 }
 
 async function resolveCronAnnounceSessionKey(params: {
-  cfg: OpenClawConfig;
+  cfg: CoderClawConfig;
   agentId: string;
   fallbackSessionKey: string;
   delivery: {
@@ -150,7 +150,7 @@ export type RunCronAgentTurnResult = {
   CronRunTelemetry;
 
 export async function runCronIsolatedAgentTurn(params: {
-  cfg: OpenClawConfig;
+  cfg: CoderClawConfig;
   deps: CliDeps;
   job: CronJob;
   message: string;
@@ -189,7 +189,7 @@ export async function runCronIsolatedAgentTurn(params: {
   } else if (overrideModel) {
     agentCfg.model = { ...existingModel, ...overrideModel };
   }
-  const cfgWithAgentDefaults: OpenClawConfig = {
+  const cfgWithAgentDefaults: CoderClawConfig = {
     ...params.cfg,
     agents: Object.assign({}, params.cfg.agents, { defaults: agentCfg }),
   };

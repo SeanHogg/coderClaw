@@ -1,9 +1,9 @@
 ---
-summary: "Schema-accurate configuration examples for common OpenClaw setups"
+summary: "Schema-accurate configuration examples for common CoderClaw setups"
 read_when:
-  - Learning how to configure OpenClaw
+  - Learning how to configure CoderClaw
   - Looking for configuration examples
-  - Setting up OpenClaw for the first time
+  - Setting up CoderClaw for the first time
 title: "Configuration Examples"
 ---
 
@@ -93,7 +93,7 @@ Save to `~/.coderclaw/coderclaw.json` and you can DM the bot from that number.
   // Logging
   logging: {
     level: "info",
-    file: "/tmp/openclaw/openclaw.log",
+    file: "/tmp/coderclaw/coderclaw.log",
     consoleLevel: "info",
     consoleStyle: "pretty",
     redactSensitive: "tools",
@@ -101,7 +101,7 @@ Save to `~/.coderclaw/coderclaw.json` and you can DM the bot from that number.
 
   // Message formatting
   messages: {
-    messagePrefix: "[openclaw]",
+    messagePrefix: "[coderclaw]",
     responsePrefix: ">",
     ackReaction: "👀",
     ackReactionScope: "group-mentions",
@@ -110,7 +110,7 @@ Save to `~/.coderclaw/coderclaw.json` and you can DM the bot from that number.
   // Routing + queue
   routing: {
     groupChat: {
-      mentionPatterns: ["@openclaw", "openclaw"],
+      mentionPatterns: ["@coderclaw", "coderclaw"],
       historyLimit: 50,
     },
     queue: {
@@ -202,7 +202,7 @@ Save to `~/.coderclaw/coderclaw.json` and you can DM the bot from that number.
       dm: { enabled: true, allowFrom: ["steipete"] },
       guilds: {
         "123456789012345678": {
-          slug: "friends-of-openclaw",
+          slug: "friends-of-coderclaw",
           requireMention: false,
           channels: {
             general: { allow: true },
@@ -222,7 +222,7 @@ Save to `~/.coderclaw/coderclaw.json` and you can DM the bot from that number.
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
         enabled: true,
-        name: "openclaw",
+        name: "coderclaw",
         sessionPrefix: "slack:slash",
         ephemeral: true,
       },
@@ -386,7 +386,7 @@ Save to `~/.coderclaw/coderclaw.json` and you can DM the bot from that number.
       },
     ],
     gmail: {
-      account: "openclaw@gmail.com",
+      account: "coderclaw@gmail.com",
       label: "INBOX",
       topic: "projects/<project-id>/topics/gog-gmail-watch",
       subscription: "gog-gmail-watch-push",
@@ -564,7 +564,7 @@ If more than one person can DM your bot (multiple entries in `allowFrom`, pairin
     theme: "professional assistant",
   },
   agent: {
-    workspace: "~/work-openclaw",
+    workspace: "~/work-coderclaw",
     elevated: { enabled: false },
   },
   channels: {

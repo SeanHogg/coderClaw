@@ -11,13 +11,13 @@ const runCommandWithTimeoutMock = vi.fn();
 const scanDirectoryWithSummaryMock = vi.fn();
 const fetchWithSsrFGuardMock = vi.fn();
 
-const originalOpenClawStateDir = process.env.CODERCLAW_STATE_DIR;
+const originalCoderClawStateDir = process.env.CODERCLAW_STATE_DIR;
 
 afterEach(() => {
-  if (originalOpenClawStateDir === undefined) {
+  if (originalCoderClawStateDir === undefined) {
     delete process.env.CODERCLAW_STATE_DIR;
   } else {
-    process.env.CODERCLAW_STATE_DIR = originalOpenClawStateDir;
+    process.env.CODERCLAW_STATE_DIR = originalCoderClawStateDir;
   }
 });
 

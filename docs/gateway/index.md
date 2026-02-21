@@ -129,7 +129,7 @@ coderclaw gateway restart
 coderclaw gateway stop
 ```
 
-LaunchAgent labels are `ai.openclaw.gateway` (default) or `ai.openclaw.<profile>` (named profile). `coderclaw doctor` audits and repairs service config drift.
+LaunchAgent labels are `ai.coderclaw.gateway` (default) or `ai.coderclaw.<profile>` (named profile). `coderclaw doctor` audits and repairs service config drift.
 
   </Tab>
 
@@ -137,7 +137,7 @@ LaunchAgent labels are `ai.openclaw.gateway` (default) or `ai.openclaw.<profile>
 
 ```bash
 coderclaw gateway install
-systemctl --user enable --now openclaw-gateway[-<profile>].service
+systemctl --user enable --now coderclaw-gateway[-<profile>].service
 coderclaw gateway status
 ```
 
@@ -155,7 +155,7 @@ Use a system unit for multi-user/always-on hosts.
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now openclaw-gateway[-<profile>].service
+sudo systemctl enable --now coderclaw-gateway[-<profile>].service
 ```
 
   </Tab>

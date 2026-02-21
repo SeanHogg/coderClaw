@@ -1,6 +1,6 @@
 ---
 read_when:
-  - 你想将 Gmail Pub/Sub 事件接入 OpenClaw
+  - 你想将 Gmail Pub/Sub 事件接入 CoderClaw
   - 你需要 Webhook 辅助命令
 summary: "`coderclaw webhooks`（Webhook 辅助工具 + Gmail Pub/Sub）的 CLI 参考"
 title: webhooks

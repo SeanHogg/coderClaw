@@ -15,7 +15,7 @@ x-i18n:
 
 # 认证
 
-OpenClaw 支持模型提供商的 OAuth 和 API 密钥。对于 Anthropic 账户，我们推荐使用 **API 密钥**。对于 Claude 订阅访问，使用 `claude setup-token` 创建的长期令牌。
+CoderClaw 支持模型提供商的 OAuth 和 API 密钥。对于 Anthropic 账户，我们推荐使用 **API 密钥**。对于 Claude 订阅访问，使用 `claude setup-token` 创建的长期令牌。
 
 参阅 [/concepts/oauth](/concepts/oauth) 了解完整的 OAuth 流程和存储布局。
 
@@ -31,10 +31,10 @@ export ANTHROPIC_API_KEY="..."
 coderclaw models status
 ```
 
-3. 如果 Gateway 网关在 systemd/launchd 下运行，最好将密钥放在 `~/.openclaw/.env` 中以便守护进程可以读取：
+3. 如果 Gateway 网关在 systemd/launchd 下运行，最好将密钥放在 `~/.coderclaw/.env` 中以便守护进程可以读取：
 
 ```bash
-cat >> ~/.openclaw/.env <<'EOF'
+cat >> ~/.coderclaw/.env <<'EOF'
 ANTHROPIC_API_KEY=...
 EOF
 ```
@@ -48,7 +48,7 @@ coderclaw doctor
 
 如果你不想自己管理环境变量，新手引导向导可以为守护进程使用存储 API 密钥：`coderclaw onboard`。
 
-参阅[帮助](/help)了解环境变量继承的详情（`env.shellEnv`、`~/.openclaw/.env`、systemd/launchd）。
+参阅[帮助](/help)了解环境变量继承的详情（`env.shellEnv`、`~/.coderclaw/.env`、systemd/launchd）。
 
 ## Anthropic：setup-token（订阅认证）
 
@@ -58,7 +58,7 @@ coderclaw doctor
 claude setup-token
 ```
 
-然后将其粘贴到 OpenClaw：
+然后将其粘贴到 CoderClaw：
 
 ```bash
 coderclaw models auth setup-token --provider anthropic

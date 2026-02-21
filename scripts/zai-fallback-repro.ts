@@ -76,7 +76,7 @@ async function main() {
     process.exit(1);
   }
 
-  const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-zai-fallback-"));
+  const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-zai-fallback-"));
   const stateDir = path.join(baseDir, "state");
   const configPath = path.join(baseDir, "coderclaw.json");
   await fs.mkdir(stateDir, { recursive: true });
@@ -100,15 +100,15 @@ async function main() {
 
   const sessionId =
     process.env.CODERCLAW_ZAI_FALLBACK_SESSION_ID ??
-    process.env.CLAWDBOT_ZAI_FALLBACK_SESSION_ID ??
+    process.env.CODERCLAW_ZAI_FALLBACK_SESSION_ID ??
     randomUUID();
 
   const baseEnv: NodeJS.ProcessEnv = {
     ...process.env,
     CODERCLAW_CONFIG_PATH: configPath,
     CODERCLAW_STATE_DIR: stateDir,
-    CLAWDBOT_CONFIG_PATH: configPath,
-    CLAWDBOT_STATE_DIR: stateDir,
+    CODERCLAW_CONFIG_PATH: configPath,
+    CODERCLAW_STATE_DIR: stateDir,
     ZAI_API_KEY: zaiKey,
     Z_AI_API_KEY: "",
   };
@@ -131,7 +131,7 @@ async function main() {
     "Then use the read tool to display the file contents. Reply with just the file contents.";
   const run1 = await runCommand(
     "run1",
-    ["openclaw", "agent", "--local", "--session-id", sessionId, "--message", toolPrompt],
+    ["coderclaw", "agent", "--local", "--session-id", sessionId, "--message", toolPrompt],
     envValidAnthropic,
   );
   if (run1.code !== 0) {
@@ -149,7 +149,7 @@ async function main() {
     "What is the content of zai-fallback-tool.txt? Reply with just the contents.";
   const run2 = await runCommand(
     "run2",
-    ["openclaw", "agent", "--local", "--session-id", sessionId, "--message", followupPrompt],
+    ["coderclaw", "agent", "--local", "--session-id", sessionId, "--message", followupPrompt],
     envInvalidAnthropic,
   );
 

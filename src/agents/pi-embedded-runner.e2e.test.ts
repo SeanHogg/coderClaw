@@ -3,8 +3,8 @@ import os from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import "./test-helpers/fast-coding-tools.js";
-import type { OpenClawConfig } from "../config/config.js";
-import { ensureOpenClawModelsJson } from "./models-config.js";
+import type { CoderClawConfig } from "../config/config.js";
+import { ensureCoderClawModelsJson } from "./models-config.js";
 
 vi.mock("@mariozechner/pi-ai", async () => {
   const actual = await vi.importActual<typeof import("@mariozechner/pi-ai")>("@mariozechner/pi-ai");
@@ -138,9 +138,9 @@ const makeOpenAiConfig = (modelIds: string[]) =>
         },
       },
     },
-  }) satisfies OpenClawConfig;
+  }) satisfies CoderClawConfig;
 
-const ensureModels = (cfg: OpenClawConfig) => ensureOpenClawModelsJson(cfg, agentDir) as unknown;
+const ensureModels = (cfg: CoderClawConfig) => ensureCoderClawModelsJson(cfg, agentDir) as unknown;
 
 const nextSessionFile = () => {
   sessionCounter += 1;
@@ -250,7 +250,7 @@ describe("runEmbeddedPiAgent", () => {
           },
         },
       },
-    } satisfies OpenClawConfig;
+    } satisfies CoderClawConfig;
 
     await expect(
       runEmbeddedPiAgent({
@@ -282,7 +282,7 @@ describe("runEmbeddedPiAgent", () => {
           workspace: fallbackWorkspace,
         },
       },
-    } satisfies OpenClawConfig;
+    } satisfies CoderClawConfig;
     await ensureModels(cfg);
 
     const result = await runEmbeddedPiAgent({
@@ -319,7 +319,7 @@ describe("runEmbeddedPiAgent", () => {
           },
         ],
       },
-    } satisfies OpenClawConfig;
+    } satisfies CoderClawConfig;
     await ensureModels(cfg);
 
     await expect(
@@ -407,7 +407,7 @@ describe("runEmbeddedPiAgent", () => {
 
     const entries = await readSessionEntries(sessionFile);
     const promptErrorEntry = entries.find(
-      (entry) => entry.type === "custom" && entry.customType === "openclaw:prompt-error",
+      (entry) => entry.type === "custom" && entry.customType === "coderclaw:prompt-error",
     ) as { data?: { error?: string } } | undefined;
 
     expect(promptErrorEntry).toBeTruthy();

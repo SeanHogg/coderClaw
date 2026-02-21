@@ -41,7 +41,7 @@ Android 直接连接到 Gateway 网关 WebSocket（默认 `ws://<host>:18789`）
   - 使用 mDNS/NSD 的同一局域网，**或**
   - 使用 Wide-Area Bonjour / unicast DNS-SD 的同一 Tailscale tailnet（见下文），**或**
   - 手动 Gateway 网关主机/端口（回退方案）
-- 你可以在 Gateway 网关机器上运行 CLI（`openclaw`）（或通过 SSH）。
+- 你可以在 Gateway 网关机器上运行 CLI（`coderclaw`）（或通过 SSH）。
 
 ### 1）启动 Gateway 网关
 
@@ -55,7 +55,7 @@ coderclaw gateway --port 18789 --verbose
 
 对于仅 tailnet 设置（推荐用于维也纳 ⇄ 伦敦），将 Gateway 网关绑定到 tailnet IP：
 
-- 在 Gateway 网关主机的 `~/.openclaw/coderclaw.json` 中设置 `gateway.bind: "tailnet"`。
+- 在 Gateway 网关主机的 `~/.coderclaw/coderclaw.json` 中设置 `gateway.bind: "tailnet"`。
 - 重启 Gateway 网关 / macOS 菜单栏应用。
 
 ### 2）验证发现（可选）
@@ -129,7 +129,7 @@ Android 节点的 Chat 面板使用 Gateway 网关的**主会话键**（`main`�
 
 注意：节点使用 `canvasHost.port`（默认 `18793`）上的独立 canvas 主机。
 
-1. 在 Gateway 网关主机上创建 `~/.openclaw/workspace/canvas/index.html`。
+1. 在 Gateway 网关主机上创建 `~/.coderclaw/workspace/canvas/index.html`。
 
 2. 将节点导航到它（局域网）：
 

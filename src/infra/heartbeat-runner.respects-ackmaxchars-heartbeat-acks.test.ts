@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { resolveMainSessionKey } from "../config/sessions.js";
 import { runHeartbeatOnce, type HeartbeatDeps } from "./heartbeat-runner.js";
 import { installHeartbeatRunnerTestRuntime } from "./heartbeat-runner.test-harness.js";
@@ -18,7 +18,7 @@ describe("resolveHeartbeatIntervalMs", () => {
     heartbeat: Record<string, unknown>;
     channels: Record<string, unknown>;
     messages?: Record<string, unknown>;
-  }): OpenClawConfig {
+  }): CoderClawConfig {
     return {
       agents: {
         defaults: {
@@ -34,7 +34,7 @@ describe("resolveHeartbeatIntervalMs", () => {
 
   async function seedMainSession(
     storePath: string,
-    cfg: OpenClawConfig,
+    cfg: CoderClawConfig,
     session: {
       sessionId?: string;
       updatedAt?: number;

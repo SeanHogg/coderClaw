@@ -2,7 +2,7 @@
   "name": "@coderclaw/whatsapp",
   "version": "2026.2.21",
   "private": true,
-  "description": "OpenClaw WhatsApp channel plugin",
+  "description": "CoderClaw WhatsApp channel plugin",
   "type": "module",
   "devDependencies": {
     "coderclaw": "workspace:*"

@@ -22,7 +22,7 @@ x-i18n:
 
 - 通过 BlueBubbles 辅助应用在 macOS 上运行（[bluebubbles.app](https://bluebubbles.app)）。
 - 推荐/已测试版本：macOS Sequoia (15)。macOS Tahoe (26) 可用；但在 Tahoe 上编辑功能目前不可用，群组图标更新可能显示成功但实际未同步。
-- OpenClaw 通过其 REST API 与之通信（`GET /api/v1/ping`、`POST /message/text`、`POST /chat/:id/*`）。
+- CoderClaw 通过其 REST API 与之通信（`GET /api/v1/ping`、`POST /message/text`、`POST /chat/:id/*`）。
 - 传入消息通过 webhook 到达；发出的回复、输入指示器、已读回执和 tapback 均为 REST 调用。
 - 附件和贴纸作为入站媒体被接收（并在可能时呈现给智能体）。
 - 配对/白名单的工作方式与其他渠道相同（`/channels/pairing` 等），使用 `channels.bluebubbles.allowFrom` + 配对码。
@@ -122,7 +122,7 @@ BlueBubbles 支持群聊的提及门控，与 iMessage/WhatsApp 行为一致：
 
 - **输入指示器**：在响应生成前和生成期间自动发送。
 - **已读回执**：由 `channels.bluebubbles.sendReadReceipts` 控制（默认：`true`）。
-- **输入指示器**：OpenClaw 发送输入开始事件；BlueBubbles 在发送或超时时自动清除输入状态（通过 DELETE 手动停止不可靠）。
+- **输入指示器**：CoderClaw 发送输入开始事件；BlueBubbles 在发送或超时时自动清除输入状态（通过 DELETE 手动停止不可靠）。
 
 ```json5
 {
@@ -177,7 +177,7 @@ BlueBubbles 在配置中启用时支持高级消息操作：
 
 ### 消息 ID（短格式 vs 完整格式）
 
-OpenClaw 可能会显示*短*消息 ID（例如 `1`、`2`）以节省 token。
+CoderClaw 可能会显示*短*消息 ID（例如 `1`、`2`）以节省 token。
 
 - `MessageSid` / `ReplyToId` 可以是短 ID。
 - `MessageSidFull` / `ReplyToIdFull` 包含提供商的完整 ID。
@@ -249,7 +249,7 @@ OpenClaw 可能会显示*短*消息 ID（例如 `1`、`2`）以节省 token。
 - `chat_id:123`
 - `chat_identifier:...`
 - 直接句柄：`+15555550123`、`user@example.com`
-  - 如果直接句柄没有现有的私信聊天，OpenClaw 将通过 `POST /api/v1/chat/new` 创建一个。这需要启用 BlueBubbles Private API。
+  - 如果直接句柄没有现有的私信聊天，CoderClaw 将通过 `POST /api/v1/chat/new` 创建一个。这需要启用 BlueBubbles Private API。
 
 ## 安全性
 
@@ -265,7 +265,7 @@ OpenClaw 可能会显示*短*消息 ID（例如 `1`、`2`）以节省 token。
 - 回应需要 BlueBubbles private API（`POST /api/v1/message/react`）；确保服务器版本支持它。
 - 编辑/撤回需要 macOS 13+ 和兼容的 BlueBubbles 服务器版本。在 macOS 26（Tahoe）上，由于 private API 变更，编辑功能目前不可用。
 - 在 macOS 26（Tahoe）上群组图标更新可能不稳定：API 可能返回成功但新图标未同步。
-- OpenClaw 会根据 BlueBubbles 服务器的 macOS 版本自动隐藏已知不可用的操作。如果在 macOS 26（Tahoe）上编辑仍然显示，请使用 `channels.bluebubbles.actions.edit=false` 手动禁用。
+- CoderClaw 会根据 BlueBubbles 服务器的 macOS 版本自动隐藏已知不可用的操作。如果在 macOS 26（Tahoe）上编辑仍然显示，请使用 `channels.bluebubbles.actions.edit=false` 手动禁用。
 - 查看状态/健康信息：`coderclaw status --all` 或 `coderclaw status --deep`。
 
 有关通用渠道工作流参考，请参阅[渠道](/channels)和[插件](/tools/plugin)指南。

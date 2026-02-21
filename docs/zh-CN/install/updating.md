@@ -1,8 +1,8 @@
 ---
 read_when:
-  - 更新 OpenClaw
+  - 更新 CoderClaw
   - 更新后出现问题
-summary: 安全更新 OpenClaw（全局安装或源码），以及回滚策略
+summary: 安全更新 CoderClaw（全局安装或源码），以及回滚策略
 title: 更新
 x-i18n:
   generated_at: "2026-02-03T07:50:25Z"
@@ -15,14 +15,14 @@ x-i18n:
 
 # 更新
 
-OpenClaw 发展迅速（尚未到"1.0"）。将更新视为发布基础设施：更新 → 运行检查 → 重启（或使用会重启的 `coderclaw update`）→ 验证。
+CoderClaw 发展迅速（尚未到"1.0"）。将更新视为发布基础设施：更新 → 运行检查 → 重启（或使用会重启的 `coderclaw update`）→ 验证。
 
 ## 推荐：重新运行网站安装程序（原地升级）
 
 **首选**的更新路径是重新运行网站上的安装程序。它会检测现有安装、原地升级，并在需要时运行 `coderclaw doctor`。
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://coderclaw.ai/install.sh | bash
 ```
 
 说明：
@@ -30,31 +30,31 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 - 如果你不想再次运行新手引导向导，添加 `--no-onboard`。
 - 对于**源码安装**，使用：
   ```bash
-  curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --no-onboard
+  curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git --no-onboard
   ```
   安装程序**仅**在仓库干净时才会执行 `git pull --rebase`。
-- 对于**全局安装**，脚本底层使用 `npm install -g openclaw@latest`。
-- 旧版说明：`clawdbot` 仍可作为兼容性垫片使用。
+- 对于**全局安装**，脚本底层使用 `npm install -g coderclaw@latest`。
+- 旧版说明：`coderclaw` 仍可作为兼容性垫片使用。
 
 ## 更新之前
 
 - 了解你的安装方式：**全局**（npm/pnpm）还是**源码**（git clone）。
 - 了解你的 Gateway 网关运行方式：**前台终端**还是**受管理服务**（launchd/systemd）。
 - 快照你的定制内容：
-  - 配置：`~/.openclaw/coderclaw.json`
-  - 凭证：`~/.openclaw/credentials/`
-  - 工作区：`~/.openclaw/workspace`
+  - 配置：`~/.coderclaw/coderclaw.json`
+  - 凭证：`~/.coderclaw/credentials/`
+  - 工作区：`~/.coderclaw/workspace`
 
 ## 更新（全局安装）
 
 全局安装（选择一个）：
 
 ```bash
-npm i -g openclaw@latest
+npm i -g coderclaw@latest
 ```
 
 ```bash
-pnpm add -g openclaw@latest
+pnpm add -g coderclaw@latest
 ```
 
 我们**不**推荐将 Bun 用于 Gateway 网关运行时（WhatsApp/Telegram 有 bug）。
@@ -137,7 +137,7 @@ coderclaw health
 
 说明：
 
-- 当你运行打包的 `openclaw` 二进制文件（[`coderclaw.mjs`](https://github.com/SeanHogg/coderClaw/blob/main/coderclaw.mjs)）或使用 Node 运行 `dist/` 时，`pnpm build` 很重要。
+- 当你运行打包的 `coderclaw` 二进制文件（[`coderclaw.mjs`](https://github.com/SeanHogg/coderClaw/blob/main/coderclaw.mjs)）或使用 Node 运行 `dist/` 时，`pnpm build` 很重要。
 - 如果你从仓库 checkout 运行而没有全局安装，CLI 命令使用 `pnpm coderclaw ...`。
 - 如果你直接从 TypeScript 运行（`pnpm coderclaw ...`），通常不需要重新构建，但**配置迁移仍然适用** → 运行 doctor。
 - 在全局和 git 安装之间切换很容易：安装另一种方式，然后运行 `coderclaw doctor` 以便将 Gateway 网关服务入口点重写为当前安装。
@@ -153,7 +153,7 @@ Doctor 是"安全更新"命令。它故意很无聊：修复 + 迁移 + 警告�
 - 迁移已弃用的配置键/旧版配置文件位置。
 - 审计私信策略并对有风险的"开放"设置发出警告。
 - 检查 Gateway 网关健康状况，可以提供重启。
-- 检测并将旧版 Gateway 网关服务（launchd/systemd；旧版 schtasks）迁移到当前 OpenClaw 服务。
+- 检测并将旧版 Gateway 网关服务（launchd/systemd；旧版 schtasks）迁移到当前 CoderClaw 服务。
 - 在 Linux 上，确保 systemd 用户 lingering（这样 Gateway 网关在登出后仍能存活）。
 
 详情：[Doctor](/gateway/doctor)
@@ -172,9 +172,9 @@ coderclaw logs --follow
 
 如果你使用受管理服务：
 
-- macOS launchd（应用捆绑的 LaunchAgent）：`launchctl kickstart -k gui/$UID/bot.molt.gateway`（使用 `bot.molt.<profile>`；旧版 `com.openclaw.*` 仍然有效）
-- Linux systemd 用户服务：`systemctl --user restart openclaw-gateway[-<profile>].service`
-- Windows（WSL2）：`systemctl --user restart openclaw-gateway[-<profile>].service`
+- macOS launchd（应用捆绑的 LaunchAgent）：`launchctl kickstart -k gui/$UID/bot.molt.gateway`（使用 `bot.molt.<profile>`；旧版 `com.coderclaw.*` 仍然有效）
+- Linux systemd 用户服务：`systemctl --user restart coderclaw-gateway[-<profile>].service`
+- Windows（WSL2）：`systemctl --user restart coderclaw-gateway[-<profile>].service`
   - `launchctl`/`systemctl` 仅在服务已安装时有效；否则运行 `coderclaw gateway install`。
 
 运行手册 + 确切的服务标签：[Gateway 网关运行手册](/gateway)
@@ -186,11 +186,11 @@ coderclaw logs --follow
 安装已知良好的版本（将 `<version>` 替换为最后可用的版本）：
 
 ```bash
-npm i -g openclaw@<version>
+npm i -g coderclaw@<version>
 ```
 
 ```bash
-pnpm add -g openclaw@<version>
+pnpm add -g coderclaw@<version>
 ```
 
 提示：要查看当前发布的版本，运行 `npm view coderclaw version`。
@@ -230,4 +230,4 @@ git pull
 
 - 再次运行 `coderclaw doctor` 并仔细阅读输出（它通常会告诉你修复方法）。
 - 查看：[故障排除](/gateway/troubleshooting)
-- 在 Discord 上提问：https://discord.gg/clawd
+- 在 Discord 上提问：https://discord.gg/coderclaw

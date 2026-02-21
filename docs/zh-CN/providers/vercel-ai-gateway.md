@@ -1,6 +1,6 @@
 ---
 read_when:
-  - 你想将 Vercel AI Gateway 与 OpenClaw 配合使用
+  - 你想将 Vercel AI Gateway 与 CoderClaw 配合使用
   - 你需要 API 密钥环境变量或 CLI 认证选择
 summary: Vercel AI Gateway 设置（认证 + 模型选择）
 title: Vercel AI Gateway
@@ -53,5 +53,5 @@ coderclaw onboard --non-interactive \
 ## 环境变量说明
 
 如果 Gateway 网关作为守护进程运行（launchd/systemd），请确保 `AI_GATEWAY_API_KEY`
-对该进程可用（例如，在 `~/.openclaw/.env` 中或通过
+对该进程可用（例如，在 `~/.coderclaw/.env` 中或通过
 `env.shellEnv`）。

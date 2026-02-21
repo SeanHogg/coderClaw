@@ -1,6 +1,6 @@
 ---
 read_when:
-  - 为 OpenClaw 设置 Zalo Personal
+  - 为 CoderClaw 设置 Zalo Personal
   - 调试 Zalo Personal 登录或消息流程
 summary: 通过 zca-cli（QR 登录）支持 Zalo 个人账户、功能和配置
 title: Zalo Personal
@@ -23,7 +23,7 @@ x-i18n:
 
 Zalo Personal 作为插件提供，不包含在核心安装中。
 
-- 通过 CLI 安装：`coderclaw plugins install @openclaw/zalouser`
+- 通过 CLI 安装：`coderclaw plugins install @coderclaw/zalouser`
 - 或从源码检出安装：`coderclaw plugins install ./extensions/zalouser`
 - 详情：[插件](/tools/plugin)
 
@@ -99,7 +99,7 @@ coderclaw directory groups list --channel zalouser --query "work"
   - `channels.zalouser.groups`（键为群组 ID 或名称）
 - 阻止所有群组：`channels.zalouser.groupPolicy = "disabled"`。
 - 配置向导可以提示输入群组允许列表。
-- 启动时，OpenClaw 将允许列表中的群组/用户名称解析为 ID 并记录映射；未解析的条目保持原样。
+- 启动时，CoderClaw 将允许列表中的群组/用户名称解析为 ID 并记录映射；未解析的条目保持原样。
 
 示例：
 

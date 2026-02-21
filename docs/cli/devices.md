@@ -23,7 +23,7 @@ coderclaw devices list --json
 
 ### `coderclaw devices approve [requestId] [--latest]`
 
-Approve a pending device pairing request. If `requestId` is omitted, OpenClaw
+Approve a pending device pairing request. If `requestId` is omitted, CoderClaw
 automatically approves the most recent pending request.
 
 ```

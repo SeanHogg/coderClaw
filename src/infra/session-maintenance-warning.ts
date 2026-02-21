@@ -1,5 +1,5 @@
 import { resolveSessionAgentId } from "../agents/agent-scope.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CoderClawConfig } from "../config/config.js";
 import type { SessionEntry, SessionMaintenanceWarning } from "../config/sessions.js";
 import { isDeliverableMessageChannel, normalizeMessageChannel } from "../utils/message-channel.js";
 import { deliverOutboundPayloads } from "./outbound/deliver.js";
@@ -7,7 +7,7 @@ import { resolveSessionDeliveryTarget } from "./outbound/targets.js";
 import { enqueueSystemEvent } from "./system-events.js";
 
 type WarningParams = {
-  cfg: OpenClawConfig;
+  cfg: CoderClawConfig;
   sessionKey: string;
   entry: SessionEntry;
   warning: SessionMaintenanceWarning;

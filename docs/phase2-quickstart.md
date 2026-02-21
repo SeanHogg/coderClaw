@@ -15,7 +15,7 @@ Get started with CoderClaw's distributed runtime, security, and team collaborati
 
 ## What is Phase 2?
 
-CoderClaw Phase 2 extends [OpenClaw](https://github.com/SeanHogg/coderClaw)'s multi-channel gateway with:
+CoderClaw Phase 2 extends [CoderClaw](https://github.com/SeanHogg/coderClaw)'s multi-channel gateway with:
 
 - **🔄 Transport Abstraction**: Execute tasks locally or remotely with protocol-agnostic runtime
 - **📊 Task Lifecycle Management**: Formal state machine with persistence and audit trails
@@ -203,7 +203,7 @@ await taskEngine.updateTaskStatus(task.id, "completed");
 ### Example 2: Security Checks
 
 ```typescript
-import { SecurityService, MemorySecurityStorage } from "openclaw/security";
+import { SecurityService, MemorySecurityStorage } from "coderclaw/security";
 
 const securityService = new SecurityService(new MemorySecurityStorage());
 
@@ -430,5 +430,5 @@ cat .coderClaw/security.yaml
 
 - [Full Documentation](/)
 - [GitHub Issues](https://github.com/SeanHogg/coderClaw/issues)
-- [Discord Community](https://discord.gg/clawd)
+- [Discord Community](https://discord.gg/coderclaw)
 - [Phase 2 Examples](https://github.com/SeanHogg/coderClaw/tree/main/examples/phase2)
