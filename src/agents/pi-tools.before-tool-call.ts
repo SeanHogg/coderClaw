@@ -1,5 +1,7 @@
 import type { ToolLoopDetectionConfig } from "../config/types.tools.js";
+import { getDiagnosticSessionState } from "../logging/diagnostic-session-state.js";
 import type { SessionState } from "../logging/diagnostic-session-state.js";
+import { logToolLoopAction } from "../logging/diagnostic.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { getGlobalHookRunner } from "../plugins/hook-runner-global.js";
 import { isPlainObject } from "../utils.js";
@@ -52,7 +54,6 @@ async function recordLoopOutcome(args: {
     return;
   }
   try {
-    const { getDiagnosticSessionState } = await import("../logging/diagnostic-session-state.js");
     const { recordToolCallOutcome } = await import("./tool-loop-detection.js");
     const sessionState = getDiagnosticSessionState({
       sessionKey: args.ctx.sessionKey,
@@ -81,8 +82,6 @@ export async function runBeforeToolCallHook(args: {
   const params = args.params;
 
   if (args.ctx?.sessionKey) {
-    const { getDiagnosticSessionState } = await import("../logging/diagnostic-session-state.js");
-    const { logToolLoopAction } = await import("../logging/diagnostic.js");
     const { detectToolCallLoop, recordToolCall } = await import("./tool-loop-detection.js");
 
     const sessionState = getDiagnosticSessionState({

@@ -1,6 +1,10 @@
 import { type OpenClawConfig, loadConfig } from "../config/config.js";
 import { resolveOpenClawAgentDir } from "./agent-paths.js";
 import { ensureOpenClawModelsJson } from "./models-config.js";
+import {
+  AuthStorage as PiAuthStorage,
+  ModelRegistry as PiModelRegistry,
+} from "./pi-model-discovery.js";
 
 export type ModelCatalogEntry = {
   id: string;
@@ -24,7 +28,11 @@ type PiSdkModule = typeof import("./pi-model-discovery.js");
 
 let modelCatalogPromise: Promise<ModelCatalogEntry[]> | null = null;
 let hasLoggedModelCatalogError = false;
-const defaultImportPiSdk = () => import("./pi-model-discovery.js");
+// Use a factory so tests can inject mock implementations via __setModelCatalogImportForTest.
+// The default uses static imports to avoid creating a split chunk that would
+// import __exportAll from the parent bundle chunk, causing a circular TDZ crash.
+const defaultImportPiSdk = (): Promise<PiSdkModule> =>
+  Promise.resolve({ AuthStorage: PiAuthStorage, ModelRegistry: PiModelRegistry } as PiSdkModule);
 let importPiSdk = defaultImportPiSdk;
 
 const CODEX_PROVIDER = "openai-codex";

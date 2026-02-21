@@ -1,5 +1,6 @@
 import path from "node:path";
 import { resolveStateDir } from "../config/paths.js";
+import { loadJsonFile, saveJsonFile } from "../infra/json-file.js";
 
 const COPILOT_TOKEN_URL = "https://api.github.com/copilot_internal/v2/token";
 
@@ -92,14 +93,8 @@ export async function resolveCopilotApiToken(params: {
 }> {
   const env = params.env ?? process.env;
   const cachePath = params.cachePath?.trim() || resolveCopilotTokenCachePath(env);
-  // Lazy-import json-file utilities to avoid a bundler circular dependency
-  // (the static import caused the chunk containing this module to depend on
-  // the __exportAll runtime helper from a chunk that in turn imported
-  // loadJsonFile/saveJsonFile back from here → ESM TDZ crash).
-  const { loadJsonFile: loadJsonFileDefault, saveJsonFile: saveJsonFileDefault } =
-    await import("../infra/json-file.js");
-  const loadJsonFileFn = params.loadJsonFileImpl ?? loadJsonFileDefault;
-  const saveJsonFileFn = params.saveJsonFileImpl ?? saveJsonFileDefault;
+  const loadJsonFileFn = params.loadJsonFileImpl ?? loadJsonFile;
+  const saveJsonFileFn = params.saveJsonFileImpl ?? saveJsonFile;
   const cached = loadJsonFileFn(cachePath) as CachedCopilotToken | undefined;
   if (cached && typeof cached.token === "string" && typeof cached.expiresAt === "number") {
     if (isTokenUsable(cached)) {

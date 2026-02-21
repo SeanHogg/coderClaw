@@ -1,5 +1,14 @@
 import type { SlackActionMiddlewareArgs, SlackCommandMiddlewareArgs } from "@slack/bolt";
-import type { ChatCommandDefinition, CommandArgs } from "../../auto-reply/commands-registry.js";
+import {
+  type ChatCommandDefinition,
+  type CommandArgs,
+  buildCommandTextFromArgs,
+  findCommandByNativeName,
+  listNativeCommandSpecsForConfig,
+  parseCommandArgs,
+  resolveCommandArgMenu,
+} from "../../auto-reply/commands-registry.js";
+import { listSkillCommandsForAgents } from "../../auto-reply/skill-commands.js";
 import type { ReplyPayload } from "../../auto-reply/types.js";
 import { formatAllowlistMatchMeta } from "../../channels/allowlist-match.js";
 import { resolveCommandAuthorizedFromAuthorizers } from "../../channels/command-gating.js";
@@ -106,15 +115,6 @@ function readSlackExternalArgMenuToken(raw: unknown): string | undefined {
   }
   const token = raw.slice(SLACK_COMMAND_ARG_EXTERNAL_PREFIX.length).trim();
   return token.length > 0 ? token : undefined;
-}
-
-type CommandsRegistry = typeof import("../../auto-reply/commands-registry.js");
-let commandsRegistry: CommandsRegistry | undefined;
-async function getCommandsRegistry(): Promise<CommandsRegistry> {
-  if (!commandsRegistry) {
-    commandsRegistry = await import("../../auto-reply/commands-registry.js");
-  }
-  return commandsRegistry;
 }
 
 function encodeSlackCommandArgValue(parts: {
@@ -507,8 +507,7 @@ export async function registerSlackMonitorSlashCommands(params: {
       }
 
       if (commandDefinition && supportsInteractiveArgMenus) {
-        const reg = await getCommandsRegistry();
-        const menu = reg.resolveCommandArgMenu({
+        const menu = resolveCommandArgMenu({
           command: commandDefinition,
           args: commandArgs,
           cfg,
@@ -676,34 +675,26 @@ export async function registerSlackMonitorSlashCommands(params: {
     globalSetting: cfg.commands?.nativeSkills,
   });
 
-  let reg: CommandsRegistry | undefined;
   let nativeCommands: Array<{ name: string }> = [];
   if (nativeEnabled) {
-    reg = await getCommandsRegistry();
-    const skillCommands = nativeSkillsEnabled
-      ? (await import("../../auto-reply/skill-commands.js")).listSkillCommandsForAgents({ cfg })
-      : [];
-    nativeCommands = reg.listNativeCommandSpecsForConfig(cfg, { skillCommands, provider: "slack" });
+    const skillCommands = nativeSkillsEnabled ? listSkillCommandsForAgents({ cfg }) : [];
+    nativeCommands = listNativeCommandSpecsForConfig(cfg, { skillCommands, provider: "slack" });
   }
 
   if (nativeCommands.length > 0) {
-    const registry = reg;
-    if (!registry) {
-      throw new Error("Missing commands registry for native Slack commands.");
-    }
     for (const command of nativeCommands) {
       ctx.app.command(
         `/${command.name}`,
         async ({ command: cmd, ack, respond }: SlackCommandMiddlewareArgs) => {
-          const commandDefinition = registry.findCommandByNativeName(command.name, "slack");
+          const commandDefinition = findCommandByNativeName(command.name, "slack");
           const rawText = cmd.text?.trim() ?? "";
           const commandArgs = commandDefinition
-            ? registry.parseCommandArgs(commandDefinition, rawText)
+            ? parseCommandArgs(commandDefinition, rawText)
             : rawText
               ? ({ raw: rawText } satisfies CommandArgs)
               : undefined;
           const prompt = commandDefinition
-            ? registry.buildCommandTextFromArgs(commandDefinition, commandArgs)
+            ? buildCommandTextFromArgs(commandDefinition, commandArgs)
             : rawText
               ? `/${command.name} ${rawText}`
               : `/${command.name}`;
@@ -828,13 +819,12 @@ export async function registerSlackMonitorSlashCommands(params: {
         });
         return;
       }
-      const reg = await getCommandsRegistry();
-      const commandDefinition = reg.findCommandByNativeName(parsed.command, "slack");
+      const commandDefinition = findCommandByNativeName(parsed.command, "slack");
       const commandArgs: CommandArgs = {
         values: { [parsed.arg]: parsed.value },
       };
       const prompt = commandDefinition
-        ? reg.buildCommandTextFromArgs(commandDefinition, commandArgs)
+        ? buildCommandTextFromArgs(commandDefinition, commandArgs)
         : `/${parsed.command} ${parsed.value}`;
       const user = body.user;
       const userName =
