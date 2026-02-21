@@ -161,7 +161,7 @@ vi.mock("../config/config.js", async (importOriginal) => {
         headless: true,
         defaultProfile: "coderclaw",
         profiles: {
-          openclaw: { cdpPort: state.testPort + 1, color: "#FF4500" },
+          coderclaw: { cdpPort: state.testPort + 1, color: "#FF4500" },
         },
       },
     }),

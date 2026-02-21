@@ -143,7 +143,7 @@ describe("server-context hot-reload profiles", () => {
       name: "coderclaw",
     });
     expect(after?.cdpPort).toBe(19999);
-    expect(state.resolved.profiles.openclaw?.cdpPort).toBe(19999);
+    expect(state.resolved.profiles.coderclaw?.cdpPort).toBe(19999);
   });
 
   it("listProfiles refreshes config before enumerating profiles", async () => {
