@@ -8,7 +8,7 @@
     "coderclaw": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.1.26"
+    "coderclaw": ">=2026.1.26"
   },
   "coderclaw": {
     "extensions": [
