@@ -27,7 +27,7 @@ If you use a remote Gateway, install/configure it on the **machine running the G
 ### Option A: install from npm
 
 ```bash
-coderclaw plugins install @openclaw/zalouser
+coderclaw plugins install @coderclaw/zalouser
 ```
 
 Restart the Gateway afterwards.

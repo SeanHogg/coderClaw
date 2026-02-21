@@ -217,7 +217,7 @@ coderclaw hooks install ./my-hook-pack
 coderclaw hooks install ./my-hook-pack.zip
 
 # NPM package
-coderclaw hooks install @openclaw/my-hook-pack
+coderclaw hooks install @coderclaw/my-hook-pack
 
 # Link a local directory without copying
 coderclaw hooks install -l ./my-hook-pack

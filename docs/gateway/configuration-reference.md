@@ -341,7 +341,7 @@ WhatsApp runs through the gateway's web channel (Baileys Web). It starts automat
 
 ### Mattermost
 
-Mattermost ships as a plugin: `coderclaw plugins install @openclaw/mattermost`.
+Mattermost ships as a plugin: `coderclaw plugins install @coderclaw/mattermost`.
 
 ```json5
 {

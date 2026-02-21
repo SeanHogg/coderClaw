@@ -106,16 +106,16 @@ Current npm plugin list (update as needed):
 
 - @coderclaw/bluebubbles
 - @coderclaw/diagnostics-otel
-- @openclaw/discord
-- @openclaw/feishu
-- @openclaw/lobster
-- @openclaw/matrix
-- @openclaw/msteams
-- @openclaw/nextcloud-talk
-- @openclaw/nostr
-- @openclaw/voice-call
-- @openclaw/zalo
-- @openclaw/zalouser
+- @coderclaw/discord
+- @coderclaw/feishu
+- @coderclaw/lobster
+- @coderclaw/matrix
+- @coderclaw/msteams
+- @coderclaw/nextcloud-talk
+- @coderclaw/nostr
+- @coderclaw/voice-call
+- @coderclaw/zalo
+- @coderclaw/zalouser
 
 Release notes must also call out **new optional bundled plugins** that are **not
 on by default** (example: `tlon`).

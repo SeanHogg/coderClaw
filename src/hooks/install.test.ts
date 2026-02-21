@@ -156,7 +156,7 @@ describe("installHooksFromPath", () => {
     fs.writeFileSync(
       path.join(pkgDir, "package.json"),
       JSON.stringify({
-        name: "@openclaw/test-hooks",
+        name: "@coderclaw/test-hooks",
         version: "0.0.1",
         openclaw: { hooks: ["./hooks/one-hook"] },
         dependencies: { "left-pad": "1.3.0" },
@@ -265,7 +265,7 @@ describe("installHooksFromNpmSpec", () => {
 
     const hooksDir = path.join(stateDir, "hooks");
     const result = await installHooksFromNpmSpec({
-      spec: "@openclaw/test-hooks@0.0.1",
+      spec: "@coderclaw/test-hooks@0.0.1",
       hooksDir,
       logger: { info: () => {}, warn: () => {} },
     });
@@ -278,7 +278,7 @@ describe("installHooksFromNpmSpec", () => {
 
     expectSingleNpmPackIgnoreScriptsCall({
       calls: run.mock.calls,
-      expectedSpec: "@openclaw/test-hooks@0.0.1",
+      expectedSpec: "@coderclaw/test-hooks@0.0.1",
     });
 
     expect(packTmpDir).not.toBe("");

@@ -19,7 +19,7 @@ Mattermost ships as a plugin and is not bundled with the core install.
 Install via CLI (npm registry):
 
 ```bash
-coderclaw plugins install @openclaw/mattermost
+coderclaw plugins install @coderclaw/mattermost
 ```
 
 Local checkout (when running from a git repo):

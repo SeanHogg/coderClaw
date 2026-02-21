@@ -29,7 +29,7 @@ You can always override the choice in the prompt.
 ### Manual install
 
 ```bash
-coderclaw plugins install @openclaw/nostr
+coderclaw plugins install @coderclaw/nostr
 ```
 
 Use a local checkout (dev workflows):

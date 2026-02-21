@@ -1,4 +1,4 @@
-# @openclaw/zalouser
+# @coderclaw/zalouser
 
 OpenClaw extension for Zalo Personal Account messaging via [zca-cli](https://zca-cli.dev).
 

@@ -77,7 +77,7 @@ async function createVoiceCallArchive(params: {
   const pkgDir = path.join(params.workDir, "package");
   writePluginPackage({
     pkgDir,
-    name: "@openclaw/voice-call",
+    name: "@coderclaw/voice-call",
     version: params.version,
     extensions: ["./dist/index.js"],
   });
@@ -239,7 +239,7 @@ describe("installPluginFromArchive", () => {
     zip.file(
       "package/package.json",
       JSON.stringify({
-        name: "@openclaw/zipper",
+        name: "@coderclaw/zipper",
         version: "0.0.1",
         openclaw: { extensions: ["./dist/index.js"] },
       }),
@@ -321,7 +321,7 @@ describe("installPluginFromArchive", () => {
     fs.mkdirSync(pkgDir, { recursive: true });
     fs.writeFileSync(
       path.join(pkgDir, "package.json"),
-      JSON.stringify({ name: "@openclaw/nope", version: "0.0.1" }),
+      JSON.stringify({ name: "@coderclaw/nope", version: "0.0.1" }),
       "utf-8",
     );
 
@@ -424,7 +424,7 @@ describe("installPluginFromDir", () => {
     fs.writeFileSync(
       path.join(pluginDir, "package.json"),
       JSON.stringify({
-        name: "@openclaw/test-plugin",
+        name: "@coderclaw/test-plugin",
         version: "0.0.1",
         openclaw: { extensions: ["./dist/index.js"] },
         dependencies: { "left-pad": "1.3.0" },
@@ -469,7 +469,7 @@ describe("installPluginFromNpmSpec", () => {
     fs.writeFileSync(
       path.join(pkgDir, "package.json"),
       JSON.stringify({
-        name: "@openclaw/voice-call",
+        name: "@coderclaw/voice-call",
         version: "0.0.1",
         openclaw: { extensions: ["./dist/index.js"] },
       }),
@@ -503,7 +503,7 @@ describe("installPluginFromNpmSpec", () => {
 
     const { installPluginFromNpmSpec } = await import("./install.js");
     const result = await installPluginFromNpmSpec({
-      spec: "@openclaw/voice-call@0.0.1",
+      spec: "@coderclaw/voice-call@0.0.1",
       extensionsDir,
       logger: { info: () => {}, warn: () => {} },
     });
@@ -511,7 +511,7 @@ describe("installPluginFromNpmSpec", () => {
 
     expectSingleNpmPackIgnoreScriptsCall({
       calls: run.mock.calls,
-      expectedSpec: "@openclaw/voice-call@0.0.1",
+      expectedSpec: "@coderclaw/voice-call@0.0.1",
     });
 
     expect(packTmpDir).not.toBe("");
