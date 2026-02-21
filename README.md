@@ -337,6 +337,27 @@ See [docs/phase2.md](docs/phase2.md) for complete documentation and [examples/ph
 
 **Status**: Phase 2 is production-ready with 194 passing tests, full backward compatibility, and zero breaking changes.
 
+## 🔗 CoderClawLink
+
+[CoderClawLink](https://github.com/SeanHogg/coderClawLink) is the companion portal: a Python FastAPI app with a Kanban UI, Telegram bot, GitHub PR automation, and local LLM (Ollama) support. CoderClaw connects to it via the built-in **ClawLink transport adapter** — your multi-agent workflows run seamlessly on a remote CoderClawLink node with zero protocol boilerplate:
+
+```typescript
+import { ClawLinkTransportAdapter, CoderClawRuntime } from "coderclaw/transport";
+
+const adapter = new ClawLinkTransportAdapter({ baseUrl: "http://localhost:8000" });
+await adapter.connect();
+const runtime = new CoderClawRuntime(adapter, "remote-enabled");
+
+// Planning, feature, adversarial-review workflows all run on the ClawLink node
+const state = await runtime.submitTask({
+  agentId: "claude",
+  description: "Plan auth feature",
+  input: "...",
+});
+```
+
+Full guide: [CoderClawLink Integration](https://docs.coderclaw.ai/coderclaw-link)
+
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=SeanHogg/coderClaw&type=date&legend=top-left)](https://www.star-history.com/#SeanHogg/coderClaw&type=date&legend=top-left)
