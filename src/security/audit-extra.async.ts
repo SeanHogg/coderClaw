@@ -72,7 +72,7 @@ async function readPluginManifestExtensions(pluginPath: string): Promise<string[
     return [];
   }
 
-  type AnyManifestKey = typeof MANIFEST_KEY;
+  type AnyManifestKey = typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number];
   const parsed = JSON.parse(raw) as Partial<
     Record<AnyManifestKey, { extensions?: unknown }>
   > | null;
