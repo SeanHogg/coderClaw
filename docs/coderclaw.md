@@ -430,7 +430,7 @@ CoderClaw's infrastructure includes:
 
 ## Security
 
-CoderClaw's security model includes Phase 2 enhancements:
+CoderClaw's security model includes:
 
 - Project context files are read-only during execution
 - Code analysis runs with same permissions as other tools
