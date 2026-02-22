@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/zalouser",
-  "version": "2026.2.21",
+  "version": "2026.2.22",
   "description": "CoderClaw Zalo Personal Account plugin via zca-cli",
   "type": "module",
   "dependencies": {

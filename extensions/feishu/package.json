@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/feishu",
-  "version": "2026.2.21",
+  "version": "2026.2.22",
   "description": "CoderClaw Feishu/Lark channel plugin (community maintained by @m1heng)",
   "type": "module",
   "dependencies": {

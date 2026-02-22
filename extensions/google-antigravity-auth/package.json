@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/google-antigravity-auth",
-  "version": "2026.2.21",
+  "version": "2026.2.22",
   "private": true,
   "description": "CoderClaw Google Antigravity OAuth provider plugin",
   "type": "module",

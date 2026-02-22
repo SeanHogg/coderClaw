@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/discord",
-  "version": "2026.2.21",
+  "version": "2026.2.22",
   "description": "CoderClaw Discord channel plugin",
   "type": "module",
   "devDependencies": {

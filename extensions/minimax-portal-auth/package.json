@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/minimax-portal-auth",
-  "version": "2026.2.21",
+  "version": "2026.2.22",
   "private": true,
   "description": "CoderClaw MiniMax Portal OAuth provider plugin",
   "type": "module",
