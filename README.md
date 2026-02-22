@@ -1,10 +1,7 @@
 # 🦞 CoderClaw — Developer-First Multi-Agent AI System
 
 <p align="center">
-    <picture>
-        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/SeanHogg/coderClaw/main/docs/assets/coderclaw-logo-text-dark.png">
-        <img src="https://raw.githubusercontent.com/SeanHogg/coderClaw/main/docs/assets/coderclaw-logo-text.png" alt="CoderClaw" width="500">
-    </picture>
+    <img src="https://raw.githubusercontent.com/SeanHogg/coderClaw/main/docs/assets/coderclaw-robot.png" alt="CoderClaw" width="300">
 </p>
 
 <p align="center">
