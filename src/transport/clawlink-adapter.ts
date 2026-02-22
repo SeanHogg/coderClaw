@@ -154,7 +154,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
   async *streamTaskUpdates(taskId: string): AsyncIterableIterator<TaskUpdateEvent> {
     // CoderClawLink currently exposes polling; WebSocket streaming is on its roadmap.
     // We poll until the task reaches a terminal state.
-    const terminal: TaskStatus[] = new Set(["completed", "failed", "cancelled"]);
+    const terminal = new Set<TaskStatus>(["completed", "failed", "cancelled"]);
     let last: TaskStatus = "pending";
 
     while (true) {
