@@ -119,7 +119,7 @@ Direct URLs are fetched as-is. This uses the `web_fetch` tool (or `exec` for POS
 
 OpenProse programs map to CoderClaw primitives:
 
-| OpenProse concept         | CoderClaw tool    |
+| OpenProse concept         | CoderClaw tool   |
 | ------------------------- | ---------------- |
 | Spawn session / Task tool | `sessions_spawn` |
 | File read/write           | `read` / `write` |

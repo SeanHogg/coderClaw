@@ -1,4 +1,8 @@
-import type { ChannelOnboardingAdapter, CoderClawConfig, WizardPrompter } from "coderclaw/plugin-sdk";
+import type {
+  ChannelOnboardingAdapter,
+  CoderClawConfig,
+  WizardPrompter,
+} from "coderclaw/plugin-sdk";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "coderclaw/plugin-sdk/account-id";
 import {
   listMattermostAccountIds,

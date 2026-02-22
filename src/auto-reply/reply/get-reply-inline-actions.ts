@@ -1,5 +1,5 @@
-import { collectTextContentBlocks } from "../../agents/content-blocks.js";
 import { createCoderClawTools } from "../../agents/coderclaw-tools.js";
+import { collectTextContentBlocks } from "../../agents/content-blocks.js";
 import type { SkillCommandSpec } from "../../agents/skills.js";
 import { getChannelDock } from "../../channels/dock.js";
 import type { CoderClawConfig } from "../../config/config.js";

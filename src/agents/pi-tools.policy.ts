@@ -81,7 +81,10 @@ function resolveSubagentDenyList(depth: number, maxSpawnDepth: number): string[]
   return [...SUBAGENT_TOOL_DENY_ALWAYS];
 }
 
-export function resolveSubagentToolPolicy(cfg?: CoderClawConfig, depth?: number): SandboxToolPolicy {
+export function resolveSubagentToolPolicy(
+  cfg?: CoderClawConfig,
+  depth?: number,
+): SandboxToolPolicy {
   const configured = cfg?.tools?.subagents?.tools;
   const maxSpawnDepth = cfg?.agents?.defaults?.subagents?.maxSpawnDepth ?? 1;
   const effectiveDepth = typeof depth === "number" && depth >= 0 ? depth : 1;

@@ -155,7 +155,10 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/agent", "docs.coderclaw.ai/cli/ag
         `
 ${theme.heading("Examples:")}
 ${formatHelpExamples([
-  ['coderclaw agents set-identity --agent main --name "CoderClaw" --emoji "🦞"', "Set name + emoji."],
+  [
+    'coderclaw agents set-identity --agent main --name "CoderClaw" --emoji "🦞"',
+    "Set name + emoji.",
+  ],
   ["coderclaw agents set-identity --agent main --avatar avatars/coderclaw.png", "Set avatar path."],
   [
     "coderclaw agents set-identity --workspace ~/.coderclaw/workspace --from-identity",

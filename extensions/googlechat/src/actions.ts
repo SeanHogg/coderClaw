@@ -30,7 +30,10 @@ function listEnabledAccounts(cfg: CoderClawConfig) {
   );
 }
 
-function isReactionsEnabled(accounts: ReturnType<typeof listEnabledAccounts>, cfg: CoderClawConfig) {
+function isReactionsEnabled(
+  accounts: ReturnType<typeof listEnabledAccounts>,
+  cfg: CoderClawConfig,
+) {
   for (const account of accounts) {
     const gate = createActionGate(
       (account.config.actions ??

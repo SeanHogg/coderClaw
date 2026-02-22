@@ -585,7 +585,9 @@ export function collectSandboxDockerNoopFindings(cfg: CoderClawConfig): Security
   return findings;
 }
 
-export function collectSandboxDangerousConfigFindings(cfg: CoderClawConfig): SecurityAuditFinding[] {
+export function collectSandboxDangerousConfigFindings(
+  cfg: CoderClawConfig,
+): SecurityAuditFinding[] {
   const findings: SecurityAuditFinding[] = [];
   const agents = Array.isArray(cfg.agents?.list) ? cfg.agents.list : [];
 
@@ -683,7 +685,9 @@ export function collectSandboxDangerousConfigFindings(cfg: CoderClawConfig): Sec
   return findings;
 }
 
-export function collectNodeDenyCommandPatternFindings(cfg: CoderClawConfig): SecurityAuditFinding[] {
+export function collectNodeDenyCommandPatternFindings(
+  cfg: CoderClawConfig,
+): SecurityAuditFinding[] {
   const findings: SecurityAuditFinding[] = [];
   const denyListRaw = cfg.gateway?.nodes?.denyCommands;
   if (!Array.isArray(denyListRaw) || denyListRaw.length === 0) {
@@ -732,7 +736,9 @@ export function collectNodeDenyCommandPatternFindings(cfg: CoderClawConfig): Sec
   return findings;
 }
 
-export function collectMinimalProfileOverrideFindings(cfg: CoderClawConfig): SecurityAuditFinding[] {
+export function collectMinimalProfileOverrideFindings(
+  cfg: CoderClawConfig,
+): SecurityAuditFinding[] {
   const findings: SecurityAuditFinding[] = [];
   if (cfg.tools?.profile !== "minimal") {
     return findings;

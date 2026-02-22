@@ -19,7 +19,6 @@ It orchestrates multiple specialized agents, maintains persistent project knowle
 includes enterprise‑grade security (RBAC, audit trails). You stay in control of your data and
 workflows. For a side‑by‑side comparison see [CoderClaw vs Alternatives](coderclaw-vs-alternatives.md).
 
-
 ## Core Capabilities
 
 ### 1. Deep Knowledge & Context Engine

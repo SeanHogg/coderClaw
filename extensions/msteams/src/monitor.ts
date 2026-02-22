@@ -1,4 +1,3 @@
-import type { Request, Response } from "express";
 import {
   DEFAULT_WEBHOOK_MAX_BODY_BYTES,
   mergeAllowlist,
@@ -6,6 +5,7 @@ import {
   type CoderClawConfig,
   type RuntimeEnv,
 } from "coderclaw/plugin-sdk";
+import type { Request, Response } from "express";
 import { createMSTeamsConversationStoreFs } from "./conversation-store-fs.js";
 import type { MSTeamsConversationStore } from "./conversation-store.js";
 import { formatUnknownError } from "./errors.js";

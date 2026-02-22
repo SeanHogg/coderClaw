@@ -1,4 +1,8 @@
-import type { ChannelMessageActionName, ChannelPlugin, CoderClawConfig } from "coderclaw/plugin-sdk";
+import type {
+  ChannelMessageActionName,
+  ChannelPlugin,
+  CoderClawConfig,
+} from "coderclaw/plugin-sdk";
 import {
   buildBaseChannelStatusSummary,
   buildChannelConfigSchema,

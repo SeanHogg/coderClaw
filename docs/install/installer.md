@@ -11,8 +11,8 @@ title: "Installer Internals"
 
 CoderClaw ships three installer scripts, served from `coderclaw.ai`.
 
-| Script                             | Platform             | What it does                                                                                 |
-| ---------------------------------- | -------------------- | -------------------------------------------------------------------------------------------- |
+| Script                             | Platform             | What it does                                                                                  |
+| ---------------------------------- | -------------------- | --------------------------------------------------------------------------------------------- |
 | [`install.sh`](#installsh)         | macOS / Linux / WSL  | Installs Node if needed, installs CoderClaw via npm (default) or git, and can run onboarding. |
 | [`install-cli.sh`](#install-clish) | macOS / Linux / WSL  | Installs Node + CoderClaw into a local prefix (`~/.coderclaw`). No root required.             |
 | [`install.ps1`](#installps1)       | Windows (PowerShell) | Installs Node if needed, installs CoderClaw via npm (default) or git, and can run onboarding. |
@@ -216,7 +216,7 @@ Designed for environments where you want everything under a local prefix (defaul
 | Flag                   | Description                                                                     |
 | ---------------------- | ------------------------------------------------------------------------------- |
 | `--prefix <path>`      | Install prefix (default: `~/.coderclaw`)                                        |
-| `--version <ver>`      | CoderClaw version or dist-tag (default: `latest`)                                |
+| `--version <ver>`      | CoderClaw version or dist-tag (default: `latest`)                               |
 | `--node-version <ver>` | Node version (default: `22.22.0`)                                               |
 | `--json`               | Emit NDJSON events                                                              |
 | `--onboard`            | Run `coderclaw onboard` after install                                           |
@@ -231,7 +231,7 @@ Designed for environments where you want everything under a local prefix (defaul
 | Variable                                     | Description                                                                       |
 | -------------------------------------------- | --------------------------------------------------------------------------------- |
 | `CODERCLAW_PREFIX=<path>`                    | Install prefix                                                                    |
-| `CODERCLAW_VERSION=<ver>`                    | CoderClaw version or dist-tag                                                      |
+| `CODERCLAW_VERSION=<ver>`                    | CoderClaw version or dist-tag                                                     |
 | `CODERCLAW_NODE_VERSION=<ver>`               | Node version                                                                      |
 | `CODERCLAW_NO_ONBOARD=1`                     | Skip onboarding                                                                   |
 | `CODERCLAW_NPM_LOGLEVEL=error\|warn\|notice` | npm log level                                                                     |
@@ -299,14 +299,14 @@ Designed for environments where you want everything under a local prefix (defaul
 <AccordionGroup>
   <Accordion title="Flags reference">
 
-| Flag                      | Description                                            |
-| ------------------------- | ------------------------------------------------------ |
-| `-InstallMethod npm\|git` | Install method (default: `npm`)                        |
-| `-Tag <tag>`              | npm dist-tag (default: `latest`)                       |
+| Flag                      | Description                                             |
+| ------------------------- | ------------------------------------------------------- |
+| `-InstallMethod npm\|git` | Install method (default: `npm`)                         |
+| `-Tag <tag>`              | npm dist-tag (default: `latest`)                        |
 | `-GitDir <path>`          | Checkout directory (default: `%USERPROFILE%\coderclaw`) |
-| `-NoOnboard`              | Skip onboarding                                        |
-| `-NoGitUpdate`            | Skip `git pull`                                        |
-| `-DryRun`                 | Print actions only                                     |
+| `-NoOnboard`              | Skip onboarding                                         |
+| `-NoGitUpdate`            | Skip `git pull`                                         |
+| `-DryRun`                 | Print actions only                                      |
 
   </Accordion>
 

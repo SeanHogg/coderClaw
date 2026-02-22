@@ -76,7 +76,10 @@ function resolveAccountConfig(
   return matchKey ? (accounts[matchKey] as TelegramAccountConfig | undefined) : undefined;
 }
 
-function mergeTelegramAccountConfig(cfg: CoderClawConfig, accountId: string): TelegramAccountConfig {
+function mergeTelegramAccountConfig(
+  cfg: CoderClawConfig,
+  accountId: string,
+): TelegramAccountConfig {
   const { accounts: _ignored, ...base } = (cfg.channels?.telegram ??
     {}) as TelegramAccountConfig & { accounts?: unknown };
   const account = resolveAccountConfig(cfg, accountId) ?? {};

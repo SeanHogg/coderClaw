@@ -63,45 +63,45 @@ If you need team collaboration, RBAC, audit logs, and distributed execution → 
 ## Feature Comparison
 
 | Feature                                    | CoderClaw | CoderClaw   |
-| ------------------------------------------ | -------- | ----------- |
+| ------------------------------------------ | --------- | ----------- |
 | **Core Gateway**                           |
-| Multi-channel messaging                    | ✅       | ✅          |
-| WebSocket control plane                    | ✅       | ✅          |
-| Plugin system                              | ✅       | ✅          |
-| Mobile nodes                               | ✅       | ✅          |
-| Canvas & voice                             | ✅       | ✅          |
+| Multi-channel messaging                    | ✅        | ✅          |
+| WebSocket control plane                    | ✅        | ✅          |
+| Plugin system                              | ✅        | ✅          |
+| Mobile nodes                               | ✅        | ✅          |
+| Canvas & voice                             | ✅        | ✅          |
 | **Execution**                              |
-| Local task execution                       | ✅       | ✅          |
-| Remote task execution                      | ❌       | ✅          |
-| Transport abstraction                      | ❌       | ✅          |
-| Distributed runtime                        | ❌       | ✅          |
+| Local task execution                       | ✅        | ✅          |
+| Remote task execution                      | ❌        | ✅          |
+| Transport abstraction                      | ❌        | ✅          |
+| Distributed runtime                        | ❌        | ✅          |
 | **Task Management**                        |
-| Basic task execution                       | ✅       | ✅          |
-| Task lifecycle management                  | ❌       | ✅          |
-| Task persistence                           | ❌       | ✅          |
-| Task resumability                          | ❌       | ✅          |
-| Audit trail                                | ❌       | ✅          |
+| Basic task execution                       | ✅        | ✅          |
+| Task lifecycle management                  | ❌        | ✅          |
+| Task persistence                           | ❌        | ✅          |
+| Task resumability                          | ❌        | ✅          |
+| Audit trail                                | ❌        | ✅          |
 | **Security**                               |
-| Allowlists                                 | ✅       | ✅          |
-| Device pairing                             | ✅       | ✅          |
-| Token authentication                       | ✅       | ✅          |
-| RBAC                                       | ❌       | ✅          |
-| Device trust levels                        | ❌       | ✅          |
-| Comprehensive audit logs                   | ❌       | ✅          |
-| Multi-provider auth (OIDC, GitHub, Google) | ❌       | ✅          |
-| Granular permissions                       | ❌       | ✅          |
+| Allowlists                                 | ✅        | ✅          |
+| Device pairing                             | ✅        | ✅          |
+| Token authentication                       | ✅        | ✅          |
+| RBAC                                       | ❌        | ✅          |
+| Device trust levels                        | ❌        | ✅          |
+| Comprehensive audit logs                   | ❌        | ✅          |
+| Multi-provider auth (OIDC, GitHub, Google) | ❌        | ✅          |
+| Granular permissions                       | ❌        | ✅          |
 | **Collaboration**                          |
-| Single-user sessions                       | ✅       | ✅          |
-| Multi-session isolation                    | ❌       | ✅          |
-| Shared agent registries                    | ❌       | ✅          |
-| Team policy enforcement                    | ❌       | ✅          |
-| CI/CD integration                          | Basic    | ✅ Advanced |
+| Single-user sessions                       | ✅        | ✅          |
+| Multi-session isolation                    | ❌        | ✅          |
+| Shared agent registries                    | ❌        | ✅          |
+| Team policy enforcement                    | ❌        | ✅          |
+| CI/CD integration                          | Basic     | ✅ Advanced |
 | **Developer Experience**                   |
-| CLI tools                                  | ✅       | ✅          |
-| Web Control UI                             | ✅       | ✅          |
-| macOS/iOS/Android apps                     | ✅       | ✅          |
-| Project knowledge engine                   | ❌       | ✅          |
-| Multi-agent workflows                      | Basic    | ✅ Advanced |
+| CLI tools                                  | ✅        | ✅          |
+| Web Control UI                             | ✅        | ✅          |
+| macOS/iOS/Android apps                     | ✅        | ✅          |
+| Project knowledge engine                   | ❌        | ✅          |
+| Multi-agent workflows                      | Basic     | ✅ Advanced |
 
 ## Architecture Comparison
 

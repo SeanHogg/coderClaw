@@ -73,10 +73,7 @@ function formatSkillMissingSummary(skill: SkillStatusEntry): string {
   return missing.join("; ");
 }
 
-export function formatSkillsList(
-  report: SkillStatusReport,
-  opts: SkillsListOptions,
-): string {
+export function formatSkillsList(report: SkillStatusReport, opts: SkillsListOptions): string {
   const skills = opts.eligible ? report.skills.filter((s) => s.eligible) : report.skills;
 
   if (opts.json) {

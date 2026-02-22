@@ -105,7 +105,10 @@ describe("handleControlUiHttpRequest", () => {
       fn: async (tmp) => {
         const { res, end } = makeMockHttpResponse();
         const handled = handleControlUiHttpRequest(
-          { url: `/coderclaw${CONTROL_UI_BOOTSTRAP_CONFIG_PATH}`, method: "GET" } as IncomingMessage,
+          {
+            url: `/coderclaw${CONTROL_UI_BOOTSTRAP_CONFIG_PATH}`,
+            method: "GET",
+          } as IncomingMessage,
           res,
           {
             basePath: "/coderclaw",

@@ -29,7 +29,10 @@ const SANDBOX_EXAMPLES = {
   recreate: [
     ["coderclaw sandbox recreate --all", "Recreate all containers."],
     ["coderclaw sandbox recreate --session main", "Recreate a specific session."],
-    ["coderclaw sandbox recreate --agent mybot", "Recreate a specific agent (includes sub-agents)."],
+    [
+      "coderclaw sandbox recreate --agent mybot",
+      "Recreate a specific agent (includes sub-agents).",
+    ],
     ["coderclaw sandbox recreate --browser --all", "Recreate only browser containers."],
     ["coderclaw sandbox recreate --all --force", "Skip confirmation."],
   ],

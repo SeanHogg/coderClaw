@@ -33,7 +33,7 @@ CoderClaw uses the pi SDK to embed an AI coding agent into its messaging gateway
 | `pi-ai`           | Core LLM abstractions: `Model`, `streamSimple`, message types, provider APIs                           |
 | `pi-agent-core`   | Agent loop, tool execution, `AgentMessage` types                                                       |
 | `pi-coding-agent` | High-level SDK: `createAgentSession`, `SessionManager`, `AuthStorage`, `ModelRegistry`, built-in tools |
-| `pi-tui`          | Terminal UI components (used in CoderClaw's local TUI mode)                                             |
+| `pi-tui`          | Terminal UI components (used in CoderClaw's local TUI mode)                                            |
 
 ## File Structure
 
@@ -511,10 +511,10 @@ This provides the interactive terminal experience similar to pi's native mode.
 
 ## Key Differences from Pi CLI
 
-| Aspect          | Pi CLI                  | CoderClaw Embedded                                                                                |
+| Aspect          | Pi CLI                  | CoderClaw Embedded                                                                               |
 | --------------- | ----------------------- | ------------------------------------------------------------------------------------------------ |
 | Invocation      | `pi` command / RPC      | SDK via `createAgentSession()`                                                                   |
-| Tools           | Default coding tools    | Custom CoderClaw tool suite                                                                       |
+| Tools           | Default coding tools    | Custom CoderClaw tool suite                                                                      |
 | System prompt   | AGENTS.md + prompts     | Dynamic per-channel/context                                                                      |
 | Session storage | `~/.pi/agent/sessions/` | `~/.coderclaw/agents/<agentId>/sessions/` (or `$CODERCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
 | Auth            | Single credential       | Multi-profile with rotation                                                                      |
