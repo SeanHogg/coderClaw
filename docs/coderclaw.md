@@ -453,7 +453,7 @@ CoderClaw's security model includes:
 
 ## Examples
 
-See [examples/coderclaw](../../examples/coderclaw) for comprehensive examples:
+See [examples/coderclaw](https://github.com/SeanHogg/coderClaw/tree/main/examples/coderclaw) for comprehensive examples:
 
 1. **Project Initialization**: Set up .coderClaw directory
 2. **Multi-Agent Workflow**: Orchestrate Creator → Reviewer → Tester
@@ -478,7 +478,7 @@ Planned features:
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
+We welcome contributions! See [CONTRIBUTING.md](https://github.com/SeanHogg/coderClaw/blob/main/CONTRIBUTING.md) for guidelines.
 
 Priority areas:
 
@@ -490,4 +490,4 @@ Priority areas:
 
 ## License
 
-MIT - See [LICENSE](../LICENSE) for details.
+MIT - See [LICENSE](https://github.com/SeanHogg/coderClaw/blob/main/LICENSE) for details.

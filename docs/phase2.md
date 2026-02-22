@@ -459,11 +459,11 @@ Existing code continues to work. New features are opt-in:
 
 ## 10. API Reference
 
-See:
+API documentation:
 
-- [Transport API](./api/transport.md)
-- [Security API](./api/security.md)
-- [Task Engine API](./api/task-engine.md)
+- Transport API (`src/transport/`)
+- Security API (`src/security/`)
+- Task Engine API (`src/transport/task-engine.ts`)
 
 ## 11. Examples
 
