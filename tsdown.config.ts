@@ -4,20 +4,25 @@ const env = {
   NODE_ENV: "production",
 };
 
+// TypeScript is a devDependency used by ast-parser.ts at runtime.
+// Marking it external keeps it as a CJS module loaded by Node, which
+// avoids bundling TypeScript's CJS globals (__filename) into ESM output.
+const external = ["typescript"];
+
 export default defineConfig([
   {
     entry: "src/index.ts",
     env,
     fixedExtension: false,
     platform: "node",
-    shims: true,
+    external,
   },
   {
     entry: "src/entry.ts",
     env,
     fixedExtension: false,
     platform: "node",
-    shims: true,
+    external,
   },
   {
     // Ensure this module is bundled as an entry so legacy CLI shims can resolve its exports.
@@ -25,14 +30,14 @@ export default defineConfig([
     env,
     fixedExtension: false,
     platform: "node",
-    shims: true,
+    external,
   },
   {
     entry: "src/infra/warning-filter.ts",
     env,
     fixedExtension: false,
     platform: "node",
-    shims: true,
+    external,
   },
   {
     entry: "src/plugin-sdk/index.ts",
@@ -40,7 +45,7 @@ export default defineConfig([
     env,
     fixedExtension: false,
     platform: "node",
-    shims: true,
+    external,
   },
   {
     entry: "src/plugin-sdk/account-id.ts",
@@ -48,20 +53,20 @@ export default defineConfig([
     env,
     fixedExtension: false,
     platform: "node",
-    shims: true,
+    external,
   },
   {
     entry: "src/extensionAPI.ts",
     env,
     fixedExtension: false,
     platform: "node",
-    shims: true,
+    external,
   },
   {
     entry: ["src/hooks/bundled/*/handler.ts", "src/hooks/llm-slug-generator.ts"],
     env,
     fixedExtension: false,
     platform: "node",
-    shims: true,
+    external,
   },
 ]);
