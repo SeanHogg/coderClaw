@@ -38,7 +38,7 @@ export function registerSkillsCli(program: Command) {
         const workspaceDir = resolveAgentWorkspaceDir(config, resolveDefaultAgentId(config));
         const { buildWorkspaceSkillStatus } = await import("../agents/skills-status.js");
         const report = buildWorkspaceSkillStatus(workspaceDir, { config });
-        defaultRuntime.log(formatSkillsList(report, opts));
+        defaultRuntime.log(formatSkillsList(report, { ...opts, config }));
       } catch (err) {
         defaultRuntime.error(String(err));
         defaultRuntime.exit(1);
@@ -56,7 +56,7 @@ export function registerSkillsCli(program: Command) {
         const workspaceDir = resolveAgentWorkspaceDir(config, resolveDefaultAgentId(config));
         const { buildWorkspaceSkillStatus } = await import("../agents/skills-status.js");
         const report = buildWorkspaceSkillStatus(workspaceDir, { config });
-        defaultRuntime.log(formatSkillInfo(report, name, opts));
+        defaultRuntime.log(formatSkillInfo(report, name, { ...opts, config }));
       } catch (err) {
         defaultRuntime.error(String(err));
         defaultRuntime.exit(1);
@@ -73,7 +73,7 @@ export function registerSkillsCli(program: Command) {
         const workspaceDir = resolveAgentWorkspaceDir(config, resolveDefaultAgentId(config));
         const { buildWorkspaceSkillStatus } = await import("../agents/skills-status.js");
         const report = buildWorkspaceSkillStatus(workspaceDir, { config });
-        defaultRuntime.log(formatSkillsCheck(report, opts));
+        defaultRuntime.log(formatSkillsCheck(report, { ...opts, config }));
       } catch (err) {
         defaultRuntime.error(String(err));
         defaultRuntime.exit(1);
@@ -87,7 +87,7 @@ export function registerSkillsCli(program: Command) {
       const workspaceDir = resolveAgentWorkspaceDir(config, resolveDefaultAgentId(config));
       const { buildWorkspaceSkillStatus } = await import("../agents/skills-status.js");
       const report = buildWorkspaceSkillStatus(workspaceDir, { config });
-      defaultRuntime.log(formatSkillsList(report, {}));
+      defaultRuntime.log(formatSkillsList(report, { config }));
     } catch (err) {
       defaultRuntime.error(String(err));
       defaultRuntime.exit(1);

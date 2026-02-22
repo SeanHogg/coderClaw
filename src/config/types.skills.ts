@@ -35,6 +35,13 @@ export type SkillsLimitsConfig = {
   maxSkillFileBytes?: number;
 };
 
+export type SkillsRegistryConfig = {
+  /** Base URL for a remote skill registry (e.g. ClawHub or self‑hosted). */
+  url?: string;
+  /** CLI command users should run to interact with the registry. */
+  cli?: string;
+};
+
 export type SkillsConfig = {
   /** Optional bundled-skill allowlist (only affects bundled skills). */
   allowBundled?: string[];
@@ -42,4 +49,6 @@ export type SkillsConfig = {
   install?: SkillsInstallConfig;
   limits?: SkillsLimitsConfig;
   entries?: Record<string, SkillConfig>;
+  /** Remote registry configuration for searching/installing skills. */
+  registry?: SkillsRegistryConfig;
 };

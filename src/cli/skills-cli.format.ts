@@ -8,21 +8,31 @@ export type SkillsListOptions = {
   json?: boolean;
   eligible?: boolean;
   verbose?: boolean;
+  /** configuration object; used to generate the registry hint */
+  config?: CoderClawConfig;
 };
 
 export type SkillInfoOptions = {
   json?: boolean;
+  config?: CoderClawConfig;
 };
 
 export type SkillsCheckOptions = {
   json?: boolean;
+  config?: CoderClawConfig;
 };
 
-function appendClawHubHint(output: string, json?: boolean): string {
+// compute the tip text based on configuration (or default to ClawHub)
+function getSkillsHint(config?: CoderClawConfig): string {
+  const cli = config?.skills?.registry?.cli ?? "npx clawhub";
+  return `Tip: use \`${cli}\` to search, install, and sync skills.`;
+}
+
+function appendSkillsHint(output: string, json?: boolean, config?: CoderClawConfig): string {
   if (json) {
     return output;
   }
-  return `${output}\n\nTip: use \`npx clawhub\` to search, install, and sync skills.`;
+  return `${output}\n\n${getSkillsHint(config)}`;
 }
 
 function formatSkillStatus(skill: SkillStatusEntry): string {
@@ -63,7 +73,10 @@ function formatSkillMissingSummary(skill: SkillStatusEntry): string {
   return missing.join("; ");
 }
 
-export function formatSkillsList(report: SkillStatusReport, opts: SkillsListOptions): string {
+export function formatSkillsList(
+  report: SkillStatusReport,
+  opts: SkillsListOptions,
+): string {
   const skills = opts.eligible ? report.skills.filter((s) => s.eligible) : report.skills;
 
   if (opts.json) {
@@ -91,7 +104,7 @@ export function formatSkillsList(report: SkillStatusReport, opts: SkillsListOpti
     const message = opts.eligible
       ? `No eligible skills found. Run \`${formatCliCommand("coderclaw skills list")}\` to see all skills.`
       : "No skills found.";
-    return appendClawHubHint(message, opts.json);
+    return appendSkillsHint(message, opts.json, opts.config);
   }
 
   const eligible = skills.filter((s) => s.eligible);
@@ -129,7 +142,7 @@ export function formatSkillsList(report: SkillStatusReport, opts: SkillsListOpti
     }).trimEnd(),
   );
 
-  return appendClawHubHint(lines.join("\n"), opts.json);
+  return appendSkillsHint(lines.join("\n"), opts.json, opts.config);
 }
 
 export function formatSkillInfo(
@@ -143,9 +156,10 @@ export function formatSkillInfo(
     if (opts.json) {
       return JSON.stringify({ error: "not found", skill: skillName }, null, 2);
     }
-    return appendClawHubHint(
+    return appendSkillsHint(
       `Skill "${skillName}" not found. Run \`${formatCliCommand("coderclaw skills list")}\` to see available skills.`,
       opts.json,
+      opts.config,
     );
   }
 
@@ -234,7 +248,7 @@ export function formatSkillInfo(
     }
   }
 
-  return appendClawHubHint(lines.join("\n"), opts.json);
+  return appendSkillsHint(lines.join("\n"), opts.json, opts.config);
 }
 
 export function formatSkillsCheck(report: SkillStatusReport, opts: SkillsCheckOptions): string {
@@ -297,5 +311,5 @@ export function formatSkillsCheck(report: SkillStatusReport, opts: SkillsCheckOp
     }
   }
 
-  return appendClawHubHint(lines.join("\n"), opts.json);
+  return appendSkillsHint(lines.join("\n"), opts.json, opts.config);
 }

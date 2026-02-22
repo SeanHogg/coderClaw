@@ -11,6 +11,8 @@ title: "ClawHub"
 
 ClawHub is the **public skill registry for CoderClaw**. It is a free service: all skills are public, open, and visible to everyone for sharing and reuse. A skill is just a folder with a `SKILL.md` file (plus supporting text files). You can browse skills in the web app or use the CLI to search, install, update, and publish skills.
 
+> 💡 **Multiple registries.** CoderClaw is designed to be agnostic: the default endpoint is ClawHub (`https://clawhub.ai`), but you can point at any compatible service (for example an [OpenClaw](https://openclaw.example/) deployment) by setting `skills.registry.url` in your configuration. The CLI hint shown by `coderclaw skills` will also adjust based on the `skills.registry.cli` string (defaults to `npx clawhub`).
+
 Site: [clawhub.ai](https://clawhub.ai)
 
 ## What ClawHub is

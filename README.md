@@ -489,6 +489,8 @@ Details: [Session tools](https://docs.coderclaw.ai/concepts/session-tool)
 
 ClawHub is a minimal skill registry. With ClawHub enabled, the agent can search for skills automatically and pull in new ones as needed.
 
+By default CoderClaw points at the public ClawHub service, but the registry endpoint and even the CLI hint are configurable via `skills.registry` in your config – this makes it easy to support self‑hosted OpenClaw registries or forks.
+
 [ClawHub](https://clawhub.com)
 
 ## Chat commands

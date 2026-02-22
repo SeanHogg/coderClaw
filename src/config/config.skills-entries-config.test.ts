@@ -44,4 +44,13 @@ describe("skills entries config schema", () => {
       ),
     ).toBe(true);
   });
+
+  it("allows specifying a registry url and CLI hint", () => {
+    const res = CoderClawSchema.safeParse({
+      skills: {
+        registry: { url: "https://my.registry/", cli: "npx openclaw" },
+      },
+    });
+    expect(res.success).toBe(true);
+  });
 });

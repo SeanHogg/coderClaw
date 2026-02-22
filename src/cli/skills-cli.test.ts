@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { SkillStatusEntry, SkillStatusReport } from "../agents/skills-status.js";
 import type { SkillEntry } from "../agents/skills.js";
+import type { CoderClawConfig } from "../src/config/config.js";
 import { captureEnv } from "../test-utils/env.js";
 import { createEmptyInstallChecks } from "./requirements-test-fixtures.js";
 import { formatSkillInfo, formatSkillsCheck, formatSkillsList } from "./skills-cli.format.js";
@@ -49,6 +50,14 @@ describe("skills-cli", () => {
       const output = formatSkillsList(report, {});
       expect(output).toContain("No skills found");
       expect(output).toContain("npx clawhub");
+    });
+
+    it("allows overriding the CLI hint via config", () => {
+      const report = createMockReport([]);
+      const cfg: CoderClawConfig = { skills: { registry: { cli: "npx openclaw" } } };
+      const output = formatSkillsList(report, { config: cfg });
+      expect(output).toContain("npx openclaw");
+      expect(output).not.toContain("npx clawhub");
     });
 
     it("formats skills list with eligible skill", () => {
@@ -123,6 +132,14 @@ describe("skills-cli", () => {
       expect(output).toContain("npx clawhub");
     });
 
+    it("skill info hint respects config override", () => {
+      const report = createMockReport([]);
+      const cfg: CoderClawConfig = { skills: { registry: { cli: "openclaw-cli" } } };
+      const output = formatSkillInfo(report, "unknown-skill", { config: cfg });
+      expect(output).toContain("openclaw-cli");
+      expect(output).not.toContain("npx clawhub");
+    });
+
     it("shows detailed info for a skill", () => {
       const report = createMockReport([
         createMockSkill({
@@ -174,6 +191,12 @@ describe("skills-cli", () => {
       expect(output).toContain("not-ready");
       expect(output).toContain("go"); // missing binary
       expect(output).toContain("npx clawhub");
+
+      // override hint
+      const cfg: CoderClawConfig = { skills: { registry: { cli: "openclaw-cli" } } };
+      const output2 = formatSkillsCheck(report, { config: cfg });
+      expect(output2).toContain("openclaw-cli");
+      expect(output2).not.toContain("npx clawhub");
     });
   });
 

@@ -441,7 +441,7 @@ Options:
 - `--json`: output JSON (no styling).
 - `-v`, `--verbose`: include missing requirements detail.
 
-Tip: use `npx clawhub` to search, install, and sync skills.
+Tip: use `npx clawhub` to search, install, and sync skills (CLI command can be changed with `skills.registry.cli` if you run a different registry).
 
 ### `pairing`
 

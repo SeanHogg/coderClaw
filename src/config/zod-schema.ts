@@ -591,6 +591,13 @@ export const CoderClawSchema = z
           })
           .strict()
           .optional(),
+        registry: z
+          .object({
+            url: z.string().url().optional(),
+            cli: z.string().optional(),
+          })
+          .strict()
+          .optional(),
         entries: z
           .record(
             z.string(),
