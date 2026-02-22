@@ -2,6 +2,15 @@
 
 Docs: https://docs.coderclaw.ai
 
+## 2026.2.23-beta.1
+
+### Changes
+
+- Build: move `typescript` from `devDependencies` to `dependencies` to fix `ERR_MODULE_NOT_FOUND` at runtime when using AST parsing features.
+- Docs: fix markdown lint errors (duplicate headings, table column counts, trailing punctuation in headings).
+- Docs: fix broken internal links in `coderclaw.md` and `phase2.md`.
+- Docs: rewrite `coderclaw-overview.md` as a standalone CoderClaw overview.
+
 ## 2026.2.22
 
 ### Changes

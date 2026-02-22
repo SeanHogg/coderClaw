@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/tlon",
-  "version": "2026.2.22",
+  "version": "2026.2.23-beta.1",
   "private": true,
   "description": "CoderClaw Tlon/Urbit channel plugin",
   "type": "module",
