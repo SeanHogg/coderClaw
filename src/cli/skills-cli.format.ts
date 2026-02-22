@@ -1,5 +1,5 @@
-import type { CoderClawConfig } from "../config/config.js";
 import type { SkillStatusEntry, SkillStatusReport } from "../agents/skills-status.js";
+import type { CoderClawConfig } from "../config/config.js";
 import { renderTable } from "../terminal/table.js";
 import { theme } from "../terminal/theme.js";
 import { shortenHomePath } from "../utils.js";
