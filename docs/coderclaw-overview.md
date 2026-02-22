@@ -39,7 +39,7 @@ If you need team collaboration, RBAC, audit logs, and distributed execution → 
 - Local execution only
 - Basic security requirements
 
-## What is CoderClaw?
+## What is CoderClaw Phase 2?
 
 **CoderClaw** is a fork and extension of CoderClaw that adds **Phase 2 capabilities** for distributed AI runtime with secure orchestration.
 
@@ -64,24 +64,24 @@ If you need team collaboration, RBAC, audit logs, and distributed execution → 
 
 | Feature                                    | CoderClaw | CoderClaw   |
 | ------------------------------------------ | --------- | ----------- |
-| **Core Gateway**                           |
+| **Core Gateway**                           |           |             |
 | Multi-channel messaging                    | ✅        | ✅          |
 | WebSocket control plane                    | ✅        | ✅          |
 | Plugin system                              | ✅        | ✅          |
 | Mobile nodes                               | ✅        | ✅          |
 | Canvas & voice                             | ✅        | ✅          |
-| **Execution**                              |
+| **Execution**                              |           |             |
 | Local task execution                       | ✅        | ✅          |
 | Remote task execution                      | ❌        | ✅          |
 | Transport abstraction                      | ❌        | ✅          |
 | Distributed runtime                        | ❌        | ✅          |
-| **Task Management**                        |
+| **Task Management**                        |           |             |
 | Basic task execution                       | ✅        | ✅          |
 | Task lifecycle management                  | ❌        | ✅          |
 | Task persistence                           | ❌        | ✅          |
 | Task resumability                          | ❌        | ✅          |
 | Audit trail                                | ❌        | ✅          |
-| **Security**                               |
+| **Security**                               |           |             |
 | Allowlists                                 | ✅        | ✅          |
 | Device pairing                             | ✅        | ✅          |
 | Token authentication                       | ✅        | ✅          |
@@ -90,13 +90,13 @@ If you need team collaboration, RBAC, audit logs, and distributed execution → 
 | Comprehensive audit logs                   | ❌        | ✅          |
 | Multi-provider auth (OIDC, GitHub, Google) | ❌        | ✅          |
 | Granular permissions                       | ❌        | ✅          |
-| **Collaboration**                          |
+| **Collaboration**                          |           |             |
 | Single-user sessions                       | ✅        | ✅          |
 | Multi-session isolation                    | ❌        | ✅          |
 | Shared agent registries                    | ❌        | ✅          |
 | Team policy enforcement                    | ❌        | ✅          |
 | CI/CD integration                          | Basic     | ✅ Advanced |
-| **Developer Experience**                   |
+| **Developer Experience**                   |           |             |
 | CLI tools                                  | ✅        | ✅          |
 | Web Control UI                             | ✅        | ✅          |
 | macOS/iOS/Android apps                     | ✅        | ✅          |
@@ -199,18 +199,18 @@ CoderClaw is for teams that need:
 
 ## Use Cases
 
-### Use CoderClaw When:
+### Use CoderClaw When
 
-✅ Personal AI assistant for messaging apps  
-✅ Small trusted team (2-5 people)  
-✅ Local execution is sufficient  
-✅ Basic allowlist security is enough  
-✅ No need for audit trails  
+✅ Personal AI assistant for messaging apps
+✅ Small trusted team (2-5 people)
+✅ Local execution is sufficient
+✅ Basic allowlist security is enough
+✅ No need for audit trails
 ✅ Simple deployment model
 
 **Example**: "I want an AI assistant I can message on WhatsApp from my phone that runs on my Mac at home."
 
-### Use CoderClaw When:
+### Use CoderClaw Phase 2 When
 
 ✅ Development team (5+ people)  
 ✅ Need remote/distributed execution  
@@ -241,7 +241,7 @@ coderclaw gateway --port 18789
 
 Documentation: [docs.coderclaw.ai](https://docs.coderclaw.ai)
 
-### Starting with CoderClaw
+### Starting with CoderClaw Phase 2
 
 ```bash
 npm install -g coderclaw@latest

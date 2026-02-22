@@ -365,7 +365,7 @@ orchestrate workflow:refactor description:"Refactor API module"
 workflow_status workflowId:abc-123-def
 ```
 
-## Workflow Patterns
+## Available Workflow Patterns
 
 ### Feature Development
 

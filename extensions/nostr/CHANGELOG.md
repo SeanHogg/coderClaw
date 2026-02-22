@@ -3,6 +3,7 @@
 ## 2026.2.22
 
 ### Changes
+
 - Version alignment with core CoderClaw release numbers.
 
 ## 2026.2.18

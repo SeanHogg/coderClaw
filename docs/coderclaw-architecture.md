@@ -18,7 +18,7 @@ CoderClaw is designed as an **orchestration engine** that sits inside developer 
 
 The foundation layer responsible for understanding code structure and context.
 
-#### Components
+#### Knowledge Engine Components
 
 **AST Parser (`src/coderclaw/ast-parser.ts`)**
 
@@ -65,7 +65,7 @@ Source Files → AST Parser → File Metadata
 
 The middle layer responsible for agent role definitions and capabilities.
 
-#### Components
+#### Agent System Components
 
 **Agent Roles (`src/coderclaw/agent-roles.ts`)**
 
@@ -107,7 +107,7 @@ Agent Request → Role Selection → Capability Check
 
 The top layer responsible for coordinating multiple agents.
 
-#### Components
+#### Orchestration Engine Components
 
 **Enhanced Orchestrator (`src/coderclaw/orchestrator-enhanced.ts`)**
 
@@ -150,7 +150,7 @@ Workflow Request → Step Definition → Dependency Analysis
 
 The outer layer connecting to CoderClaw infrastructure.
 
-#### Components
+#### Integration Layer Components
 
 **Tool System Integration**
 
