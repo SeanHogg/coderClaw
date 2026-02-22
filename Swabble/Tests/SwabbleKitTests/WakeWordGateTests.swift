@@ -4,7 +4,7 @@ import Testing
 
 @Suite struct WakeWordGateTests {
     @Test func matchRequiresGapAfterTrigger() {
-        let transcript = "hey clawd do thing"
+        let transcript = "hey coderclaw do thing"
         let segments = makeSegments(
             transcript: transcript,
             words: [
@@ -18,7 +18,7 @@ import Testing
     }
 
     @Test func matchAllowsGapAndExtractsCommand() {
-        let transcript = "hey clawd do thing"
+        let transcript = "hey coderclaw do thing"
         let segments = makeSegments(
             transcript: transcript,
             words: [
@@ -33,7 +33,7 @@ import Testing
     }
 
     @Test func matchHandlesMultiWordTriggers() {
-        let transcript = "hey clawd do it"
+        let transcript = "hey coderclaw do it"
         let segments = makeSegments(
             transcript: transcript,
             words: [

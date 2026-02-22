@@ -2356,5 +2356,5 @@ Thanks @AlexMikhalev, @CoreyH, @John-Rood, @KrauseFx, @MaudeBot, @Nachx639, @Nic
 - Discord/Slack: route reaction + system notifications to the correct session (no main-session bleed).
 - Agent tools: honor `agent.tools` allow/deny policy even when sandbox is off.
 - Discord: avoid duplicate replies when OpenAI emits repeated `message_end` events.
-- Commands: unify /status (inline) and command auth across providers; group bypass for authorized control commands; remove Discord /clawd slash handler.
+- Commands: unify /status (inline) and command auth across providers; group bypass for authorized control commands; remove Discord /coderclaw slash handler.
 - CLI: run `coderclaw agent` via the Gateway by default; use `--local` to force embedded mode.

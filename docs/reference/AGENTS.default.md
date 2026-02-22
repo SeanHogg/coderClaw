@@ -77,13 +77,13 @@ cp docs/reference/AGENTS.default.md ~/.coderclaw/workspace/AGENTS.md
 
 ## Backup tip (recommended)
 
-If you treat this workspace as Clawd’s “memory”, make it a git repo (ideally private) so `AGENTS.md` and your memory files are backed up.
+If you treat this workspace as CoderClaw’s “memory”, make it a git repo (ideally private) so `AGENTS.md` and your memory files are backed up.
 
 ```bash
 cd ~/.coderclaw/workspace
 git init
 git add AGENTS.md
-git commit -m "Add Clawd workspace"
+git commit -m "Add CoderClaw workspace"
 # Optional: add a private remote + push
 ```
 

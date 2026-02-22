@@ -36,7 +36,7 @@ x-i18n:
 ```json5
 {
   identity: {
-    name: "Clawd",
+    name: "CoderClaw",
     theme: "helpful assistant",
     emoji: "🦞",
   },
