@@ -1,6 +1,5 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "rolldown";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, "../../../../..");
@@ -17,7 +16,7 @@ const outputFile = path.resolve(
 const a2uiLitDist = path.resolve(repoRoot, "vendor/a2ui/renderers/lit/dist/src");
 const a2uiThemeContext = path.resolve(a2uiLitDist, "0.8/ui/context/theme.js");
 
-export default defineConfig({
+export default {
   input: fromHere("bootstrap.js"),
   experimental: {
     attachDebugInfo: "none",
@@ -42,4 +41,4 @@ export default defineConfig({
     codeSplitting: false,
     sourcemap: false,
   },
-});
+};

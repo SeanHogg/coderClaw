@@ -28,8 +28,8 @@ const shouldEagerRegisterSubcommands = (_argv: string[]) => {
 };
 
 const loadConfig = async (): Promise<CoderClawConfig> => {
-  const mod = await import("../../config/config.js");
-  return mod.loadConfig();
+  const { loadConfig: _load } = await import("../../config/io.js");
+  return _load();
 };
 
 // Note for humans and agents:
