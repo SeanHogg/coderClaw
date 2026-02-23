@@ -83,6 +83,7 @@ pnpm install --lockfile-only
 - Ensure CI checks pass
 - Keep PRs focused (one thing per PR; do not mix unrelated concerns)
 - Describe what & why
+- **Never manually edit `version` in `package.json`** — use `pnpm release` (or `pnpm plugins:sync` after a root version bump) to keep all extension versions in sync. CI will fail if versions diverge.
 
 ## Control UI Decorators
 
