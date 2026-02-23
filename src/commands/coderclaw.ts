@@ -132,7 +132,9 @@ async function detectLanguagesFromFiles(projectRoot: string): Promise<string[]> 
   ]);
 
   async function walk(dir: string, depth: number): Promise<void> {
-    if (depth > 3) return;
+    if (depth > 3) {
+      return;
+    }
     let entries: import("node:fs").Dirent[];
     try {
       entries = await fs.readdir(dir, { withFileTypes: true });
@@ -147,7 +149,9 @@ async function detectLanguagesFromFiles(projectRoot: string): Promise<string[]> 
       } else {
         const ext = path.extname(entry.name).toLowerCase();
         const lang = extLangMap[ext];
-        if (lang) counts[lang] = (counts[lang] ?? 0) + 1;
+        if (lang) {
+          counts[lang] = (counts[lang] ?? 0) + 1;
+        }
       }
     }
   }
@@ -156,7 +160,7 @@ async function detectLanguagesFromFiles(projectRoot: string): Promise<string[]> 
 
   // Return langs sorted by file count (most common first), deduplicated
   return Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
+    .toSorted((a, b) => b[1] - a[1])
     .map(([lang]) => lang);
 }
 
@@ -198,12 +202,17 @@ async function detectFrameworks(
   ];
 
   for (const [match, label] of frameworkMap) {
-    if (found.includes(label)) continue;
+    if (found.includes(label)) {
+      continue;
+    }
     if (typeof match === "string") {
-      if (all.some((k) => k === match || k.startsWith(`${match}/`) || k.startsWith(`@${match}/`)))
+      if (all.some((k) => k === match || k.startsWith(`${match}/`) || k.startsWith(`@${match}/`))) {
         found.push(label);
+      }
     } else {
-      if (all.some((k) => match.test(k))) found.push(label);
+      if (all.some((k) => match.test(k))) {
+        found.push(label);
+      }
     }
   }
 
@@ -238,16 +247,33 @@ async function detectTestFramework(
   pkgDeps: Record<string, unknown>,
 ): Promise<string | undefined> {
   const all = Object.keys(pkgDeps);
-  if (all.includes("vitest")) return "vitest";
-  if (all.includes("jest") || all.some((k) => k.startsWith("@jest/"))) return "jest";
-  if (all.includes("mocha")) return "mocha";
-  if (all.includes("jasmine")) return "jasmine";
-  if (all.includes("ava")) return "ava";
-  if (all.includes("pytest") || (await fileExists(path.join(projectRoot, "pytest.ini"))))
+  if (all.includes("vitest")) {
+    return "vitest";
+  }
+  if (all.includes("jest") || all.some((k) => k.startsWith("@jest/"))) {
+    return "jest";
+  }
+  if (all.includes("mocha")) {
+    return "mocha";
+  }
+  if (all.includes("jasmine")) {
+    return "jasmine";
+  }
+  if (all.includes("ava")) {
+    return "ava";
+  }
+  if (all.includes("pytest") || (await fileExists(path.join(projectRoot, "pytest.ini")))) {
     return "pytest";
-  if (await fileExists(path.join(projectRoot, "vitest.config.ts"))) return "vitest";
-  if (await fileExists(path.join(projectRoot, "jest.config.js"))) return "jest";
-  if (await fileExists(path.join(projectRoot, "jest.config.ts"))) return "jest";
+  }
+  if (await fileExists(path.join(projectRoot, "vitest.config.ts"))) {
+    return "vitest";
+  }
+  if (await fileExists(path.join(projectRoot, "jest.config.js"))) {
+    return "jest";
+  }
+  if (await fileExists(path.join(projectRoot, "jest.config.ts"))) {
+    return "jest";
+  }
   return undefined;
 }
 
@@ -259,15 +285,24 @@ async function detectLintingTools(
   const tools: string[] = [];
   const all = Object.keys(pkgDeps);
 
-  if (all.includes("eslint") || (await fileExists(path.join(projectRoot, ".eslintrc.js"))))
+  if (all.includes("eslint") || (await fileExists(path.join(projectRoot, ".eslintrc.js")))) {
     tools.push("eslint");
-  if (all.includes("oxlint")) tools.push("oxlint");
-  if (all.includes("prettier") || (await fileExists(path.join(projectRoot, ".prettierrc"))))
+  }
+  if (all.includes("oxlint")) {
+    tools.push("oxlint");
+  }
+  if (all.includes("prettier") || (await fileExists(path.join(projectRoot, ".prettierrc")))) {
     tools.push("prettier");
-  if (all.includes("biome")) tools.push("biome");
-  if (all.includes("ruff") || (await fileExists(path.join(projectRoot, "ruff.toml"))))
+  }
+  if (all.includes("biome")) {
+    tools.push("biome");
+  }
+  if (all.includes("ruff") || (await fileExists(path.join(projectRoot, "ruff.toml")))) {
     tools.push("ruff");
-  if (all.includes("pylint")) tools.push("pylint");
+  }
+  if (all.includes("pylint")) {
+    tools.push("pylint");
+  }
 
   return tools;
 }
@@ -278,23 +313,52 @@ async function detectBuildSystem(
   pkgDeps: Record<string, unknown>,
 ): Promise<string | undefined> {
   const all = Object.keys(pkgDeps);
-  if (all.includes("turbo")) return "turborepo";
-  if (all.includes("nx")) return "nx";
-  if (all.includes("tsdown") || all.includes("tsup"))
+  if (all.includes("turbo")) {
+    return "turborepo";
+  }
+  if (all.includes("nx")) {
+    return "nx";
+  }
+  if (all.includes("tsdown") || all.includes("tsup")) {
     return all.includes("tsdown") ? "tsdown" : "tsup";
-  if (all.includes("vite")) return "vite";
-  if (all.includes("webpack")) return "webpack";
-  if (all.includes("rollup")) return "rollup";
-  if (all.includes("esbuild")) return "esbuild";
-  if (await fileExists(path.join(projectRoot, "Makefile"))) return "make";
-  if (await fileExists(path.join(projectRoot, "CMakeLists.txt"))) return "cmake";
-  if (await fileExists(path.join(projectRoot, "Cargo.toml"))) return "cargo";
-  if (await fileExists(path.join(projectRoot, "pyproject.toml"))) return "poetry";
-  if (await fileExists(path.join(projectRoot, "setup.py"))) return "setuptools";
+  }
+  if (all.includes("vite")) {
+    return "vite";
+  }
+  if (all.includes("webpack")) {
+    return "webpack";
+  }
+  if (all.includes("rollup")) {
+    return "rollup";
+  }
+  if (all.includes("esbuild")) {
+    return "esbuild";
+  }
+  if (await fileExists(path.join(projectRoot, "Makefile"))) {
+    return "make";
+  }
+  if (await fileExists(path.join(projectRoot, "CMakeLists.txt"))) {
+    return "cmake";
+  }
+  if (await fileExists(path.join(projectRoot, "Cargo.toml"))) {
+    return "cargo";
+  }
+  if (await fileExists(path.join(projectRoot, "pyproject.toml"))) {
+    return "poetry";
+  }
+  if (await fileExists(path.join(projectRoot, "setup.py"))) {
+    return "setuptools";
+  }
   // Detect package manager from lockfile
-  if (await fileExists(path.join(projectRoot, "pnpm-lock.yaml"))) return "pnpm";
-  if (await fileExists(path.join(projectRoot, "yarn.lock"))) return "yarn";
-  if (await fileExists(path.join(projectRoot, "package-lock.json"))) return "npm";
+  if (await fileExists(path.join(projectRoot, "pnpm-lock.yaml"))) {
+    return "pnpm";
+  }
+  if (await fileExists(path.join(projectRoot, "yarn.lock"))) {
+    return "yarn";
+  }
+  if (await fileExists(path.join(projectRoot, "package-lock.json"))) {
+    return "npm";
+  }
   return undefined;
 }
 
@@ -310,9 +374,9 @@ async function detectProjectInfo(projectRoot: string): Promise<DetectedProjectIn
 
   // Aggregate all deps (prod + dev + peer)
   const allDeps: Record<string, unknown> = {
-    ...((pkg?.dependencies as Record<string, unknown>) ?? {}),
-    ...((pkg?.devDependencies as Record<string, unknown>) ?? {}),
-    ...((pkg?.peerDependencies as Record<string, unknown>) ?? {}),
+    ...(pkg?.dependencies as Record<string, unknown>),
+    ...(pkg?.devDependencies as Record<string, unknown>),
+    ...(pkg?.peerDependencies as Record<string, unknown>),
   };
 
   const [langsByFile, frameworks, testFramework, lintingTools, buildSystem] = await Promise.all([
@@ -392,7 +456,9 @@ const PROVIDERS: ProviderMeta[] = [
 ];
 
 function isProviderConfigured(p: ProviderMeta): boolean {
-  if (!p.envVar) return false;
+  if (!p.envVar) {
+    return false;
+  }
   const val = process.env[p.envVar];
   return typeof val === "string" && val.trim().length > 0;
 }
@@ -416,7 +482,7 @@ async function applyLlmProviderModel(
 async function promptLlmProvider(projectRoot: string): Promise<string | null> {
   const options = [
     ...PROVIDERS.map((p) => ({
-      value: p.id as ProviderChoice,
+      value: p.id,
       label: isProviderConfigured(p) ? `${p.label}  ✓ configured` : p.label,
       hint: isProviderConfigured(p)
         ? `${p.envVar} is set`
@@ -427,15 +493,14 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
     { value: "skip" as ProviderChoice, label: "Skip — configure later" },
   ];
 
-  const chosen = await select<
-    { value: ProviderChoice; label: string; hint?: string }[],
-    ProviderChoice
-  >({
+  const chosen = await select<ProviderChoice>({
     message: "LLM provider to use for AI agents:",
     options,
   });
 
-  if (typeof chosen === "symbol" || chosen === "skip") return null;
+  if (typeof chosen === "symbol" || chosen === "skip") {
+    return null;
+  }
 
   const meta = PROVIDERS.find((p) => p.id === chosen)!;
 
@@ -483,14 +548,18 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
       message: "Ollama base URL:",
       initialValue: "http://127.0.0.1:11434",
     });
-    if (typeof ollamaUrl === "symbol") return null;
+    if (typeof ollamaUrl === "symbol") {
+      return null;
+    }
 
     const ollamaModel = await text({
       message: "Ollama model to use as default:",
       initialValue: "llama3.3",
       placeholder: "llama3.3  or  qwen2.5-coder:32b  or  deepseek-r1:32b",
     });
-    if (typeof ollamaModel === "symbol") return null;
+    if (typeof ollamaModel === "symbol") {
+      return null;
+    }
 
     const modelId = ollamaModel.trim() || "llama3.3";
     const modelRef = `ollama/${modelId}`;
@@ -509,11 +578,12 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
           models: {
             ...existing.models,
             providers: {
-              ...(existing.models?.providers ?? {}),
+              ...existing.models?.providers,
               ollama: {
                 baseUrl: normalizedUrl,
                 api: "ollama" as const,
                 apiKey: "ollama-local",
+                models: [],
               },
             },
           },
@@ -532,14 +602,20 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
       message: "Server base URL (e.g. http://127.0.0.1:8000/v1):",
       initialValue: "http://127.0.0.1:8000/v1",
     });
-    if (typeof vllmUrl === "symbol") return null;
+    if (typeof vllmUrl === "symbol") {
+      return null;
+    }
 
     const vllmModelId = await text({
       message: "Model ID served at that endpoint:",
       placeholder: "meta-llama/Llama-3.1-8B-Instruct",
     });
-    if (typeof vllmModelId === "symbol") return null;
-    if (!vllmModelId.trim()) return null;
+    if (typeof vllmModelId === "symbol") {
+      return null;
+    }
+    if (!vllmModelId.trim()) {
+      return null;
+    }
 
     const modelId = vllmModelId.trim();
     const providerRef = "vllm";
@@ -553,7 +629,7 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
         models: {
           ...existing.models,
           providers: {
-            ...(existing.models?.providers ?? {}),
+            ...existing.models?.providers,
             vllm: {
               baseUrl: vllmUrl.trim().replace(/\/+$/, ""),
               api: "openai-completions" as const,
@@ -648,7 +724,9 @@ async function promptClawLink(
 
   // ── Previously declined? Skip silently ───────────────────────────────────
   const skipped = readSharedEnvVar("CODERCLAW_LINK_SKIPPED");
-  if (skipped === "1") return null;
+  if (skipped === "1") {
+    return null;
+  }
 
   const connect = await confirm({
     message: "Connect to coderClawLink? (manage projects, tasks & agents across your mesh)",
@@ -665,7 +743,9 @@ async function promptClawLink(
     message: "coderClawLink server URL:",
     initialValue: "https://api.coderclaw.ai",
   });
-  if (typeof urlInput === "symbol") return null;
+  if (typeof urlInput === "symbol") {
+    return null;
+  }
   const serverUrl = urlInput.trim().replace(/\/+$/, "") || "https://api.coderclaw.ai";
 
   // ── 2. Login or register ──────────────────────────────────────────────────
@@ -676,10 +756,14 @@ async function promptClawLink(
       { value: "register", label: "No  — create a free account" },
     ],
   });
-  if (typeof authMode === "symbol") return null;
+  if (typeof authMode === "symbol") {
+    return null;
+  }
 
   const emailInput = await text({ message: "Email:" });
-  if (typeof emailInput === "symbol" || !emailInput.trim()) return null;
+  if (typeof emailInput === "symbol" || !emailInput.trim()) {
+    return null;
+  }
   const email = emailInput.trim();
 
   let usernameForReg = "";
@@ -688,12 +772,16 @@ async function promptClawLink(
       message: "Username:",
       initialValue: defaultInstanceName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
     });
-    if (typeof unInput === "symbol" || !unInput.trim()) return null;
+    if (typeof unInput === "symbol" || !unInput.trim()) {
+      return null;
+    }
     usernameForReg = unInput.trim();
   }
 
   const pwdInput = await password({ message: "Password:" });
-  if (typeof pwdInput === "symbol" || !pwdInput.trim()) return null;
+  if (typeof pwdInput === "symbol" || !pwdInput.trim()) {
+    return null;
+  }
   const pwd = pwdInput.trim();
 
   // ── 3. Authenticate ───────────────────────────────────────────────────────
@@ -747,7 +835,9 @@ async function promptClawLink(
       message: "Create your first workspace:",
       initialValue: defaultInstanceName,
     });
-    if (typeof wsNameInput === "symbol" || !wsNameInput.trim()) return null;
+    if (typeof wsNameInput === "symbol" || !wsNameInput.trim()) {
+      return null;
+    }
     const wsSpin = spinner();
     wsSpin.start("Creating workspace…");
     try {
@@ -770,8 +860,10 @@ async function promptClawLink(
       message: "Select workspace:",
       options: tenants.map((t) => ({ value: t.id, label: t.name, hint: t.slug })),
     });
-    if (typeof picked === "symbol") return null;
-    tenantId = picked as number;
+    if (typeof picked === "symbol") {
+      return null;
+    }
+    tenantId = picked;
   }
 
   // ── 5. Get tenant-scoped JWT ──────────────────────────────────────────────
@@ -793,7 +885,9 @@ async function promptClawLink(
     message: "Claw instance name (shown in dashboard):",
     initialValue: defaultInstanceName,
   });
-  if (typeof clawNameInput === "symbol") return null;
+  if (typeof clawNameInput === "symbol") {
+    return null;
+  }
   const clawName = clawNameInput.trim() || defaultInstanceName;
 
   const clawSpin = spinner();

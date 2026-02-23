@@ -66,6 +66,7 @@
     "build:plugin-sdk:dts": "tsc -p tsconfig.plugin-sdk.dts.json",
     "canvas:a2ui:bundle": "bash scripts/bundle-a2ui.sh",
     "check": "pnpm format:check && pnpm tsgo && pnpm lint",
+    "check:docs": "node --import tsx scripts/check-docs.ts",
     "check:loc": "node --import tsx scripts/check-ts-max-loc.ts --max 500",
     "coderclaw:rpc": "node scripts/run-node.mjs agent --mode rpc --json",
     "dev": "node scripts/run-node.mjs",

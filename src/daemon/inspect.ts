@@ -14,7 +14,7 @@ export type ExtraGatewayService = {
   label: string;
   detail: string;
   scope: "user" | "system";
-  marker?: "coderclaw" | "coderclaw" | "coderclaw";
+  marker?: "coderclaw";
   legacy?: boolean;
 };
 

@@ -51,15 +51,21 @@ function run(cmd: string, label?: string): string {
     return "";
   }
   const s = spinner();
-  if (label) s.start(label);
+  if (label) {
+    s.start(label);
+  }
   try {
     const out = execSync(cmd, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
-    if (label) s.stop(`✓ ${label}`);
+    if (label) {
+      s.stop(`✓ ${label}`);
+    }
     return out;
   } catch (err: unknown) {
-    if (label) s.stop(`✗ ${label}`);
+    if (label) {
+      s.stop(`✗ ${label}`);
+    }
     const msg = err instanceof Error ? err.message : String(err);
-    throw new Error(msg);
+    throw new Error(msg, { cause: err });
   }
 }
 
@@ -117,15 +123,21 @@ function prependChangelog(
 
   if (sections.breaking.length > 0) {
     entry += `\n### Breaking\n\n`;
-    for (const line of sections.breaking) entry += `- ${line}\n`;
+    for (const line of sections.breaking) {
+      entry += `- ${line}\n`;
+    }
   }
   if (sections.changes.length > 0) {
     entry += `\n### Changes\n\n`;
-    for (const line of sections.changes) entry += `- ${line}\n`;
+    for (const line of sections.changes) {
+      entry += `- ${line}\n`;
+    }
   }
   if (sections.fixes.length > 0) {
     entry += `\n### Fixes\n\n`;
-    for (const line of sections.fixes) entry += `- ${line}\n`;
+    for (const line of sections.fixes) {
+      entry += `- ${line}\n`;
+    }
   }
 
   entry += "\n";
@@ -150,7 +162,9 @@ async function collectBullets(prompt: string): Promise<string[]> {
     message: prompt,
     placeholder: "One item per line (press Enter twice when done, or leave blank to skip)",
   });
-  if (typeof raw === "symbol" || !raw.trim()) return [];
+  if (typeof raw === "symbol" || !raw.trim()) {
+    return [];
+  }
   return raw
     .split(/\r?\n/)
     .map((l) => l.replace(/^[-*]\s*/, "").trim())
@@ -347,7 +361,7 @@ async function main() {
     }
     nextVersion = custom.trim();
   } else {
-    nextVersion = versionPick as string;
+    nextVersion = versionPick;
   }
 
   // ── 2. Collect changelog entries ─────────────────────────────────────────
@@ -409,13 +423,17 @@ async function main() {
 
   if (hasCLEntry) {
     prependChangelog(nextVersion, { changes, breaking, fixes });
-    if (!DRY) console.log(`✓ Prepended CHANGELOG.md`);
+    if (!DRY) {
+      console.log(`✓ Prepended CHANGELOG.md`);
+    }
   }
 
   run("pnpm plugins:sync", "Syncing extension versions (pnpm plugins:sync)");
 
   if (doApps) {
-    if (!DRY) console.log("\nBumping native app versions…");
+    if (!DRY) {
+      console.log("\nBumping native app versions…");
+    }
     bumpNativeApps(prevVersion, nextVersion);
   }
 
