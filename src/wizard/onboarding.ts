@@ -370,7 +370,8 @@ export async function runOnboardingWizard(
     return;
   }
 
-  const existingWorkspace = baseConfig.agents?.defaults?.workspace ?? onboardHelpers.DEFAULT_WORKSPACE;
+  const existingWorkspace =
+    baseConfig.agents?.defaults?.workspace ?? onboardHelpers.DEFAULT_WORKSPACE;
   const workspaceInput =
     opts.workspace ??
     (flow === "quickstart" || keepExistingValues
@@ -454,7 +455,8 @@ export async function runOnboardingWizard(
     settings = {
       port: quickstartGateway.port,
       bind: quickstartGateway.bind,
-      customBindHost: quickstartGateway.bind === "custom" ? quickstartGateway.customBindHost : undefined,
+      customBindHost:
+        quickstartGateway.bind === "custom" ? quickstartGateway.customBindHost : undefined,
       authMode: quickstartGateway.authMode,
       gatewayToken: quickstartGateway.authMode === "token" ? quickstartGateway.token : undefined,
       tailscaleMode: quickstartGateway.tailscaleMode,

@@ -53,8 +53,9 @@
    - `install-smoke.yml` and `sandbox-common-smoke.yml` are separate workflows that could run as jobs under `ci.yml` with path filters.
 
 3. **Release workflow split (resolved)**
-  - Consolidated into `.github/workflows/release.yml`.
-  - No separate npm/docker release workflow files remain.
+
+- Consolidated into `.github/workflows/release.yml`.
+- No separate npm/docker release workflow files remain.
 
 4. **Self-hosted runner use for non-build automation**
    - `stale.yml`, `labeler.yml`, `auto-response.yml` run on self-hosted runners.

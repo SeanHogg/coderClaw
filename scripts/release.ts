@@ -90,7 +90,11 @@ function suggestVersions(current: string): { value: string; label: string; hint?
     // Today stable
     suggestions.push({ value: today, label: today, hint: "stable release" });
     // Today beta.1
-    suggestions.push({ value: `${today}-beta.1`, label: `${today}-beta.1`, hint: "new date, beta.1" });
+    suggestions.push({
+      value: `${today}-beta.1`,
+      label: `${today}-beta.1`,
+      hint: "new date, beta.1",
+    });
   } else {
     // Current is stable - next beta or new day
     suggestions.push({ value: `${today}-beta.1`, label: `${today}-beta.1`, hint: "today beta.1" });
@@ -105,7 +109,10 @@ function suggestVersions(current: string): { value: string; label: string; hint?
 // CHANGELOG
 // ---------------------------------------------------------------------------
 
-function prependChangelog(version: string, sections: { changes: string[]; breaking: string[]; fixes: string[] }): void {
+function prependChangelog(
+  version: string,
+  sections: { changes: string[]; breaking: string[]; fixes: string[] },
+): void {
   let entry = `## ${version}\n`;
 
   if (sections.breaking.length > 0) {
@@ -344,14 +351,20 @@ async function main() {
   }
 
   // ── 2. Collect changelog entries ─────────────────────────────────────────
-  note("Enter changelog entries (multi-line ok, one bullet per line, blank to skip a section).", "CHANGELOG");
-  const changes  = await collectBullets("Changes (new features / improvements):");
+  note(
+    "Enter changelog entries (multi-line ok, one bullet per line, blank to skip a section).",
+    "CHANGELOG",
+  );
+  const changes = await collectBullets("Changes (new features / improvements):");
   const breaking = await collectBullets("Breaking changes:");
-  const fixes    = await collectBullets("Fixes:");
+  const fixes = await collectBullets("Fixes:");
 
   const hasCLEntry = changes.length + breaking.length + fixes.length > 0;
   if (!hasCLEntry) {
-    const proceed = await confirm({ message: "No changelog entries — continue anyway?", initialValue: false });
+    const proceed = await confirm({
+      message: "No changelog entries — continue anyway?",
+      initialValue: false,
+    });
     if (typeof proceed === "symbol" || !proceed) {
       cancel("Aborted");
       process.exit(0);
@@ -372,9 +385,13 @@ async function main() {
   // ── 4. Confirm plan ───────────────────────────────────────────────────────
   const lines = [
     `  ${prevVersion}  →  ${nextVersion}`,
-    hasCLEntry ? `  CHANGELOG: ${changes.length} changes, ${breaking.length} breaking, ${fixes.length} fixes` : "  CHANGELOG: skipped",
+    hasCLEntry
+      ? `  CHANGELOG: ${changes.length} changes, ${breaking.length} breaking, ${fixes.length} fixes`
+      : "  CHANGELOG: skipped",
     `  pnpm plugins:sync`,
-    doApps ? `  native apps: iOS / Android / macOS → ${toAppVersion(nextVersion)}` : "  native apps: skipped",
+    doApps
+      ? `  native apps: iOS / Android / macOS → ${toAppVersion(nextVersion)}`
+      : "  native apps: skipped",
     `  pnpm format && pnpm check`,
     `  pnpm release:check`,
   ];

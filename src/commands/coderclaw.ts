@@ -6,17 +6,22 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { confirm, intro, note, outro, password, select, spinner, text } from "@clack/prompts";
 import { Command } from "commander";
+import {
+  initializeCoderClawProject,
+  isCoderClawProject,
+  loadProjectContext,
+  updateProjectContextFields,
+} from "../coderclaw/project-context.js";
 import { readConfigFileSnapshot, writeConfigFile } from "../config/config.js";
-import { initializeCoderClawProject, isCoderClawProject, loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
+import { upsertSharedEnvVar, readSharedEnvVar } from "../infra/env-file.js";
+import { theme } from "../terminal/theme.js";
 import { runTui } from "../tui/tui.js";
 import { VERSION } from "../version.js";
-import { upsertSharedEnvVar, readSharedEnvVar } from "../infra/env-file.js";
 import {
   setAnthropicApiKey,
   setGeminiApiKey,
   setOpenrouterApiKey,
 } from "./onboard-auth.credentials.js";
-import { theme } from "../terminal/theme.js";
 
 // ---------------------------------------------------------------------------
 // Persistent session
@@ -35,14 +40,13 @@ export async function runCoderClawSession(
   const cwd = projectRoot === process.cwd() ? projectRoot : `${projectRoot} (${process.cwd()})`;
 
   // ── Banner (version · model · cwd) ──────────────────────────────────────
-  const lines: string[] = [
-    theme.heading("coderClaw") + " " + theme.muted(VERSION),
-  ];
+  const lines: string[] = [theme.heading("coderClaw") + " " + theme.muted(VERSION)];
   if (context?.llm) {
     lines.push(theme.muted(`  ${context.llm.provider} \u00b7 ${context.llm.model}`));
   }
   if (context?.clawLink) {
-    const label = context.clawLink.instanceSlug ?? context.clawLink.instanceName ?? context.clawLink.instanceId;
+    const label =
+      context.clawLink.instanceSlug ?? context.clawLink.instanceName ?? context.clawLink.instanceId;
     lines.push(theme.muted(`  \u{1F517} coderClawLink \u00b7 ${label}`));
   }
   lines.push(theme.muted(`  ${cwd}`));
@@ -276,7 +280,8 @@ async function detectBuildSystem(
   const all = Object.keys(pkgDeps);
   if (all.includes("turbo")) return "turborepo";
   if (all.includes("nx")) return "nx";
-  if (all.includes("tsdown") || all.includes("tsup")) return all.includes("tsdown") ? "tsdown" : "tsup";
+  if (all.includes("tsdown") || all.includes("tsup"))
+    return all.includes("tsdown") ? "tsdown" : "tsup";
   if (all.includes("vite")) return "vite";
   if (all.includes("webpack")) return "webpack";
   if (all.includes("rollup")) return "rollup";
@@ -339,14 +344,7 @@ async function detectProjectInfo(projectRoot: string): Promise<DetectedProjectIn
 // LLM provider helpers
 // ---------------------------------------------------------------------------
 
-type ProviderChoice =
-  | "anthropic"
-  | "openai"
-  | "openrouter"
-  | "gemini"
-  | "ollama"
-  | "vllm"
-  | "skip";
+type ProviderChoice = "anthropic" | "openai" | "openrouter" | "gemini" | "ollama" | "vllm" | "skip";
 
 interface ProviderMeta {
   id: ProviderChoice;
@@ -399,7 +397,11 @@ function isProviderConfigured(p: ProviderMeta): boolean {
   return typeof val === "string" && val.trim().length > 0;
 }
 
-async function applyLlmProviderModel(projectRoot: string, provider: string, modelRef: string): Promise<void> {
+async function applyLlmProviderModel(
+  projectRoot: string,
+  provider: string,
+  modelRef: string,
+): Promise<void> {
   try {
     await updateProjectContextFields(projectRoot, { llm: { provider, model: modelRef } });
   } catch {
@@ -425,7 +427,10 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
     { value: "skip" as ProviderChoice, label: "Skip — configure later" },
   ];
 
-  const chosen = await select<{ value: ProviderChoice; label: string; hint?: string }[], ProviderChoice>({
+  const chosen = await select<
+    { value: ProviderChoice; label: string; hint?: string }[],
+    ProviderChoice
+  >({
     message: "LLM provider to use for AI agents:",
     options,
   });
@@ -435,7 +440,12 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
   const meta = PROVIDERS.find((p) => p.id === chosen)!;
 
   // ── Cloud providers: API key ──────────────────────────────────────────────
-  if (chosen === "anthropic" || chosen === "openai" || chosen === "openrouter" || chosen === "gemini") {
+  if (
+    chosen === "anthropic" ||
+    chosen === "openai" ||
+    chosen === "openrouter" ||
+    chosen === "gemini"
+  ) {
     if (isProviderConfigured(meta)) {
       note(`${meta.envVar} is already set — keeping existing credential.`, meta.label);
       await applyLlmProviderModel(projectRoot, chosen, meta.defaultModel);
@@ -588,7 +598,7 @@ async function clawLinkFetch<T>(
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
   const res = await fetch(url, { ...rest, headers });
-  const body = await res.json().catch(() => ({})) as Record<string, unknown>;
+  const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
   if (!res.ok) {
     const msg = (body.error as string) ?? (body.message as string) ?? res.statusText;
     throw new Error(`${res.status} ${msg}`);
@@ -607,7 +617,10 @@ async function clawLinkFetch<T>(
  *   5. Register new claw       → claw.id, claw.slug, one-time apiKey
  *   6. Persist everything globally + to project context.yaml
  */
-async function promptClawLink(projectRoot: string, defaultInstanceName: string): Promise<string | null> {
+async function promptClawLink(
+  projectRoot: string,
+  defaultInstanceName: string,
+): Promise<string | null> {
   // ── Already connected? Check global ~/.coderclaw/.env first ──────────────
   const existingKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
   if (existingKey) {
@@ -615,10 +628,11 @@ async function promptClawLink(projectRoot: string, defaultInstanceName: string):
     const existingTenantId = readSharedEnvVar("CODERCLAW_LINK_TENANT_ID");
     // Also check project context for the claw slug
     const existingCtx = await loadProjectContext(projectRoot).catch(() => null);
-    const clawLabel = existingCtx?.clawLink?.instanceSlug
-      ?? existingCtx?.clawLink?.instanceName
-      ?? existingCtx?.clawLink?.instanceId
-      ?? "(registered)";
+    const clawLabel =
+      existingCtx?.clawLink?.instanceSlug ??
+      existingCtx?.clawLink?.instanceName ??
+      existingCtx?.clawLink?.instanceId ??
+      "(registered)";
     note(
       [
         `URL:    ${existingUrl}`,
@@ -688,18 +702,18 @@ async function promptClawLink(projectRoot: string, defaultInstanceName: string):
   try {
     if (authMode === "register") {
       authSpin.start("Creating account…");
-      const res = await clawLinkFetch<{ token: string }>(
-        `${serverUrl}/api/auth/web/register`,
-        { method: "POST", body: JSON.stringify({ email, username: usernameForReg, password: pwd }) },
-      );
+      const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/register`, {
+        method: "POST",
+        body: JSON.stringify({ email, username: usernameForReg, password: pwd }),
+      });
       webToken = res.token;
       authSpin.stop("Account created");
     } else {
       authSpin.start("Authenticating…");
-      const res = await clawLinkFetch<{ token: string }>(
-        `${serverUrl}/api/auth/web/login`,
-        { method: "POST", body: JSON.stringify({ email, password: pwd }) },
-      );
+      const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/login`, {
+        method: "POST",
+        body: JSON.stringify({ email, password: pwd }),
+      });
       webToken = res.token;
       authSpin.stop("Authenticated");
     }
@@ -763,10 +777,11 @@ async function promptClawLink(projectRoot: string, defaultInstanceName: string):
   // ── 5. Get tenant-scoped JWT ──────────────────────────────────────────────
   let tenantJwt = "";
   try {
-    const res = await clawLinkFetch<{ token: string }>(
-      `${serverUrl}/api/auth/tenant-token`,
-      { method: "POST", token: webToken, body: JSON.stringify({ tenantId }) },
-    );
+    const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/tenant-token`, {
+      method: "POST",
+      token: webToken,
+      body: JSON.stringify({ tenantId }),
+    });
     tenantJwt = res.token;
   } catch (err) {
     note(String(err instanceof Error ? err.message : err), "Could not get workspace token");
@@ -790,10 +805,11 @@ async function promptClawLink(projectRoot: string, defaultInstanceName: string):
     const res = await clawLinkFetch<{
       claw: { id: number; name: string; slug: string };
       apiKey: string;
-    }>(
-      `${serverUrl}/api/claws`,
-      { method: "POST", token: tenantJwt, body: JSON.stringify({ name: clawName }) },
-    );
+    }>(`${serverUrl}/api/claws`, {
+      method: "POST",
+      token: tenantJwt,
+      body: JSON.stringify({ name: clawName }),
+    });
     clawId = String(res.claw.id);
     clawSlug = res.claw.slug;
     apiKey = res.apiKey;
@@ -936,11 +952,17 @@ export function createInitCommand(): Command {
           description: descriptionInput || detected.description,
           languages:
             languagesInput.trim().length > 0
-              ? languagesInput.split(",").map((l) => l.trim()).filter(Boolean)
+              ? languagesInput
+                  .split(",")
+                  .map((l) => l.trim())
+                  .filter(Boolean)
               : detected.languages,
           frameworks:
             frameworksInput.trim().length > 0
-              ? frameworksInput.split(",").map((f) => f.trim()).filter(Boolean)
+              ? frameworksInput
+                  .split(",")
+                  .map((f) => f.trim())
+                  .filter(Boolean)
               : detected.frameworks,
           buildSystem: detected.buildSystem,
           testFramework: detected.testFramework,
@@ -962,10 +984,7 @@ export function createInitCommand(): Command {
         await promptLlmProvider(projectRoot);
 
         // CoderClawLink connection
-        await promptClawLink(
-          projectRoot,
-          projectNameInput || detected.projectName,
-        );
+        await promptClawLink(projectRoot, projectNameInput || detected.projectName);
 
         const aiPopulate = await confirm({
           message: "Use an AI agent to populate context.yaml, architecture.md, and rules.yaml now?",

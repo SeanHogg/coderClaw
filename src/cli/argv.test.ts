@@ -18,9 +18,9 @@ describe("argv helpers", () => {
     expect(hasHelpOrVersion(["node", "coderclaw", "-V"])).toBe(true);
     expect(hasHelpOrVersion(["node", "coderclaw", "help"])).toBe(true);
     expect(hasHelpOrVersion(["node", "coderclaw", "status"])).toBe(false);
-    expect(
-      hasHelpOrVersion(["node", "coderclaw", "agent", "--message", "help", "--deliver"]),
-    ).toBe(false);
+    expect(hasHelpOrVersion(["node", "coderclaw", "agent", "--message", "help", "--deliver"])).toBe(
+      false,
+    );
   });
 
   it("extracts command path ignoring flags and terminator", () => {
