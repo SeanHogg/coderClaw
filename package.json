@@ -129,7 +129,7 @@
   "dependencies": {
     "@agentclientprotocol/sdk": "0.14.1",
     "@aws-sdk/client-bedrock": "^3.992.0",
-    "@buape/carbon": "0.0.0-beta-20260216184201",
+    "@buape/carbon": "0.14.0",
     "@clack/prompts": "^1.0.1",
     "@grammyjs/runner": "^2.0.3",
     "@grammyjs/transformer-throttler": "^1.2.1",
