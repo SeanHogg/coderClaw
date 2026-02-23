@@ -107,8 +107,6 @@ async function main() {
     ...process.env,
     CODERCLAW_CONFIG_PATH: configPath,
     CODERCLAW_STATE_DIR: stateDir,
-    CODERCLAW_CONFIG_PATH: configPath,
-    CODERCLAW_STATE_DIR: stateDir,
     ZAI_API_KEY: zaiKey,
     Z_AI_API_KEY: "",
   };

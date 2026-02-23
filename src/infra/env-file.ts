@@ -63,7 +63,9 @@ export function readSharedEnvVar(
 ): string | undefined {
   const dir = resolveConfigDir(env);
   const filepath = path.join(dir, ".env");
-  if (!fs.existsSync(filepath)) return undefined;
+  if (!fs.existsSync(filepath)) {
+    return undefined;
+  }
   const raw = fs.readFileSync(filepath, "utf8");
   const matcher = new RegExp(`^(?:export\\s+)?${escapeRegExp(key.trim())}=(.*)$`, "m");
   const match = raw.match(matcher);

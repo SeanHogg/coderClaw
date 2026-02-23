@@ -69,9 +69,7 @@ async function requireRiskAcknowledgement(params: {
 function hasConfiguredModelOrAuth(config: CoderClawConfig): boolean {
   const defaultsModel = config.agents?.defaults?.model;
   const hasDefaultModel =
-    typeof defaultsModel === "string"
-      ? defaultsModel.trim().length > 0
-      : typeof defaultsModel?.primary === "string" && defaultsModel.primary.trim().length > 0;
+    typeof defaultsModel?.primary === "string" && defaultsModel.primary.trim().length > 0;
   const hasModelCatalog =
     Boolean(config.models) && Object.keys(config.models as Record<string, unknown>).length > 0;
   return hasDefaultModel || hasModelCatalog;
@@ -180,14 +178,14 @@ export async function runOnboardingWizard(
       "Existing config detected",
     );
 
-    const action = (await prompter.select({
+    const action = await prompter.select<"keep" | "modify" | "reset">({
       message: "Config handling",
       options: [
         { value: "keep", label: "Use existing values" },
         { value: "modify", label: "Update values" },
         { value: "reset", label: "Reset" },
       ],
-    })) as "keep" | "modify" | "reset";
+    });
     configHandlingAction = action;
 
     if (action === "reset") {
