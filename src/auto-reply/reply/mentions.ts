@@ -66,7 +66,9 @@ export function buildMentionRegexes(cfg: CoderClawConfig | undefined, agentId?: 
 }
 
 export function normalizeMentionText(text: string): string {
-  const stripped = (text ?? "").replace(/[\u200b-\u200f\u202a-\u202e\u2060-\u206f]/g, "").toLowerCase();
+  const stripped = (text ?? "")
+    .replace(/[\u200b-\u200f\u202a-\u202e\u2060-\u206f]/g, "")
+    .toLowerCase();
   return stripped.replace(/\bopenclaw\b/g, "coderclaw");
 }
 
