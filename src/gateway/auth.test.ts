@@ -23,10 +23,10 @@ function createLimiterSpy(): AuthRateLimiter & {
 }
 
 describe("gateway auth", () => {
-  it("resolves token/password from CODERCLAW gateway env vars", () => {
+  it("ignores legacy CODERCLAW gateway env vars in favor of config", () => {
     expect(
       resolveGatewayAuth({
-        authConfig: {},
+        authConfig: { token: "config-token", password: "config-password" },
         env: {
           CODERCLAW_GATEWAY_TOKEN: "env-token",
           CODERCLAW_GATEWAY_PASSWORD: "env-password",
@@ -34,8 +34,8 @@ describe("gateway auth", () => {
       }),
     ).toMatchObject({
       mode: "password",
-      token: "env-token",
-      password: "env-password",
+      token: "config-token",
+      password: "config-password",
     });
   });
 

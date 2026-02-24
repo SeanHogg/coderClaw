@@ -183,8 +183,8 @@ export function resolveGatewayAuth(params: {
 }): ResolvedGatewayAuth {
   const authConfig = params.authConfig ?? {};
   const env = params.env ?? process.env;
-  const token = authConfig.token ?? env.CODERCLAW_GATEWAY_TOKEN ?? undefined;
-  const password = authConfig.password ?? env.CODERCLAW_GATEWAY_PASSWORD ?? undefined;
+  const token = authConfig.token ?? undefined;
+  const password = authConfig.password ?? undefined;
   const trustedProxy = authConfig.trustedProxy;
 
   let mode: ResolvedGatewayAuth["mode"];
