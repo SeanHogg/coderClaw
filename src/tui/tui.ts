@@ -676,6 +676,40 @@ export async function runTui(opts: TuiOptions) {
     clearLocalRunIds,
   });
 
+  // Stops TUI, runs onboarding wizard, starts gateway if needed, then spawns
+  // a fresh TUI process automatically — no manual re-run required.
+  const handleSetup = async () => {
+    chatLog.addSystem("Stopping TUI — setup wizard starting…");
+    tui.requestRender();
+    await new Promise<void>((r) => setTimeout(r, 80)); // let final render flush
+    client.stop();
+    tui.stop();
+    await new Promise<void>((r) => setTimeout(r, 50));
+    const { restoreTerminalState } = await import("../terminal/restore.js");
+    const { runInteractiveOnboarding } = await import("../commands/onboard-interactive.js");
+    const { startGatewayBackground } = await import("./tui-setup-check.js");
+    restoreTerminalState("pre-setup-wizard", { resumeStdinIfPaused: true });
+    try {
+      await runInteractiveOnboarding({ flow: "quickstart" });
+    } catch (err) {
+      process.stderr.write(`Setup wizard failed: ${String(err)}\n`);
+    }
+    // Start gateway in background if daemon install failed (e.g. no admin on Windows).
+    await startGatewayBackground();
+    // Spawn a fresh detached TUI then exit this process immediately.
+    // The child inherits the terminal; the env flag tells tui-cli to skip
+    // the pre-launch setup check so the wizard doesn't re-run.
+    const { spawn } = await import("node:child_process");
+    const child = spawn(process.execPath, [process.argv[1], "tui"], {
+      detached: true,
+      stdio: "inherit",
+      cwd: process.cwd(),
+      env: { ...process.env, CODERCLAW_SKIP_SETUP_CHECK: "1" },
+    });
+    child.unref();
+    process.exit(0);
+  };
+
   const { handleCommand, sendMessage, openModelSelector, openAgentSelector, openSessionSelector } =
     createCommandHandlers({
       client,
@@ -696,6 +730,7 @@ export async function runTui(opts: TuiOptions) {
       formatSessionKey,
       noteLocalRunId,
       forgetLocalRunId,
+      onSetup: handleSetup,
     });
 
   const { runLocalShellLine } = createLocalShellRunner({
@@ -791,12 +826,16 @@ export async function runTui(opts: TuiOptions) {
   };
 
   client.onDisconnected = (reason) => {
+    const isFirstFailure = !wasDisconnected && !isConnected;
     isConnected = false;
     wasDisconnected = true;
     historyLoaded = false;
     const reasonLabel = reason?.trim() ? reason.trim() : "closed";
     setConnectionStatus(`gateway disconnected: ${reasonLabel}`, 5000);
     setActivityStatus("idle");
+    if (isFirstFailure) {
+      chatLog.addSystem("Gateway not reachable. Type /setup or /onboard to run the setup wizard.");
+    }
     updateFooter();
     tui.requestRender();
   };

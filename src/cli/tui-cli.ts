@@ -25,6 +25,33 @@ export function registerTuiCli(program: Command) {
     )
     .action(async (opts) => {
       try {
+        // Pre-launch setup detection — mirrors Claude Code's approach.
+        // If config is missing or no model is configured, run the onboarding
+        // wizard inline before the TUI starts.
+        // Skip when spawned from handleSetup (already ran wizard there).
+        const { checkIfSetupNeeded } = await import("../tui/tui-setup-check.js");
+        const setupCheck =
+          process.env.CODERCLAW_SKIP_SETUP_CHECK === "1"
+            ? ({ needed: false } as const)
+            : await checkIfSetupNeeded();
+        if (setupCheck.needed) {
+          defaultRuntime.log(theme.muted(setupCheck.hint));
+          const { runInteractiveOnboarding } = await import("../commands/onboard-interactive.js");
+          await runInteractiveOnboarding({ flow: "quickstart" });
+          // After onboarding, try to start the gateway if it isn't running
+          // (daemon install may have failed on Windows without admin rights).
+          const { startGatewayBackground } = await import("../tui/tui-setup-check.js");
+          const started = await startGatewayBackground();
+          if (!started) {
+            defaultRuntime.log(
+              theme.muted("Gateway not reachable yet — TUI will retry when it connects."),
+            );
+          }
+          // Fall through to launch the TUI. If the wizard launched its own TUI
+          // (user picked "Hatch in TUI"), that session has already exited; we
+          // start a fresh one below.
+        }
+
         const timeoutMs = parseTimeoutMs(opts.timeoutMs);
         if (opts.timeoutMs !== undefined && timeoutMs === undefined) {
           defaultRuntime.error(

@@ -81,13 +81,13 @@ export function formatCliBannerArt(options: BannerOptions = {}): string {
 
   const colorChar = (ch: string) => {
     if (ch === "█") {
-      return theme.accentBright(ch);
+      return theme.brand(ch);
     }
     if (ch === "░") {
-      return theme.accentDim(ch);
+      return theme.info(ch);
     }
     if (ch === "▀") {
-      return theme.accent(ch);
+      return theme.brand(ch);
     }
     return theme.muted(ch);
   };

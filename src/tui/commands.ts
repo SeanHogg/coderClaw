@@ -22,6 +22,7 @@ export type SlashCommandOptions = {
 
 const COMMAND_ALIASES: Record<string, string> = {
   elev: "elevated",
+  onboard: "setup",
 };
 
 export function parseCommand(input: string): ParsedCommand {
@@ -119,6 +120,8 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
     { name: "settings", description: "Open settings" },
     { name: "exit", description: "Exit the TUI" },
     { name: "quit", description: "Exit the TUI" },
+    { name: "setup", description: "Run the setup/onboarding wizard" },
+    { name: "onboard", description: "Alias for /setup" },
   ];
 
   const seen = new Set(commands.map((command) => command.name));
@@ -159,5 +162,6 @@ export function helpText(options: SlashCommandOptions = {}): string {
     "/abort",
     "/settings",
     "/exit",
+    "/setup or /onboard",
   ].join("\n");
 }

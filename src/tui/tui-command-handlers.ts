@@ -43,6 +43,7 @@ type CommandHandlerContext = {
   applySessionInfoFromPatch: (result: SessionsPatchResult) => void;
   noteLocalRunId: (runId: string) => void;
   forgetLocalRunId?: (runId: string) => void;
+  onSetup?: () => Promise<void>;
 };
 
 export function createCommandHandlers(context: CommandHandlerContext) {
@@ -65,6 +66,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
     applySessionInfoFromPatch,
     noteLocalRunId,
     forgetLocalRunId,
+    onSetup,
   } = context;
 
   const setAgent = async (id: string) => {
@@ -455,6 +457,15 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         tui.stop();
         process.exit(0);
         break;
+      case "setup":
+        if (onSetup) {
+          chatLog.addSystem("Launching setup wizard — TUI will restart when complete.");
+          tui.requestRender();
+          await onSetup();
+        } else {
+          chatLog.addSystem("Run: coderclaw onboard");
+        }
+        break;
       default:
         await sendMessage(raw);
         break;
@@ -463,6 +474,15 @@ export function createCommandHandlers(context: CommandHandlerContext) {
   };
 
   const sendMessage = async (text: string) => {
+    // Plain-text "setup"/"onboard" fallback: intercept when gateway is not
+    // connected so the user doesn't need to remember the slash prefix.
+    const lower = text.trim().toLowerCase();
+    if (!state.isConnected && (lower === "setup" || lower === "onboard") && onSetup) {
+      chatLog.addSystem("Launching setup wizard — TUI will restart when complete.");
+      tui.requestRender();
+      await onSetup();
+      return;
+    }
     try {
       chatLog.addUser(text);
       tui.requestRender();

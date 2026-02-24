@@ -2,6 +2,12 @@
 
 Docs: https://docs.coderclaw.ai
 
+## 2026.2.23-beta.6
+
+### Changes
+
+- Release: version bump to beta.6 with extension versions synced.
+
 ## 2026.2.23-beta.5
 
 ### Changes
