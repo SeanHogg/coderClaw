@@ -550,6 +550,29 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           chatLog.addSystem("  context.yaml – project metadata");
           chatLog.addSystem("  architecture.md – design documentation");
           chatLog.addSystem("  rules.yaml – coding standards");
+          chatLog.addSystem("Running deep codebase understanding to update project files...");
+          if (state.isConnected) {
+            await sendMessage(
+              [
+                "Initialize this project by reviewing the current repository and updating these files with accurate, concrete project context:",
+                "- .coderClaw/context.yaml",
+                "- .coderClaw/architecture.md",
+                "- .coderClaw/rules.yaml",
+                "",
+                "Use Deep Codebase Understanding:",
+                "- AST parsing",
+                "- semantic maps",
+                "- dependency graphs",
+                "- git history",
+                "",
+                "If required details are ambiguous, ask concise wizard-style follow-up questions before finalizing file updates.",
+              ].join("\n"),
+            );
+          } else {
+            chatLog.addSystem(
+              "Gateway is disconnected. Reconnect and run /init again to auto-populate .coderClaw files with AI.",
+            );
+          }
         } catch (err) {
           chatLog.addSystem(
             `Failed to initialize project: ${err instanceof Error ? err.message : String(err)}`,

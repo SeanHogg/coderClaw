@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026.2.23-beta.11
+
+### Changes
+
+- bug fixes
+
 Docs: https://docs.coderclaw.ai
 
 ## 2026.2.23-beta.10

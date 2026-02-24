@@ -1,11 +1,9 @@
 version: 1
-projectName: coderclaw
-description: ai coding agent
-rootPath: E:\code\agentic\coderClaw
-languages:
-  - typescript
-frameworks:
-  - ""
+projectName: coderClaw
+description: A coderClaw-enabled project
+rootPath: C:\code\agentic\coderClaw
+languages: []
+frameworks: []
 architecture:
   style: unknown
   layers: []
