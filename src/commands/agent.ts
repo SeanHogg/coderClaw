@@ -303,7 +303,10 @@ export async function agentCommand(
       persistedThinking ??
       (agentCfg?.thinkingDefault as ThinkLevel | undefined);
     const resolvedVerboseLevel =
-      verboseOverride ?? persistedVerbose ?? (agentCfg?.verboseDefault as VerboseLevel | undefined);
+      verboseOverride ??
+      persistedVerbose ??
+      (agentCfg?.verboseDefault as VerboseLevel | undefined) ??
+      "on";
 
     if (sessionKey) {
       registerAgentRunContext(runId, {

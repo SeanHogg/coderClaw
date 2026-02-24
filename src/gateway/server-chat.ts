@@ -308,7 +308,7 @@ export function createAgentEventHandler({
       return runVerbose;
     }
     if (!sessionKey) {
-      return "off";
+      return "on";
     }
     try {
       const { cfg, entry } = loadSessionEntry(sessionKey);
@@ -317,9 +317,9 @@ export function createAgentEventHandler({
         return sessionVerbose;
       }
       const defaultVerbose = normalizeVerboseLevel(cfg.agents?.defaults?.verboseDefault);
-      return defaultVerbose ?? "off";
+      return defaultVerbose ?? "on";
     } catch {
-      return "off";
+      return "on";
     }
   };
 

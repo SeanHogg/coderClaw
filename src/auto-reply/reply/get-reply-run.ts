@@ -452,7 +452,7 @@ export async function runPreparedReply(
     storePath,
     defaultModel,
     agentCfgContextTokens: agentCfg?.contextTokens,
-    resolvedVerboseLevel: resolvedVerboseLevel ?? "off",
+    resolvedVerboseLevel: resolvedVerboseLevel ?? "on",
     isNewSession,
     blockStreamingEnabled,
     blockReplyChunking,

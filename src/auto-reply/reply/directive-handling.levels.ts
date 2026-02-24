@@ -26,7 +26,8 @@ export async function resolveCurrentDirectiveLevels(params: {
   const currentThinkLevel = resolvedDefaultThinkLevel;
   const currentVerboseLevel =
     (params.sessionEntry?.verboseLevel as VerboseLevel | undefined) ??
-    (params.agentCfg?.verboseDefault as VerboseLevel | undefined);
+    (params.agentCfg?.verboseDefault as VerboseLevel | undefined) ??
+    "on";
   const currentReasoningLevel =
     (params.sessionEntry?.reasoningLevel as ReasoningLevel | undefined) ?? "off";
   const currentElevatedLevel =

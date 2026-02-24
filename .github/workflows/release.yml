@@ -36,6 +36,8 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          CODERCLAW_A2UI_SKIP_MISSING: "1"
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
@@ -76,6 +78,8 @@ jobs:
       - name: Build if no dist artifact
         if: steps.download-dist.outcome == 'failure'
         run: pnpm build
+        env:
+          CODERCLAW_A2UI_SKIP_MISSING: "1"
 
       - name: Configure npm
         run: |

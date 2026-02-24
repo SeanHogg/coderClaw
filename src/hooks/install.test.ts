@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import JSZip from "jszip";
+import * as tar from "tar";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   expectSingleNpmInstallIgnoreScriptsCall,
@@ -12,14 +14,94 @@ import { isAddressInUseError } from "./gmail-watcher.js";
 const fixtureRoot = path.join(os.tmpdir(), `coderclaw-hook-install-${randomUUID()}`);
 let tempDirIndex = 0;
 
+type HookPackFixture = {
+  packageName: string;
+  hookDirName: string;
+  hookName: string;
+};
+
 const fixturesDir = path.resolve(process.cwd(), "test", "fixtures", "hooks-install");
-const zipHooksBuffer = fs.readFileSync(path.join(fixturesDir, "zip-hooks.zip"));
 const zipTraversalBuffer = fs.readFileSync(path.join(fixturesDir, "zip-traversal.zip"));
-const tarHooksBuffer = fs.readFileSync(path.join(fixturesDir, "tar-hooks.tar"));
 const tarTraversalBuffer = fs.readFileSync(path.join(fixturesDir, "tar-traversal.tar"));
-const tarEvilIdBuffer = fs.readFileSync(path.join(fixturesDir, "tar-evil-id.tar"));
-const tarReservedIdBuffer = fs.readFileSync(path.join(fixturesDir, "tar-reserved-id.tar"));
-const npmPackHooksBuffer = fs.readFileSync(path.join(fixturesDir, "npm-pack-hooks.tgz"));
+
+function buildPackageJson(params: HookPackFixture): string {
+  return JSON.stringify(
+    {
+      name: params.packageName,
+      version: "0.0.1",
+      coderclaw: { hooks: [`./hooks/${params.hookDirName}`] },
+    },
+    null,
+    2,
+  );
+}
+
+function buildHookMd(params: HookPackFixture): string {
+  return [
+    "---",
+    `name: ${params.hookName}`,
+    `description: ${params.hookName}`,
+    'metadata: {"coderclaw":{"events":["command:new"]}}',
+    "---",
+    "",
+    `# ${params.hookName}`,
+  ].join("\n");
+}
+
+async function createZipHookPackBuffer(params: HookPackFixture): Promise<Buffer> {
+  const zip = new JSZip();
+  zip.file("package/package.json", buildPackageJson(params));
+  zip.file(`package/hooks/${params.hookDirName}/HOOK.md`, buildHookMd(params));
+  zip.file(`package/hooks/${params.hookDirName}/handler.ts`, "export default async () => {};\n");
+  return Buffer.from(await zip.generateAsync({ type: "nodebuffer" }));
+}
+
+async function createTarHookPackBuffer(
+  params: HookPackFixture,
+  options?: { gzip?: boolean },
+): Promise<Buffer> {
+  const workDir = makeTempDir();
+  const pkgRoot = path.join(workDir, "package");
+  const hookRoot = path.join(pkgRoot, "hooks", params.hookDirName);
+  fs.mkdirSync(hookRoot, { recursive: true });
+  fs.writeFileSync(path.join(pkgRoot, "package.json"), buildPackageJson(params), "utf-8");
+  fs.writeFileSync(path.join(hookRoot, "HOOK.md"), buildHookMd(params), "utf-8");
+  fs.writeFileSync(path.join(hookRoot, "handler.ts"), "export default async () => {};\n", "utf-8");
+
+  const archiveName = options?.gzip ? "pack.tgz" : "pack.tar";
+  const archivePath = path.join(workDir, archiveName);
+  await tar.c({ cwd: workDir, gzip: options?.gzip === true, file: archivePath }, ["package"]);
+  return fs.readFileSync(archivePath);
+}
+
+const zipHooksBuffer = await createZipHookPackBuffer({
+  packageName: "@coderclaw/zip-hooks",
+  hookDirName: "zip-hook",
+  hookName: "zip-hook",
+});
+const tarHooksBuffer = await createTarHookPackBuffer({
+  packageName: "@coderclaw/tar-hooks",
+  hookDirName: "tar-hook",
+  hookName: "tar-hook",
+});
+const tarEvilIdBuffer = await createTarHookPackBuffer({
+  packageName: "@evil/..",
+  hookDirName: "evil-hook",
+  hookName: "evil-hook",
+});
+const tarReservedIdBuffer = await createTarHookPackBuffer({
+  packageName: "@evil/.",
+  hookDirName: "reserved-hook",
+  hookName: "reserved-hook",
+});
+const npmPackHooksBuffer = await createTarHookPackBuffer(
+  {
+    packageName: "@coderclaw/test-hooks",
+    hookDirName: "one-hook",
+    hookName: "one-hook",
+  },
+  { gzip: true },
+);
 
 vi.mock("../process/exec.js", () => ({
   runCommandWithTimeout: vi.fn(),

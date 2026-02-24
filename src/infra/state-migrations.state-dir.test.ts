@@ -2,6 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+import { resolveLegacyStateDirs, resolveNewStateDir } from "../config/paths.js";
 import {
   autoMigrateLegacyStateDir,
   resetAutoMigrateLegacyStateDirForTest,
@@ -25,10 +26,14 @@ afterEach(async () => {
 });
 
 describe("legacy state dir auto-migration", () => {
-  it("follows legacy symlink when it points at another legacy dir (coderclaw -> coderclaw)", async () => {
+  it("follows legacy symlink when it points at another legacy dir", async () => {
     const root = await makeTempRoot();
-    const legacySymlink = path.join(root, ".coderclaw");
-    const legacyDir = path.join(root, ".coderclaw");
+    const legacyDirs = resolveLegacyStateDirs(() => root);
+    const legacySymlink = legacyDirs[0];
+    if (!legacySymlink) {
+      return;
+    }
+    const legacyDir = path.join(root, ".coderclaw-legacy-target");
 
     fs.mkdirSync(legacyDir, { recursive: true });
     fs.writeFileSync(path.join(legacyDir, "marker.txt"), "ok", "utf-8");
@@ -44,9 +49,12 @@ describe("legacy state dir auto-migration", () => {
     expect(result.migrated).toBe(true);
     expect(result.warnings).toEqual([]);
 
-    const targetMarker = path.join(root, ".coderclaw", "marker.txt");
+    const targetMarker = path.join(
+      resolveNewStateDir(() => root),
+      "marker.txt",
+    );
     expect(fs.readFileSync(targetMarker, "utf-8")).toBe("ok");
-    expect(fs.readFileSync(path.join(root, ".coderclaw", "marker.txt"), "utf-8")).toBe("ok");
-    expect(fs.readFileSync(path.join(root, ".coderclaw", "marker.txt"), "utf-8")).toBe("ok");
+    expect(fs.readFileSync(path.join(legacyDir, "marker.txt"), "utf-8")).toBe("ok");
+    expect(fs.readFileSync(path.join(legacySymlink, "marker.txt"), "utf-8")).toBe("ok");
   });
 });

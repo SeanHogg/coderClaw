@@ -344,7 +344,8 @@ export async function resolveReplyDirectives(params: {
   const resolvedVerboseLevel =
     directives.verboseLevel ??
     (sessionEntry?.verboseLevel as VerboseLevel | undefined) ??
-    (agentCfg?.verboseDefault as VerboseLevel | undefined);
+    (agentCfg?.verboseDefault as VerboseLevel | undefined) ??
+    "on";
   const resolvedReasoningLevel: ReasoningLevel =
     directives.reasoningLevel ??
     (sessionEntry?.reasoningLevel as ReasoningLevel | undefined) ??

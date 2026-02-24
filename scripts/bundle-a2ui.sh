@@ -12,12 +12,25 @@ HASH_FILE="$ROOT_DIR/src/canvas-host/a2ui/.bundle.hash"
 OUTPUT_FILE="$ROOT_DIR/src/canvas-host/a2ui/a2ui.bundle.js"
 A2UI_RENDERER_DIR="$ROOT_DIR/vendor/a2ui/renderers/lit"
 A2UI_APP_DIR="$ROOT_DIR/apps/shared/CoderClawKit/Tools/CanvasA2UI"
+A2UI_RENDERER_TSCONFIG="$A2UI_RENDERER_DIR/tsconfig.json"
+A2UI_APP_ROLLDOWN_CONFIG="$A2UI_APP_DIR/rolldown.config.mjs"
+A2UI_RENDERER_TSCONFIG_REL="vendor/a2ui/renderers/lit/tsconfig.json"
+A2UI_APP_ROLLDOWN_CONFIG_REL="apps/shared/CoderClawKit/Tools/CanvasA2UI/rolldown.config.mjs"
+
+PNPM_RUNNER=(pnpm)
+if ! command -v node >/dev/null 2>&1 && command -v cmd.exe >/dev/null 2>&1; then
+  PNPM_RUNNER=(cmd.exe /c pnpm)
+fi
+
+pnpm_run() {
+  "${PNPM_RUNNER[@]}" "$@"
+}
 
 # Docker builds exclude vendor/apps via .dockerignore.
 # In that environment we can keep a prebuilt bundle only if it exists.
 # CI builds set CODERCLAW_A2UI_SKIP_MISSING=1 to skip bundling entirely
 # (no prebuilt bundle is committed; the canvas feature is omitted from the dist).
-if [[ ! -d "$A2UI_RENDERER_DIR" || ! -d "$A2UI_APP_DIR" ]]; then
+if [[ ! -f "$A2UI_RENDERER_TSCONFIG" || ! -f "$A2UI_APP_ROLLDOWN_CONFIG" ]]; then
   if [[ -f "$OUTPUT_FILE" ]]; then
     echo "A2UI sources missing; keeping prebuilt bundle."
     exit 0
@@ -39,48 +52,42 @@ INPUT_PATHS=(
 )
 
 compute_hash() {
-  ROOT_DIR="$ROOT_DIR" node --input-type=module - "${INPUT_PATHS[@]}" <<'NODE'
-import { createHash } from "node:crypto";
-import { promises as fs } from "node:fs";
-import path from "node:path";
+  local hash_cmd
+  if command -v sha256sum >/dev/null 2>&1; then
+    hash_cmd="sha256sum"
+  elif command -v shasum >/dev/null 2>&1; then
+    hash_cmd="shasum -a 256"
+  else
+    echo "Neither sha256sum nor shasum is available to compute the A2UI bundle hash." >&2
+    exit 1
+  fi
 
-const rootDir = process.env.ROOT_DIR ?? process.cwd();
-const inputs = process.argv.slice(2);
-const files = [];
+  (
+    cd "$ROOT_DIR"
 
-async function walk(entryPath) {
-  const st = await fs.stat(entryPath);
-  if (st.isDirectory()) {
-    const entries = await fs.readdir(entryPath);
-    for (const entry of entries) {
-      await walk(path.join(entryPath, entry));
-    }
-    return;
-  }
-  files.push(entryPath);
-}
-
-for (const input of inputs) {
-  await walk(input);
-}
-
-function normalize(p) {
-  return p.split(path.sep).join("/");
-}
-
-files.sort((a, b) => normalize(a).localeCompare(normalize(b)));
-
-const hash = createHash("sha256");
-for (const filePath of files) {
-  const rel = normalize(path.relative(rootDir, filePath));
-  hash.update(rel);
-  hash.update("\0");
-  hash.update(await fs.readFile(filePath));
-  hash.update("\0");
-}
-
-process.stdout.write(hash.digest("hex"));
-NODE
+    for input in "${INPUT_PATHS[@]}"; do
+      rel_path="${input#"$ROOT_DIR"/}"
+      if [[ -d "$input" ]]; then
+        find "$rel_path" -type f -print0
+      else
+        printf '%s\0' "$rel_path"
+      fi
+    done |
+      sort -z |
+      while IFS= read -r -d '' rel_path; do
+        if [[ "$hash_cmd" == "sha256sum" ]]; then
+          file_hash="$(sha256sum "$rel_path" | awk '{print $1}')"
+        else
+          file_hash="$(shasum -a 256 "$rel_path" | awk '{print $1}')"
+        fi
+        printf '%s\0%s\0' "$rel_path" "$file_hash"
+      done |
+      if [[ "$hash_cmd" == "sha256sum" ]]; then
+        sha256sum | awk '{print $1}'
+      else
+        shasum -a 256 | awk '{print $1}'
+      fi
+  )
 }
 
 current_hash="$(compute_hash)"
@@ -92,11 +99,14 @@ if [[ -f "$HASH_FILE" ]]; then
   fi
 fi
 
-pnpm -s exec tsc -p "$A2UI_RENDERER_DIR/tsconfig.json"
-if command -v rolldown >/dev/null 2>&1; then
-  rolldown -c "$A2UI_APP_DIR/rolldown.config.mjs"
-else
-  pnpm -s dlx rolldown -c "$A2UI_APP_DIR/rolldown.config.mjs"
-fi
+(
+  cd "$ROOT_DIR"
+  pnpm_run -s exec tsc -p "$A2UI_RENDERER_TSCONFIG_REL"
+  if command -v rolldown >/dev/null 2>&1; then
+    rolldown -c "$A2UI_APP_ROLLDOWN_CONFIG_REL"
+  else
+    pnpm_run -s dlx rolldown -c "$A2UI_APP_ROLLDOWN_CONFIG_REL"
+  fi
+)
 
 echo "$current_hash" > "$HASH_FILE"

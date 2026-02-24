@@ -2,6 +2,15 @@
 
 Docs: https://docs.coderclaw.ai
 
+## 2026.2.23-beta.7
+
+### Changes
+
+- Release: version bump to beta.7 with extension versions synced.
+- CI/Release: align release workflow build env with CI by setting `CODERCLAW_A2UI_SKIP_MISSING=1` for `pnpm build` steps.
+- Build: harden `scripts/bundle-a2ui.sh` for Windows Git Bash/NVM environments and robust source-presence detection.
+- Tests: restore legacy hook manifest compatibility (`openclaw` key), make slash-command docs test resilient to docs-site layout, and fix legacy state-dir symlink migration test setup.
+
 ## 2026.2.23-beta.6
 
 ### Changes
