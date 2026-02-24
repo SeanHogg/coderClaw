@@ -2,6 +2,15 @@
 
 Docs: https://docs.coderclaw.ai
 
+## 2026.2.23-beta.9
+
+### Changes
+
+- Release: version bump to beta.9 with extension versions synced.
+- UI: update control UI metadata, icons, and colors to coderClaw branding — use `coderclaw.png` logo across favicon/Apple touch icons, add SEO metadata (`og:image`, `application-name`), and replace red accent tokens (#ff5c5c, #dc2626) with blue (#4d9eff, #3b82f6) to align with coderClawLink design system.
+- TUI: add `/init` slash command to initialize coderClaw project locally (creates `.coderClaw/context.yaml`, `architecture.md`, `rules.yaml`), preventing collision with gateway session reset and providing clear separation between local project init and session management.
+- CI/Release: harden release workflow auth handling by removing invalid job-level `secrets.*` checks and specifying explicit auth secrets without conditional gates, allowing safe skip when credentials are unconfigured in forks.
+
 ## 2026.2.23-beta.8
 
 ### Changes

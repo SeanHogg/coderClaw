@@ -121,6 +121,7 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
     { name: "settings", description: "Open settings" },
     { name: "gateway", description: "Gateway service control (status/start/stop/restart)" },
     { name: "daemon", description: "Alias for /gateway" },
+    { name: "init", description: "Initialize coderClaw project in workspace" },
     { name: "exit", description: "Exit the TUI" },
     { name: "quit", description: "Exit the TUI" },
     { name: "setup", description: "Run the setup/onboarding wizard" },
@@ -166,6 +167,7 @@ export function helpText(options: SlashCommandOptions = {}): string {
     "/settings",
     "/gateway <status|start|stop|restart>",
     "/daemon <status|start|stop|restart>",
+    "/init",
     "/exit",
     "/setup or /onboard",
   ].join("\n");

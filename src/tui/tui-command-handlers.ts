@@ -6,6 +6,7 @@ import {
   normalizeUsageDisplay,
   resolveResponseUsageMode,
 } from "../auto-reply/thinking.js";
+import { initializeCoderClawProject } from "../coderclaw/project-context.js";
 import type { SessionsPatchResult } from "../gateway/protocol/index.js";
 import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
 import { normalizeAgentId } from "../routing/session-key.js";
@@ -537,6 +538,22 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           await onSetup();
         } else {
           chatLog.addSystem("Run: coderclaw onboard");
+        }
+        break;
+      case "init":
+        try {
+          chatLog.addSystem("Initializing coderClaw project...");
+          tui.requestRender();
+          const projectRoot = process.cwd();
+          await initializeCoderClawProject(projectRoot);
+          chatLog.addSystem("✓ coderClaw project initialized in .coderClaw/");
+          chatLog.addSystem("  context.yaml – project metadata");
+          chatLog.addSystem("  architecture.md – design documentation");
+          chatLog.addSystem("  rules.yaml – coding standards");
+        } catch (err) {
+          chatLog.addSystem(
+            `Failed to initialize project: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
         break;
       default:
