@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026.2.23
+
+### Changes
+
+- Official stable release promoting 2026.2.23-beta.11.
+
+Docs: https://docs.coderclaw.ai
+
 ## 2026.2.23-beta.11
 
 ### Changes
