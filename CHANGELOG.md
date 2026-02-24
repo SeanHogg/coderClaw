@@ -2,6 +2,13 @@
 
 Docs: https://docs.coderclaw.ai
 
+## 2026.2.23-beta.10
+
+### Changes
+
+- Release: version bump to beta.10 with extension versions synced.
+- CI: add `pnpm test` step to release workflow `build-and-check` job to ensure test suite runs during automated release pipeline, matching CONTRIBUTING.md guidance that developers must run tests locally.
+
 ## 2026.2.23-beta.9
 
 ### Changes
