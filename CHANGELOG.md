@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026.2.26
+
+### Changes
+
+- Fix formatting in extension CHANGELOG files
+
 ## 2026.2.23
 
 ### Changes

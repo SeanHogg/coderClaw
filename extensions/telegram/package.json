@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/telegram",
-  "version": "2026.2.23",
+  "version": "2026.2.26",
   "private": true,
   "description": "CoderClaw Telegram channel plugin",
   "type": "module",
