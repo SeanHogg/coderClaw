@@ -131,6 +131,22 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain("Do not poll `subagents list` / `sessions_list` in a loop");
   });
 
+  it("enforces human-in-the-loop termination and continuous PRD execution", () => {
+    const prompt = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/coderclaw",
+    });
+
+    expect(prompt).toContain(
+      "Treat user-provided PRDs, roadmap items, and architecture notes as execution instructions: derive a concrete plan and then execute it.",
+    );
+    expect(prompt).toContain(
+      "Continue execution until every requested task is complete, tested, and reported, unless you are blocked on missing user input.",
+    );
+    expect(prompt).toContain(
+      "Human-in-the-loop rule: if you ask the user a direct question that requires their decision or information, stop tool execution and wait for their reply.",
+    );
+  });
+
   it("lists available tools when provided", () => {
     const prompt = buildAgentSystemPrompt({
       workspaceDir: "/tmp/coderclaw",

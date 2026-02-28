@@ -52,6 +52,7 @@ import { resolveModel } from "./model.js";
 import { runEmbeddedAttempt } from "./run/attempt.js";
 import type { RunEmbeddedPiAgentParams } from "./run/params.js";
 import { buildEmbeddedRunPayloads } from "./run/payloads.js";
+import { AUTO_CONTINUE_PROMPT, shouldAutoContinueRun } from "./continuation-policy.js";
 import {
   truncateOversizedToolResultsInSession,
   sessionLikelyHasOversizedToolResults,
@@ -471,8 +472,11 @@ export async function runEmbeddedPiAgent(
       }
 
       const MAX_OVERFLOW_COMPACTION_ATTEMPTS = 3;
+      const MAX_AUTO_CONTINUE_NUDGES = 3;
       let overflowCompactionAttempts = 0;
       let toolResultTruncationAttempted = false;
+      let autoContinueNudges = 0;
+      let currentPrompt = params.prompt;
       const usageAccumulator = createUsageAccumulator();
       let lastRunPromptUsage: ReturnType<typeof normalizeUsage> | undefined;
       let autoCompactionCount = 0;
@@ -482,7 +486,7 @@ export async function runEmbeddedPiAgent(
           await fs.mkdir(resolvedWorkspace, { recursive: true });
 
           const prompt =
-            provider === "anthropic" ? scrubAnthropicRefusalMagic(params.prompt) : params.prompt;
+            provider === "anthropic" ? scrubAnthropicRefusalMagic(currentPrompt) : currentPrompt;
 
           const attempt = await runEmbeddedAttempt({
             sessionId: params.sessionId,
@@ -1002,6 +1006,25 @@ export async function runEmbeddedPiAgent(
             suppressToolErrorWarnings: params.suppressToolErrorWarnings,
             inlineToolResultsAllowed: false,
           });
+
+          const continuationDecision = shouldAutoContinueRun({
+            userPrompt: params.prompt,
+            assistantTexts: attempt.assistantTexts,
+            toolNames: attempt.toolMetas.map((entry) => entry.toolName),
+            aborted,
+            timedOut,
+            promptErrored: Boolean(promptError),
+            hasPendingClientToolCall: Boolean(attempt.clientToolCall),
+          });
+
+          if (continuationDecision.shouldContinue && autoContinueNudges < MAX_AUTO_CONTINUE_NUDGES) {
+            autoContinueNudges += 1;
+            currentPrompt = AUTO_CONTINUE_PROMPT;
+            log.warn(
+              `auto-continue nudge ${autoContinueNudges}/${MAX_AUTO_CONTINUE_NUDGES}: reason=${continuationDecision.reason ?? "policy"} runId=${params.runId} sessionId=${params.sessionId}`,
+            );
+            continue;
+          }
 
           // Timeout aborts can leave the run without any assistant payloads.
           // Emit an explicit timeout error instead of silently completing, so
