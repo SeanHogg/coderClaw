@@ -439,21 +439,46 @@ export function normalizeToolParams(params: unknown): Record<string, unknown> | 
     normalized.path = normalized.file_path;
     delete normalized.file_path;
   }
+  if ("filepath" in normalized && !("path" in normalized)) {
+    normalized.path = normalized.filepath;
+    delete normalized.filepath;
+  }
+  if ("filePath" in normalized && !("path" in normalized)) {
+    normalized.path = normalized.filePath;
+    delete normalized.filePath;
+  }
+  if ("relative_path" in normalized && !("path" in normalized)) {
+    normalized.path = normalized.relative_path;
+    delete normalized.relative_path;
+  }
+  if ("filename" in normalized && !("path" in normalized)) {
+    normalized.path = normalized.filename;
+    delete normalized.filename;
+  }
   // old_string → oldText (edit)
   if ("old_string" in normalized && !("oldText" in normalized)) {
     normalized.oldText = normalized.old_string;
     delete normalized.old_string;
+  }
+  if ("old_str" in normalized && !("oldText" in normalized)) {
+    normalized.oldText = normalized.old_str;
+    delete normalized.old_str;
   }
   // new_string → newText (edit)
   if ("new_string" in normalized && !("newText" in normalized)) {
     normalized.newText = normalized.new_string;
     delete normalized.new_string;
   }
+  if ("new_str" in normalized && !("newText" in normalized)) {
+    normalized.newText = normalized.new_str;
+    delete normalized.new_str;
+  }
   // Additional edit aliases used by some models/tooling ecosystems
   if (!("oldText" in normalized)) {
     const oldAliasValue = coalesceAliasString(normalized, [
       "old",
       "old_text",
+      "oldString",
       "search",
       "searchText",
       "find",
@@ -468,6 +493,7 @@ export function normalizeToolParams(params: unknown): Record<string, unknown> | 
     const newAliasValue = coalesceAliasString(normalized, [
       "new",
       "new_text",
+      "newString",
       "replace",
       "replacement",
       "replaceWith",

@@ -57,6 +57,7 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     } as unknown as MockChatLog & HandlerChatLog;
     const tui = { requestRender: vi.fn() } as unknown as MockTui & HandlerTui;
     const setActivityStatus = vi.fn();
+    const reportAction = vi.fn();
     const loadHistory = vi.fn();
     const localRunIds = new Set<string>();
     const noteLocalRunId = (runId: string) => {
@@ -75,6 +76,7 @@ describe("tui-event-handlers: handleAgentEvent", () => {
       tui,
       state,
       setActivityStatus,
+      reportAction,
       loadHistory,
       noteLocalRunId,
       forgetLocalRunId,
@@ -95,6 +97,7 @@ describe("tui-event-handlers: handleAgentEvent", () => {
       tui: context.tui,
       state,
       setActivityStatus: context.setActivityStatus,
+      reportAction: context.reportAction,
       loadHistory: context.loadHistory,
       isLocalRunId: context.isLocalRunId,
       forgetLocalRunId: context.forgetLocalRunId,
@@ -406,6 +409,53 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     });
 
     expect(loadHistory).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports activity summary with unique files read on run completion", () => {
+    const { state, reportAction, handleAgentEvent, handleChatEvent } = createHandlersHarness({
+      state: { activeChatRunId: "run-summary" },
+    });
+
+    handleAgentEvent({
+      runId: "run-summary",
+      stream: "tool",
+      data: {
+        phase: "start",
+        toolCallId: "tc-r1",
+        name: "read",
+        args: { path: "src/a.ts" },
+      },
+    });
+    handleAgentEvent({
+      runId: "run-summary",
+      stream: "tool",
+      data: {
+        phase: "start",
+        toolCallId: "tc-r2",
+        name: "read",
+        args: { file_path: "src/b.ts" },
+      },
+    });
+    handleAgentEvent({
+      runId: "run-summary",
+      stream: "tool",
+      data: {
+        phase: "start",
+        toolCallId: "tc-r3",
+        name: "read",
+        args: { path: "src/a.ts" },
+      },
+    });
+
+    handleChatEvent({
+      runId: "run-summary",
+      sessionKey: state.currentSessionKey,
+      state: "final",
+      message: { content: [{ type: "text", text: "done" }] },
+    });
+
+    expect(reportAction).toHaveBeenCalledWith("✓ 2 files read");
+    expect(reportAction).toHaveBeenCalledWith("run completed");
   });
 
   it("schedules session-info refresh backfill after final events", () => {

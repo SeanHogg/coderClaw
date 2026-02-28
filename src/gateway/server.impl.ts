@@ -38,6 +38,8 @@ import {
 } from "../infra/skills-remote.js";
 import { scheduleGatewayUpdateCheck } from "../infra/update-startup.js";
 import { startDiagnosticHeartbeat, stopDiagnosticHeartbeat } from "../logging/diagnostic.js";
+import { registerCustomRoles } from "../coderclaw/agent-roles.js";
+import { loadCustomAgentRoles } from "../coderclaw/project-context.js";
 import { createSubsystemLogger, runtimeForLogger } from "../logging/subsystem.js";
 import { getGlobalHookRunner, runGlobalGatewayStopSafely } from "../plugins/hook-runner-global.js";
 import { createEmptyPluginRegistry } from "../plugins/registry.js";
@@ -237,6 +239,18 @@ export async function startGatewayServer(
     () => getTotalQueueSize() + getTotalPendingReplies() + getActiveEmbeddedRunCount(),
   );
   initSubagentRegistry();
+
+  // Load custom agent roles from .coderClaw/agents if present
+  try {
+    const projectRoot = process.cwd();
+    const customRoles = await loadCustomAgentRoles(projectRoot);
+    registerCustomRoles(customRoles);
+    // Clear any previously registered custom roles on gateway start to avoid stale state
+    // (if the gateway is restarted in the same process)
+  } catch (err) {
+    log.warn(`Failed to load custom agent roles from ${projectRoot}: ${err}`);
+  }
+
   const defaultAgentId = resolveDefaultAgentId(cfgAtStart);
   const defaultWorkspaceDir = resolveAgentWorkspaceDir(cfgAtStart, defaultAgentId);
   const baseMethods = listGatewayMethods();

@@ -32,6 +32,51 @@ type EventHandlerContext = {
   clearLocalRunIds?: () => void;
 };
 
+type RunActivityStats = {
+  toolStarts: number;
+  toolFailures: number;
+  readFiles: Set<string>;
+  editFiles: Set<string>;
+  writeFiles: Set<string>;
+  applyPatchCalls: number;
+  execCalls: number;
+};
+
+const TOOL_NAME_ALIASES: Record<string, string> = {
+  str_replace_editor: "edit",
+  replace_editor: "edit",
+};
+
+function normalizeToolName(name: string): string {
+  const normalized = name.trim().toLowerCase();
+  return TOOL_NAME_ALIASES[normalized] ?? normalized;
+}
+
+function extractPathArg(args: unknown): string | null {
+  if (!args || typeof args !== "object") {
+    return null;
+  }
+  const record = args as Record<string, unknown>;
+  const candidates = [
+    record.path,
+    record.file_path,
+    record.filePath,
+    record.filepath,
+    record.relative_path,
+    record.filename,
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim().length > 0) {
+      return candidate.trim();
+    }
+  }
+  return null;
+}
+
+function formatCount(value: number, singular: string, plural: string): string {
+  return `${value} ${value === 1 ? singular : plural}`;
+}
+
 export function createEventHandlers(context: EventHandlerContext) {
   const {
     chatLog,
@@ -47,6 +92,7 @@ export function createEventHandlers(context: EventHandlerContext) {
   } = context;
   const finalizedRuns = new Map<string, number>();
   const sessionRuns = new Map<string, number>();
+  const runActivity = new Map<string, RunActivityStats>();
   const pendingFinalTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
   const FINAL_EVENT_GRACE_MS = 3_000;
   const SESSION_REFRESH_BACKFILL_DELAY_MS = 1_500;
@@ -70,6 +116,66 @@ export function createEventHandlers(context: EventHandlerContext) {
       clearTimeout(timer);
     }
     pendingFinalTimeouts.clear();
+  };
+
+  const getRunActivity = (runId: string): RunActivityStats => {
+    const existing = runActivity.get(runId);
+    if (existing) {
+      return existing;
+    }
+    const created: RunActivityStats = {
+      toolStarts: 0,
+      toolFailures: 0,
+      readFiles: new Set<string>(),
+      editFiles: new Set<string>(),
+      writeFiles: new Set<string>(),
+      applyPatchCalls: 0,
+      execCalls: 0,
+    };
+    runActivity.set(runId, created);
+    return created;
+  };
+
+  const clearRunActivity = (runId: string) => {
+    runActivity.delete(runId);
+  };
+
+  const reportRunActivitySummary = (runId: string) => {
+    if (!reportAction) {
+      clearRunActivity(runId);
+      return;
+    }
+    const stats = runActivity.get(runId);
+    if (!stats || stats.toolStarts === 0) {
+      clearRunActivity(runId);
+      return;
+    }
+
+    const parts: string[] = [];
+    if (stats.readFiles.size > 0) {
+      parts.push(formatCount(stats.readFiles.size, "file read", "files read"));
+    }
+    if (stats.editFiles.size > 0) {
+      parts.push(formatCount(stats.editFiles.size, "file edited", "files edited"));
+    }
+    if (stats.writeFiles.size > 0) {
+      parts.push(formatCount(stats.writeFiles.size, "file written", "files written"));
+    }
+    if (stats.applyPatchCalls > 0) {
+      parts.push(formatCount(stats.applyPatchCalls, "patch applied", "patches applied"));
+    }
+    if (stats.execCalls > 0) {
+      parts.push(formatCount(stats.execCalls, "command run", "commands run"));
+    }
+    if (parts.length === 0) {
+      parts.push(formatCount(stats.toolStarts, "tool call", "tool calls"));
+    }
+    if (stats.toolFailures > 0) {
+      parts.push(formatCount(stats.toolFailures, "tool failure", "tool failures"));
+    }
+
+    reportAction(`✓ ${parts.join(" · ")}`);
+    clearRunActivity(runId);
   };
 
   const clearPendingSessionRefreshTimer = () => {
@@ -118,6 +224,7 @@ export function createEventHandlers(context: EventHandlerContext) {
         return;
       }
       sessionRuns.delete(runId);
+      reportRunActivitySummary(runId);
       clearActiveRunIfMatch(runId);
       maybeRefreshHistoryForRun(runId);
       setActivityStatus("idle");
@@ -160,6 +267,7 @@ export function createEventHandlers(context: EventHandlerContext) {
     sessionRuns.clear();
     clearAllPendingFinalTimeouts();
     clearPendingSessionRefreshTimer();
+    runActivity.clear();
     streamAssembler = new TuiStreamAssembler();
     clearLocalRunIds?.();
   };
@@ -174,6 +282,7 @@ export function createEventHandlers(context: EventHandlerContext) {
     finalizedRuns.set(runId, Date.now());
     sessionRuns.delete(runId);
     streamAssembler.drop(runId);
+    clearRunActivity(runId);
     pruneRunMap(finalizedRuns);
   };
 
@@ -241,6 +350,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (!evt.message) {
         maybeRefreshHistoryForRun(evt.runId);
         chatLog.dropAssistant(evt.runId);
+        reportRunActivitySummary(evt.runId);
         noteFinalizedRun(evt.runId);
         clearActiveRunIfMatch(evt.runId);
         if (wasActiveRun) {
@@ -257,6 +367,7 @@ export function createEventHandlers(context: EventHandlerContext) {
           chatLog.addSystem(text);
         }
         streamAssembler.drop(evt.runId);
+        reportRunActivitySummary(evt.runId);
         noteFinalizedRun(evt.runId);
         clearActiveRunIfMatch(evt.runId);
         if (wasActiveRun) {
@@ -282,6 +393,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       } else {
         chatLog.finalizeAssistant(finalText, evt.runId);
       }
+      reportRunActivitySummary(evt.runId);
       noteFinalizedRun(evt.runId);
       clearActiveRunIfMatch(evt.runId);
       if (wasActiveRun) {
@@ -296,6 +408,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       const wasActiveRun = state.activeChatRunId === evt.runId;
       chatLog.addSystem("run aborted");
       streamAssembler.drop(evt.runId);
+      reportRunActivitySummary(evt.runId);
       sessionRuns.delete(evt.runId);
       clearActiveRunIfMatch(evt.runId);
       if (wasActiveRun) {
@@ -310,6 +423,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       const wasActiveRun = state.activeChatRunId === evt.runId;
       chatLog.addSystem(`run error: ${evt.errorMessage ?? "unknown"}`);
       streamAssembler.drop(evt.runId);
+      reportRunActivitySummary(evt.runId);
       sessionRuns.delete(evt.runId);
       clearActiveRunIfMatch(evt.runId);
       if (wasActiveRun) {
@@ -344,14 +458,31 @@ export function createEventHandlers(context: EventHandlerContext) {
       const phase = asString(data.phase, "");
       const toolCallId = asString(data.toolCallId, "");
       const toolName = asString(data.name, "tool");
+      const normalizedToolName = normalizeToolName(toolName);
       if (!toolCallId) {
         return;
       }
       // Always report tool activity in the trace, regardless of verbose level
       if (phase === "start") {
         reportAction?.(`tool: ${toolName}`);
+        const stats = getRunActivity(evt.runId);
+        stats.toolStarts += 1;
+        const toolPath = extractPathArg(data.args);
+        if (normalizedToolName === "read" && toolPath) {
+          stats.readFiles.add(toolPath);
+        } else if (normalizedToolName === "edit" && toolPath) {
+          stats.editFiles.add(toolPath);
+        } else if (normalizedToolName === "write" && toolPath) {
+          stats.writeFiles.add(toolPath);
+        } else if (normalizedToolName === "apply_patch") {
+          stats.applyPatchCalls += 1;
+        } else if (normalizedToolName === "exec") {
+          stats.execCalls += 1;
+        }
       } else if (phase === "result" && Boolean(data.isError)) {
         reportAction?.(`tool failed: ${toolName}`);
+        const stats = getRunActivity(evt.runId);
+        stats.toolFailures += 1;
       }
       if (!allowToolEvents) {
         tui.requestRender();
@@ -401,6 +532,7 @@ export function createEventHandlers(context: EventHandlerContext) {
           asString(evt.data?.detail, "") ||
           "unknown";
         chatLog.addSystem(`run error: ${errorMessage}`);
+        reportRunActivitySummary(evt.runId);
         noteFinalizedRun(evt.runId);
         clearActiveRunIfMatch(evt.runId);
         maybeRefreshHistoryForRun(evt.runId);

@@ -76,7 +76,30 @@ describe("shouldAutoContinueRun", () => {
     });
 
     expect(decision.shouldContinue).toBe(true);
-    expect(decision.reason).toBe("investigation_only_tools");
+    expect(decision.reason).toBe("tool_activity_no_progress");
+  });
+
+  it("continues when tool activity produced no assistant text", () => {
+    const decision = shouldAutoContinueRun({
+      userPrompt: "Fix orchestrate-tool and complete the implementation",
+      assistantTexts: [],
+      toolNames: ["read", "str_replace_editor"],
+    });
+
+    expect(decision.shouldContinue).toBe(true);
+    expect(decision.reason).toBe("tool_activity_no_progress");
+  });
+
+  it("continues when tool error occurs without a user question", () => {
+    const decision = shouldAutoContinueRun({
+      userPrompt: "Implement the fix and run tests",
+      assistantTexts: ["Applying the edit now."],
+      toolNames: ["str_replace_editor"],
+      hasToolError: true,
+    });
+
+    expect(decision.shouldContinue).toBe(true);
+    expect(decision.reason).toBe("tool_error_retry");
   });
 });
 

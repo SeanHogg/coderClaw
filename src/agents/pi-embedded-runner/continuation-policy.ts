@@ -3,6 +3,7 @@ export type ContinuationPolicyInput = {
   assistantTexts: string[];
   payloadTexts?: string[];
   toolNames: string[];
+  hasToolError?: boolean;
   aborted?: boolean;
   timedOut?: boolean;
   promptErrored?: boolean;
@@ -86,10 +87,20 @@ export function shouldAutoContinueRun(input: ContinuationPolicyInput): Continuat
 
   const lastAssistantText = normalizeLastAssistantText(input.assistantTexts, input.payloadTexts);
   if (!lastAssistantText) {
+    if (input.hasToolError && input.toolNames.length > 0) {
+      return { shouldContinue: true, reason: "tool_error_no_progress" };
+    }
+    if (input.toolNames.length > 0) {
+      return { shouldContinue: true, reason: "tool_activity_no_progress" };
+    }
     if (isInvestigationOnly(input.toolNames)) {
       return { shouldContinue: true, reason: "investigation_only_tools" };
     }
     return { shouldContinue: false };
+  }
+
+  if (input.hasToolError && !isQuestionForUser(lastAssistantText)) {
+    return { shouldContinue: true, reason: "tool_error_retry" };
   }
 
   if (isQuestionForUser(lastAssistantText)) {

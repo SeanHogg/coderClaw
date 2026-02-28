@@ -20,8 +20,8 @@ export const theme = {
   warn: hex(LOBSTER_PALETTE.warn),
   error: hex(LOBSTER_PALETTE.error),
   muted: hex(LOBSTER_PALETTE.muted),
-  heading: baseChalk.bold.hex(LOBSTER_PALETTE.accent),
-  command: hex(LOBSTER_PALETTE.accentBright),
+  heading: baseChalk.bold.hex(LOBSTER_PALETTE.brand),
+  command: hex(LOBSTER_PALETTE.brand),
   option: hex(LOBSTER_PALETTE.warn),
 } as const;
 

@@ -37,4 +37,16 @@ describe("normalizeToolParams", () => {
     expect(normalized?.oldText).toBe("explicit-old");
     expect(normalized?.newText).toBe("explicit-new");
   });
+
+  it("normalizes str_replace_editor style args", () => {
+    const normalized = normalizeToolParams({
+      relative_path: "src/file.ts",
+      old_str: "before",
+      new_str: "after",
+    });
+
+    expect(normalized?.path).toBe("src/file.ts");
+    expect(normalized?.oldText).toBe("before");
+    expect(normalized?.newText).toBe("after");
+  });
 });

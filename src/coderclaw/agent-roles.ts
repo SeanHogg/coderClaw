@@ -4,6 +4,23 @@
 
 import type { AgentRole } from "./types.js";
 
+// Registry for custom agent roles loaded from .coderClaw/agents/
+let globalCustomRoles: AgentRole[] = [];
+
+/**
+ * Register custom agent roles (e.g., loaded from .coderClaw/agents/*.yaml)
+ */
+export function registerCustomRoles(roles: AgentRole[]): void {
+  globalCustomRoles = roles;
+}
+
+/**
+ * Clear custom agent roles (mainly for testing)
+ */
+export function clearCustomRoles(): void {
+  globalCustomRoles = [];
+}
+
 /**
  * Code Creator Agent - Generates new code, features, and implementations
  */
@@ -247,7 +264,7 @@ export function getBuiltInAgentRoles(): AgentRole[] {
 /**
  * Find an agent role by name
  */
-export function findAgentRole(name: string, customRoles: AgentRole[] = []): AgentRole | null {
+export function findAgentRole(name: string, customRoles: AgentRole[] = globalCustomRoles): AgentRole | null {
   const allRoles = [...getBuiltInAgentRoles(), ...customRoles];
   return allRoles.find((role) => role.name === name) || null;
 }

@@ -1014,6 +1014,7 @@ export async function runEmbeddedPiAgent(
               .map((payload) => (typeof payload.text === "string" ? payload.text : ""))
               .filter((text) => text.length > 0),
             toolNames: attempt.toolMetas.map((entry) => entry.toolName),
+            hasToolError: Boolean(attempt.lastToolError),
             aborted,
             timedOut,
             promptErrored: Boolean(promptError),

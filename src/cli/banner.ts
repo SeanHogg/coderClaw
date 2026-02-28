@@ -36,22 +36,22 @@ const hasVersionFlag = (argv: string[]) =>
 
 export function formatCliBannerLine(version: string, options: BannerOptions = {}): string {
   const commit = options.commit ?? resolveCommitHash({ env: options.env });
-  const commitLabel = commit ?? "unknown";
+  const commitLabel = commit ?? "local";
   const tagline = pickTagline(options);
   const rich = options.richTty ?? isRich();
-  const title = "🦞 CoderClaw";
-  const prefix = "🦞 ";
+  const title = "CoderClaw";
+  const prefix = "";
   const columns = options.columns ?? process.stdout.columns ?? 120;
   const plainFullLine = `${title} ${version} (${commitLabel}) — ${tagline}`;
   const fitsOnOneLine = visibleWidth(plainFullLine) <= columns;
   if (rich) {
     if (fitsOnOneLine) {
-      return `${theme.brand(title)} ${theme.info(version)} ${theme.muted(
+      return `${theme.brand(title)} ${theme.brand(version)} ${theme.muted(
         `(${commitLabel})`,
-      )} ${theme.muted("—")} ${theme.accentDim(tagline)}`;
+      )} ${theme.muted("—")} ${theme.brand(tagline)}`;
     }
-    const line1 = `${theme.brand(title)} ${theme.info(version)} ${theme.muted(`(${commitLabel})`)}`;
-    const line2 = `${" ".repeat(prefix.length)}${theme.accentDim(tagline)}`;
+    const line1 = `${theme.brand(title)} ${theme.brand(version)} ${theme.muted(`(${commitLabel})`)}`;
+    const line2 = `${" ".repeat(prefix.length)}${theme.brand(tagline)}`;
     return `${line1}\n${line2}`;
   }
   if (fitsOnOneLine) {
@@ -96,9 +96,9 @@ export function formatCliBannerArt(options: BannerOptions = {}): string {
     if (line.includes("CODERCLAW")) {
       return (
         theme.muted("              ") +
-        theme.accent("🦞") +
+        theme.brand("🦞") +
         theme.brand(" CODERCLAW ") +
-        theme.accent("🦞")
+        theme.brand("🦞")
       );
     }
     return splitGraphemes(line).map(colorChar).join("");

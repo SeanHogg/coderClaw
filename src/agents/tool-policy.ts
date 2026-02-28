@@ -10,6 +10,7 @@ type ToolProfilePolicy = {
 const TOOL_NAME_ALIASES: Record<string, string> = {
   bash: "exec",
   "apply-patch": "apply_patch",
+  str_replace_editor: "edit",
 };
 
 export const TOOL_GROUPS: Record<string, string[]> = {
