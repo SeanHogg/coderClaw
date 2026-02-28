@@ -261,7 +261,7 @@ export async function spawnSubagentDirect(
       };
     }
   }
-  const childSystemPrompt = buildSubagentSystemPrompt({
+  let childSystemPrompt = buildSubagentSystemPrompt({
     requesterSessionKey,
     requesterOrigin,
     childSessionKey,

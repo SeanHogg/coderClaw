@@ -405,6 +405,26 @@ function normalizeTextLikeParam(record: Record<string, unknown>, key: string) {
   }
 }
 
+function coalesceAliasString(
+  record: Record<string, unknown>,
+  aliases: readonly string[],
+): string | undefined {
+  for (const key of aliases) {
+    if (!(key in record)) {
+      continue;
+    }
+    const value = record[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+    const extracted = extractStructuredText(value);
+    if (typeof extracted === "string" && extracted.trim().length > 0) {
+      return extracted;
+    }
+  }
+  return undefined;
+}
+
 // Normalize tool parameters from Claude Code conventions to pi-coding-agent conventions.
 // Claude Code uses file_path/old_string/new_string while pi-coding-agent uses path/oldText/newText.
 // This prevents models trained on Claude Code from getting stuck in tool-call loops.
@@ -428,6 +448,35 @@ export function normalizeToolParams(params: unknown): Record<string, unknown> | 
   if ("new_string" in normalized && !("newText" in normalized)) {
     normalized.newText = normalized.new_string;
     delete normalized.new_string;
+  }
+  // Additional edit aliases used by some models/tooling ecosystems
+  if (!("oldText" in normalized)) {
+    const oldAliasValue = coalesceAliasString(normalized, [
+      "old",
+      "old_text",
+      "search",
+      "searchText",
+      "find",
+      "target",
+      "match",
+    ]);
+    if (oldAliasValue !== undefined) {
+      normalized.oldText = oldAliasValue;
+    }
+  }
+  if (!("newText" in normalized)) {
+    const newAliasValue = coalesceAliasString(normalized, [
+      "new",
+      "new_text",
+      "replace",
+      "replacement",
+      "replaceWith",
+      "replacementText",
+      "with",
+    ]);
+    if (newAliasValue !== undefined) {
+      normalized.newText = newAliasValue;
+    }
   }
   // Some providers/models emit text payloads as structured blocks instead of raw strings.
   // Normalize these for write/edit so content matching and writes stay deterministic.

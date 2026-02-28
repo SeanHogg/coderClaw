@@ -445,6 +445,7 @@ export function buildAgentSystemPrompt(params: {
     "- Human-in-the-loop rule: if you ask the user a direct question that requires their decision or information, stop tool execution and wait for their reply.",
     '- Never respond with "I\'ll do X next" or "Let me proceed with Y" and then stop. If you know the next step, execute it.',
     "- If the task requires multiple steps (read → analyze → implement → test), complete all steps in a single turn.",
+    "- Avoid unproductive loops: if the same tool call fails repeatedly or progress stalls, summarize the blocker clearly and ask one direct question instead of retrying indefinitely.",
     "- Only produce a final text response when the work is done or you are genuinely blocked and need user input.",
     "",
     ...safetySection,

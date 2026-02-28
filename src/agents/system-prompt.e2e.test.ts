@@ -145,6 +145,9 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain(
       "Human-in-the-loop rule: if you ask the user a direct question that requires their decision or information, stop tool execution and wait for their reply.",
     );
+    expect(prompt).toContain(
+      "Avoid unproductive loops: if the same tool call fails repeatedly or progress stalls, summarize the blocker clearly and ask one direct question instead of retrying indefinitely.",
+    );
   });
 
   it("lists available tools when provided", () => {
