@@ -3,7 +3,8 @@
  */
 
 import crypto from "node:crypto";
-import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
+import { spawnSubagentDirect, type SpawnSubagentContext } from "../../agents/subagent-spawn.js";
+import { findAgentRole } from "./agent-roles.js";
 
 export type TaskStatus = "pending" | "running" | "completed" | "failed" | "cancelled";
 
@@ -194,11 +195,13 @@ export class AgentOrchestrator {
     }
 
     // Spawn subagent for the task
+    const roleConfig = findAgentRole(task.agentRole);
     const result = await spawnSubagentDirect(
       {
         task: taskInput,
         label: task.description,
         agentId: task.agentRole,
+        roleConfig,
       },
       context,
     );

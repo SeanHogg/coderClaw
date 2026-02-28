@@ -11,4 +11,24 @@ describe("spawnSubagentDirect (stub)", () => {
     expect(result).toHaveProperty("childSessionKey");
     expect(typeof result.childSessionKey).toBe("string");
   });
+
+  test("echoes roleConfig metadata when provided", async () => {
+    const roleConfig = {
+      name: "code-creator",
+      model: "anthropic/claude-sonnet-4-20250514",
+      thinking: "high",
+      tools: ["create", "edit", "view"],
+    };
+    const result = await spawnSubagentDirect({
+      task: "Implement feature",
+      label: "Implement",
+      agentId: "code-creator",
+      roleConfig,
+    });
+    expect(result.status).toBe("accepted");
+    expect(result.role).toBe("code-creator");
+    expect(result.model).toBe(roleConfig.model);
+    expect(result.thinking).toBe("high");
+    expect(result.tools).toEqual(roleConfig.tools);
+  });
 });

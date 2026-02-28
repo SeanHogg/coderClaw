@@ -38,7 +38,7 @@ tools. Add `planning` and `adversarial` workflow types (currently only
 
 ## Gap 2: Agent Roles Defined But Never Applied
 
-**Status**: FACADE — code exists, never consumed
+**Status**: IN PROGRESS — basic wiring done; orchestrator calls findAgentRole and passes roleConfig to spawnSubagentDirect stub. Custom roles not yet loaded.
 
 **Evidence**:
 - `src/coderclaw/agent-roles.ts`: 7 role definitions with system prompts,
