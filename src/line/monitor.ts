@@ -309,7 +309,7 @@ export async function monitorLineProvider(
     });
   };
 
-  abortSignal?.addEventListener("abort", stopHandler);
+  abortSignal?.addEventListener("abort", stopHandler, { once: true });
 
   return {
     account: bot.account,

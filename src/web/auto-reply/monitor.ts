@@ -5,6 +5,7 @@ import { DEFAULT_GROUP_HISTORY_LIMIT } from "../../auto-reply/reply/history.js";
 import { formatCliCommand } from "../../cli/command-format.js";
 import { waitForever } from "../../cli/wait.js";
 import { loadConfig } from "../../config/config.js";
+import { getMaxListeners, setMaxListeners } from "node:events";
 import { logVerbose } from "../../globals.js";
 import { formatDurationPrecise } from "../../infra/format-time/format-duration.ts";
 import { enqueueSystemEvent } from "../../infra/system-events.js";
@@ -130,6 +131,14 @@ export async function monitorWebChannel(
   const currentMaxListeners = process.getMaxListeners?.() ?? 10;
   if (process.setMaxListeners && currentMaxListeners < 50) {
     process.setMaxListeners(50);
+  }
+
+  // Also raise the limit on a long-lived abort signal used by concurrent tasks.
+  if (abortSignal) {
+    const currentSignalMaxListeners = getMaxListeners(abortSignal);
+    if (currentSignalMaxListeners < 50) {
+      setMaxListeners(50, abortSignal);
+    }
   }
 
   let sigintStop = false;

@@ -13,10 +13,21 @@ You are working on the coderClaw platform itself — coderClaw building coderCla
 ## Read These First
 
 1. `.coderClaw/planning/CAPABILITY_GAPS.md` — **START HERE**: 6 gaps where code exists but is never called
-2. `../ROADMAP.md` — Phase -1 must be done before anything else
+2. `.coderClaw/planning/ROADMAP.md` — local roadmap mirror (Phase -1 must be done before anything else)
 3. `.coderClaw/context.yaml`, `.coderClaw/architecture.md` — project metadata & module structure
-4. `../CLAW_REGISTRATION_ANALYSIS.md` — claw registration audit & coderclawLLM API design
+4. `.coderClaw/planning/CLAW_REGISTRATION_ANALYSIS.md` — local registration audit mirror (coderclawLLM API design)
 5. `AGENTS.md` — conventions (TS ESM, Vitest, Oxlint, Conventional Commits, ≤500 LOC/file)
+
+## Canonical Source Paths (avoid ENOENT)
+
+- `src/coderclaw/tools/orchestrate-tool.ts`
+- `src/coderclaw/orchestrator.ts`
+- `src/agents/subagent-spawn.ts`
+
+Do **not** use these non-existent paths:
+- `src/coderclaw/agents/subagent-spawn.ts`
+- `src/coderclaw/tools/common.ts`
+- `src/agents/agent-manager.ts`
 
 ## Current State (facade — nothing executes)
 

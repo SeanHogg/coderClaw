@@ -24,6 +24,7 @@ type EventHandlerContext = {
   tui: EventHandlerTui;
   state: TuiStateAccess;
   setActivityStatus: (text: string) => void;
+  reportAction?: (text: string) => void;
   refreshSessionInfo?: () => Promise<void>;
   loadHistory?: () => Promise<void>;
   isLocalRunId?: (runId: string) => boolean;
@@ -37,6 +38,7 @@ export function createEventHandlers(context: EventHandlerContext) {
     tui,
     state,
     setActivityStatus,
+    reportAction,
     refreshSessionInfo,
     loadHistory,
     isLocalRunId,
@@ -136,9 +138,13 @@ export function createEventHandlers(context: EventHandlerContext) {
         return;
       }
     }
+    const wasKnownRun = sessionRuns.has(evt.runId);
     noteSessionRun(evt.runId);
     if (!state.activeChatRunId) {
       state.activeChatRunId = evt.runId;
+    }
+    if (!wasKnownRun && evt.state === "delta") {
+      reportAction?.("run started");
     }
     if (evt.state === "delta") {
       const displayText = streamAssembler.ingestDelta(evt.runId, evt.message, state.showThinking);
@@ -199,6 +205,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (wasActiveRun) {
         setActivityStatus(stopReason === "error" ? "error" : "idle");
       }
+      reportAction?.(stopReason === "error" ? "run ended with error" : "run completed");
       // Refresh session info to update token counts in footer
       void refreshSessionInfo?.();
     }
@@ -211,6 +218,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (wasActiveRun) {
         setActivityStatus("aborted");
       }
+      reportAction?.("run aborted");
       void refreshSessionInfo?.();
       maybeRefreshHistoryForRun(evt.runId);
     }
@@ -223,6 +231,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (wasActiveRun) {
         setActivityStatus("error");
       }
+      reportAction?.("run error");
       void refreshSessionInfo?.();
       maybeRefreshHistoryForRun(evt.runId);
     }
@@ -259,6 +268,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       }
       if (phase === "start") {
         chatLog.startTool(toolCallId, toolName, data.args);
+        reportAction?.(`tool start: ${toolName}`);
       } else if (phase === "update") {
         if (!allowToolOutput) {
           return;
@@ -274,6 +284,9 @@ export function createEventHandlers(context: EventHandlerContext) {
         } else {
           chatLog.updateToolResult(toolCallId, { content: [] }, { isError: Boolean(data.isError) });
         }
+        reportAction?.(
+          Boolean(data.isError) ? `tool failed: ${toolName}` : `tool complete: ${toolName}`,
+        );
       }
       tui.requestRender();
       return;
@@ -285,12 +298,14 @@ export function createEventHandlers(context: EventHandlerContext) {
       const phase = typeof evt.data?.phase === "string" ? evt.data.phase : "";
       if (phase === "start") {
         setActivityStatus("running");
+        reportAction?.("agent execution started");
       }
       if (phase === "end") {
         sessionRuns.delete(evt.runId);
         clearActiveRunIfMatch(evt.runId);
         maybeRefreshHistoryForRun(evt.runId);
         setActivityStatus("idle");
+        reportAction?.("agent execution finished");
       }
       if (phase === "error") {
         const errorMessage =
@@ -305,6 +320,7 @@ export function createEventHandlers(context: EventHandlerContext) {
         maybeRefreshHistoryForRun(evt.runId);
         void refreshSessionInfo?.();
         setActivityStatus("error");
+        reportAction?.("agent execution error");
       }
       tui.requestRender();
     }

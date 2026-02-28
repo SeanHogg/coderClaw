@@ -43,6 +43,7 @@ type CommandHandlerContext = {
   refreshAgents: () => Promise<void>;
   abortActive: () => Promise<void>;
   setActivityStatus: (text: string) => void;
+  reportAction?: (text: string) => void;
   formatSessionKey: (key: string) => string;
   applySessionInfoFromPatch: (result: SessionsPatchResult) => void;
   updateFooter?: () => void;
@@ -149,6 +150,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
     refreshAgents,
     abortActive,
     setActivityStatus,
+    reportAction,
     formatSessionKey,
     applySessionInfoFromPatch,
     noteLocalRunId,
@@ -769,6 +771,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
       noteLocalRunId(runId);
       state.activeChatRunId = runId;
       setActivityStatus("sending");
+      reportAction?.("sending message to gateway");
       await client.sendChat({
         sessionKey: state.currentSessionKey,
         message: text,
@@ -778,6 +781,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         runId,
       });
       setActivityStatus("waiting");
+      reportAction?.("waiting for assistant response");
     } catch (err) {
       if (state.activeChatRunId) {
         forgetLocalRunId?.(state.activeChatRunId);
@@ -785,6 +789,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
       state.activeChatRunId = null;
       chatLog.addSystem(`send failed: ${String(err)}`);
       setActivityStatus("error");
+      reportAction?.("send failed");
     }
     tui.requestRender();
   };

@@ -376,12 +376,16 @@ export async function runTui(opts: TuiOptions) {
   const tui = new TUI(new ProcessTerminal());
   const header = new Text("", 1, 0);
   const statusContainer = new Container();
+  const statusBodyContainer = new Container();
+  const statusTraceText = new Text("", 1, 0);
   const footer = new Text("", 1, 0);
   const chatLog = new ChatLog();
   const editor = new CustomEditor(tui, editorTheme);
   const root = new Container();
   root.addChild(header);
   root.addChild(chatLog);
+  statusContainer.addChild(statusBodyContainer);
+  statusContainer.addChild(statusTraceText);
   root.addChild(statusContainer);
   root.addChild(footer);
   root.addChild(editor);
@@ -439,6 +443,32 @@ export async function runTui(opts: TuiOptions) {
   const busyStates = new Set(["sending", "waiting", "streaming", "running"]);
   let statusText: Text | null = null;
   let statusLoader: Loader | null = null;
+  const statusTraceLines: string[] = [];
+  const MAX_STATUS_TRACE_LINES = 4;
+
+  const formatTraceTimestamp = () => {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mm = String(now.getMinutes()).padStart(2, "0");
+    const ss = String(now.getSeconds()).padStart(2, "0");
+    return `${hh}:${mm}:${ss}`;
+  };
+
+  const renderStatusTrace = () => {
+    statusTraceText.setText(theme.dim(statusTraceLines.join("\n")));
+  };
+
+  const reportAction = (text: string) => {
+    const message = text.trim();
+    if (!message) {
+      return;
+    }
+    statusTraceLines.push(`• ${formatTraceTimestamp()} ${message}`);
+    if (statusTraceLines.length > MAX_STATUS_TRACE_LINES) {
+      statusTraceLines.splice(0, statusTraceLines.length - MAX_STATUS_TRACE_LINES);
+    }
+    renderStatusTrace();
+  };
 
   const formatElapsed = (startMs: number) => {
     const totalSeconds = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
@@ -454,18 +484,18 @@ export async function runTui(opts: TuiOptions) {
     if (statusText) {
       return;
     }
-    statusContainer.clear();
+    statusBodyContainer.clear();
     statusLoader?.stop();
     statusLoader = null;
     statusText = new Text("", 1, 0);
-    statusContainer.addChild(statusText);
+    statusBodyContainer.addChild(statusText);
   };
 
   const ensureStatusLoader = () => {
     if (statusLoader) {
       return;
     }
-    statusContainer.clear();
+    statusBodyContainer.clear();
     statusText = null;
     statusLoader = new Loader(
       tui,
@@ -473,7 +503,7 @@ export async function runTui(opts: TuiOptions) {
       (text) => theme.bold(theme.accentSoft(text)),
       "",
     );
-    statusContainer.addChild(statusLoader);
+    statusBodyContainer.addChild(statusLoader);
   };
 
   let waitingTick = 0;
@@ -582,7 +612,11 @@ export async function runTui(opts: TuiOptions) {
   };
 
   const setConnectionStatus = (text: string, ttlMs?: number) => {
+    const previous = connectionStatus;
     connectionStatus = text;
+    if (text !== previous) {
+      reportAction(`connection: ${text}`);
+    }
     renderStatus();
     if (statusTimeout) {
       clearTimeout(statusTimeout);
@@ -596,7 +630,17 @@ export async function runTui(opts: TuiOptions) {
   };
 
   const setActivityStatus = (text: string) => {
+    const previous = activityStatus;
     activityStatus = text;
+    if (text !== previous) {
+      if (text === "idle") {
+        if (previous && previous !== "idle") {
+          reportAction("idle");
+        }
+      } else {
+        reportAction(text);
+      }
+    }
     renderStatus();
   };
 
@@ -669,6 +713,7 @@ export async function runTui(opts: TuiOptions) {
     tui,
     state,
     setActivityStatus,
+    reportAction,
     refreshSessionInfo,
     loadHistory,
     isLocalRunId,
@@ -728,6 +773,7 @@ export async function runTui(opts: TuiOptions) {
       refreshAgents,
       abortActive,
       setActivityStatus,
+      reportAction,
       formatSessionKey,
       noteLocalRunId,
       forgetLocalRunId,

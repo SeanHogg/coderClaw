@@ -49,7 +49,7 @@ export function execDockerRaw(
       if (signal.aborted) {
         handleAbort();
       } else {
-        signal.addEventListener("abort", handleAbort);
+        signal.addEventListener("abort", handleAbort, { once: true });
       }
     }
 
