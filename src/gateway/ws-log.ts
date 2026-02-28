@@ -344,6 +344,27 @@ function logWsOptimized(direction: "in" | "out", kind: string, meta?: Record<str
   }
 
   if (direction !== "out" || kind !== "res") {
+    // In non-verbose mode, still emit a compact one-liner for agent broadcast events
+    // so tool/lifecycle activity is visible in the gateway console.
+    if (kind === "event" && direction === "out") {
+      const event = typeof meta?.event === "string" ? meta.event : undefined;
+      if (event === "agent") {
+        const stream = typeof meta?.stream === "string" ? meta.stream : undefined;
+        const tool = typeof meta?.tool === "string" ? meta.tool : undefined;
+        const phase = typeof meta?.phase === "string" ? meta.phase : undefined;
+        const run = typeof meta?.run === "string" ? meta.run : undefined;
+        const agent = typeof meta?.agent === "string" ? meta.agent : undefined;
+        const tokens = [
+          `${chalk.cyanBright("→")} ${chalk.bold("agent")}`,
+          stream ? `${chalk.dim("stream")}=${stream}` : undefined,
+          tool ? `${chalk.dim("tool")}=${tool}` : undefined,
+          phase ? `${chalk.dim("phase")}=${phase}` : undefined,
+          agent ? `${chalk.dim("agent")}=${agent}` : undefined,
+          run ? `${chalk.dim("run")}=${chalk.gray(run)}` : undefined,
+        ].filter((t): t is string => Boolean(t));
+        wsLog.info(tokens.join(" "));
+      }
+    }
     return;
   }
 
