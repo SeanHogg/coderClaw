@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { shouldAutoContinueRun } from "./continuation-policy.js";
+import { buildAutoContinuePrompt, shouldAutoContinueRun } from "./continuation-policy.js";
 
 describe("shouldAutoContinueRun", () => {
   it("continues on deferral language during execution tasks", () => {
@@ -77,5 +77,21 @@ describe("shouldAutoContinueRun", () => {
 
     expect(decision.shouldContinue).toBe(true);
     expect(decision.reason).toBe("investigation_only_tools");
+  });
+});
+
+describe("buildAutoContinuePrompt", () => {
+  it("includes original request and prior incomplete response", () => {
+    const prompt = buildAutoContinuePrompt({
+      originalPrompt: "Wire executeWorkflow into orchestrate tool and run tests.",
+      lastAssistantText: "Let me check the exact line numbers and understand the gap.",
+      reason: "deferral_language",
+    });
+
+    expect(prompt).toContain("Original user request:");
+    expect(prompt).toContain("Wire executeWorkflow into orchestrate tool and run tests.");
+    expect(prompt).toContain("Your previous incomplete response:");
+    expect(prompt).toContain("Let me check the exact line numbers and understand the gap.");
+    expect(prompt).toContain("Continuation reason: deferral_language.");
   });
 });

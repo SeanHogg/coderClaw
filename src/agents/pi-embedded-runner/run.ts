@@ -52,7 +52,7 @@ import { resolveModel } from "./model.js";
 import { runEmbeddedAttempt } from "./run/attempt.js";
 import type { RunEmbeddedPiAgentParams } from "./run/params.js";
 import { buildEmbeddedRunPayloads } from "./run/payloads.js";
-import { AUTO_CONTINUE_PROMPT, shouldAutoContinueRun } from "./continuation-policy.js";
+import { buildAutoContinuePrompt, shouldAutoContinueRun } from "./continuation-policy.js";
 import {
   truncateOversizedToolResultsInSession,
   sessionLikelyHasOversizedToolResults,
@@ -1020,9 +1020,24 @@ export async function runEmbeddedPiAgent(
             hasPendingClientToolCall: Boolean(attempt.clientToolCall),
           });
 
+          log.debug(
+            `auto-continue decision: shouldContinue=${continuationDecision.shouldContinue} reason=${continuationDecision.reason ?? "none"} runId=${params.runId} sessionId=${params.sessionId} toolCalls=${attempt.toolMetas.length}`,
+          );
+
           if (continuationDecision.shouldContinue && autoContinueNudges < MAX_AUTO_CONTINUE_NUDGES) {
             autoContinueNudges += 1;
-            currentPrompt = AUTO_CONTINUE_PROMPT;
+            const latestPayloadText = payloads
+              .map((payload) => (typeof payload.text === "string" ? payload.text.trim() : ""))
+              .find((text) => text.length > 0);
+            const latestAssistantText = [...attempt.assistantTexts]
+              .reverse()
+              .map((text) => text.trim())
+              .find((text) => text.length > 0);
+            currentPrompt = buildAutoContinuePrompt({
+              originalPrompt: params.prompt,
+              lastAssistantText: latestAssistantText ?? latestPayloadText,
+              reason: continuationDecision.reason,
+            });
             log.warn(
               `auto-continue nudge ${autoContinueNudges}/${MAX_AUTO_CONTINUE_NUDGES}: reason=${continuationDecision.reason ?? "policy"} runId=${params.runId} sessionId=${params.sessionId}`,
             );

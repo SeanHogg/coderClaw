@@ -14,6 +14,12 @@ export type ContinuationPolicyDecision = {
   reason?: string;
 };
 
+export type AutoContinuePromptInput = {
+  originalPrompt: string;
+  lastAssistantText?: string;
+  reason?: string;
+};
+
 const INVESTIGATION_TOOLS = new Set([
   "read",
   "grep",
@@ -107,3 +113,18 @@ export function shouldAutoContinueRun(input: ContinuationPolicyInput): Continuat
 
 export const AUTO_CONTINUE_PROMPT =
   "Continue executing the user's requested tasks now. Do not summarize your plan. Perform concrete implementation and test steps. Only stop if you need a specific user decision or missing required information.";
+
+export function buildAutoContinuePrompt(input: AutoContinuePromptInput): string {
+  const sections = [
+    "Your previous turn ended before the requested work was complete.",
+    input.reason ? `Continuation reason: ${input.reason}.` : "",
+    "Original user request:",
+    input.originalPrompt.trim(),
+    input.lastAssistantText?.trim()
+      ? ["Your previous incomplete response:", input.lastAssistantText.trim()].join("\n")
+      : "",
+    AUTO_CONTINUE_PROMPT,
+  ].filter(Boolean);
+
+  return sections.join("\n\n");
+}
