@@ -20,6 +20,38 @@ async function clawLinkFetch<T>(
   return body as T;
 }
 
+async function ensureProjectMapping(params: {
+  serverUrl: string;
+  tenantJwt: string;
+  projectRoot: string;
+  projectName: string;
+  description?: string;
+  clawId: string;
+}): Promise<{ projectId: string; action: "created" | "updated" } | null> {
+  try {
+    const upsert = await clawLinkFetch<{
+      action: "created" | "updated";
+      project: { id: string; name: string };
+    }>(`${params.serverUrl}/api/projects/upsert`, {
+      method: "POST",
+      token: params.tenantJwt,
+      body: JSON.stringify({
+        name: params.projectName,
+        description: params.description ?? `Managed from ${params.projectRoot}`,
+      }),
+    });
+
+    await clawLinkFetch(`${params.serverUrl}/api/claws/${params.clawId}/projects/${upsert.project.id}`, {
+      method: "PUT",
+      token: params.tenantJwt,
+    });
+
+    return { projectId: upsert.project.id, action: upsert.action };
+  } catch {
+    return null;
+  }
+}
+
 export async function promptCoderClawLinkOnboarding(params: {
   projectRoot: string;
   defaultInstanceName: string;
@@ -226,6 +258,8 @@ export async function promptCoderClawLinkOnboarding(params: {
   let clawId = "";
   let clawSlug = "";
   let apiKey = "";
+  let projectId = "";
+  let projectAction: "created" | "updated" | "unknown" = "unknown";
   try {
     const res = await clawLinkFetch<{
       claw: { id: number; name: string; slug: string };
@@ -238,6 +272,20 @@ export async function promptCoderClawLinkOnboarding(params: {
     clawId = String(res.claw.id);
     clawSlug = res.claw.slug;
     apiKey = res.apiKey;
+
+    const mapped = await ensureProjectMapping({
+      serverUrl,
+      tenantJwt,
+      clawId,
+      projectRoot: params.projectRoot,
+      projectName: params.defaultInstanceName,
+      description: `coderClaw project at ${params.projectRoot}`,
+    });
+    if (mapped) {
+      projectId = mapped.projectId;
+      projectAction = mapped.action;
+    }
+
     clawSpin.stop(`Claw "${res.claw.name}" registered`);
   } catch (err) {
     clawSpin.stop("Claw registration failed");
@@ -257,6 +305,7 @@ export async function promptCoderClawLinkOnboarding(params: {
         instanceId: clawId,
         instanceSlug: clawSlug,
         instanceName: clawName,
+        ...(projectId ? { projectId } : {}),
         tenantId,
         url: serverUrl,
       },
@@ -268,6 +317,7 @@ export async function promptCoderClawLinkOnboarding(params: {
       "Claw API key saved to ~/.coderclaw/.env",
       "This key was shown once — it is hashed on the server.",
       `Instance slug: ${clawSlug}  ·  tenant: ${tenantId}`,
+      projectId ? `Project ${projectAction}: ${projectId}` : "Project mapping: not available",
     ].join("\n"),
     "coderClawLink connected",
   );

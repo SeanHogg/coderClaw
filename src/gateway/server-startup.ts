@@ -17,7 +17,10 @@ import {
   triggerInternalHook,
 } from "../hooks/internal-hooks.js";
 import { loadInternalHooks } from "../hooks/loader.js";
+import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
+import { ClawLinkRelayService } from "../infra/clawlink-relay.js";
+import { loadProjectContext } from "../coderclaw/project-context.js";
 import type { loadCoderClawPlugins } from "../plugins/loader.js";
 import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
 import { startBrowserControlServerIfEnabled } from "./server-browser.js";
@@ -169,5 +172,24 @@ export async function startGatewaySidecars(params: {
     }, 750);
   }
 
-  return { browserControl, pluginServices };
+  // Start the ClawLink upstream relay if credentials are configured.
+  // Both the upstream WS and local gateway bridge retry independently on failure.
+  let clawLinkRelay: ClawLinkRelayService | null = null;
+  try {
+    const apiKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
+    const baseUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai";
+    if (apiKey) {
+      const ctx = await loadProjectContext(params.defaultWorkspaceDir);
+      const clawId = ctx?.clawLink?.instanceId;
+      if (clawId) {
+        clawLinkRelay = new ClawLinkRelayService({ baseUrl, clawId: String(clawId), apiKey });
+        clawLinkRelay.start();
+        params.log.warn(`[clawlink] relay started for claw ${clawId}`);
+      }
+    }
+  } catch (err) {
+    params.log.warn(`[clawlink] relay failed to start: ${String(err)}`);
+  }
+
+  return { browserControl, pluginServices, clawLinkRelay };
 }

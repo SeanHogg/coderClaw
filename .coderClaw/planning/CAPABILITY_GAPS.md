@@ -1,6 +1,6 @@
 # CoderClaw Capability Gaps — Deep Audit
 
-> Last updated: 2026-02-28
+> Last updated: 2026-03-01
 > Source: Code audit of `coderClaw/src/` and `coderClawLink/api/src/`
 
 This document records what **actually works** vs. what is **facade code** (exists
@@ -132,7 +132,7 @@ updated.
 
 ## Gap 6: Mesh Is Branding, Not Implementation
 
-**Status**: COMPLETELY MISSING — the core mesh concept has no code
+**Status**: PARTIALLY IMPLEMENTED — hub-and-spoke relay is now end-to-end functional; claw-to-claw mesh still completely missing
 
 **Evidence**:
 
@@ -143,22 +143,54 @@ updated.
 - Distributed orchestration across claws
 - Fleet discovery (which claws are online, what are their capabilities)
 
-### What actually exists:
+### What was built (2026-03-01):
 
-- **Hub-and-spoke relay**: `ClawRelayDO` connects ONE claw (upstream) to N
-  browser clients. No claw-to-claw channel.
+- **`ClawLinkRelayService`** (`src/infra/clawlink-relay.ts` — NEW): Persistent
+  service that manages the upstream WebSocket connection from coderClaw to
+  `ClawRelayDO`. Previously listed as `[PLANNED]`; now implemented.
+  - Connects to `wss://.../api/claws/:id/upstream?key=<apiKey>` on gateway startup
+  - Exponential backoff reconnect (1 s → 30 s cap) on disconnect
+  - Bridges browser→agent: translates `chat`, `chat.abort`, `session.new` relay
+    messages into local `gateway.request("chat.send", ...)` calls via `GatewayClient`
+  - Bridges agent→browser: translates local gateway `"chat"` EventFrames
+    (`delta`, `message`, `tool_use`, `tool_result`, `abort`) into ClawLink wire
+    protocol messages broadcast over the upstream WebSocket
+  - HTTP heartbeat: `PATCH /api/claws/:id/heartbeat?key=<apiKey>` every 5
+    minutes to keep `lastSeenAt` fresh even when no messages are flowing
+- **Wired into `startGatewaySidecars`** (`src/gateway/server-startup.ts`):
+  reads `CODERCLAW_LINK_API_KEY` and `CODERCLAW_LINK_URL` from
+  `~/.coderclaw/.env`; loads `clawLink.instanceId` from project context; starts
+  `ClawLinkRelayService` if both are present. Returns handle for clean shutdown.
+- **Heartbeat API endpoint** (`coderClawLink /api/claws/:id/heartbeat` — NEW):
+  `PATCH /:id/heartbeat?key=<apiKey>` updates `lastSeenAt`; API-key auth
+  without requiring the full JWT flow.
+
+### What now works:
+
+- `connectedAt` is set when the upstream WS connects; cleared on disconnect. UI
+  "Waiting for connection..." dot turns green.
+- `lastSeenAt` is updated on connect and refreshed every 5 minutes. UI "Last
+  seen: never" now shows an actual timestamp.
+- Browser→agent chat flows: browser client → `ClawRelayDO` → upstream WS →
+  `ClawLinkRelayService.handleRelayMessage` → local `GatewayClient.request("chat.send")`
+- Agent→browser streaming flows: local gateway EventFrame → `ClawLinkRelayService.handleGatewayEvent`
+  → upstream WS → `ClawRelayDO.broadcast()` → all browser `clientSockets`
+
+### Still completely missing (original mesh gaps unchanged):
+
+- **Hub-and-spoke only**: `ClawRelayDO` connects ONE claw to N browser clients.
+  No claw-to-claw channel. No `forwardToUpstream` across DOs.
 - **Local-only subagents**: `spawnSubagentDirect()` spawns in-process agents.
-  There is no `RemoteSubagentAdapter` or similar.
-- **No discovery**: A claw cannot query which other claws are online or what
-  they can do. `coderclaw_instances` in the DB tracks registrations but no
-  capability metadata or online status query API beyond the SPA.
-- **No claw-to-claw routes**: No `/api/claws/:id/forward/:targetId` or
-  equivalent. ClawRelayDO has no `forwardToUpstream` for a different DO.
-- **No distributed task routing**: `ClawLinkTransportAdapter` submits tasks
-  to the ClawLink server, but there's no concept of routing a task to a
-  specific claw. The server is just a CRUD layer, not a router.
+  No `RemoteSubagentAdapter` or equivalent.
+- **No fleet discovery**: A claw cannot query which other claws are online or
+  their capabilities. `coderclaw_instances` tracks registrations but has no
+  capability metadata or online-status query API.
+- **No claw-to-claw routes**: No `/api/claws/:id/forward/:targetId`. No
+  concept of routing a task to a specific claw.
+- **No distributed task routing**: `ClawLinkTransportAdapter` is still a CRUD
+  transport, not a distributed router.
 
-### What's partially there:
+### What's partially there (unchanged from prior audit):
 
 - `ClawLinkTransportAdapter` (295 lines): Full HTTP transport to ClawLink.
   Could be extended for claw-addressed routing if the server supported it.
@@ -166,12 +198,12 @@ updated.
   fields. Could become the fleet registry with capability metadata.
 - `RuntimeStatus.mode` type includes `"distributed-cluster"` (never used).
 
-**Impact**: The platform cannot distribute work. All computation happens on one
-machine. A "fleet" of claws is just a list in a database — they can't
-collaborate.
+**Impact**: Single-claw browser↔agent chat now works end-to-end. The platform
+still cannot distribute work between claws. A "fleet" is still just a list in a
+database — they can't collaborate.
 
-**Fix**: Build claw discovery API, claw-to-claw relay extension to
-ClawRelayDO, `RemoteSubagentAdapter`, orchestrator mesh mode. Tracked as
+**Fix** (remaining): Build claw discovery API, claw-to-claw relay extension to
+`ClawRelayDO`, `RemoteSubagentAdapter`, orchestrator mesh mode. Tracked as
 **Phase -1.6** (foundation) and **Phase 4** (full orchestration).
 
 ---
@@ -185,7 +217,7 @@ ClawRelayDO, `RemoteSubagentAdapter`, orchestrator mesh mode. Tracked as
 | 3        | **-1.3** Wire session handoff | Multi-session work needs continuity                  |
 | 4        | **-1.5** Knowledge loop       | Agents need updated context to work effectively      |
 | 5        | **-1.4** Workflow persistence | Nice-to-have once workflows actually run             |
-| 6        | **-1.6** Mesh plumbing        | Enables Phase 4/5 but single-claw works fine for now |
+| 6        | **-1.6b** Claw-to-claw mesh   | Relay works (single-claw chat ✅); claw→claw still missing |
 
 Items 1-4 are **blocking**: coderClaw literally cannot self-improve without them.
 Items 5-6 are **enabling**: they improve reliability and scale but aren't required
@@ -208,5 +240,8 @@ After each gap is fixed, verify:
       "Incomplete workflow found. Resume? [Y/n]" → continues from last checkpoint.
 - [ ] **-1.5**: Complete a task that adds a new module → `architecture.md` is
       updated → next agent session sees the new module in its context.
-- [ ] **-1.6**: `GET /api/tenants/:id/claws?status=online` returns online claws
+- [x] **-1.6a** (2026-03-01): coderClaw connects to ClawRelayDO upstream WS on
+      gateway start. `connectedAt` and `lastSeenAt` update correctly. Browser
+      chat reaches local agent; agent responses stream back to browser.
+- [ ] **-1.6b**: `GET /api/tenants/:id/claws?status=online` returns online claws
       with capabilities. Orchestrator can dispatch a step to a remote claw.

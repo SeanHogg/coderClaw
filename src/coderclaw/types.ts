@@ -34,6 +34,8 @@ export type ProjectContext = {
     instanceSlug?: string;
     /** Human-readable name for this project's claw instance */
     instanceName?: string;
+    /** Linked project id in coderClawLink */
+    projectId?: string;
     /** Tenant this claw belongs to */
     tenantId?: number;
     /** CoderClawLink server URL */
