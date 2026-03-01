@@ -91,6 +91,43 @@ describe("handleChatEvent", () => {
     expect(state.chatRunId).toBe(null);
     expect(state.chatStream).toBe(null);
     expect(state.chatStreamStartedAt).toBe(null);
+    expect(state.lastError).toBe(null);
+  });
+
+  it("records stop reason details when final arrives without assistant content", () => {
+    const state = createState({
+      sessionKey: "main",
+      chatRunId: "run-1",
+      chatStream: "",
+      chatStreamStartedAt: 100,
+    });
+    const payload: ChatEventPayload = {
+      runId: "run-1",
+      sessionKey: "main",
+      state: "final",
+      stopReason: "max_output_tokens",
+    };
+
+    expect(handleChatEvent(state, payload)).toBe("final");
+    expect(state.lastError).toBe("run stopped: max_output_tokens");
+  });
+
+  it("records final error detail when chat final includes error metadata", () => {
+    const state = createState({
+      sessionKey: "main",
+      chatRunId: "run-1",
+      chatStream: "",
+      chatStreamStartedAt: 100,
+    });
+    const payload: ChatEventPayload = {
+      runId: "run-1",
+      sessionKey: "main",
+      state: "final",
+      errorMessage: "tool failure propagated",
+    };
+
+    expect(handleChatEvent(state, payload)).toBe("final");
+    expect(state.lastError).toBe("run ended with error: tool failure propagated");
   });
 
   it("processes aborted from own run and keeps partial assistant message", () => {
@@ -123,6 +160,25 @@ describe("handleChatEvent", () => {
     expect(state.chatStream).toBe(null);
     expect(state.chatStreamStartedAt).toBe(null);
     expect(state.chatMessages).toEqual([existingMessage, partialMessage]);
+    expect(state.lastError).toBe("run aborted");
+  });
+
+  it("records abort stop reason for aborted events", () => {
+    const state = createState({
+      sessionKey: "main",
+      chatRunId: "run-1",
+      chatStream: "Partial reply",
+      chatStreamStartedAt: 100,
+    });
+    const payload: ChatEventPayload = {
+      runId: "run-1",
+      sessionKey: "main",
+      state: "aborted",
+      stopReason: "user",
+    };
+
+    expect(handleChatEvent(state, payload)).toBe("aborted");
+    expect(state.lastError).toBe("run aborted: user");
   });
 
   it("falls back to streamed partial when aborted payload message is invalid", () => {
@@ -212,5 +268,27 @@ describe("handleChatEvent", () => {
     expect(state.chatStream).toBe(null);
     expect(state.chatStreamStartedAt).toBe(null);
     expect(state.chatMessages).toEqual([existingMessage]);
+    expect(state.lastError).toBe("run aborted");
+  });
+
+  it("records detailed error text for error events", () => {
+    const state = createState({
+      sessionKey: "main",
+      chatRunId: "run-err",
+      chatStream: "Working",
+      chatStreamStartedAt: 100,
+    });
+    const payload: ChatEventPayload = {
+      runId: "run-err",
+      sessionKey: "main",
+      state: "error",
+      errorMessage: "No API key found",
+    };
+
+    expect(handleChatEvent(state, payload)).toBe("error");
+    expect(state.lastError).toBe("run error: No API key found");
+    expect(state.chatRunId).toBe(null);
+    expect(state.chatStream).toBe(null);
+    expect(state.chatStreamStartedAt).toBe(null);
   });
 });

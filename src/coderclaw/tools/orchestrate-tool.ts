@@ -13,11 +13,15 @@ import {
   type WorkflowStep,
   type SpawnSubagentContext,
 } from "../orchestrator.js";
+import {
+  createPlanningWorkflow,
+  createAdversarialReviewWorkflow,
+} from "../orchestrator-enhanced.js";
 
 const OrchestrateSchema = Type.Object({
   workflow: Type.String({
     description:
-      "Type of workflow: 'feature', 'bugfix', 'refactor', or 'custom'. Use 'custom' to define your own steps.",
+      "Type of workflow: 'feature', 'bugfix', 'refactor', 'planning', 'adversarial', or 'custom'. Use 'custom' to define your own steps.",
   }),
   description: Type.String({
     description:
@@ -97,6 +101,12 @@ export function createOrchestrateTool(options?: {
           case "refactor":
             steps = createRefactorWorkflow(description);
             break;
+          case "planning":
+            steps = createPlanningWorkflow(description);
+            break;
+          case "adversarial":
+            steps = createAdversarialReviewWorkflow(description);
+            break;
           case "custom":
             if (!customSteps || customSteps.length === 0) {
               return jsonResult({
@@ -107,7 +117,7 @@ export function createOrchestrateTool(options?: {
             break;
           default:
             return jsonResult({
-              error: `Unknown workflow type: ${workflow}. Use 'feature', 'bugfix', 'refactor', or 'custom'.`,
+              error: `Unknown workflow type: ${workflow}. Use 'feature', 'bugfix', 'refactor', 'planning', 'adversarial', or 'custom'.`,
             }) as AgentToolResult<string>;
         }
 

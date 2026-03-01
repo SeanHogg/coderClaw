@@ -6,6 +6,16 @@ import { resolveHeartbeatVisibility } from "../infra/heartbeat-visibility.js";
 import { loadSessionEntry } from "./session-utils.js";
 import { formatForLog } from "./ws-log.js";
 
+function asString(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return "";
+}
+
 /**
  * Check if webchat broadcasts should be suppressed for heartbeat runs.
  * Returns true if the run is a heartbeat and showOk is false.
@@ -263,6 +273,7 @@ export function createAgentEventHandler({
     seq: number,
     jobState: "done" | "error",
     error?: unknown,
+    details?: { stopReason?: string; errorMessage?: string },
   ) => {
     const text = chatRunState.buffers.get(clientRunId)?.trim() ?? "";
     const shouldSuppressSilent = isSilentReplyText(text, SILENT_REPLY_TOKEN);
@@ -274,6 +285,8 @@ export function createAgentEventHandler({
         sessionKey,
         seq,
         state: "final" as const,
+        stopReason: details?.stopReason,
+        errorMessage: details?.errorMessage,
         message:
           text && !shouldSuppressSilent
             ? {
@@ -295,7 +308,8 @@ export function createAgentEventHandler({
       sessionKey,
       seq,
       state: "error" as const,
-      errorMessage: error ? formatForLog(error) : undefined,
+      stopReason: details?.stopReason,
+      errorMessage: details?.errorMessage ?? (error ? formatForLog(error) : undefined),
     };
     broadcast("chat", payload);
     nodeSendToSession(sessionKey, "chat", payload);
@@ -373,6 +387,28 @@ export function createAgentEventHandler({
 
     const lifecyclePhase =
       evt.stream === "lifecycle" && typeof evt.data?.phase === "string" ? evt.data.phase : null;
+    const lifecycleStopReason =
+      evt.stream === "lifecycle"
+        ? (() => {
+            const value =
+              asString(evt.data?.stopReason, "") ||
+              asString(evt.data?.reason, "") ||
+              asString(evt.data?.finishReason, "") ||
+              (lifecyclePhase === "error" ? "error" : "");
+            return value || undefined;
+          })()
+        : undefined;
+    const lifecycleErrorMessage =
+      evt.stream === "lifecycle"
+        ? (() => {
+            const value =
+              asString(evt.data?.error, "") ||
+              asString(evt.data?.errorMessage, "") ||
+              asString(evt.data?.message, "") ||
+              asString(evt.data?.detail, "");
+            return value || undefined;
+          })()
+        : undefined;
 
     if (sessionKey) {
       // Send tool events to node/channel subscribers only when verbose is enabled;
@@ -395,6 +431,10 @@ export function createAgentEventHandler({
             evt.seq,
             lifecyclePhase === "error" ? "error" : "done",
             evt.data?.error,
+            {
+              stopReason: lifecycleStopReason,
+              errorMessage: lifecycleErrorMessage,
+            },
           );
         } else {
           emitChatFinal(
@@ -403,6 +443,10 @@ export function createAgentEventHandler({
             evt.seq,
             lifecyclePhase === "error" ? "error" : "done",
             evt.data?.error,
+            {
+              stopReason: lifecycleStopReason,
+              errorMessage: lifecycleErrorMessage,
+            },
           );
         }
       } else if (isAborted && (lifecyclePhase === "end" || lifecyclePhase === "error")) {

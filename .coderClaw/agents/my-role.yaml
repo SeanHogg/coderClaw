@@ -1,0 +1,6 @@
+role: my-role
+description: Sample custom role for testing
+tools:
+  - default-tool
+constraints:
+  - cannot use private APIs

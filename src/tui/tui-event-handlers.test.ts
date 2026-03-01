@@ -229,6 +229,22 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     expect(loadHistory).not.toHaveBeenCalled();
   });
 
+  it("includes lifecycle stop reason in composing trace", () => {
+    const { reportAction, handleAgentEvent } = createHandlersHarness({
+      state: { activeChatRunId: "run-stop" },
+    });
+
+    handleAgentEvent({
+      runId: "run-stop",
+      stream: "lifecycle",
+      data: { phase: "end", stopReason: "max_output_tokens" },
+    });
+
+    expect(reportAction).toHaveBeenCalledWith(
+      "Composing response… (stop reason: max_output_tokens)",
+    );
+  });
+
   it("falls back to idle when final chat event is not received", () => {
     vi.useFakeTimers();
     try {
@@ -256,7 +272,7 @@ describe("tui-event-handlers: handleAgentEvent", () => {
   });
 
   it("surfaces lifecycle error details and clears active run", () => {
-    const { state, chatLog, setActivityStatus, loadHistory, handleAgentEvent } =
+    const { state, chatLog, setActivityStatus, reportAction, loadHistory, handleAgentEvent } =
       createHandlersHarness({
         state: { activeChatRunId: "run-err" },
       });
@@ -271,8 +287,48 @@ describe("tui-event-handlers: handleAgentEvent", () => {
       "run error: No API key found for provider coderclawllm",
     );
     expect(setActivityStatus).toHaveBeenCalledWith("error");
+    expect(reportAction).toHaveBeenCalledWith(
+      "agent execution error: No API key found for provider coderclawllm",
+    );
     expect(state.activeChatRunId).toBeNull();
     expect(loadHistory).toHaveBeenCalledTimes(1);
+  });
+
+  it("surfaces tool failure detail and carries it into empty final diagnostics", () => {
+    const { state, reportAction, handleAgentEvent, handleChatEvent } = createHandlersHarness({
+      state: { activeChatRunId: "run-tool-fail" },
+    });
+
+    handleAgentEvent({
+      runId: "run-tool-fail",
+      stream: "tool",
+      data: {
+        phase: "result",
+        toolCallId: "tc-fail",
+        name: "edit",
+        isError: true,
+        result: { errorMessage: "validation failed: unmatched block" },
+      },
+    });
+
+    handleAgentEvent({
+      runId: "run-tool-fail",
+      stream: "lifecycle",
+      data: { phase: "end" },
+    });
+
+    handleChatEvent({
+      runId: "run-tool-fail",
+      sessionKey: state.currentSessionKey,
+      state: "final",
+    });
+
+    expect(reportAction).toHaveBeenCalledWith(
+      "Tool failed: edit — validation failed: unmatched block",
+    );
+    expect(reportAction).toHaveBeenCalledWith(
+      "run completed with no final message (validation failed: unmatched block)",
+    );
   });
 
   it("captures runId from chat events when activeChatRunId is unset", () => {

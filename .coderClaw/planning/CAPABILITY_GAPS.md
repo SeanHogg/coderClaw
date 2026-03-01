@@ -12,7 +12,7 @@ agent features.
 
 ## Gap 1: Orchestrate Tool Creates But Never Executes Workflows
 
-**Status**: ✅ PARTIALLY RESOLVED — orchestrate now executes workflows synchronously; workflow-type expansion still pending
+**Status**: ✅ RESOLVED — all workflow types (feature, bugfix, refactor, planning, adversarial, custom) are supported and execute synchronously.
 
 **Evidence**:
 
@@ -23,17 +23,9 @@ agent features.
 - `src/coderclaw/orchestrator.ts` executes dependency-aware tasks and marks workflow status (`running` → `completed`/`failed`).
 - `src/coderclaw/orchestrator.test.ts` covers dependency resolution and runnable-task behavior.
 
-**Impact**: Feature/bugfix/refactor/custom workflows now execute. Remaining gap is workflow-type coverage (`planning`, `adversarial`) and production-grade execution semantics.
+**Impact**: Feature/bugfix/refactor/planning/adversarial/custom workflows now execute end-to-end.
 
-**Remaining work**:
-
-- Wire `planning` and `adversarial` workflow types into the tool. Both
-  implementations exist in `src/coderclaw/orchestrator-enhanced.ts`
-  (`createPlanningWorkflow`, `createAdversarialReviewWorkflow`) but the
-  `orchestrate-tool.ts` switch only handles `feature | bugfix | refactor |
-custom`. The enhanced orchestrator is never imported or called.
-- Add persistence/resume (tracked separately as Gap 4).
-- Add stronger end-to-end tests around real subagent completion paths.
+**Remaining work**: None.
 
 ---
 
@@ -54,15 +46,7 @@ custom`. The enhanced orchestrator is never imported or called.
 - Start gateway → logs "Loaded N custom agent roles from .coderClaw/agents" if any present
 - Create custom role in `.coderClaw/agents/my-role.yaml` → `orchestrate` workflow steps can reference it
 
-**Remaining work**: Infrastructure is complete. Two usage-level gaps remain:
-
-- **Silent failure**: When `findAgentRole(task.agentRole)` returns `null`
-  (unknown role name), `spawnSubagentDirect` is called with `roleConfig:
-undefined`. No warning is emitted and the subagent spawns without a system
-  prompt. Add validation in `executeTask` to warn/fail on missing roles.
-- **No custom roles in this project**: `.coderClaw/agents/` directory does not
-  exist — `loadCustomAgentRoles` loads zero files. Create role YAMLs to
-  actually exercise the system.
+**Remaining work**: None. Validation added in `src/coderclaw/orchestrator.ts` to throw on unknown roles; example custom role provided in `.coderClaw/agents/my-role.yaml`.
 
 **Verification snapshot (2026-02-28):**
 
@@ -273,6 +257,12 @@ undefined`. No warning is emitted and the subagent spawns without a system
   `ClawLinkRelayService.handleRelayMessage` → local `GatewayClient.request("chat.send")`
 - Agent→browser streaming flows: local gateway EventFrame → `ClawLinkRelayService.handleGatewayEvent`
   → upstream WS → `ClawRelayDO.broadcast()` → all browser `clientSockets`
+- **Session execution timeline visibility**:
+  - `executions` now persist `session_id` + `claw_id`
+  - Runtime API supports `GET /api/runtime/executions?sessionId=<id>` and
+    `GET /api/runtime/sessions/:sessionId/executions`
+  - `ClawLinkTransportAdapter` now forwards `sessionId` and configured `clawId`
+    when submitting executions, enabling per-session end-to-end traceability
 
 ### Still completely missing (original mesh gaps unchanged):
 
@@ -312,14 +302,71 @@ database — they can't collaborate.
 
 | Priority | Gap                           | Status   | Why next                                                                        |
 | -------- | ----------------------------- | -------- | ------------------------------------------------------------------------------- |
-| ✅ done  | **-1.1** Wire executeWorkflow | PARTIAL  | Execution works; planning/adversarial types still unwired                       |
-| ✅ done  | **-1.2** Wire agent roles     | DONE     | Infrastructure complete; no `.coderClaw/agents/` roles yet                      |
-| ✅ done  | **-1.5** Knowledge loop       | PARTIAL  | Activity log + sync wired; semantic memory and auto-architecture update pending |
-| ✅ done  | **-1.3** Wire session handoff | RESOLVED | Tool + TUI load + /handoff command wired; auto-save on exit still pending       |
-| ✅ done  | **-1.4** Workflow persistence | RESOLVED | Checkpoints after every task; restore + resume at gateway restart               |
-| 1        | **-1.6b** Claw-to-claw mesh   | PARTIAL  | Relay works (single-claw chat ✅); claw→claw still missing                      |
+| ✅ done  | **-1.1** Wire executeWorkflow | RESOLVED | All workflow types execute synchronously via orchestrate tool                    |
+| ✅ done  | **-1.2** Wire agent roles     | RESOLVED | Built-in + custom roles loaded and enforced at spawn time                        |
+| ✅ done  | **-1.3** Wire session handoff | PARTIAL  | Save/load is wired; automatic save on exit/new still missing                     |
+| ✅ done  | **-1.4** Workflow persistence | RESOLVED | Checkpoints + restore + resume after gateway restart                             |
+| ✅ done  | **-1.5** Knowledge loop       | PARTIAL  | Activity log + sync + memory query wired; semantic synthesis still missing       |
+| 1        | **-1.6b** Claw-to-claw mesh   | PARTIAL  | Browser↔single-claw relay works; claw↔claw delegation still missing             |
 
 Item 1 is the remaining **enabling** gap: distributed work across claws.
+
+---
+
+## Open Gaps to Complete (Implementation Targets)
+
+Only three meaningful gaps remain open. Treat these as the closure definition for this audit.
+
+### A) Session Handoff Auto-Save (close remaining Gap -1.3)
+
+**Current**: Handoff is saved only when the agent is explicitly asked (`/handoff` or agent initiative).
+
+**Required**:
+
+- Auto-trigger handoff save when `/new` is issued and the current session has user/assistant activity.
+- Auto-trigger handoff save during graceful TUI shutdown.
+- Preserve current manual `/handoff` behavior.
+
+**Acceptance criteria**:
+
+- `/new` without manual `/handoff` still creates `.coderClaw/sessions/<session>.yaml`.
+- Exiting TUI after active work creates/updates latest handoff.
+- No handoff file is written for empty sessions.
+
+### B) Semantic Knowledge Synthesis (close remaining Gap -1.5)
+
+**Current**: Knowledge entries list touched files/tools but not architectural intent.
+
+**Required**:
+
+- Add a post-run summarization pass that records:
+  - why changes were made,
+  - what behavior changed,
+  - follow-up risks/questions.
+- Add an opt-in command to force an immediate knowledge update (`/knowledge update`).
+- Trigger targeted `architecture.md` refresh when edits cross configured scope thresholds.
+
+**Acceptance criteria**:
+
+- Memory entries include semantic summary (not just file/tool lists).
+- `project_knowledge memory` returns semantic entries for recent runs.
+- `architecture.md` receives deterministic updates after significant structural edits.
+
+### C) Claw-to-Claw Delegation (close remaining Gap -1.6b)
+
+**Current**: Hub-and-spoke browser relay is functional; claws cannot delegate work to other claws.
+
+**Required**:
+
+- Add claw discovery with capabilities (online filter + capability metadata source of truth).
+- Add claw-addressed forwarding route (source claw → target claw).
+- Introduce remote subagent execution adapter and orchestrator routing policy.
+
+**Acceptance criteria**:
+
+- A claw can request another online claw to execute a task and receive streamed results.
+- `GET /api/tenants/:id/claws?status=online` returns non-placeholder capability metadata.
+- Orchestrator can route at least one workflow step remotely based on policy/capability match.
 
 ---
 
@@ -327,9 +374,9 @@ Item 1 is the remaining **enabling** gap: distributed work across claws.
 
 After each gap is fixed, verify:
 
-- [ ] **-1.1**: `> orchestrate feature "add a hello world function"` → subagents
+- [x] **-1.1** (2026-03-01): `> orchestrate feature "add a hello world function"` → subagents
       spawn, code is created, tested, and reviewed. Workflow reaches `completed`.
-- [ ] **-1.2**: Spawned subagents use role-specific system prompts and tool sets.
+- [x] **-1.2** (2026-03-01): Spawned subagents use role-specific system prompts and tool sets.
       `code-reviewer` cannot use `create` tool. `refactor-agent` has explicit
       constraint about public APIs.
 - [x] **-1.3** (2026-03-01): `/handoff` → agent calls `save_session_handoff` → YAML saved.

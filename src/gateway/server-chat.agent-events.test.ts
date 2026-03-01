@@ -151,6 +151,51 @@ describe("agent event handler", () => {
     nowSpy?.mockRestore();
   });
 
+  it("includes lifecycle stop reason in final chat payload", () => {
+    const { broadcast, chatRunState, handler, nowSpy } = createHarness({ now: 3_000 });
+    chatRunState.registry.add("run-stop", { sessionKey: "session-stop", clientRunId: "client-stop" });
+
+    handler({
+      runId: "run-stop",
+      seq: 1,
+      stream: "lifecycle",
+      ts: Date.now(),
+      data: { phase: "end", stopReason: "max_output_tokens" },
+    });
+
+    const chatCalls = broadcast.mock.calls.filter(([event]) => event === "chat");
+    expect(chatCalls).toHaveLength(1);
+    const payload = chatCalls[0]?.[1] as { state?: string; stopReason?: string };
+    expect(payload.state).toBe("final");
+    expect(payload.stopReason).toBe("max_output_tokens");
+    nowSpy?.mockRestore();
+  });
+
+  it("includes lifecycle error detail in error chat payload", () => {
+    const { broadcast, chatRunState, handler, nowSpy } = createHarness({ now: 3_500 });
+    chatRunState.registry.add("run-err", { sessionKey: "session-err", clientRunId: "client-err" });
+
+    handler({
+      runId: "run-err",
+      seq: 1,
+      stream: "lifecycle",
+      ts: Date.now(),
+      data: { phase: "error", errorMessage: "provider timeout" },
+    });
+
+    const chatCalls = broadcast.mock.calls.filter(([event]) => event === "chat");
+    expect(chatCalls).toHaveLength(1);
+    const payload = chatCalls[0]?.[1] as {
+      state?: string;
+      stopReason?: string;
+      errorMessage?: string;
+    };
+    expect(payload.state).toBe("error");
+    expect(payload.stopReason).toBe("error");
+    expect(payload.errorMessage).toBe("provider timeout");
+    nowSpy?.mockRestore();
+  });
+
   it("routes tool events only to registered recipients when verbose is enabled", () => {
     const { broadcast, broadcastToConnIds, toolEventRecipients, handler } = createHarness({
       resolveSessionKeyForRun: () => "session-1",

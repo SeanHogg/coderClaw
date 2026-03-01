@@ -42,6 +42,12 @@ type RunActivityStats = {
   execCalls: number;
 };
 
+type RunTerminationContext = {
+  stopReason?: string;
+  errorMessage?: string;
+  lastToolFailure?: string;
+};
+
 const TOOL_NAME_ALIASES: Record<string, string> = {
   str_replace_editor: "edit",
   replace_editor: "edit",
@@ -171,6 +177,90 @@ function formatCount(value: number, singular: string, plural: string): string {
   return `${value} ${value === 1 ? singular : plural}`;
 }
 
+function sanitizeReasonText(value: string, max = 140): string {
+  const collapsed = value.replace(/\s+/g, " ").trim();
+  if (!collapsed) {
+    return "";
+  }
+  if (collapsed.length <= max) {
+    return collapsed;
+  }
+  return `${collapsed.slice(0, Math.max(1, max - 1))}…`;
+}
+
+function extractErrorSummary(value: unknown): string {
+  if (typeof value === "string") {
+    return sanitizeReasonText(value);
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (!value || typeof value !== "object") {
+    return "";
+  }
+
+  const record = value as Record<string, unknown>;
+  const keys = [
+    "errorMessage",
+    "error",
+    "message",
+    "detail",
+    "reason",
+    "stderr",
+    "text",
+    "summary",
+  ];
+
+  for (const key of keys) {
+    const candidate = record[key];
+    if (typeof candidate === "string") {
+      const text = sanitizeReasonText(candidate);
+      if (text) {
+        return text;
+      }
+    }
+    if (candidate && typeof candidate === "object") {
+      const nested = extractErrorSummary(candidate);
+      if (nested) {
+        return nested;
+      }
+    }
+  }
+
+  const content = record.content;
+  if (Array.isArray(content)) {
+    for (const block of content) {
+      if (!block || typeof block !== "object") {
+        continue;
+      }
+      const text = extractErrorSummary(block);
+      if (text) {
+        return text;
+      }
+    }
+  }
+
+  return "";
+}
+
+function extractStopReason(data: unknown): string {
+  const record = asRecord(data);
+  if (!record) {
+    return "";
+  }
+  const keys = ["stopReason", "reason", "finishReason", "status", "outcome"];
+  for (const key of keys) {
+    const candidate = record[key];
+    if (typeof candidate === "string") {
+      const text = sanitizeReasonText(candidate, 80);
+      if (text) {
+        return text;
+      }
+    }
+  }
+  return "";
+}
+
 export function createEventHandlers(context: EventHandlerContext) {
   const {
     chatLog,
@@ -187,6 +277,7 @@ export function createEventHandlers(context: EventHandlerContext) {
   const finalizedRuns = new Map<string, number>();
   const sessionRuns = new Map<string, number>();
   const runActivity = new Map<string, RunActivityStats>();
+  const runTermination = new Map<string, RunTerminationContext>();
   const pendingFinalTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
   const FINAL_EVENT_GRACE_MS = 3_000;
   const SESSION_REFRESH_BACKFILL_DELAY_MS = 1_500;
@@ -232,6 +323,20 @@ export function createEventHandlers(context: EventHandlerContext) {
 
   const clearRunActivity = (runId: string) => {
     runActivity.delete(runId);
+  };
+
+  const getRunTermination = (runId: string): RunTerminationContext => {
+    const existing = runTermination.get(runId);
+    if (existing) {
+      return existing;
+    }
+    const created: RunTerminationContext = {};
+    runTermination.set(runId, created);
+    return created;
+  };
+
+  const clearRunTermination = (runId: string) => {
+    runTermination.delete(runId);
   };
 
   const emitExecutionAction = (text: string) => {
@@ -327,7 +432,15 @@ export function createEventHandlers(context: EventHandlerContext) {
       clearActiveRunIfMatch(runId);
       maybeRefreshHistoryForRun(runId);
       setActivityStatus("idle");
-      emitExecutionAction("run settled to idle (final event not received)");
+      const context = runTermination.get(runId);
+      const reason =
+        context?.errorMessage || context?.lastToolFailure || context?.stopReason || "";
+      if (reason) {
+        emitExecutionAction(`run settled to idle (final event not received: ${reason})`);
+      } else {
+        emitExecutionAction("run settled to idle (final event not received)");
+      }
+      clearRunTermination(runId);
       tui.requestRender();
     }, FINAL_EVENT_GRACE_MS);
     timer.unref?.();
@@ -367,6 +480,7 @@ export function createEventHandlers(context: EventHandlerContext) {
     clearAllPendingFinalTimeouts();
     clearPendingSessionRefreshTimer();
     runActivity.clear();
+    runTermination.clear();
     streamAssembler = new TuiStreamAssembler();
     clearLocalRunIds?.();
   };
@@ -382,6 +496,7 @@ export function createEventHandlers(context: EventHandlerContext) {
     sessionRuns.delete(runId);
     streamAssembler.drop(runId);
     clearRunActivity(runId);
+    clearRunTermination(runId);
     pruneRunMap(finalizedRuns);
   };
 
@@ -446,6 +561,7 @@ export function createEventHandlers(context: EventHandlerContext) {
     }
     if (evt.state === "final") {
       const wasActiveRun = state.activeChatRunId === evt.runId;
+      const termination = getRunTermination(evt.runId);
       if (!evt.message) {
         maybeRefreshHistoryForRun(evt.runId);
         chatLog.dropAssistant(evt.runId);
@@ -454,6 +570,13 @@ export function createEventHandlers(context: EventHandlerContext) {
         clearActiveRunIfMatch(evt.runId);
         if (wasActiveRun) {
           setActivityStatus("idle");
+        }
+        const reason =
+          termination.errorMessage || termination.lastToolFailure || termination.stopReason || "";
+        if (reason) {
+          emitExecutionAction(`run completed with no final message (${reason})`);
+        } else {
+          emitExecutionAction("run completed with no final message");
         }
         scheduleSessionInfoRefresh();
         tui.requestRender();
@@ -472,6 +595,8 @@ export function createEventHandlers(context: EventHandlerContext) {
         if (wasActiveRun) {
           setActivityStatus("idle");
         }
+        const reason = termination.stopReason || "";
+        emitExecutionAction(reason ? `run completed (stop reason: ${reason})` : "run completed");
         scheduleSessionInfoRefresh();
         tui.requestRender();
         return;
@@ -498,7 +623,18 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (wasActiveRun) {
         setActivityStatus(stopReason === "error" ? "error" : "idle");
       }
-      emitExecutionAction(stopReason === "error" ? "run ended with error" : "run completed");
+      const messageError =
+        evt.message && typeof evt.message === "object" && !Array.isArray(evt.message)
+          ? sanitizeReasonText(asString((evt.message as Record<string, unknown>).errorMessage, ""))
+          : "";
+      if (stopReason === "error") {
+        const detail = messageError || termination.errorMessage || termination.lastToolFailure || "";
+        emitExecutionAction(detail ? `run ended with error: ${detail}` : "run ended with error");
+      } else if (stopReason && stopReason !== "stop") {
+        emitExecutionAction(`run completed (stop reason: ${stopReason})`);
+      } else {
+        emitExecutionAction("run completed");
+      }
       // Refresh session info to update token counts in footer
       scheduleSessionInfoRefresh();
     }
@@ -513,7 +649,8 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (wasActiveRun) {
         setActivityStatus("aborted");
       }
-      emitExecutionAction("run aborted");
+      const reason = getRunTermination(evt.runId).stopReason;
+      emitExecutionAction(reason ? `run aborted (${reason})` : "run aborted");
       scheduleSessionInfoRefresh();
       maybeRefreshHistoryForRun(evt.runId);
     }
@@ -528,7 +665,8 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (wasActiveRun) {
         setActivityStatus("error");
       }
-      emitExecutionAction("run error");
+      const errorMessage = sanitizeReasonText(evt.errorMessage ?? "");
+      emitExecutionAction(errorMessage ? `run error: ${errorMessage}` : "run error");
       scheduleSessionInfoRefresh();
       maybeRefreshHistoryForRun(evt.runId);
     }
@@ -579,9 +717,16 @@ export function createEventHandlers(context: EventHandlerContext) {
           stats.execCalls += 1;
         }
       } else if (phase === "result" && Boolean(data.isError)) {
-        emitExecutionAction(`Tool failed: ${toolName}`);
+        const detail =
+          extractErrorSummary(data.result) ||
+          extractErrorSummary(data.error) ||
+          extractErrorSummary(data.partialResult) ||
+          extractErrorSummary(data);
+        emitExecutionAction(detail ? `Tool failed: ${toolName} — ${detail}` : `Tool failed: ${toolName}`);
         const stats = getRunActivity(evt.runId);
         stats.toolFailures += 1;
+        const termination = getRunTermination(evt.runId);
+        termination.lastToolFailure = detail || termination.lastToolFailure;
       }
       if (!allowToolEvents) {
         tui.requestRender();
@@ -620,7 +765,13 @@ export function createEventHandlers(context: EventHandlerContext) {
       }
       if (phase === "end") {
         setActivityStatus("waiting");
-        emitExecutionAction("Composing response…");
+        const stopReason = extractStopReason(evt.data);
+        if (stopReason) {
+          getRunTermination(evt.runId).stopReason = stopReason;
+        }
+        emitExecutionAction(
+          stopReason ? `Composing response… (stop reason: ${stopReason})` : "Composing response…",
+        );
         scheduleFinalEventTimeout(evt.runId);
       }
       if (phase === "error") {
@@ -630,6 +781,9 @@ export function createEventHandlers(context: EventHandlerContext) {
           asString(evt.data?.message, "") ||
           asString(evt.data?.detail, "") ||
           "unknown";
+        const termination = getRunTermination(evt.runId);
+        termination.errorMessage = sanitizeReasonText(errorMessage);
+        termination.stopReason = termination.stopReason || "error";
         chatLog.addSystem(`run error: ${errorMessage}`);
         reportRunActivitySummary(evt.runId);
         noteFinalizedRun(evt.runId);
@@ -637,7 +791,7 @@ export function createEventHandlers(context: EventHandlerContext) {
         maybeRefreshHistoryForRun(evt.runId);
         scheduleSessionInfoRefresh();
         setActivityStatus("error");
-        emitExecutionAction("agent execution error");
+        emitExecutionAction(`agent execution error: ${termination.errorMessage || "unknown"}`);
       }
       tui.requestRender();
     }

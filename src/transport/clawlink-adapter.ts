@@ -8,12 +8,11 @@
  * seamlessly — local agents and remote ClawLink agents are interchangeable.
  *
  * CoderClawLink API surface used here:
- *   POST   /api/runtime/sessions
- *   POST   /api/runtime/tasks/submit
- *   GET    /api/runtime/tasks/{task_id}/state
- *   POST   /api/runtime/tasks/{task_id}/cancel
- *   GET    /api/runtime/agents
- *   GET    /api/runtime/skills
+ *   POST   /api/runtime/executions
+ *   GET    /api/runtime/executions/{id}
+ *   POST   /api/runtime/executions/{id}/cancel
+ *   GET    /api/agents
+ *   GET    /api/skills
  */
 
 import type {
@@ -31,23 +30,30 @@ import type {
 // ClawLink API response shapes (as documented in coderClawLink/app/api/runtime.py)
 // ---------------------------------------------------------------------------
 
-type ClawLinkSessionResponse = {
-  session_id: string;
-  user_id: string | null;
-  created_at: string;
-  last_activity: string;
-  permissions: string[];
-};
+type ClawLinkExecutionStatus =
+  | "pending"
+  | "submitted"
+  | "running"
+  | "completed"
+  | "failed"
+  | "cancelled";
 
-type ClawLinkTaskStateResponse = {
-  task_id: string;
-  execution_uuid: string;
-  state: TaskStatus; // enum values are identical to CoderClaw's TaskStatus
-  success: boolean;
-  result?: unknown;
-  error?: string | null;
-  execution_time?: number | null;
-  metadata?: Record<string, unknown> | null;
+type ClawLinkExecutionResponse = {
+  id: number;
+  taskId: number;
+  agentId: number | null;
+  clawId: number | null;
+  tenantId: number;
+  submittedBy: string;
+  sessionId: string | null;
+  status: ClawLinkExecutionStatus;
+  payload: string | null;
+  result: string | null;
+  errorMessage: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 type ClawLinkAgentResponse = {
@@ -88,40 +94,27 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
   private readonly baseUrl: string;
   private readonly pollIntervalMs: number;
   private readonly timeoutMs: number;
+  private readonly authToken: string | undefined;
+  private readonly clawId: number | undefined;
   private readonly userId: string | undefined;
   private readonly deviceId: string | undefined;
-
-  /** Session ID returned by ClawLink after connect() */
-  private sessionId: string | undefined;
 
   constructor(config: ClawLinkConfig) {
     this.baseUrl = config.baseUrl.replace(/\/$/, "");
     this.pollIntervalMs = config.pollIntervalMs ?? 1000;
     this.timeoutMs = config.timeoutMs ?? 30_000;
+    this.authToken = config.authToken;
+    this.clawId = config.clawId;
     this.userId = config.userId;
     this.deviceId = config.deviceId;
   }
 
   /**
-   * Create a session on the ClawLink node. Call this before submitting tasks.
-   * Safe to call multiple times — subsequent calls are no-ops if already connected.
+   * Runtime API is stateless for this adapter; connect() is a no-op kept for
+   * backward compatibility with callers that eagerly connect adapters.
    */
   async connect(): Promise<void> {
-    if (this.sessionId) {
-      return;
-    }
-
-    const params = new URLSearchParams();
-    if (this.userId) {
-      params.set("user_id", this.userId);
-    }
-    if (this.deviceId) {
-      params.set("device_id", this.deviceId);
-    }
-
-    const url = `${this.baseUrl}/api/runtime/sessions${params.size > 0 ? `?${params}` : ""}`;
-    const response = await this.post<ClawLinkSessionResponse>(url, null);
-    this.sessionId = response.session_id;
+    return;
   }
 
   // -------------------------------------------------------------------------
@@ -129,26 +122,20 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
   // -------------------------------------------------------------------------
 
   async submitTask(request: TaskSubmitRequest): Promise<TaskState> {
-    await this.connect();
-
+    const taskId = this.resolveTaskId(request);
     const body = {
-      agent_type: request.agentId ?? "general-purpose",
-      prompt: request.input,
-      context: {
-        description: request.description,
-        model: request.model,
-        thinking: request.thinking,
-        parentTaskId: request.parentTaskId,
-        ...request.metadata,
-      },
-      session_id: this.sessionId,
+      taskId,
+      agentId: this.parseAgentId(request.agentId),
+      clawId: this.clawId,
+      sessionId: request.sessionId,
+      payload: request.input,
     };
 
-    const raw = await this.post<ClawLinkTaskStateResponse>(
-      `${this.baseUrl}/api/runtime/tasks/submit`,
+    const raw = await this.post<ClawLinkExecutionResponse>(
+      `${this.baseUrl}/api/runtime/executions`,
       body,
     );
-    return this.toTaskState(raw, request);
+    return this.toTaskStateFromExecution(raw, request);
   }
 
   async *streamTaskUpdates(taskId: string): AsyncIterableIterator<TaskUpdateEvent> {
@@ -160,24 +147,25 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
     while (true) {
       await sleep(this.pollIntervalMs);
 
-      const raw = await this.post<ClawLinkTaskStateResponse>(
-        `${this.baseUrl}/api/runtime/tasks/${taskId}/state`,
+      const raw = await this.post<ClawLinkExecutionResponse>(
+        `${this.baseUrl}/api/runtime/executions/${encodeURIComponent(taskId)}`,
         null,
         "GET",
       );
+      const mappedState = this.mapExecutionStatus(raw.status);
 
-      if (raw.state !== last) {
-        last = raw.state;
+      if (mappedState !== last) {
+        last = mappedState;
         yield {
           taskId,
-          status: raw.state,
+          status: mappedState,
           timestamp: new Date(),
-          message: raw.error ?? undefined,
-          progress: raw.state === "completed" ? 100 : undefined,
+          message: raw.errorMessage ?? undefined,
+          progress: mappedState === "completed" ? 100 : undefined,
         };
       }
 
-      if (terminal.has(raw.state)) {
+      if (terminal.has(mappedState)) {
         break;
       }
     }
@@ -185,12 +173,12 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
 
   async queryTaskState(taskId: string): Promise<TaskState | null> {
     try {
-      const raw = await this.post<ClawLinkTaskStateResponse>(
-        `${this.baseUrl}/api/runtime/tasks/${taskId}/state`,
+      const raw = await this.post<ClawLinkExecutionResponse>(
+        `${this.baseUrl}/api/runtime/executions/${encodeURIComponent(taskId)}`,
         null,
         "GET",
       );
-      return this.toTaskState(raw);
+      return this.toTaskStateFromExecution(raw);
     } catch {
       return null;
     }
@@ -198,20 +186,26 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
 
   async cancelTask(taskId: string): Promise<boolean> {
     try {
-      const result = await this.post<{ success: boolean; task_id: string }>(
-        `${this.baseUrl}/api/runtime/tasks/${taskId}/cancel`,
-        { session_id: this.sessionId },
+      const result = await this.post<ClawLinkExecutionResponse>(
+        `${this.baseUrl}/api/runtime/executions/${encodeURIComponent(taskId)}/cancel`,
+        {},
       );
-      return result.success;
+      return this.mapExecutionStatus(result.status) === "cancelled";
     } catch {
       return false;
     }
   }
 
   async listAgents(): Promise<AgentInfo[]> {
-    const params = this.sessionId ? `?session_id=${this.sessionId}` : "";
+    const params = new URLSearchParams();
+    if (this.userId) {
+      params.set("user_id", this.userId);
+    }
+    if (this.deviceId) {
+      params.set("device_id", this.deviceId);
+    }
     const agents = await this.post<ClawLinkAgentResponse[]>(
-      `${this.baseUrl}/api/runtime/agents${params}`,
+      `${this.baseUrl}/api/agents${params.size > 0 ? `?${params}` : ""}`,
       null,
       "GET",
     );
@@ -226,9 +220,15 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
   }
 
   async listSkills(): Promise<SkillInfo[]> {
-    const params = this.sessionId ? `?session_id=${this.sessionId}` : "";
+    const params = new URLSearchParams();
+    if (this.userId) {
+      params.set("user_id", this.userId);
+    }
+    if (this.deviceId) {
+      params.set("device_id", this.deviceId);
+    }
     const skills = await this.post<ClawLinkSkillResponse[]>(
-      `${this.baseUrl}/api/runtime/skills${params}`,
+      `${this.baseUrl}/api/skills${params.size > 0 ? `?${params}` : ""}`,
       null,
       "GET",
     );
@@ -242,7 +242,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
   }
 
   async close(): Promise<void> {
-    this.sessionId = undefined;
+    return;
   }
 
   // -------------------------------------------------------------------------
@@ -251,9 +251,17 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
 
   /** Minimal HTTP helper — uses Node 22+ built-in fetch, no extra deps. */
   private async post<T>(url: string, body: unknown, method: "POST" | "GET" = "POST"): Promise<T> {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+    if (this.authToken) {
+      headers.Authorization = `Bearer ${this.authToken}`;
+    }
+
     const init: RequestInit = {
       method,
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      headers,
       signal: AbortSignal.timeout(this.timeoutMs),
     };
 
@@ -271,20 +279,63 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
     return response.json() as Promise<T>;
   }
 
-  /** Map a ClawLink task state response to CoderClaw's TaskState. */
-  private toTaskState(raw: ClawLinkTaskStateResponse, req?: TaskSubmitRequest): TaskState {
+  private mapExecutionStatus(status: ClawLinkExecutionStatus): TaskStatus {
+    switch (status) {
+      case "submitted":
+        return "pending";
+      default:
+        return status;
+    }
+  }
+
+  private resolveTaskId(request: TaskSubmitRequest): number {
+    const candidate = request.metadata?.taskId;
+    const value =
+      typeof candidate === "number"
+        ? candidate
+        : typeof candidate === "string"
+          ? Number(candidate)
+          : NaN;
+
+    if (!Number.isFinite(value) || value <= 0) {
+      throw new Error(
+        "ClawLinkTransportAdapter requires metadata.taskId (numeric) for /api/runtime/executions",
+      );
+    }
+    return value;
+  }
+
+  private parseAgentId(agentId: string | undefined): number | undefined {
+    if (!agentId) {
+      return undefined;
+    }
+    const numeric = Number(agentId);
+    return Number.isFinite(numeric) ? numeric : undefined;
+  }
+
+  /** Map a ClawLink execution response to CoderClaw's TaskState. */
+  private toTaskStateFromExecution(raw: ClawLinkExecutionResponse, req?: TaskSubmitRequest): TaskState {
+    const mappedStatus = this.mapExecutionStatus(raw.status);
     return {
-      id: raw.task_id,
-      status: raw.state,
+      id: String(raw.id),
+      status: mappedStatus,
       agentId: req?.agentId,
-      description: req?.description ?? raw.task_id,
-      sessionId: this.sessionId,
+      description: req?.description ?? `Execution ${raw.id}`,
+      sessionId: raw.sessionId ?? req?.sessionId,
       parentTaskId: req?.parentTaskId,
-      createdAt: new Date(),
-      output: typeof raw.result === "string" ? raw.result : undefined,
-      error: raw.error ?? undefined,
-      progress: raw.state === "completed" ? 100 : undefined,
-      metadata: raw.metadata ?? undefined,
+      createdAt: new Date(raw.createdAt),
+      startedAt: raw.startedAt ? new Date(raw.startedAt) : undefined,
+      completedAt: raw.completedAt ? new Date(raw.completedAt) : undefined,
+      output: raw.result ?? undefined,
+      error: raw.errorMessage ?? undefined,
+      progress: mappedStatus === "completed" ? 100 : undefined,
+      metadata: {
+        taskId: raw.taskId,
+        clawId: raw.clawId,
+        tenantId: raw.tenantId,
+        submittedBy: raw.submittedBy,
+        sessionId: raw.sessionId,
+      },
     };
   }
 }

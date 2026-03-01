@@ -194,6 +194,10 @@ export type TransportConfig = {
 export type ClawLinkConfig = {
   /** Base URL of the CoderClawLink server, e.g. "http://localhost:8000" */
   baseUrl: string;
+  /** Optional tenant JWT used for authenticated API routes */
+  authToken?: string;
+  /** Optional claw instance id for execution attribution */
+  clawId?: number;
   /** Optional user ID to attach to the session */
   userId?: string;
   /** Optional device ID to attach to the session */

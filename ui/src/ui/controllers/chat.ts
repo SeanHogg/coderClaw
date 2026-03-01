@@ -25,7 +25,77 @@ export type ChatEventPayload = {
   state: "delta" | "final" | "aborted" | "error";
   message?: unknown;
   errorMessage?: string;
+  stopReason?: string;
 };
+
+function asNonEmptyString(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function extractEventMessageRecord(payload: ChatEventPayload): Record<string, unknown> | null {
+  if (!payload.message || typeof payload.message !== "object" || Array.isArray(payload.message)) {
+    return null;
+  }
+  return payload.message as Record<string, unknown>;
+}
+
+function extractStopReason(payload: ChatEventPayload): string | null {
+  const fromPayload = asNonEmptyString(payload.stopReason);
+  if (fromPayload) {
+    return fromPayload;
+  }
+  const record = extractEventMessageRecord(payload);
+  return record ? asNonEmptyString(record.stopReason) : null;
+}
+
+function extractErrorMessage(payload: ChatEventPayload): string | null {
+  const fromPayload = asNonEmptyString(payload.errorMessage);
+  if (fromPayload) {
+    return fromPayload;
+  }
+  const record = extractEventMessageRecord(payload);
+  if (!record) {
+    return null;
+  }
+  return (
+    asNonEmptyString(record.errorMessage) ||
+    asNonEmptyString(record.error) ||
+    asNonEmptyString(record.detail) ||
+    asNonEmptyString(record.message)
+  );
+}
+
+function formatTerminalDiagnostic(
+  state: ChatEventPayload["state"],
+  stopReason: string | null,
+  errorMessage: string | null,
+): string | null {
+  if (state === "error") {
+    if (errorMessage) {
+      return `run error: ${errorMessage}`;
+    }
+    if (stopReason) {
+      return `run error: ${stopReason}`;
+    }
+    return "run error";
+  }
+  if (state === "aborted") {
+    return stopReason ? `run aborted: ${stopReason}` : "run aborted";
+  }
+  if (state === "final") {
+    if (errorMessage) {
+      return `run ended with error: ${errorMessage}`;
+    }
+    if (stopReason && stopReason !== "stop" && stopReason !== "done") {
+      return `run stopped: ${stopReason}`;
+    }
+  }
+  return null;
+}
 
 export async function loadChatHistory(state: ChatState) {
   if (!state.client || !state.connected) {
@@ -190,6 +260,9 @@ export function handleChatEvent(state: ChatState, payload?: ChatEventPayload) {
     return null;
   }
 
+  const stopReason = extractStopReason(payload);
+  const eventErrorMessage = extractErrorMessage(payload);
+
   // Final from another run (e.g. sub-agent announce): refresh history to show new message.
   // See https://github.com/SeanHogg/coderClaw/issues/1909
   if (payload.runId && state.chatRunId && payload.runId !== state.chatRunId) {
@@ -211,6 +284,7 @@ export function handleChatEvent(state: ChatState, payload?: ChatEventPayload) {
     state.chatStream = null;
     state.chatRunId = null;
     state.chatStreamStartedAt = null;
+    state.lastError = formatTerminalDiagnostic(payload.state, stopReason, eventErrorMessage);
   } else if (payload.state === "aborted") {
     const normalizedMessage = normalizeAbortedAssistantMessage(payload.message);
     if (normalizedMessage) {
@@ -231,11 +305,13 @@ export function handleChatEvent(state: ChatState, payload?: ChatEventPayload) {
     state.chatStream = null;
     state.chatRunId = null;
     state.chatStreamStartedAt = null;
+    state.lastError = formatTerminalDiagnostic(payload.state, stopReason, eventErrorMessage);
   } else if (payload.state === "error") {
     state.chatStream = null;
     state.chatRunId = null;
     state.chatStreamStartedAt = null;
-    state.lastError = payload.errorMessage ?? "chat error";
+    state.lastError =
+      formatTerminalDiagnostic(payload.state, stopReason, eventErrorMessage) ?? "chat error";
   }
   return payload.state;
 }

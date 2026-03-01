@@ -225,12 +225,15 @@ export class AgentOrchestrator {
 
     // Spawn subagent for the task
     const roleConfig = findAgentRole(task.agentRole);
+    if (!roleConfig) {
+      throw new Error(`Unknown agent role: ${task.agentRole}. Define it in .coderClaw/agents/ or use a built-in role.`);
+    }
     const result = await spawnSubagentDirect(
       {
         task: taskInput,
         label: task.description,
         agentId: task.agentRole,
-        roleConfig: roleConfig ?? undefined,
+        roleConfig,
       },
       context,
     );
