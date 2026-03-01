@@ -100,6 +100,8 @@ export type SessionLogEntry = {
   content: string;
   tokens?: number;
   cost?: number;
+  stopReason?: string;
+  errorMessage?: string;
 };
 
 export type SessionLogRole = SessionLogEntry["role"];

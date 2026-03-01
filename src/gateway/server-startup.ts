@@ -205,6 +205,12 @@ export async function startGatewaySidecars(params: {
           workspaceDir: params.defaultWorkspaceDir,
           log: params.log,
         });
+        // Enable remote claw-to-claw dispatch in the orchestrator
+        globalOrchestrator.setRemoteDispatchOptions({
+          baseUrl,
+          myClawId: String(clawId),
+          apiKey,
+        });
       }
 
       // Knowledge loop runs whenever an API key is present; sync is skipped internally

@@ -157,6 +157,26 @@ export class ClawLinkRelayService {
         this.gatewayClient?.request("chat.new", {}).catch(() => {});
         break;
 
+      case "remote.task": {
+        // Peer claw delegated a task to this claw — execute it as a chat message.
+        const task = typeof msg.task === "string" ? msg.task : "";
+        const fromClawId = typeof msg.fromClawId === "string" ? msg.fromClawId : "unknown";
+        if (!task) {
+          break;
+        }
+        logDebug(`[clawlink-relay] remote task from claw ${fromClawId}: ${task.slice(0, 80)}…`);
+        this.gatewayClient
+          ?.request("chat.send", {
+            sessionKey: "default",
+            message: `[Remote task from claw ${fromClawId}]\n\n${task}`,
+            idempotencyKey: `remote-${fromClawId}-${Date.now()}`,
+          })
+          .catch((err: unknown) => {
+            logDebug(`[clawlink-relay] remote.task dispatch failed: ${String(err)}`);
+          });
+        break;
+      }
+
       default:
         break;
     }
@@ -274,6 +294,10 @@ export class ClawLinkRelayService {
     try {
       await fetch(this.heartbeatHttpUrl, {
         method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          capabilities: ["chat", "tasks", "relay", "remote-dispatch"],
+        }),
         signal: AbortSignal.timeout(10_000),
       });
     } catch (err) {

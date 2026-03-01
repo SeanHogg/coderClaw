@@ -8,15 +8,15 @@
 
 ## 1. Is Registration Implemented in Both Projects?
 
-| Concern | coderClawLink (server) | coderClaw (client) |
-|---------|----------------------|-------------------|
-| **Claw CRUD API** | ✅ Full — `POST /api/claws`, `GET /api/claws`, `DELETE /api/claws/:id` | N/A (consumer only) |
-| **Registration wizard** | N/A (receives requests) | ✅ Full — interactive TUI wizard in `coderclaw init` (`promptClawLink`) |
-| **API key generation** | ✅ Server generates random key, hashes (bcrypt), stores hash, returns plaintext once | ✅ Client stores plaintext in `~/.coderclaw/.env` as `CODERCLAW_LINK_API_KEY` |
-| **WebSocket relay (upstream)** | ✅ `GET /api/claws/:id/upstream?key=` — Durable Object relay via `ClawRelayDO` | ✅ Implemented via `ClawLinkRelayService` (persistent upstream WS + reconnect + heartbeat) |
-| **WebSocket relay (browser)** | ✅ `GET /api/claws/:id/ws?token=` — browser client connects via `ClawGateway` class | N/A (this is the SPA side) |
-| **Task execution transport** | ✅ Runtime routes at `POST /api/runtime/executions` | ✅ `ClawLinkTransportAdapter` calls `/api/runtime/*` over HTTP |
-| **Connection tracking** | ✅ `connectedAt`/`lastSeenAt` columns on `coderclaw_instances` | Reads status indirectly via stored env vars |
+| Concern                        | coderClawLink (server)                                                               | coderClaw (client)                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Claw CRUD API**              | ✅ Full — `POST /api/claws`, `GET /api/claws`, `DELETE /api/claws/:id`               | N/A (consumer only)                                                                        |
+| **Registration wizard**        | N/A (receives requests)                                                              | ✅ Full — interactive TUI wizard in `coderclaw init` (`promptClawLink`)                    |
+| **API key generation**         | ✅ Server generates random key, hashes (bcrypt), stores hash, returns plaintext once | ✅ Client stores plaintext in `~/.coderclaw/.env` as `CODERCLAW_LINK_API_KEY`              |
+| **WebSocket relay (upstream)** | ✅ `GET /api/claws/:id/upstream?key=` — Durable Object relay via `ClawRelayDO`       | ✅ Implemented via `ClawLinkRelayService` (persistent upstream WS + reconnect + heartbeat) |
+| **WebSocket relay (browser)**  | ✅ `GET /api/claws/:id/ws?token=` — browser client connects via `ClawGateway` class  | N/A (this is the SPA side)                                                                 |
+| **Task execution transport**   | ✅ Runtime routes at `POST /api/runtime/executions`                                  | ✅ `ClawLinkTransportAdapter` calls `/api/runtime/*` over HTTP                             |
+| **Connection tracking**        | ✅ `connectedAt`/`lastSeenAt` columns on `coderclaw_instances`                       | Reads status indirectly via stored env vars                                                |
 
 **Verdict**: Registration and relay connectivity are **fully wired end-to-end**,
 and session-level execution history is now queryable. Remaining gaps are now
@@ -167,15 +167,16 @@ coderClaw                  ClawRelayDO              Browser (SPA)
 
 The schema has **two separate, unlinked entity systems**:
 
-| Entity | Table | Purpose |
-|--------|-------|---------|
-| **Claws** | `coderclaw_instances` | Physical coderClaw installations (identified by API key, relay connection) |
-| **Agents** | `agents` | Abstract LLM agent registrations (type: claude/openai/ollama/http, endpoint, apiKey) |
+| Entity     | Table                 | Purpose                                                                              |
+| ---------- | --------------------- | ------------------------------------------------------------------------------------ |
+| **Claws**  | `coderclaw_instances` | Physical coderClaw installations (identified by API key, relay connection)           |
+| **Agents** | `agents`              | Abstract LLM agent registrations (type: claude/openai/ollama/http, endpoint, apiKey) |
 
 **Status**: ✅ PARTIALLY RESOLVED.
 
 `executions` now persist optional `clawId` and `sessionId`, and runtime routes
 support session-scoped history queries:
+
 - `GET /api/runtime/executions?sessionId=<id>`
 - `GET /api/runtime/sessions/:sessionId/executions`
 
@@ -195,11 +196,13 @@ backoff, and sends periodic heartbeat updates.
 **Status**: ✅ RESOLVED.
 
 `ClawLinkTransportAdapter` now targets the implemented runtime contract:
+
 - `POST /api/runtime/executions`
 - `GET /api/runtime/executions/:id`
 - `POST /api/runtime/executions/:id/cancel`
 
 and discovery routes:
+
 - `GET /api/agents`
 - `GET /api/skills`
 
@@ -215,6 +218,7 @@ The adapter now supports authenticated calls via optional `authToken` in
 ### GAP 5: Skill Assignment Disconnection
 
 The schema defines both:
+
 - `tenant_skill_assignments` — all claws in a tenant inherit these
 - `claw_skill_assignments` — per-claw overrides
 
@@ -410,16 +414,16 @@ coderClaw agent                 coderclawLLM                  SPA Dashboard
 
 ### Implementation Plan
 
-| Step | What | Where |
-|------|------|-------|
-| 1 | Create `/v1/chat/completions` proxy route | `coderClawLink/api/src/presentation/routes/llmRoutes.ts` |
-| 2 | Add `llm_requests` table (log every call) | `schema.ts`: clawId, tenantId, model, provider, inputTokens, outputTokens, costUsd, latencyMs, approvalId |
-| 3 | Build routing engine (aliases, fallback, budget) | `coderClawLink/api/src/application/llm/RoutingEngine.ts` |
-| 4 | Add `routing_policies` table | schema: tenantId, policy JSON, monthlyBudgetUsd, alertPercent |
-| 5 | Wire approval workflow | Reuse execution approval from Phase 2; add `status: 'awaiting_approval'` to LLM request lifecycle |
-| 6 | Configure coderClaw to use it | New provider in `src/providers/coderclawllm.ts` that points at `CODERCLAW_LINK_URL + /v1` using existing API key |
-| 7 | Add `/v1/models` endpoint | Aggregates provider models + local models from connected claws |
-| 8 | OTel metrics | Extend `diagnostics-otel` with `llm.proxy.*` metrics |
+| Step | What                                             | Where                                                                                                            |
+| ---- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| 1    | Create `/v1/chat/completions` proxy route        | `coderClawLink/api/src/presentation/routes/llmRoutes.ts`                                                         |
+| 2    | Add `llm_requests` table (log every call)        | `schema.ts`: clawId, tenantId, model, provider, inputTokens, outputTokens, costUsd, latencyMs, approvalId        |
+| 3    | Build routing engine (aliases, fallback, budget) | `coderClawLink/api/src/application/llm/RoutingEngine.ts`                                                         |
+| 4    | Add `routing_policies` table                     | schema: tenantId, policy JSON, monthlyBudgetUsd, alertPercent                                                    |
+| 5    | Wire approval workflow                           | Reuse execution approval from Phase 2; add `status: 'awaiting_approval'` to LLM request lifecycle                |
+| 6    | Configure coderClaw to use it                    | New provider in `src/providers/coderclawllm.ts` that points at `CODERCLAW_LINK_URL + /v1` using existing API key |
+| 7    | Add `/v1/models` endpoint                        | Aggregates provider models + local models from connected claws                                                   |
+| 8    | OTel metrics                                     | Extend `diagnostics-otel` with `llm.proxy.*` metrics                                                             |
 
 ### coderClaw Provider Integration
 
@@ -429,14 +433,14 @@ import { readSharedEnvVar } from "../coderclaw/env.js";
 
 export function createCoderClawLLMProvider() {
   const baseUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai";
-  const apiKey  = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
-  const clawId  = readSharedEnvVar("CODERCLAW_LINK_CLAW_ID"); // from context.yaml
+  const apiKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
+  const clawId = readSharedEnvVar("CODERCLAW_LINK_CLAW_ID"); // from context.yaml
 
   return {
     name: "coderclawLLM",
     baseUrl: `${baseUrl}/v1`,
     headers: {
-      "Authorization": `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       "X-Claw-Id": clawId,
     },
     // OpenAI-compatible — works with existing chat/completion handlers

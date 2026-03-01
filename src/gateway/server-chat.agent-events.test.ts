@@ -153,7 +153,10 @@ describe("agent event handler", () => {
 
   it("includes lifecycle stop reason in final chat payload", () => {
     const { broadcast, chatRunState, handler, nowSpy } = createHarness({ now: 3_000 });
-    chatRunState.registry.add("run-stop", { sessionKey: "session-stop", clientRunId: "client-stop" });
+    chatRunState.registry.add("run-stop", {
+      sessionKey: "session-stop",
+      clientRunId: "client-stop",
+    });
 
     handler({
       runId: "run-stop",

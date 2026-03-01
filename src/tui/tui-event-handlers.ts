@@ -433,8 +433,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       maybeRefreshHistoryForRun(runId);
       setActivityStatus("idle");
       const context = runTermination.get(runId);
-      const reason =
-        context?.errorMessage || context?.lastToolFailure || context?.stopReason || "";
+      const reason = context?.errorMessage || context?.lastToolFailure || context?.stopReason || "";
       if (reason) {
         emitExecutionAction(`run settled to idle (final event not received: ${reason})`);
       } else {
@@ -628,7 +627,8 @@ export function createEventHandlers(context: EventHandlerContext) {
           ? sanitizeReasonText(asString((evt.message as Record<string, unknown>).errorMessage, ""))
           : "";
       if (stopReason === "error") {
-        const detail = messageError || termination.errorMessage || termination.lastToolFailure || "";
+        const detail =
+          messageError || termination.errorMessage || termination.lastToolFailure || "";
         emitExecutionAction(detail ? `run ended with error: ${detail}` : "run ended with error");
       } else if (stopReason && stopReason !== "stop") {
         emitExecutionAction(`run completed (stop reason: ${stopReason})`);
@@ -722,7 +722,9 @@ export function createEventHandlers(context: EventHandlerContext) {
           extractErrorSummary(data.error) ||
           extractErrorSummary(data.partialResult) ||
           extractErrorSummary(data);
-        emitExecutionAction(detail ? `Tool failed: ${toolName} — ${detail}` : `Tool failed: ${toolName}`);
+        emitExecutionAction(
+          detail ? `Tool failed: ${toolName} — ${detail}` : `Tool failed: ${toolName}`,
+        );
         const stats = getRunActivity(evt.runId);
         stats.toolFailures += 1;
         const termination = getRunTermination(evt.runId);

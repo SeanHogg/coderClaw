@@ -6,6 +6,10 @@ import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import { jsonResult } from "../../agents/tools/common.js";
 import {
+  createPlanningWorkflow,
+  createAdversarialReviewWorkflow,
+} from "../orchestrator-enhanced.js";
+import {
   globalOrchestrator,
   createFeatureWorkflow,
   createBugFixWorkflow,
@@ -13,10 +17,6 @@ import {
   type WorkflowStep,
   type SpawnSubagentContext,
 } from "../orchestrator.js";
-import {
-  createPlanningWorkflow,
-  createAdversarialReviewWorkflow,
-} from "../orchestrator-enhanced.js";
 
 const OrchestrateSchema = Type.Object({
   workflow: Type.String({

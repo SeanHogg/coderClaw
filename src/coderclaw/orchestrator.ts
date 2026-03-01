@@ -4,6 +4,7 @@
 
 import crypto from "node:crypto";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
+import { dispatchToRemoteClaw, type RemoteDispatchOptions } from "../infra/remote-subagent.js";
 import { logDebug } from "../logger.js";
 import { findAgentRole } from "./agent-roles.js";
 import {
@@ -55,10 +56,20 @@ export class AgentOrchestrator {
   private workflows = new Map<string, Workflow>();
   private taskResults = new Map<string, string>();
   private projectRoot: string | null = null;
+  private remoteDispatchOpts: RemoteDispatchOptions | null = null;
 
   /** Enable disk persistence for workflows. Call at gateway startup. */
   setProjectRoot(root: string): void {
     this.projectRoot = root;
+  }
+
+  /**
+   * Configure remote dispatch credentials so "remote:<clawId>" workflow steps
+   * can delegate tasks to peer claws via CoderClawLink.
+   * Call once at gateway startup when CODERCLAW_LINK_API_KEY is present.
+   */
+  setRemoteDispatchOptions(opts: RemoteDispatchOptions): void {
+    this.remoteDispatchOpts = opts;
   }
 
   /**
@@ -223,10 +234,45 @@ export class AgentOrchestrator {
       }
     }
 
-    // Spawn subagent for the task
+    // Remote dispatch: role "remote:<clawId>" delegates the task to a peer claw.
+    if (task.agentRole.startsWith("remote:")) {
+      const targetClawId = task.agentRole.slice("remote:".length);
+      if (!this.remoteDispatchOpts) {
+        task.status = "failed";
+        task.error =
+          "Remote dispatch not configured — set CODERCLAW_LINK_API_KEY and clawLink.instanceId";
+        task.completedAt = new Date();
+        this.persistWorkflow(workflow);
+        throw new Error(task.error);
+      }
+      const remoteResult = await dispatchToRemoteClaw(
+        this.remoteDispatchOpts,
+        targetClawId,
+        taskInput,
+      );
+      if (remoteResult.status === "accepted") {
+        task.status = "completed";
+        task.completedAt = new Date();
+        const output = `Task ${task.id} dispatched to remote claw ${targetClawId}`;
+        task.output = output;
+        this.taskResults.set(task.id, output);
+        this.persistWorkflow(workflow);
+        return output;
+      } else {
+        task.status = "failed";
+        task.error = remoteResult.error;
+        task.completedAt = new Date();
+        this.persistWorkflow(workflow);
+        throw new Error(task.error);
+      }
+    }
+
+    // Local dispatch: spawn a subagent in this process.
     const roleConfig = findAgentRole(task.agentRole);
     if (!roleConfig) {
-      throw new Error(`Unknown agent role: ${task.agentRole}. Define it in .coderClaw/agents/ or use a built-in role.`);
+      throw new Error(
+        `Unknown agent role: ${task.agentRole}. Define it in .coderClaw/agents/ or use a built-in role.`,
+      );
     }
     const result = await spawnSubagentDirect(
       {

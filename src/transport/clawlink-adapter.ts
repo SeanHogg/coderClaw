@@ -314,7 +314,10 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
   }
 
   /** Map a ClawLink execution response to CoderClaw's TaskState. */
-  private toTaskStateFromExecution(raw: ClawLinkExecutionResponse, req?: TaskSubmitRequest): TaskState {
+  private toTaskStateFromExecution(
+    raw: ClawLinkExecutionResponse,
+    req?: TaskSubmitRequest,
+  ): TaskState {
     const mappedStatus = this.mapExecutionStatus(raw.status);
     return {
       id: String(raw.id),

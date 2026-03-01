@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026.3.1-beta.3
+
+### Changes
+
+- Claw-to-claw mesh — fleet discovery: `GET /api/claws/fleet?from=<clawId>&key=<apiKey>` (CoderClawLink) returns all claws in the same tenant with name, online status, lastSeenAt, and capabilities array. Registered before `/:id` routes to prevent param capture.
+- Claw-to-claw mesh — capability persistence: `PATCH /api/claws/:id/heartbeat` now accepts a `{ capabilities: string[] }` body and persists it to the new `capabilities TEXT` column (migration `0007_claw_capabilities.sql`). `ClawLinkRelayService.sendHeartbeat()` sends `["chat","tasks","relay","remote-dispatch"]` on every heartbeat.
+- Claw-to-claw mesh — forwarding: `POST /api/claws/:id/forward?from=<sourceId>&key=<sourceKey>` (CoderClawLink) authenticates the source claw, verifies the target is in the same tenant, and delivers the JSON payload to the target claw via `ClawRelayDO` dispatch.
+- Claw-to-claw mesh — remote task handling: `ClawLinkRelayService.handleRelayMessage` now processes `remote.task` messages by dispatching the task as a local `chat.send` with a `[Remote task from claw <id>]` prefix.
+- Claw-to-claw mesh — `claw_fleet` tool: new `AgentTool` that calls `GET /api/claws/fleet`; returns fleet with capabilities and online status; hints at `remote:<id>` role format. Registered in `createCoderClawTools()`.
+- Claw-to-claw mesh — `remote-subagent.ts`: `dispatchToRemoteClaw(opts, targetClawId, task)` POSTs to `/api/claws/:id/forward` and returns `{ status: "accepted" | "rejected" }`.
+- Claw-to-claw mesh — orchestrator routing: `AgentOrchestrator.setRemoteDispatchOptions()` added; `executeTask()` now branches on `agentRole.startsWith("remote:")` and calls `dispatchToRemoteClaw` instead of `spawnSubagentDirect`. Gateway startup calls `setRemoteDispatchOptions` when claw credentials are configured.
+- CoderClawLink `tenantRoutes.ts`: `GET /api/tenants/:id/claws` now reads real `capabilities` from the DB; `capabilitySummary.remoteDispatch` is `true` only when the claw is online and reports `"remote-dispatch"` capability.
+
 ## 2026.3.1-beta.2
 
 ### Changes

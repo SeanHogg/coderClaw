@@ -1,5 +1,6 @@
 import {
   codeAnalysisTool,
+  clawFleetTool,
   projectKnowledgeTool,
   saveSessionHandoffTool,
   createOrchestrateTool,
@@ -167,6 +168,7 @@ export function createCoderClawTools(options?: {
     ...(webFetchTool ? [webFetchTool] : []),
     ...(imageTool ? [imageTool] : []),
     codeAnalysisTool,
+    clawFleetTool,
     projectKnowledgeTool,
     saveSessionHandoffTool,
     createOrchestrateTool({

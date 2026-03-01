@@ -75,6 +75,40 @@ const toFiniteNumber = (value: unknown): number | undefined => {
   return value;
 };
 
+const asNonEmptyString = (value: unknown): string | undefined => {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed ? trimmed : undefined;
+};
+
+const extractErrorMessage = (message: Record<string, unknown>): string | undefined => {
+  const direct =
+    asNonEmptyString(message.errorMessage) ??
+    asNonEmptyString(message.error_message) ??
+    asNonEmptyString(message.lastError) ??
+    asNonEmptyString(message.last_error);
+  if (direct) {
+    return direct;
+  }
+
+  const rawError = message.error;
+  if (typeof rawError === "string") {
+    return asNonEmptyString(rawError);
+  }
+  if (rawError && typeof rawError === "object") {
+    const record = rawError as Record<string, unknown>;
+    return (
+      asNonEmptyString(record.message) ??
+      asNonEmptyString(record.detail) ??
+      asNonEmptyString(record.error)
+    );
+  }
+
+  return undefined;
+};
+
 const extractCostBreakdown = (usageRaw?: UsageLike | null): CostBreakdown | undefined => {
   if (!usageRaw || typeof usageRaw !== "object") {
     return undefined;
@@ -959,6 +993,9 @@ export async function loadSessionLogs(params: {
       // Get usage for assistant messages
       let tokens: number | undefined;
       let cost: number | undefined;
+      const stopReason =
+        asNonEmptyString(message.stopReason) ?? asNonEmptyString(message.stop_reason);
+      const errorMessage = extractErrorMessage(message);
       if (role === "assistant") {
         const usageRaw = message.usage as Record<string, unknown> | undefined;
         const usage = normalizeUsage(usageRaw);
@@ -989,6 +1026,8 @@ export async function loadSessionLogs(params: {
         content,
         tokens,
         cost,
+        stopReason,
+        errorMessage,
       });
     } catch {
       // Ignore malformed lines

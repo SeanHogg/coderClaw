@@ -897,6 +897,14 @@ function renderSessionLogsCompact(
   cursorStart?: number | null,
   cursorEnd?: number | null,
 ) {
+  const asNonEmptyString = (value: unknown): string | undefined => {
+    if (typeof value !== "string") {
+      return undefined;
+    }
+    const trimmed = value.trim();
+    return trimmed ? trimmed : undefined;
+  };
+
   if (loading) {
     return html`
       <div class="session-logs-compact">
@@ -1028,6 +1036,8 @@ function renderSessionLogsCompact(
       <div class="session-logs-list">
         ${filteredEntries.map((entry) => {
           const { log, toolInfo, cleanContent } = entry;
+          const stopReason = asNonEmptyString(log.stopReason);
+          const errorMessage = asNonEmptyString(log.errorMessage);
           const roleClass = log.role === "user" ? "user" : "assistant";
           const roleLabel =
             log.role === "user" ? "You" : log.role === "assistant" ? "Assistant" : "Tool";
@@ -1039,6 +1049,18 @@ function renderSessionLogsCompact(
               ${log.tokens ? html`<span>${formatTokens(log.tokens)}</span>` : nothing}
             </div>
             <div class="session-log-content">${cleanContent}</div>
+            ${stopReason || errorMessage
+              ? html`
+                  <div class="session-log-terminal">
+                    ${errorMessage
+                      ? html`<span class="session-log-terminal-item error">error: ${errorMessage}</span>`
+                      : nothing}
+                    ${stopReason
+                      ? html`<span class="session-log-terminal-item">stop: ${stopReason}</span>`
+                      : nothing}
+                  </div>
+                `
+              : nothing}
             ${
               toolInfo.tools.length > 0
                 ? html`

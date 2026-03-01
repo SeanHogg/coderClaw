@@ -1,10 +1,12 @@
+import { render } from "lit";
 import { describe, it, expect } from "vitest";
 import {
   computeFilteredUsage,
   CHART_BAR_WIDTH_RATIO,
   CHART_MAX_BAR_WIDTH,
+  renderSessionLogsCompact,
 } from "./usage-render-details.ts";
-import type { TimeSeriesPoint, UsageSessionEntry } from "./usageTypes.ts";
+import type { SessionLogEntry, TimeSeriesPoint, UsageSessionEntry } from "./usageTypes.ts";
 
 function makePoint(overrides: Partial<TimeSeriesPoint> = {}): TimeSeriesPoint {
   return {
@@ -128,5 +130,39 @@ describe("chart bar sizing", () => {
         expect(barGap).toBeGreaterThanOrEqual(0);
       }
     }
+  });
+});
+
+describe("renderSessionLogsCompact", () => {
+  it("shows stop reason and error details for historical assistant messages", () => {
+    const container = document.createElement("div");
+    const logs: SessionLogEntry[] = [
+      {
+        timestamp: 1_700_000_000_000,
+        role: "assistant",
+        content: "Execution stopped",
+        stopReason: "tool_error",
+        errorMessage: "Tool failed: run_in_terminal",
+      },
+    ];
+
+    render(
+      renderSessionLogsCompact(
+        logs,
+        false,
+        false,
+        () => undefined,
+        { roles: [], tools: [], hasTools: false, query: "" },
+        () => undefined,
+        () => undefined,
+        () => undefined,
+        () => undefined,
+        () => undefined,
+      ),
+      container,
+    );
+
+    expect(container.textContent).toContain("error: Tool failed: run_in_terminal");
+    expect(container.textContent).toContain("stop: tool_error");
   });
 });

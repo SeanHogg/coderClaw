@@ -551,6 +551,25 @@ export const usageStylesPart2 = `
     max-height: 220px;
     overflow-y: auto;
   }
+  .session-log-terminal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .session-log-terminal-item {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 8px;
+    line-height: 1.3;
+  }
+  .session-log-terminal-item.error {
+    color: var(--danger-color, var(--muted));
+    border-color: var(--danger-color, var(--border));
+  }
 
   /* ===== CONTEXT WEIGHT BREAKDOWN ===== */
   .context-weight-breakdown {

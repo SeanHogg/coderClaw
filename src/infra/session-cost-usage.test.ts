@@ -384,6 +384,33 @@ describe("session cost usage", () => {
     }
   });
 
+  it("includes stop reason and error details in session logs", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-logs-reason-"));
+    const sessionFile = path.join(root, "session.jsonl");
+
+    await fs.writeFile(
+      sessionFile,
+      [
+        JSON.stringify({
+          type: "message",
+          timestamp: "2026-02-12T10:00:00.000Z",
+          message: {
+            role: "assistant",
+            content: "Stopped after tool failure",
+            stopReason: "tool_error",
+            error: { message: "Tool failed: run_in_terminal" },
+          },
+        }),
+      ].join("\n"),
+      "utf-8",
+    );
+
+    const logs = await loadSessionLogs({ sessionFile });
+    expect(logs).toHaveLength(1);
+    expect(logs?.[0]?.stopReason).toBe("tool_error");
+    expect(logs?.[0]?.errorMessage).toBe("Tool failed: run_in_terminal");
+  });
+
   it("preserves totals and cumulative values when downsampling timeseries", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-timeseries-downsample-"));
     const sessionsDir = path.join(root, "agents", "main", "sessions");
