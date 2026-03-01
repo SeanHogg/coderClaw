@@ -8,6 +8,7 @@ import {
 } from "../auto-reply/thinking.js";
 import { initializeCoderClawProject } from "../coderclaw/project-context.js";
 import type { SessionsPatchResult } from "../gateway/protocol/index.js";
+import { readSharedEnvVar } from "../infra/env-file.js";
 import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
 import { logDebug, logWarn } from "../logger.js";
 import { normalizeAgentId } from "../routing/session-key.js";
@@ -18,7 +19,6 @@ import {
   createSearchableSelectList,
   createSettingsList,
 } from "./components/selectors.js";
-import { readSharedEnvVar } from "../infra/env-file.js";
 import type { GatewayChatClient } from "./gateway-chat.js";
 import { formatStatusSummary } from "./tui-status-summary.js";
 import type {
@@ -180,7 +180,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         process.env.CODERCLAW_LINK_API_KEY?.trim() ||
         readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
       if (!registrationKey) {
-        chatLog.addSystem("coderclawllm requires CoderClawLink registration. Launching setup wizard...");
+        chatLog.addSystem(
+          "coderclawllm requires CoderClawLink registration. Launching setup wizard...",
+        );
         if (onSetup) {
           tui.requestRender();
           await onSetup();

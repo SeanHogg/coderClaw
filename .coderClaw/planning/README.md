@@ -5,12 +5,12 @@ are injected into agent context when workflows reference roadmap items.
 
 ## Contents
 
-| File | Purpose |
-|------|---------|
-| [CAPABILITY_GAPS.md](CAPABILITY_GAPS.md) | Deep audit of what's implemented vs. facade. Mesh, knowledge loop, orchestrator, session handoff. |
-| [BOOTSTRAP_PROMPT.md](BOOTSTRAP_PROMPT.md) | The seed prompt to paste into coderClaw TUI to begin the self-improvement initiative. |
-| [ROADMAP.md](ROADMAP.md) | Local mirror of platform roadmap essentials needed by the self-improvement workflow. |
-| [CLAW_REGISTRATION_ANALYSIS.md](CLAW_REGISTRATION_ANALYSIS.md) | Local mirror of claw registration audit and coderclawLLM integration notes. |
+| File                                                           | Purpose                                                                                           |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [CAPABILITY_GAPS.md](CAPABILITY_GAPS.md)                       | Deep audit of what's implemented vs. facade. Mesh, knowledge loop, orchestrator, session handoff. |
+| [BOOTSTRAP_PROMPT.md](BOOTSTRAP_PROMPT.md)                     | The seed prompt to paste into coderClaw TUI to begin the self-improvement initiative.             |
+| [ROADMAP.md](ROADMAP.md)                                       | Local mirror of platform roadmap essentials needed by the self-improvement workflow.              |
+| [CLAW_REGISTRATION_ANALYSIS.md](CLAW_REGISTRATION_ANALYSIS.md) | Local mirror of claw registration audit and coderclawLLM integration notes.                       |
 
 ## Cross-references (workspace root)
 

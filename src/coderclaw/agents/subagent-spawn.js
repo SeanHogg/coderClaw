@@ -22,9 +22,7 @@ export async function spawnSubagentDirect(payload, context = {}) {
   }
 
   // Generate a simple unique session key for the stub.
-  const childSessionKey = `stub-${Math.random()
-    .toString(36)
-    .substring(2, 8)}`;
+  const childSessionKey = `stub-${Math.random().toString(36).substring(2, 8)}`;
 
   // Build result, optionally including role metadata when roleConfig is provided
   const result = {

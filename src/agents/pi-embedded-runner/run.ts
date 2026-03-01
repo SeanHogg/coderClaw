@@ -46,13 +46,13 @@ import {
 import { derivePromptTokens, normalizeUsage, type UsageLike } from "../usage.js";
 import { redactRunIdentifier, resolveRunWorkspaceDir } from "../workspace-run.js";
 import { compactEmbeddedPiSessionDirect } from "./compact.js";
+import { buildAutoContinuePrompt, shouldAutoContinueRun } from "./continuation-policy.js";
 import { resolveGlobalLane, resolveSessionLane } from "./lanes.js";
 import { log } from "./logger.js";
 import { resolveModel } from "./model.js";
 import { runEmbeddedAttempt } from "./run/attempt.js";
 import type { RunEmbeddedPiAgentParams } from "./run/params.js";
 import { buildEmbeddedRunPayloads } from "./run/payloads.js";
-import { buildAutoContinuePrompt, shouldAutoContinueRun } from "./continuation-policy.js";
 import {
   truncateOversizedToolResultsInSession,
   sessionLikelyHasOversizedToolResults,
@@ -1025,7 +1025,10 @@ export async function runEmbeddedPiAgent(
             `auto-continue decision: shouldContinue=${continuationDecision.shouldContinue} reason=${continuationDecision.reason ?? "none"} runId=${params.runId} sessionId=${params.sessionId} toolCalls=${attempt.toolMetas.length}`,
           );
 
-          if (continuationDecision.shouldContinue && autoContinueNudges < MAX_AUTO_CONTINUE_NUDGES) {
+          if (
+            continuationDecision.shouldContinue &&
+            autoContinueNudges < MAX_AUTO_CONTINUE_NUDGES
+          ) {
             autoContinueNudges += 1;
             const latestPayloadText = payloads
               .map((payload) => (typeof payload.text === "string" ? payload.text.trim() : ""))

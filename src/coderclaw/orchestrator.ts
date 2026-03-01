@@ -6,6 +6,8 @@ import crypto from "node:crypto";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
 import { findAgentRole } from "./agent-roles.js";
 
+export type { SpawnSubagentContext } from "../agents/subagent-spawn.js";
+
 export type TaskStatus = "pending" | "running" | "completed" | "failed" | "cancelled";
 
 export type Task = {
@@ -267,7 +269,8 @@ export class AgentOrchestrator {
         .map((task) => task.id),
     );
     return Array.from(workflow.tasks.values()).filter(
-      (task) => task.status === "pending" && task.dependencies.every((depId) => completed.has(depId)),
+      (task) =>
+        task.status === "pending" && task.dependencies.every((depId) => completed.has(depId)),
     );
   }
 

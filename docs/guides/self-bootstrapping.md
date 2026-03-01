@@ -53,6 +53,7 @@ coderclaw init
 ```
 
 This creates `.coderClaw/` with:
+
 - `context.yaml` — project metadata (languages, frameworks, architecture)
 - `architecture.md` — module graph skeleton
 - `rules.yaml` — coding conventions (TypeScript ESM, Vitest, Oxlint, etc.)
@@ -80,6 +81,7 @@ mkdir -p .coderClaw/planning
 ```
 
 The planning directory should contain:
+
 - `CAPABILITY_GAPS.md` — the 6 gaps audit (what's real vs. facade)
 - `BOOTSTRAP_PROMPT.md` — the seed prompt for coderClaw
 - `README.md` — index with cross-references to workspace-root ROADMAP.md
@@ -88,14 +90,14 @@ The planning directory should contain:
 
 Before running any prompt, understand what **doesn't work**:
 
-| # | Gap | Effect |
-|---|-----|--------|
-| 1 | `orchestrate` tool never calls `executeWorkflow()` | Multi-agent workflows are inert |
-| 2 | Agent roles defined but never applied | All agents behave identically |
-| 3 | Session handoff never saved/loaded | Zero cross-session continuity |
-| 4 | Workflow state is in-memory only | Process restart = state loss |
-| 5 | No post-task knowledge update | `.coderClaw/` goes stale immediately |
-| 6 | Mesh is branding, not code | Claws can't collaborate |
+| #   | Gap                                                | Effect                               |
+| --- | -------------------------------------------------- | ------------------------------------ |
+| 1   | `orchestrate` tool never calls `executeWorkflow()` | Multi-agent workflows are inert      |
+| 2   | Agent roles defined but never applied              | All agents behave identically        |
+| 3   | Session handoff never saved/loaded                 | Zero cross-session continuity        |
+| 4   | Workflow state is in-memory only                   | Process restart = state loss         |
+| 5   | No post-task knowledge update                      | `.coderClaw/` goes stale immediately |
+| 6   | Mesh is branding, not code                         | Claws can't collaborate              |
 
 **Gaps 1-4 are blocking.** You cannot use multi-agent workflows until Gap 1 is
 fixed. You cannot get role-specific behavior until Gap 2 is fixed. Sessions
@@ -113,6 +115,7 @@ coderclaw
 
 Then paste the prompt from the "The Prompt" section of BOOTSTRAP_PROMPT.md.
 This gives coderClaw full awareness of:
+
 - Its own architecture and conventions
 - The 6 capability gaps
 - The roadmap priority order
@@ -135,6 +138,7 @@ This is the most important item. coderClaw will:
 Approve or reject.
 
 ### What to watch for:
+
 - Does the implementation handle the `SpawnSubagentContext` correctly?
 - Are OTel spans emitted for workflow-level visibility?
 - Does it handle workflow failure gracefully (one step fails → workflow fails)?
@@ -201,21 +205,21 @@ Each subsequent phase follows the same pattern:
 
 ### Phase progression and what each unlocks:
 
-| After completing... | You unlock... |
-|---|---|
-| Phase -1.1 | Multi-agent workflows actually execute |
-| Phase -1.2 | Agents have role-specific behavior |
-| Phase -1.1 + -1.2 | Full orchestrate tool (planning, adversarial, feature, refactor workflows) |
-| Phase -1.3 | Sessions resume automatically — no more re-explaining context |
-| Phase -1.4 | Workflows survive process restarts |
-| Phase -1.5 | Knowledge stays current — agents always have fresh context |
-| Phase -1.6 | Claws can delegate to other claws (mesh) |
-| Phase 0 | Claw ↔ ClawLink connection works end-to-end |
-| Phase 1 | Full observability — you see cost/duration/success per task |
-| Phase 2 | LLM proxy with budget gating + approval workflows |
-| Phase 3 | Local model execution for cheap drafts |
-| Phase 4 | Multi-claw parallel orchestration |
-| Phase 5 | Production-scale fleet with audit trail |
+| After completing... | You unlock...                                                              |
+| ------------------- | -------------------------------------------------------------------------- |
+| Phase -1.1          | Multi-agent workflows actually execute                                     |
+| Phase -1.2          | Agents have role-specific behavior                                         |
+| Phase -1.1 + -1.2   | Full orchestrate tool (planning, adversarial, feature, refactor workflows) |
+| Phase -1.3          | Sessions resume automatically — no more re-explaining context              |
+| Phase -1.4          | Workflows survive process restarts                                         |
+| Phase -1.5          | Knowledge stays current — agents always have fresh context                 |
+| Phase -1.6          | Claws can delegate to other claws (mesh)                                   |
+| Phase 0             | Claw ↔ ClawLink connection works end-to-end                                |
+| Phase 1             | Full observability — you see cost/duration/success per task                |
+| Phase 2             | LLM proxy with budget gating + approval workflows                          |
+| Phase 3             | Local model execution for cheap drafts                                     |
+| Phase 4             | Multi-claw parallel orchestration                                          |
+| Phase 5             | Production-scale fleet with audit trail                                    |
 
 ## The Feedback Loop
 
@@ -281,21 +285,26 @@ the local codebase automatically.
 ## Troubleshooting
 
 ### "Workflow created" but nothing happens
+
 Phase -1.1 isn't complete. The orchestrate tool creates workflows but doesn't
 execute them. Use the manual single-agent sequence instead.
 
 ### Agents all behave the same regardless of role
+
 Phase -1.2 isn't complete. Role definitions exist but aren't applied. Manually
 prompt "You are acting as code-reviewer" etc.
 
 ### Session starts with no context from previous work
+
 Phase -1.3 isn't complete. Session handoff is dead code. Manually include
 prior session context in your prompt.
 
 ### `.coderClaw/architecture.md` is outdated
+
 Phase -1.5 isn't complete. Manually run `/knowledge update` (once implemented)
 or regenerate by re-running `coderclaw init`.
 
 ### Can't delegate work to another claw
+
 Phase -1.6 isn't complete. Mesh is not implemented. All work happens on the
 local claw.

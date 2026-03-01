@@ -497,13 +497,14 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
     ...PROVIDERS.map((p) => ({
       value: p.id,
       label: isProviderConfigured(p) ? `${p.label}  ✓ configured` : p.label,
-      hint: p.id === "coderclawllm"
-        ? "managed proxy (no local API key needed)"
-        : isProviderConfigured(p)
-        ? `${p.envVar} is set`
-        : p.envVar
-          ? `needs ${p.envVar}`
-          : "enter server URL",
+      hint:
+        p.id === "coderclawllm"
+          ? "managed proxy (no local API key needed)"
+          : isProviderConfigured(p)
+            ? `${p.envVar} is set`
+            : p.envVar
+              ? `needs ${p.envVar}`
+              : "enter server URL",
     })),
     { value: "skip" as ProviderChoice, label: "Skip — configure later" },
   ];

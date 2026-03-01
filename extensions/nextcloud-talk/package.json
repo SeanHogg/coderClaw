@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/nextcloud-talk",
-  "version": "2026.2.27-beta.1",
+  "version": "2026.2.27-beta.2",
   "description": "CoderClaw Nextcloud Talk channel plugin",
   "type": "module",
   "devDependencies": {

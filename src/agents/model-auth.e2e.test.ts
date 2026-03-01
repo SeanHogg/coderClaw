@@ -322,7 +322,9 @@ describe("getApiKeyForModel", () => {
         error = err;
       }
 
-      expect(String(error)).toContain("No CoderClawLink registration found for provider \"coderclawllm\".");
+      expect(String(error)).toContain(
+        'No CoderClawLink registration found for provider "coderclawllm".',
+      );
       expect(String(error)).toContain("coderclaw onboard");
     } finally {
       envSnapshot.restore();

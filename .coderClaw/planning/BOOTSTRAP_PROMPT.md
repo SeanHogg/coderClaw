@@ -25,6 +25,7 @@ You are working on the coderClaw platform itself — coderClaw building coderCla
 - `src/agents/subagent-spawn.ts`
 
 Do **not** use these non-existent paths:
+
 - `src/coderclaw/agents/subagent-spawn.ts`
 - `src/coderclaw/tools/common.ts`
 - `src/agents/agent-manager.ts`

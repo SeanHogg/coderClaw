@@ -27,6 +27,7 @@ describe("agent-roles", () => {
     const customRole: AgentRole = {
       name: "my-custom-agent",
       description: "A custom test agent",
+      capabilities: ["custom-workflow"],
       tools: ["view", "bash"],
       systemPrompt: "You are a custom agent.",
       model: "test/model",
@@ -37,55 +38,53 @@ describe("agent-roles", () => {
     const found = findAgentRole("my-custom-agent");
     expect(found).not.toBeNull();
     expect(found?.name).toBe("my-custom-agent");
+    expect(found?.description).toBe("A custom test agent");
     expect(found?.tools).toEqual(["view", "bash"]);
+    expect(found?.model).toBe("test/model");
   });
 
-  it("custom roles override built-in roles with same name", () => {
-    // Register a custom role with same name as built-in (though unusual)
-    const overridingRole: AgentRole = {
+  it("does not replace built-in roles with custom roles of same name", () => {
+    // Even if a custom role with same name is registered, built-in takes precedence
+    const conflictingRole: AgentRole = {
       name: "code-creator",
-      description: "Overridden description",
+      description: "Custom override attempt",
+      capabilities: ["code-generation"],
       tools: ["edit"],
       systemPrompt: "Overridden prompt",
       model: "override/model",
     };
 
-    registerCustomRoles([overridingRole]);
+    registerCustomRoles([conflictingRole]);
 
+    // Should still get the built-in role
     const role = findAgentRole("code-creator");
-    expect(role).not.toBe(CODE_CREATOR_ROLE); // different instance
-    expect(role?.description).toBe("Overridden description");
-    expect(role?.tools).toEqual(["edit"]);
+    expect(role).toBe(CODE_CREATOR_ROLE);
+    expect(role?.description).not.toBe("Custom override attempt");
   });
 
-  it("can register multiple custom roles", () => {
-    const roles: AgentRole[] = [
-      {
-        name: "role-a",
-        description: "Role A",
-        tools: ["view"],
-        systemPrompt: "A",
-        model: "m/a",
-      },
-      {
-        name: "role-b",
-        description: "Role B",
-        tools: ["edit"],
-        systemPrompt: "B",
-        model: "m/b",
-      },
-    ];
+  it("can find both built-in and custom roles simultaneously", () => {
+    const customRole: AgentRole = {
+      name: "security-specialist",
+      description: "Focuses on security audits",
+      capabilities: ["security-audit"],
+      tools: ["view", "grep", "bash"],
+      systemPrompt: "You are a security specialist.",
+      model: "claude-sonnet",
+    };
 
-    registerCustomRoles(roles);
+    registerCustomRoles([customRole]);
 
-    expect(findAgentRole("role-a")?.description).toBe("Role A");
-    expect(findAgentRole("role-b")?.description).toBe("Role B");
+    // Built-in still works
+    expect(findAgentRole("code-reviewer")?.name).toBe("code-reviewer");
+    // Custom role is also findable
+    expect(findAgentRole("security-specialist")?.description).toBe("Focuses on security audits");
   });
 
   it("clearCustomRoles removes all custom roles", () => {
     const customRole: AgentRole = {
       name: "temp-role",
       description: "Temporary",
+      capabilities: ["temporary"],
       tools: [],
       systemPrompt: "Temp",
       model: "test",

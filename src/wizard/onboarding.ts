@@ -14,9 +14,9 @@ import {
   resolveGatewayPort,
   writeConfigFile,
 } from "../config/config.js";
+import { readSharedEnvVar } from "../infra/env-file.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
-import { readSharedEnvVar } from "../infra/env-file.js";
 import { resolveUserPath } from "../utils.js";
 import type {
   GatewayWizardSettings,
@@ -465,9 +465,8 @@ export async function runOnboardingWizard(
           ].join("\n"),
           "CoderClawLLM",
         );
-        const { promptCoderClawLinkOnboarding } = await import(
-          "../commands/coderclaw-link-onboarding.js"
-        );
+        const { promptCoderClawLinkOnboarding } =
+          await import("../commands/coderclaw-link-onboarding.js");
         const defaultInstanceName = path.basename(workspaceDir) || "coderclaw";
         await promptCoderClawLinkOnboarding({
           projectRoot: workspaceDir,

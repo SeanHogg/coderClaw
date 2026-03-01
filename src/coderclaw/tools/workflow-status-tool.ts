@@ -39,7 +39,9 @@ export const workflowStatusTool: AgentTool<typeof WorkflowStatusSchema, string> 
 
       if (!workflow) {
         if (requestedWorkflowId) {
-          return jsonResult({ error: `Workflow ${requestedWorkflowId} not found` }) as AgentToolResult<string>;
+          return jsonResult({
+            error: `Workflow ${requestedWorkflowId} not found`,
+          }) as AgentToolResult<string>;
         }
         return jsonResult({
           error: "No workflows found",

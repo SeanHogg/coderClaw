@@ -156,8 +156,8 @@ export async function spawnSubagentDirect(
   if (params.roleConfig) {
     // Ensure the config has an agent entry with the role's skills and model
     if (!cfg.agents) cfg.agents = { list: [] };
-    const agentsList = cfg.agents.list;
-    const existingIdx = agentsList.findIndex(e => normalizeAgentId(e.id) === targetAgentId);
+    const agentsList = cfg.agents.list ?? (cfg.agents.list = []);
+    const existingIdx = agentsList.findIndex((e) => normalizeAgentId(e.id) === targetAgentId);
     const role = params.roleConfig;
     const newEntry = {
       id: targetAgentId,

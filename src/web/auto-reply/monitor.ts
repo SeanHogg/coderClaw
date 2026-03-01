@@ -1,3 +1,4 @@
+import { getMaxListeners, setMaxListeners } from "node:events";
 import { hasControlCommand } from "../../auto-reply/command-detection.js";
 import { resolveInboundDebounceMs } from "../../auto-reply/inbound-debounce.js";
 import { getReplyFromConfig } from "../../auto-reply/reply.js";
@@ -5,7 +6,6 @@ import { DEFAULT_GROUP_HISTORY_LIMIT } from "../../auto-reply/reply/history.js";
 import { formatCliCommand } from "../../cli/command-format.js";
 import { waitForever } from "../../cli/wait.js";
 import { loadConfig } from "../../config/config.js";
-import { getMaxListeners, setMaxListeners } from "node:events";
 import { logVerbose } from "../../globals.js";
 import { formatDurationPrecise } from "../../infra/format-time/format-duration.ts";
 import { enqueueSystemEvent } from "../../infra/system-events.js";

@@ -264,7 +264,10 @@ export function getBuiltInAgentRoles(): AgentRole[] {
 /**
  * Find an agent role by name
  */
-export function findAgentRole(name: string, customRoles: AgentRole[] = globalCustomRoles): AgentRole | null {
+export function findAgentRole(
+  name: string,
+  customRoles: AgentRole[] = globalCustomRoles,
+): AgentRole | null {
   const allRoles = [...getBuiltInAgentRoles(), ...customRoles];
   return allRoles.find((role) => role.name === name) || null;
 }

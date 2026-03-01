@@ -8,6 +8,8 @@ import type { CanvasHostServer } from "../canvas-host/server.js";
 import { type ChannelId, listChannelPlugins } from "../channels/plugins/index.js";
 import { formatCliCommand } from "../cli/command-format.js";
 import { createDefaultDeps } from "../cli/deps.js";
+import { registerCustomRoles } from "../coderclaw/agent-roles.js";
+import { loadCustomAgentRoles } from "../coderclaw/project-context.js";
 import {
   CONFIG_PATH,
   isNixMode,
@@ -38,8 +40,6 @@ import {
 } from "../infra/skills-remote.js";
 import { scheduleGatewayUpdateCheck } from "../infra/update-startup.js";
 import { startDiagnosticHeartbeat, stopDiagnosticHeartbeat } from "../logging/diagnostic.js";
-import { registerCustomRoles } from "../coderclaw/agent-roles.js";
-import { loadCustomAgentRoles } from "../coderclaw/project-context.js";
 import { createSubsystemLogger, runtimeForLogger } from "../logging/subsystem.js";
 import { getGlobalHookRunner, runGlobalGatewayStopSafely } from "../plugins/hook-runner-global.js";
 import { createEmptyPluginRegistry } from "../plugins/registry.js";

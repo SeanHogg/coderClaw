@@ -8,6 +8,7 @@ import { shortenHomePath } from "../../../utils.js";
 import { normalizeSecretInput } from "../../../utils/normalize-secret-input.js";
 import { buildTokenProfileId, validateAnthropicSetupToken } from "../../auth-token.js";
 import { applyGoogleGeminiModelDefault } from "../../google-gemini-model-default.js";
+import { applyAgentDefaultModelPrimary } from "../../onboard-auth.config-shared.js";
 import {
   applyAuthProfileConfig,
   applyCloudflareAiGatewayConfig,
@@ -48,7 +49,6 @@ import {
   setXiaomiApiKey,
   setZaiApiKey,
 } from "../../onboard-auth.js";
-import { applyAgentDefaultModelPrimary } from "../../onboard-auth.config-shared.js";
 import {
   applyCustomApiConfig,
   CustomApiError,

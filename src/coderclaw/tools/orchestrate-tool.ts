@@ -117,7 +117,7 @@ export function createOrchestrateTool(options?: {
         // Execute workflow and await completion so we can return proper status
         try {
           const results = await globalOrchestrator.executeWorkflow(wf.id, context);
-          
+
           return jsonResult({
             workflowId: wf.id,
             status: "completed",

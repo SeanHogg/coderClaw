@@ -15,6 +15,7 @@ agent features.
 **Status**: IN PROGRESS — spawn stub implemented, test added
 
 **Evidence**:
+
 - `src/coderclaw/tools/orchestrate-tool.ts` line 96: calls
   `globalOrchestrator.createWorkflow(steps)` then returns
   `"Workflow created. It will execute asynchronously."`
@@ -41,6 +42,7 @@ tools. Add `planning` and `adversarial` workflow types (currently only
 **Status**: IN PROGRESS — basic wiring done; orchestrator calls findAgentRole and passes roleConfig to spawnSubagentDirect stub. Custom roles not yet loaded.
 
 **Evidence**:
+
 - `src/coderclaw/agent-roles.ts`: 7 role definitions with system prompts,
   models (`claude-sonnet-4-20250514`), thinking levels, tool allowlists,
   and constraints.
@@ -68,6 +70,7 @@ Tracked as **Phase -1.2**.
 **Status**: FACADE — fully implemented, zero callers
 
 **Evidence**:
+
 - `project-context.ts` lines 291-349: `saveSessionHandoff()`,
   `loadLatestSessionHandoff()`, `listSessionHandoffs()` — complete
   implementations with YAML serialization, sorted file listing, error handling.
@@ -93,6 +96,7 @@ TUI command. Tracked as **Phase -1.3**.
 **Status**: MISSING — no persistence at all
 
 **Evidence**:
+
 - `orchestrator.ts`: `private workflows = new Map<string, Workflow>()`
 - Process restart = total state loss. No disk writes, no checkpoints.
 - No `resumeWorkflow()` function exists.
@@ -110,6 +114,7 @@ after each step. Add resume logic. Tracked as **Phase -1.4**.
 **Status**: MISSING — no automatic knowledge loop
 
 **Evidence**:
+
 - `.coderClaw/` is populated once by `coderclaw init` (interactive wizard).
 - `architecture.md` is a skeleton created at init time, never refreshed.
 - `.coderClaw/memory/` directory is created but **never indexed** by the
@@ -138,12 +143,14 @@ updated.
 **Evidence**:
 
 ### What "mesh" implies:
+
 - Multiple coderClaw instances collaborating as a workforce
 - Claw-to-claw task delegation (claw A asks claw B to do work)
 - Distributed orchestration across claws
 - Fleet discovery (which claws are online, what are their capabilities)
 
 ### What actually exists:
+
 - **Hub-and-spoke relay**: `ClawRelayDO` connects ONE claw (upstream) to N
   browser clients. No claw-to-claw channel.
 - **Local-only subagents**: `spawnSubagentDirect()` spawns in-process agents.
@@ -158,6 +165,7 @@ updated.
   specific claw. The server is just a CRUD layer, not a router.
 
 ### What's partially there:
+
 - `ClawLinkTransportAdapter` (295 lines): Full HTTP transport to ClawLink.
   Could be extended for claw-addressed routing if the server supported it.
 - `coderclaw_instances` table: Tracks multiple claws per tenant with status
@@ -176,14 +184,14 @@ ClawRelayDO, `RemoteSubagentAdapter`, orchestrator mesh mode. Tracked as
 
 ## Priority Order
 
-| Priority | Gap | Why first |
-|----------|-----|-----------|
-| 1 | **-1.1** Wire executeWorkflow | Nothing works without this — it's the core engine |
-| 2 | **-1.2** Wire agent roles | Workflows need role-specific behavior to be useful |
-| 3 | **-1.3** Wire session handoff | Multi-session work needs continuity |
-| 4 | **-1.5** Knowledge loop | Agents need updated context to work effectively |
-| 5 | **-1.4** Workflow persistence | Nice-to-have once workflows actually run |
-| 6 | **-1.6** Mesh plumbing | Enables Phase 4/5 but single-claw works fine for now |
+| Priority | Gap                           | Why first                                            |
+| -------- | ----------------------------- | ---------------------------------------------------- |
+| 1        | **-1.1** Wire executeWorkflow | Nothing works without this — it's the core engine    |
+| 2        | **-1.2** Wire agent roles     | Workflows need role-specific behavior to be useful   |
+| 3        | **-1.3** Wire session handoff | Multi-session work needs continuity                  |
+| 4        | **-1.5** Knowledge loop       | Agents need updated context to work effectively      |
+| 5        | **-1.4** Workflow persistence | Nice-to-have once workflows actually run             |
+| 6        | **-1.6** Mesh plumbing        | Enables Phase 4/5 but single-claw works fine for now |
 
 Items 1-4 are **blocking**: coderClaw literally cannot self-improve without them.
 Items 5-6 are **enabling**: they improve reliability and scale but aren't required
@@ -196,15 +204,15 @@ for the single-claw self-bootstrapping loop.
 After each gap is fixed, verify:
 
 - [ ] **-1.1**: `> orchestrate feature "add a hello world function"` → subagents
-  spawn, code is created, tested, and reviewed. Workflow reaches `completed`.
+      spawn, code is created, tested, and reviewed. Workflow reaches `completed`.
 - [ ] **-1.2**: Spawned subagents use role-specific system prompts and tool sets.
-  `code-reviewer` cannot use `create` tool. `refactor-agent` has explicit
-  constraint about public APIs.
+      `code-reviewer` cannot use `create` tool. `refactor-agent` has explicit
+      constraint about public APIs.
 - [ ] **-1.3**: Start session → do work → exit. Start new session → see
-  "Resuming from: [summary]" → prior decisions and next steps in context.
+      "Resuming from: [summary]" → prior decisions and next steps in context.
 - [ ] **-1.4**: Start workflow → kill process mid-step → restart → see
-  "Incomplete workflow found. Resume? [Y/n]" → continues from last checkpoint.
+      "Incomplete workflow found. Resume? [Y/n]" → continues from last checkpoint.
 - [ ] **-1.5**: Complete a task that adds a new module → `architecture.md` is
-  updated → next agent session sees the new module in its context.
+      updated → next agent session sees the new module in its context.
 - [ ] **-1.6**: `GET /api/tenants/:id/claws?status=online` returns online claws
-  with capabilities. Orchestrator can dispatch a step to a remote claw.
+      with capabilities. Orchestrator can dispatch a step to a remote claw.

@@ -65,18 +65,21 @@ Human Developer (TUI / IDE / messaging channel)
 ## Core Modules
 
 ### Gateway (`src/gateway/`)
+
 - WebSocket server on port 18789
 - JSON-RPC message protocol
 - Session management (create, switch, reset, message history)
 - Agent dispatch — spawns subagents with tool access
 
 ### Agent System (`src/agents/`)
+
 - `subagent-spawn.ts` — `spawnSubagentDirect()`: the actual agent execution engine
 - `agent-scope.ts` — resolves agent configuration from YAML config
 - `model-selection.ts` — model routing, allowlists, provider resolution
 - `tools/` — built-in tools (create, edit, view, bash, grep, glob, task)
 
 ### CoderClaw Layer (`src/coderclaw/`)
+
 - `agent-roles.ts` — 7 built-in role definitions (⚠️ not wired to runtime yet)
 - `orchestrator.ts` — workflow engine, dependency DAG, task scheduling
 - `orchestrator-enhanced.ts` — distributed orchestrator (Phase 2 target)
@@ -85,21 +88,25 @@ Human Developer (TUI / IDE / messaging channel)
 - `tools/` — orchestrate, workflow_status, code_analysis, project_knowledge, git_history
 
 ### TUI (`src/tui/`)
+
 - Ink + React terminal interface
 - Slash commands: /agent, /model, /init, /session, /think, /compact, /cost
 - `tui-command-handlers.ts` — command dispatch
 
 ### Transport (`src/transport/`)
+
 - `clawlink-adapter.ts` — HTTP transport to coderClawLink API
 - Types: TransportAdapter interface, ClawLinkConfig, RuntimeInterface
 
 ### Extensions (`extensions/`)
+
 - Plugin system with lifecycle hooks (load, unload, on-message, etc.)
 - `diagnostics-otel` — 634 lines, 20+ metrics, OTel traces + logs via OTLP/HTTP
 - `memory-core` / `memory-lancedb` — vector memory with node-llama-cpp embeddings
 - Channel extensions: Discord, Slack, Telegram, Matrix, IRC, etc.
 
 ### Skills (`skills/`)
+
 - 56 skill definitions, each with SKILL.md (instructions + tool mappings)
 - `coderclaw` meta-skill: code_analysis, project_knowledge, git_history, orchestrate, workflow_status
 - `skill-creator` skill: scaffolds new skills from templates
@@ -109,6 +116,7 @@ Human Developer (TUI / IDE / messaging channel)
 ## Known Architectural Gaps
 
 See `.coderClaw/planning/ROADMAP.md` Phase -1 for the 4 critical gaps:
+
 1. `executeWorkflow()` never called — orchestrator is dead code
 2. `agent-roles.ts` orphaned — role definitions not read by runtime
 3. Session handoff never wired — save/load functions exist but unused

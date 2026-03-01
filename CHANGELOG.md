@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026.2.27-beta.2
+
+### Changes
+
+- Tests/Agent Roles: strengthen custom role coverage by asserting custom role metadata, ensuring built-in roles remain authoritative when names conflict, and validating built-in/custom role coexistence.
+
+Docs: https://docs.coderclaw.ai
+
 ## 2026.2.27-beta.1
 
 ### Changes
