@@ -154,6 +154,8 @@ export class GatewayClient {
     this.ws.on("close", (code, reason) => {
       const reasonText = rawDataToString(reason);
       this.ws = null;
+      this.lastSeq = null;
+      this.lastTick = null;
       // If closed due to device token mismatch, clear the stored token so next attempt can get a fresh one
       if (
         code === 1008 &&
@@ -190,6 +192,8 @@ export class GatewayClient {
       clearInterval(this.tickTimer);
       this.tickTimer = null;
     }
+    this.lastSeq = null;
+    this.lastTick = null;
     this.ws?.close();
     this.ws = null;
     this.flushPendingErrors(new Error("gateway client stopped"));

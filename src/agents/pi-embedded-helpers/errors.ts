@@ -589,6 +589,8 @@ const ERROR_PATTERNS = {
     "timed out",
     "deadline exceeded",
     "context deadline exceeded",
+    "error from model endpoint",
+    "upstream error from openinference",
     /without sending (?:any )?chunks?/i,
     /\bstop reason:\s*abort\b/i,
     /\breason:\s*abort\b/i,

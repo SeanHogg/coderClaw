@@ -81,6 +81,7 @@ export class GatewayBrowserClient {
 
   stop() {
     this.closed = true;
+    this.lastSeq = null;
     this.ws?.close();
     this.ws = null;
     this.flushPending(new Error("gateway client stopped"));
@@ -100,6 +101,7 @@ export class GatewayBrowserClient {
     this.ws.addEventListener("close", (ev) => {
       const reason = String(ev.reason ?? "");
       this.ws = null;
+      this.lastSeq = null;
       this.flushPending(new Error(`gateway closed (${ev.code}): ${reason}`));
       this.opts.onClose?.({ code: ev.code, reason });
       this.scheduleReconnect();

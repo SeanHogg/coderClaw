@@ -81,6 +81,74 @@ describe("GatewayClient", () => {
     expect(res.reason).toContain("tick timeout");
   }, 4000);
 
+  test("does not emit gap after reconnect when sequence jumps", async () => {
+    const port = await getFreePort();
+    wss = new WebSocketServer({ port, host: "127.0.0.1" });
+
+    let connCount = 0;
+    wss.on("connection", (socket) => {
+      connCount += 1;
+      const connectionIndex = connCount;
+
+      socket.once("message", (data) => {
+        const first = JSON.parse(rawDataToString(data)) as { id?: string };
+        const id = first.id ?? "connect";
+        const helloOk = {
+          type: "hello-ok",
+          protocol: 2,
+          server: { version: "dev", connId: `c${connectionIndex}` },
+          features: { methods: [], events: [] },
+          snapshot: {
+            presence: [],
+            health: {},
+            stateVersion: { presence: 1, health: 1 },
+            uptimeMs: 1,
+          },
+          policy: {
+            maxPayload: 512 * 1024,
+            maxBufferedBytes: 1024 * 1024,
+            tickIntervalMs: 30_000,
+          },
+        };
+        socket.send(JSON.stringify({ type: "res", id, ok: true, payload: helloOk }));
+
+        if (connectionIndex === 1) {
+          socket.send(JSON.stringify({ type: "event", event: "chat", seq: 350, payload: {} }));
+          setTimeout(() => socket.close(1012, "restart"), 20);
+        } else {
+          socket.send(JSON.stringify({ type: "event", event: "chat", seq: 356, payload: {} }));
+        }
+      });
+    });
+
+    let gapCount = 0;
+    const completed = new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        client.stop();
+        reject(new Error("timeout waiting for reconnect event"));
+      }, 6000);
+
+      const client = new GatewayClient({
+        url: `ws://127.0.0.1:${port}`,
+        connectDelayMs: 0,
+        onGap: () => {
+          gapCount += 1;
+        },
+        onEvent: (evt) => {
+          if (evt.seq === 356) {
+            clearTimeout(timeout);
+            client.stop();
+            resolve();
+          }
+        },
+      });
+      client.start();
+    });
+
+    await completed;
+    expect(gapCount).toBe(0);
+  }, 10_000);
+
   test("rejects mismatched tls fingerprint", async () => {
     const key = `-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDrur5CWp4psMMb
