@@ -111,7 +111,7 @@ describe("tui-event-handlers: handleAgentEvent", () => {
   };
 
   it("processes tool events when runId matches activeChatRunId (even if sessionId differs)", () => {
-    const { chatLog, tui, handleAgentEvent } = createHandlersHarness({
+    const { chatLog, tui, reportAction, handleAgentEvent } = createHandlersHarness({
       state: { currentSessionId: "session-xyz", activeChatRunId: "run-123" },
     });
 
@@ -129,7 +129,41 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     handleAgentEvent(evt);
 
     expect(chatLog.startTool).toHaveBeenCalledWith("tc1", "exec", { command: "echo hi" });
+    expect(reportAction).toHaveBeenCalledWith('Run "echo hi"');
     expect(tui.requestRender).toHaveBeenCalledTimes(1);
+  });
+
+  it("formats grep and read tool actions in execution trace", () => {
+    const { chatLog, reportAction, handleAgentEvent } = createHandlersHarness({
+      state: { activeChatRunId: "run-ops" },
+    });
+
+    handleAgentEvent({
+      runId: "run-ops",
+      stream: "tool",
+      data: {
+        phase: "start",
+        toolCallId: "tc-grep",
+        name: "grep_search",
+        args: { query: "auth choice", includePattern: "src/commands/**" },
+      },
+    });
+
+    handleAgentEvent({
+      runId: "run-ops",
+      stream: "tool",
+      data: {
+        phase: "start",
+        toolCallId: "tc-read",
+        name: "read_file",
+        args: { filePath: "src/tui/tui.ts", startLine: 340, endLine: 380 },
+      },
+    });
+
+    expect(reportAction).toHaveBeenCalledWith('Grep "auth choice" in src/commands/**');
+    expect(reportAction).toHaveBeenCalledWith("Read src/tui/tui.ts (340-380)");
+    expect(chatLog.addSystem).toHaveBeenCalledWith('exec: Grep "auth choice" in src/commands/**');
+    expect(chatLog.addSystem).toHaveBeenCalledWith("exec: Read src/tui/tui.ts (340-380)");
   });
 
   it("ignores tool events when runId does not match activeChatRunId", () => {
@@ -159,7 +193,7 @@ describe("tui-event-handlers: handleAgentEvent", () => {
       finalizeAssistant: vi.fn(),
       dropAssistant: vi.fn(),
     } as unknown as HandlerChatLog;
-    const { tui, setActivityStatus, handleAgentEvent } = createHandlersHarness({
+    const { tui, setActivityStatus, reportAction, handleAgentEvent } = createHandlersHarness({
       state: { activeChatRunId: "run-9" },
       chatLog,
     });
@@ -173,13 +207,15 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     handleAgentEvent(evt);
 
     expect(setActivityStatus).toHaveBeenCalledWith("running");
+    expect(reportAction).toHaveBeenCalledWith("Thinking…");
     expect(tui.requestRender).toHaveBeenCalledTimes(1);
   });
 
   it("keeps active run on lifecycle end while waiting for final chat event", () => {
-    const { state, setActivityStatus, loadHistory, handleAgentEvent } = createHandlersHarness({
-      state: { activeChatRunId: "run-end" },
-    });
+    const { state, setActivityStatus, reportAction, loadHistory, handleAgentEvent } =
+      createHandlersHarness({
+        state: { activeChatRunId: "run-end" },
+      });
 
     handleAgentEvent({
       runId: "run-end",
@@ -188,6 +224,7 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     });
 
     expect(setActivityStatus).toHaveBeenCalledWith("waiting");
+    expect(reportAction).toHaveBeenCalledWith("Composing response…");
     expect(state.activeChatRunId).toBe("run-end");
     expect(loadHistory).not.toHaveBeenCalled();
   });

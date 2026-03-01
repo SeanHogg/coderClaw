@@ -226,6 +226,7 @@ export async function runTui(opts: TuiOptions) {
   let statusTimer: NodeJS.Timeout | null = null;
   let statusStartedAt: number | null = null;
   let lastActivityStatus = activityStatus;
+  let setupInProgress = false;
 
   const state: TuiStateAccess = {
     get agentDefaultId() {
@@ -444,15 +445,7 @@ export async function runTui(opts: TuiOptions) {
   let statusText: Text | null = null;
   let statusLoader: Loader | null = null;
   const statusTraceLines: string[] = [];
-  const MAX_STATUS_TRACE_LINES = 8;
-
-  const formatTraceTimestamp = () => {
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2, "0");
-    const mm = String(now.getMinutes()).padStart(2, "0");
-    const ss = String(now.getSeconds()).padStart(2, "0");
-    return `${hh}:${mm}:${ss}`;
-  };
+  const MAX_STATUS_TRACE_LINES = 14;
 
   const renderStatusTrace = () => {
     statusTraceText.setText(theme.dim(statusTraceLines.join("\n")));
@@ -463,7 +456,7 @@ export async function runTui(opts: TuiOptions) {
     if (!message) {
       return;
     }
-    statusTraceLines.push(`• ${formatTraceTimestamp()} ${message}`);
+    statusTraceLines.push(`• ${message}`);
     if (statusTraceLines.length > MAX_STATUS_TRACE_LINES) {
       statusTraceLines.splice(0, statusTraceLines.length - MAX_STATUS_TRACE_LINES);
     }
@@ -712,37 +705,45 @@ export async function runTui(opts: TuiOptions) {
   });
 
   // Stops TUI, runs onboarding wizard, starts gateway if needed, then spawns
-  // a fresh TUI process automatically — no manual re-run required.
+  // the TUI again in-process — no detached respawn needed.
   const handleSetup = async () => {
-    chatLog.addSystem("Stopping TUI — setup wizard starting…");
-    tui.requestRender();
-    await new Promise<void>((r) => setTimeout(r, 80)); // let final render flush
-    client.stop();
-    tui.stop();
-    await new Promise<void>((r) => setTimeout(r, 50));
-    const { restoreTerminalState } = await import("../terminal/restore.js");
-    const { runInteractiveOnboarding } = await import("../commands/onboard-interactive.js");
-    const { startGatewayBackground } = await import("./tui-setup-check.js");
-    restoreTerminalState("pre-setup-wizard", { resumeStdinIfPaused: true });
-    try {
-      await runInteractiveOnboarding({ flow: "quickstart" });
-    } catch (err) {
-      process.stderr.write(`Setup wizard failed: ${String(err)}\n`);
+    if (setupInProgress) {
+      chatLog.addSystem("Setup is already running.");
+      tui.requestRender();
+      return;
     }
-    // Start gateway in background if daemon install failed (e.g. no admin on Windows).
-    await startGatewayBackground();
-    // Spawn a fresh detached TUI then exit this process immediately.
-    // The child inherits the terminal; the env flag tells tui-cli to skip
-    // the pre-launch setup check so the wizard doesn't re-run.
-    const { spawn } = await import("node:child_process");
-    const child = spawn(process.execPath, [process.argv[1], "tui"], {
-      detached: true,
-      stdio: "inherit",
-      cwd: process.cwd(),
-      env: { ...process.env, CODERCLAW_SKIP_SETUP_CHECK: "1" },
-    });
-    child.unref();
-    process.exit(0);
+    setupInProgress = true;
+    try {
+      chatLog.addSystem("Stopping TUI — setup wizard starting…");
+      tui.requestRender();
+      await new Promise<void>((r) => setTimeout(r, 80)); // let final render flush
+      client.stop();
+      tui.stop();
+      await new Promise<void>((r) => setTimeout(r, 50));
+      const { restoreTerminalState } = await import("../terminal/restore.js");
+      const { runInteractiveOnboarding } = await import("../commands/onboard-interactive.js");
+      const { startGatewayBackground } = await import("./tui-setup-check.js");
+      restoreTerminalState("pre-setup-wizard", { resumeStdinIfPaused: true });
+      try {
+        await runInteractiveOnboarding({ flow: "quickstart" });
+      } catch (err) {
+        process.stderr.write(`Setup wizard failed: ${String(err)}\n`);
+      } finally {
+        restoreTerminalState("post-setup-wizard", { resumeStdinIfPaused: true });
+      }
+      // Start gateway in background if daemon install failed (e.g. no admin on Windows).
+      await startGatewayBackground();
+      setConnectionStatus("restarting tui");
+      setActivityStatus("idle");
+      updateHeader();
+      updateFooter();
+      tui.start();
+      tui.setFocus(editor);
+      tui.requestRender();
+      client.start();
+    } finally {
+      setupInProgress = false;
+    }
   };
 
   const { handleCommand, sendMessage, openModelSelector, openAgentSelector, openSessionSelector } =

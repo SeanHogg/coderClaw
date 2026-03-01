@@ -3,7 +3,6 @@ import {
   findAgentRole,
   registerCustomRoles,
   clearCustomRoles,
-  getBuiltInAgentRoles,
   CODE_CREATOR_ROLE,
 } from "./agent-roles.js";
 import type { AgentRole } from "./types.js";

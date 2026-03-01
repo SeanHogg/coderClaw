@@ -43,6 +43,7 @@ describe("buildAuthChoiceOptions", () => {
     ["Chutes OAuth auth choice", ["chutes"]],
     ["Qwen auth choice", ["qwen-portal"]],
     ["xAI auth choice", ["xai-api-key"]],
+    ["Local guided setup auth choice", ["local"]],
     ["vLLM auth choice", ["vllm"]],
   ])("includes %s", (_label, expectedValues) => {
     const options = getOptions();
@@ -97,5 +98,17 @@ describe("buildAuthChoiceOptions", () => {
     expect(coderClawGroup).toBeDefined();
     expect(coderClawGroup?.label).toBe("CoderClaw");
     expect(coderClawGroup?.options.some((opt) => opt.value === "custom-api-key")).toBe(true);
+  });
+
+  it("shows Local Models in grouped provider selection", () => {
+    const { groups } = buildAuthChoiceGroups({
+      store: EMPTY_STORE,
+      includeSkip: false,
+    });
+    const localGroup = groups.find((group) => group.value === "local");
+
+    expect(localGroup).toBeDefined();
+    expect(localGroup?.label).toBe("Local Models");
+    expect(localGroup?.options.some((opt) => opt.value === "local")).toBe(true);
   });
 });

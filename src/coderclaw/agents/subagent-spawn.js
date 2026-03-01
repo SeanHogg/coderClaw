@@ -15,7 +15,7 @@
  * when the multi-agent system is ready.
  */
 
-export async function spawnSubagentDirect(payload, context = {}) {
+export async function spawnSubagentDirect(payload, _context = {}) {
   // Basic validation
   if (!payload || typeof payload.task !== "string") {
     return { status: "rejected", error: "Invalid payload" };
@@ -33,9 +33,15 @@ export async function spawnSubagentDirect(payload, context = {}) {
   if (payload.roleConfig && typeof payload.roleConfig === "object") {
     // Echo back role metadata for verification
     result.role = payload.roleConfig.name;
-    if (payload.roleConfig.model) result.model = payload.roleConfig.model;
-    if (payload.roleConfig.thinking) result.thinking = payload.roleConfig.thinking;
-    if (payload.roleConfig.tools) result.tools = payload.roleConfig.tools;
+    if (payload.roleConfig.model) {
+      result.model = payload.roleConfig.model;
+    }
+    if (payload.roleConfig.thinking) {
+      result.thinking = payload.roleConfig.thinking;
+    }
+    if (payload.roleConfig.tools) {
+      result.tools = payload.roleConfig.tools;
+    }
   }
 
   return result;

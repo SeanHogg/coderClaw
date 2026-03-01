@@ -92,6 +92,17 @@ export async function applyNonInteractiveAuthChoice(params: {
     return null;
   }
 
+  if (authChoice === "local") {
+    runtime.error(
+      [
+        'Auth choice "local" requires interactive mode.',
+        "Use interactive onboard/configure for guided local Ollama or llama.cpp/vLLM setup.",
+      ].join("\n"),
+    );
+    runtime.exit(1);
+    return null;
+  }
+
   if (authChoice === "vllm") {
     runtime.error(
       [

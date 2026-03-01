@@ -29,8 +29,8 @@ class ModalOverlayFrame implements Component {
     this.inner.handleInput?.(data);
   }
 
-  invalidate?(): void {
-    this.inner.invalidate?.();
+  invalidate(): void {
+    this.inner.invalidate();
   }
 
   get focused(): boolean {

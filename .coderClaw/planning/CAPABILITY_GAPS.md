@@ -1,6 +1,6 @@
 # CoderClaw Capability Gaps — Deep Audit
 
-> Last updated: 2026-02-26
+> Last updated: 2026-02-28
 > Source: Code audit of `coderClaw/src/` and `coderClawLink/api/src/`
 
 This document records what **actually works** vs. what is **facade code** (exists
@@ -26,6 +26,7 @@ agent features.
 **Impact**: Feature/bugfix/refactor/custom workflows now execute. Remaining gap is workflow-type coverage (`planning`, `adversarial`) and production-grade execution semantics.
 
 **Remaining work**:
+
 - Add `planning` and `adversarial` workflow types (currently only `feature`, `bugfix`, `refactor`, `custom`).
 - Add persistence/resume (tracked separately as Gap 4).
 - Add stronger end-to-end tests around real subagent completion paths.
@@ -44,11 +45,17 @@ agent features.
 - The orchestrator already uses `findAgentRole` when spawning subagents (see `orchestrator.ts` `executeTask`). Now custom roles are available to that lookup.
 
 **Verification**:
+
 - Run `pnpm test src/coderclaw/agent-roles.test.ts` → 6/6 pass
 - Start gateway → logs "Loaded N custom agent roles from .coderClaw/agents" if any present
 - Create custom role in `.coderClaw/agents/my-role.yaml` → `orchestrate` workflow steps can reference it
 
 **Remaining work**: None for Gap 2. The multi-agent system now has role-specific behavior, and custom roles are fully supported.
+
+**Verification snapshot (2026-02-28):**
+
+- `pnpm exec vitest --run src/coderclaw/agent-roles.test.ts src/coderclaw/orchestrator.test.ts` → 8/8 pass
+- `pnpm exec vitest run --config vitest.e2e.config.ts src/agents/coderclaw-tools.subagents.sessions-spawn.allowlist.e2e.test.ts src/agents/coderclaw-tools.subagents.sessions-spawn.model.e2e.test.ts` → 14/14 pass
 
 ---
 

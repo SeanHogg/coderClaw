@@ -109,6 +109,8 @@ describe("resolveAllowedModelRef", () => {
         providers: {
           openrouter: {
             apiKey: "test-key",
+            baseUrl: "https://openrouter.ai/api/v1",
+            models: [],
           },
         },
       },
@@ -145,6 +147,8 @@ describe("resolveAllowedModelRef", () => {
         providers: {
           openrouter: {
             apiKey: "test-key",
+            baseUrl: "https://openrouter.ai/api/v1",
+            models: [],
           },
         },
       },

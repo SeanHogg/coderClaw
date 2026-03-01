@@ -207,7 +207,10 @@ describe("gateway server chat", () => {
       expect(sendRes.ok).toBe(true);
 
       const finalEvent = await finalEventP;
-      const textBlock = finalEvent.payload?.message?.content?.[0]?.text;
+      const chatPayload = finalEvent.payload as {
+        message?: { content?: Array<{ text?: string }> };
+      } | null;
+      const textBlock = chatPayload?.message?.content?.[0]?.text;
       expect(typeof textBlock).toBe("string");
       expect(String(textBlock)).toContain("Agent failed before reply");
     });

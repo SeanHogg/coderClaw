@@ -297,6 +297,17 @@ describe("onboard (non-interactive): provider auth", () => {
     });
   }, 60_000);
 
+  it("rejects local auth choice in non-interactive mode", async () => {
+    await withOnboardEnv("coderclaw-onboard-local-non-interactive-", async ({ runtime }) => {
+      await expect(
+        runNonInteractiveOnboardingWithDefaults(runtime, {
+          authChoice: "local",
+          skipSkills: true,
+        }),
+      ).rejects.toThrow('Auth choice "local" requires interactive mode.');
+    });
+  }, 60_000);
+
   it("stores LiteLLM API key and sets default model", async () => {
     await withOnboardEnv("coderclaw-onboard-litellm-", async (env) => {
       const cfg = await runOnboardingAndReadConfig(env, {

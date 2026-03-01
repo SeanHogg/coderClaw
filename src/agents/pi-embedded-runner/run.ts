@@ -1034,7 +1034,7 @@ export async function runEmbeddedPiAgent(
               .map((payload) => (typeof payload.text === "string" ? payload.text.trim() : ""))
               .find((text) => text.length > 0);
             const latestAssistantText = [...attempt.assistantTexts]
-              .reverse()
+              .toReversed()
               .map((text) => text.trim())
               .find((text) => text.length > 0);
             currentPrompt = buildAutoContinuePrompt({

@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+// @ts-expect-error – stub is a plain JS file without type declarations (TODO: convert to TS)
 import { spawnSubagentDirect } from "./subagent-spawn.js";
 
 describe("spawnSubagentDirect (stub)", () => {

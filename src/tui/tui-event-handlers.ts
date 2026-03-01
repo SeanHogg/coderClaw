@@ -73,6 +73,100 @@ function extractPathArg(args: unknown): string | null {
   return null;
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  return value as Record<string, unknown>;
+}
+
+function getStringArg(args: unknown, keys: string[]): string | null {
+  const record = asRecord(args);
+  if (!record) {
+    return null;
+  }
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value.trim();
+    }
+  }
+  return null;
+}
+
+function shortenText(value: string, max = 60): string {
+  const collapsed = value.replace(/\s+/g, " ").trim();
+  if (collapsed.length <= max) {
+    return collapsed;
+  }
+  return `${collapsed.slice(0, Math.max(1, max - 1))}…`;
+}
+
+function shortenPath(path: string): string {
+  const cleaned = path.replace(/\\/g, "/");
+  const segments = cleaned.split("/").filter(Boolean);
+  if (segments.length <= 3) {
+    return cleaned;
+  }
+  return `…/${segments.slice(-3).join("/")}`;
+}
+
+function formatReadRange(args: unknown): string {
+  const record = asRecord(args);
+  if (!record) {
+    return "";
+  }
+  const start = record.startLine;
+  const end = record.endLine;
+  if (typeof start === "number" && typeof end === "number") {
+    return ` (${start}-${end})`;
+  }
+  if (typeof start === "number") {
+    return ` (${start}+)`;
+  }
+  return "";
+}
+
+function formatToolAction(toolName: string, args: unknown): string {
+  const normalizedToolName = normalizeToolName(toolName);
+  const pathArg = extractPathArg(args);
+  if (normalizedToolName === "grep_search") {
+    const query = getStringArg(args, ["query"]);
+    const scope = getStringArg(args, ["includePattern"]);
+    const queryPart = query ? ` "${shortenText(query, 44)}"` : "";
+    const scopePart = scope ? ` in ${shortenPath(scope)}` : "";
+    return `Grep${queryPart}${scopePart}`;
+  }
+  if (normalizedToolName === "file_search") {
+    const query = getStringArg(args, ["query"]);
+    return query ? `Find files "${shortenText(query, 48)}"` : "Find files";
+  }
+  if (normalizedToolName === "read" || normalizedToolName === "read_file") {
+    if (pathArg) {
+      return `Read ${shortenPath(pathArg)}${formatReadRange(args)}`;
+    }
+    return "Read file";
+  }
+  if (normalizedToolName === "edit" || normalizedToolName === "str_replace_editor") {
+    return pathArg ? `Edit ${shortenPath(pathArg)}` : "Edit file";
+  }
+  if (normalizedToolName === "write") {
+    return pathArg ? `Write ${shortenPath(pathArg)}` : "Write file";
+  }
+  if (normalizedToolName === "apply_patch") {
+    return "Apply patch";
+  }
+  if (normalizedToolName === "exec" || normalizedToolName === "run_in_terminal") {
+    const command = getStringArg(args, ["command"]);
+    return command ? `Run "${shortenText(command, 52)}"` : "Run command";
+  }
+  if (normalizedToolName === "search_subagent" || normalizedToolName === "semantic_search") {
+    const query = getStringArg(args, ["query"]);
+    return query ? `Search "${shortenText(query, 48)}"` : "Search workspace";
+  }
+  return `Use ${toolName}`;
+}
+
 function formatCount(value: number, singular: string, plural: string): string {
   return `${value} ${value === 1 ? singular : plural}`;
 }
@@ -140,11 +234,16 @@ export function createEventHandlers(context: EventHandlerContext) {
     runActivity.delete(runId);
   };
 
-  const reportRunActivitySummary = (runId: string) => {
-    if (!reportAction) {
-      clearRunActivity(runId);
+  const emitExecutionAction = (text: string) => {
+    const message = text.trim();
+    if (!message) {
       return;
     }
+    reportAction?.(message);
+    chatLog.addSystem(`exec: ${message}`);
+  };
+
+  const reportRunActivitySummary = (runId: string) => {
     const stats = runActivity.get(runId);
     if (!stats || stats.toolStarts === 0) {
       clearRunActivity(runId);
@@ -174,7 +273,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       parts.push(formatCount(stats.toolFailures, "tool failure", "tool failures"));
     }
 
-    reportAction(`✓ ${parts.join(" · ")}`);
+    emitExecutionAction(`✓ ${parts.join(" · ")}`);
     clearRunActivity(runId);
   };
 
@@ -228,7 +327,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       clearActiveRunIfMatch(runId);
       maybeRefreshHistoryForRun(runId);
       setActivityStatus("idle");
-      reportAction?.("run settled to idle (final event not received)");
+      emitExecutionAction("run settled to idle (final event not received)");
       tui.requestRender();
     }, FINAL_EVENT_GRACE_MS);
     timer.unref?.();
@@ -334,7 +433,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       state.activeChatRunId = evt.runId;
     }
     if (!wasKnownRun && evt.state === "delta") {
-      reportAction?.("run started");
+      emitExecutionAction("run started");
     }
     if (evt.state === "delta") {
       clearPendingFinalTimeout(evt.runId);
@@ -399,7 +498,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (wasActiveRun) {
         setActivityStatus(stopReason === "error" ? "error" : "idle");
       }
-      reportAction?.(stopReason === "error" ? "run ended with error" : "run completed");
+      emitExecutionAction(stopReason === "error" ? "run ended with error" : "run completed");
       // Refresh session info to update token counts in footer
       scheduleSessionInfoRefresh();
     }
@@ -414,7 +513,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (wasActiveRun) {
         setActivityStatus("aborted");
       }
-      reportAction?.("run aborted");
+      emitExecutionAction("run aborted");
       scheduleSessionInfoRefresh();
       maybeRefreshHistoryForRun(evt.runId);
     }
@@ -429,7 +528,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (wasActiveRun) {
         setActivityStatus("error");
       }
-      reportAction?.("run error");
+      emitExecutionAction("run error");
       scheduleSessionInfoRefresh();
       maybeRefreshHistoryForRun(evt.runId);
     }
@@ -464,7 +563,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       }
       // Always report tool activity in the trace, regardless of verbose level
       if (phase === "start") {
-        reportAction?.(`tool: ${toolName}`);
+        emitExecutionAction(formatToolAction(toolName, data.args));
         const stats = getRunActivity(evt.runId);
         stats.toolStarts += 1;
         const toolPath = extractPathArg(data.args);
@@ -480,7 +579,7 @@ export function createEventHandlers(context: EventHandlerContext) {
           stats.execCalls += 1;
         }
       } else if (phase === "result" && Boolean(data.isError)) {
-        reportAction?.(`tool failed: ${toolName}`);
+        emitExecutionAction(`Tool failed: ${toolName}`);
         const stats = getRunActivity(evt.runId);
         stats.toolFailures += 1;
       }
@@ -517,11 +616,11 @@ export function createEventHandlers(context: EventHandlerContext) {
       const phase = typeof evt.data?.phase === "string" ? evt.data.phase : "";
       if (phase === "start") {
         setActivityStatus("running");
-        reportAction?.("agent execution started");
+        emitExecutionAction("Thinking…");
       }
       if (phase === "end") {
         setActivityStatus("waiting");
-        reportAction?.("agent execution finished; awaiting final response");
+        emitExecutionAction("Composing response…");
         scheduleFinalEventTimeout(evt.runId);
       }
       if (phase === "error") {
@@ -538,7 +637,7 @@ export function createEventHandlers(context: EventHandlerContext) {
         maybeRefreshHistoryForRun(evt.runId);
         scheduleSessionInfoRefresh();
         setActivityStatus("error");
-        reportAction?.("agent execution error");
+        emitExecutionAction("agent execution error");
       }
       tui.requestRender();
     }

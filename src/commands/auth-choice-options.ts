@@ -23,6 +23,12 @@ const AUTH_CHOICE_GROUP_DEFS: {
   choices: AuthChoice[];
 }[] = [
   {
+    value: "local",
+    label: "Local Models",
+    hint: "Ollama or llama.cpp/vLLM on this machine",
+    choices: ["local"],
+  },
+  {
     value: "coderclawllm",
     label: "CoderClawLLM",
     hint: "Recommended default (managed free model pool)",
@@ -175,6 +181,11 @@ const AUTH_CHOICE_GROUP_DEFS: {
 ];
 
 const BASE_AUTH_CHOICE_OPTIONS: ReadonlyArray<AuthChoiceOption> = [
+  {
+    value: "local",
+    label: "Local setup (Ollama / llama.cpp / vLLM)",
+    hint: "Guided local setup with auto model discovery",
+  },
   {
     value: "coderclawllm",
     label: "CoderClawLLM (recommended)",

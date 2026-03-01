@@ -343,9 +343,7 @@ describe("classifyFailoverReason", () => {
     ).toBeNull();
     expect(classifyFailoverReason("image exceeds 5 MB maximum")).toBeNull();
     expect(
-      classifyFailoverReason(
-        "Upstream error from OpenInference: Error from model endpoint",
-      ),
+      classifyFailoverReason("Upstream error from OpenInference: Error from model endpoint"),
     ).toBe("timeout");
   });
   it("classifies OpenAI usage limit errors as rate_limit", () => {

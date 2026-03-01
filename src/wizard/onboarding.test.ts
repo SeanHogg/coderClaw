@@ -504,7 +504,7 @@ describe("runOnboardingWizard", () => {
           defaults: {
             ...args.config.agents?.defaults,
             model: {
-              ...(args.config.agents?.defaults?.model ?? {}),
+              ...args.config.agents?.defaults?.model,
               primary: "coderclawllm/auto",
             },
           },

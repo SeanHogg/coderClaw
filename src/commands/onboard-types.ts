@@ -9,6 +9,7 @@ export type AuthChoice =
   | "claude-cli"
   | "token"
   | "chutes"
+  | "local"
   | "vllm"
   | "coderclawllm"
   | "openai-codex"
@@ -50,6 +51,7 @@ export type AuthChoice =
   | "custom-api-key"
   | "skip";
 export type AuthChoiceGroupId =
+  | "local"
   | "coderclaw"
   | "coderclawllm"
   | "openai"
