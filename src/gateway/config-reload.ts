@@ -244,6 +244,7 @@ export function buildGatewayReloadPlan(changedPaths: string[]): GatewayReloadPla
 
 export type GatewayConfigReloader = {
   stop: () => Promise<void>;
+  trigger: () => Promise<void>;
 };
 
 export function startGatewayConfigReloader(opts: {
@@ -376,6 +377,9 @@ export function startGatewayConfigReloader(opts: {
       debounceTimer = null;
       watcherClosed = true;
       await watcher.close().catch(() => {});
+    },
+    trigger: async () => {
+      await runReload();
     },
   };
 }

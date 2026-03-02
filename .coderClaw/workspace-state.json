@@ -1,4 +1,7 @@
 {
   "version": 1,
-  "bootstrapSeededAt": "2026-02-24T05:58:11.053Z"
+  "bootstrapSeededAt": "2026-02-24T05:58:11.053Z",
+  "onboardingCompletedAt": "2026-03-02T02:47:48.233Z",
+  "lastSyncedAt": "2026-03-02T03:50:46.508Z",
+  "syncCount": 1
 }

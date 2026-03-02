@@ -611,6 +611,8 @@ export async function startGatewayServer(
       markChannelLoggedOut,
       wizardRunner,
       broadcastVoiceWakeChanged,
+      configReloader,
+      skillsChangeBump: () => bumpSkillsSnapshotVersion({ reason: "manual" }),
     },
   });
   logGatewayStartup({

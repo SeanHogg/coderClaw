@@ -6,8 +6,13 @@ import {
   normalizeUsageDisplay,
   resolveResponseUsageMode,
 } from "../auto-reply/thinking.js";
-import { initializeCoderClawProject } from "../coderclaw/project-context.js";
+import {
+  initializeCoderClawProject,
+  loadProjectContext,
+  loadWorkspaceState,
+} from "../coderclaw/project-context.js";
 import type { SessionsPatchResult } from "../gateway/protocol/index.js";
+import { syncCoderClawDirectoryWithMetaUpdate } from "../infra/clawlink-directory-sync.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
 import { logDebug, logWarn } from "../logger.js";
@@ -767,6 +772,75 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           ].join("\n"),
         );
         break;
+      case "project": {
+        const projectRoot = process.cwd();
+        const ctx = await loadProjectContext(projectRoot).catch(() => null);
+        const ws = await loadWorkspaceState(projectRoot).catch(() => null);
+        if (!ctx) {
+          chatLog.addSystem("No .coderClaw/context.yaml found. Run /init to initialize a project.");
+          break;
+        }
+        const lines: string[] = [
+          `Project: ${ctx.projectName ?? "(unnamed)"}`,
+          ...(ctx.description ? [`Description: ${ctx.description}`] : []),
+          ...(ctx.languages?.length ? [`Languages: ${ctx.languages.join(", ")}`] : []),
+          ...(ctx.frameworks?.length ? [`Frameworks: ${ctx.frameworks.join(", ")}`] : []),
+        ];
+        if (ctx.clawLink) {
+          lines.push(
+            `CoderClawLink: instance ${ctx.clawLink.instanceId ?? "?"} (${ctx.clawLink.instanceSlug ?? "?"}) · tenant ${ctx.clawLink.tenantId ?? "?"}`,
+          );
+        }
+        if (ws?.lastSyncedAt) {
+          lines.push(
+            `Last synced: ${new Date(ws.lastSyncedAt).toLocaleString()} (${ws.syncCount ?? 1} total)`,
+          );
+        } else {
+          lines.push("Last synced: never");
+        }
+        chatLog.addSystem(lines.join("\n"));
+        break;
+      }
+      case "sync": {
+        const projectRoot = process.cwd();
+        const apiKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+        const baseUrl = (
+          readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai"
+        ).replace(/\/+$/, "");
+        if (!apiKey) {
+          chatLog.addSystem(
+            "Not linked to CoderClawLink (CODERCLAW_LINK_API_KEY not set). Run /setup to configure.",
+          );
+          break;
+        }
+        const ctx = await loadProjectContext(projectRoot).catch(() => null);
+        const clawId = ctx?.clawLink?.instanceId?.trim();
+        if (!clawId) {
+          chatLog.addSystem(
+            "No clawLink.instanceId in .coderClaw/context.yaml. Run /init or configure CoderClawLink first.",
+          );
+          break;
+        }
+        chatLog.addSystem("Syncing .coderClaw directory to CoderClawLink…");
+        tui.requestRender();
+        try {
+          const projectId = ctx?.clawLink?.projectId ? Number(ctx.clawLink.projectId) : undefined;
+          const { fileCount } = await syncCoderClawDirectoryWithMetaUpdate({
+            workspaceDir: projectRoot,
+            apiKey,
+            baseUrl,
+            clawId,
+            projectId,
+            triggeredBy: "manual",
+          });
+          chatLog.addSystem(
+            `Synced ${fileCount} file${fileCount === 1 ? "" : "s"} to CoderClawLink.`,
+          );
+        } catch (err) {
+          chatLog.addSystem(`Sync failed: ${err instanceof Error ? err.message : String(err)}`);
+        }
+        break;
+      }
       default:
         await sendMessage(raw);
         break;

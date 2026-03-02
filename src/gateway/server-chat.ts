@@ -280,22 +280,39 @@ export function createAgentEventHandler({
     chatRunState.buffers.delete(clientRunId);
     chatRunState.deltaSentAt.delete(clientRunId);
     if (jobState === "done") {
-      const payload = {
-        runId: clientRunId,
-        sessionKey,
-        seq,
-        state: "final" as const,
-        stopReason: details?.stopReason,
-        errorMessage: details?.errorMessage,
-        message:
-          text && !shouldSuppressSilent
-            ? {
-                role: "assistant",
-                content: [{ type: "text", text }],
-                timestamp: Date.now(),
-              }
-            : undefined,
+      // Build the final payload.  If there was any text buffered and it's not a
+    // silent token we use that as the assistant message.  Previously we would
+    // omit `message` entirely when there was no text, which caused clients to
+    // treat the run as having "no final message" and drop it silently.  That
+    // leaves users confused when a tool succeeds but produces no text, or when
+    // a model terminates unexpectedly.  To improve continuity we always provide
+    // something in `message` when a stopReason or errorMessage exists.
+    let finalMessage: unknown | undefined;
+    if (text && !shouldSuppressSilent) {
+      finalMessage = {
+        role: "assistant",
+        content: [{ type: "text", text }],
+        timestamp: Date.now(),
       };
+    } else if ((details?.stopReason || details?.errorMessage) && !shouldSuppressSilent) {
+      // include a terse placeholder explaining why there was no output
+      const reason = details.errorMessage ?? details.stopReason ?? "";
+      finalMessage = {
+        role: "assistant",
+        content: [{ type: "text", text: `(no output${reason ? `; ${reason}` : ""})` }],
+        timestamp: Date.now(),
+      };
+    }
+
+    const payload = {
+      runId: clientRunId,
+      sessionKey,
+      seq,
+      state: "final" as const,
+      stopReason: details?.stopReason,
+      errorMessage: details?.errorMessage,
+      message: finalMessage,
+    };
       // Suppress webchat broadcast for heartbeat runs when showOk is false
       if (!shouldSuppressHeartbeatBroadcast(clientRunId)) {
         broadcast("chat", payload);

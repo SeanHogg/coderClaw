@@ -1,6 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { loadProjectContext, resolveCoderClawDir } from "../coderclaw/project-context.js";
+import {
+  loadProjectContext,
+  loadWorkspaceState,
+  resolveCoderClawDir,
+  updateWorkspaceState,
+} from "../coderclaw/project-context.js";
 import { readSharedEnvVar } from "./env-file.js";
 
 type SyncLog = { warn: (msg: string) => void };
@@ -82,13 +87,17 @@ export type SyncCoderClawDirParams = {
   baseUrl: string;
   clawId: string;
   projectId?: number;
+  triggeredBy?: "startup" | "manual" | "api";
 };
 
 /**
  * Sync the .coderClaw/ directory to the CoderClawLink API.
  * Callable at any time — not just on startup.
+ * Returns the number of files synced.
  */
-export async function syncCoderClawDirectory(params: SyncCoderClawDirParams): Promise<void> {
+export async function syncCoderClawDirectory(
+  params: SyncCoderClawDirParams,
+): Promise<{ fileCount: number }> {
   const baseUrl = params.baseUrl.replace(/\/+$/, "");
   const coderClawDir = resolveCoderClawDir(params.workspaceDir);
   const exists = await fs
@@ -96,7 +105,7 @@ export async function syncCoderClawDirectory(params: SyncCoderClawDirParams): Pr
     .then((s) => s.isDirectory())
     .catch(() => false);
   if (!exists) {
-    return;
+    return { fileCount: 0 };
   }
 
   const files = await collectFiles(coderClawDir.root);
@@ -109,6 +118,7 @@ export async function syncCoderClawDirectory(params: SyncCoderClawDirParams): Pr
       source: "sync",
       workspaceDir: params.workspaceDir,
       fileCount: files.length,
+      triggeredBy: params.triggeredBy ?? "startup",
     },
     files,
   };
@@ -126,6 +136,24 @@ export async function syncCoderClawDirectory(params: SyncCoderClawDirParams): Pr
   if (!response.ok) {
     throw new Error(`sync failed: ${response.status} ${response.statusText}`);
   }
+  return { fileCount: files.length };
+}
+
+/**
+ * Same as syncCoderClawDirectory but also stamps lastSyncedAt / syncCount
+ * into .coderClaw/workspace-state.json on success.
+ * Returns the number of files that were synced.
+ */
+export async function syncCoderClawDirectoryWithMetaUpdate(
+  params: SyncCoderClawDirParams,
+): Promise<{ fileCount: number }> {
+  const result = await syncCoderClawDirectory(params);
+  const prev = await loadWorkspaceState(params.workspaceDir);
+  await updateWorkspaceState(params.workspaceDir, {
+    lastSyncedAt: new Date().toISOString(),
+    syncCount: (prev.syncCount ?? 0) + 1,
+  });
+  return result;
 }
 
 export async function syncCoderClawDirectoryOnStartup(params: {
@@ -150,7 +178,7 @@ export async function syncCoderClawDirectoryOnStartup(params: {
   const projectId = ctx?.clawLink?.projectId ? Number(ctx.clawLink.projectId) : undefined;
 
   try {
-    await syncCoderClawDirectory({
+    await syncCoderClawDirectoryWithMetaUpdate({
       workspaceDir: params.workspaceDir,
       apiKey,
       baseUrl,

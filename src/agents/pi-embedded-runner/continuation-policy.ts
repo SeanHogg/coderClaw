@@ -21,6 +21,8 @@ export type AutoContinuePromptInput = {
   reason?: string;
 };
 
+import { logDebug } from "../../logger.js";
+
 const INVESTIGATION_TOOLS = new Set([
   "read",
   "grep",
@@ -37,7 +39,7 @@ const DIRECT_USER_QUESTION_PATTERN =
   /\b(can you|could you|would you|do you want|which|what|where|when|should i|please provide|need your)\b/i;
 
 const COMPLETION_PATTERN =
-  /\b(completed|done|finished|implemented|updated|fixed|added|tests?\s+(pass|passed)|all tasks? complete|all set|ready for review)\b/i;
+  /\b(all tasks? completed|all work (is|are) complete|everything (is|are) done|implementation complete|task complete|all steps? finished|fully implemented|all set and ready|final answer)\b/i;
 
 const DEFERRAL_PATTERN =
   /\b(let me|i\s*'ll|i will|next step|going to|check .* first|understand .* first)\b/i;
@@ -78,47 +80,66 @@ function isInvestigationOnly(toolNames: string[]): boolean {
 
 export function shouldAutoContinueRun(input: ContinuationPolicyInput): ContinuationPolicyDecision {
   if (input.aborted || input.timedOut || input.promptErrored || input.hasPendingClientToolCall) {
+    logDebug(`[auto-continue] blocked: abort/timeout/error status (aborted=${input.aborted} timedOut=${input.timedOut})`);
     return { shouldContinue: false };
   }
 
   if (!looksLikeExecutionTask(input.userPrompt)) {
+    logDebug(`[auto-continue] blocked: user prompt doesn't look like execution task`);
     return { shouldContinue: false };
   }
 
   const lastAssistantText = normalizeLastAssistantText(input.assistantTexts, input.payloadTexts);
   if (!lastAssistantText) {
     if (input.hasToolError && input.toolNames.length > 0) {
+      logDebug(`[auto-continue] continue: tool error with no assistant text`);
       return { shouldContinue: true, reason: "tool_error_no_progress" };
     }
     if (input.toolNames.length > 0) {
+      logDebug(`[auto-continue] continue: tools called but no assistant text`);
       return { shouldContinue: true, reason: "tool_activity_no_progress" };
     }
     if (isInvestigationOnly(input.toolNames)) {
+      logDebug(`[auto-continue] continue: investigation-only tools`);
       return { shouldContinue: true, reason: "investigation_only_tools" };
     }
+    logDebug(`[auto-continue] blocked: no assistant text and no tool activity`);
     return { shouldContinue: false };
   }
 
   if (input.hasToolError && !isQuestionForUser(lastAssistantText)) {
+    logDebug(`[auto-continue] continue: tool error recovery`);
     return { shouldContinue: true, reason: "tool_error_retry" };
   }
 
   if (isQuestionForUser(lastAssistantText)) {
+    logDebug(`[auto-continue] blocked: agent asked user a question`);
     return { shouldContinue: false, reason: "asked_user_question" };
   }
 
+  // If tools were called in the last turn, the agent likely needs to continue
+  // processing results, regardless of any completion-like phrasing.
+  if (input.toolNames.length > 0) {
+    logDebug(`[auto-continue] continue: tools were called (${input.toolNames.join(", ")})`);
+    return { shouldContinue: true, reason: "tools_called" };
+  }
+
   if (COMPLETION_PATTERN.test(lastAssistantText)) {
+    logDebug(`[auto-continue] blocked: completion pattern matched`);
     return { shouldContinue: false, reason: "looks_complete" };
   }
 
   if (DEFERRAL_PATTERN.test(lastAssistantText)) {
+    logDebug(`[auto-continue] continue: deferral language detected`);
     return { shouldContinue: true, reason: "deferral_language" };
   }
 
   if (isInvestigationOnly(input.toolNames)) {
+    logDebug(`[auto-continue] continue: investigation-only tools`);
     return { shouldContinue: true, reason: "investigation_only_tools" };
   }
 
+  logDebug(`[auto-continue] blocked: no continuation signal (last text: "${lastAssistantText.slice(0, 100)}...")`);
   return { shouldContinue: false };
 }
 

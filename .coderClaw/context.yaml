@@ -1,7 +1,7 @@
 version: 1
 projectName: coderClaw
 description: >
-  AI coding agent platform — TypeScript gateway with 7 agent roles, 56 skills,
+  AI coding agent platform — TypeScript gateway with 7 agent roles, 53 skills,
   multi-agent orchestrator, TUI, WebSocket-based transport, and coderClawLink
   cloud portal integration. The claw runs locally on developer machines,
   connects to coderClawLink for management, approval, and fleet coordination.
@@ -31,7 +31,7 @@ architecture:
     - src/infra (ClawLinkRelayService WS relay, directory sync, config, logging, git, env)
     - src/providers (LLM provider adapters — Anthropic, OpenAI, Ollama, etc.)
     - extensions/ (plugin system — OTel, memory, channels, etc.)
-    - skills/ (56 skill definitions with SKILL.md + optional scripts)
+    - skills/ (53 skill definitions with SKILL.md + optional scripts)
   patterns:
     - Agent roles with system prompts, tool allowlists, thinking levels
     - Multi-agent orchestrator with dependency DAG scheduling
@@ -61,13 +61,12 @@ dependencies:
     oxlint: linting
     typescript: 5.x
 customRules:
-  - Files must be ≤500 LOC (hard limit 700)
+  - Files must be ≤500 LOC (guideline; hard limit 700)
   - No @ts-nocheck or @ts-expect-error
-  - All exports must have JSDoc
-  - Test coverage ≥70%
+  - All exports should have JSDoc
+  - Test coverage ≥70% (lines/functions/statements), ≥55% branches
   - Conventional Commits via scripts/committer
-  - Multi-agent safety — no git stash, no branch switching, scope commits to own
-    files
+  - Multi-agent safety — no git stash, no worktree switches, scope commits to own files
 metadata:
   nodeVersion: 22+
   packageManager: pnpm

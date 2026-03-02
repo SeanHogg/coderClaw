@@ -6,8 +6,9 @@ codeStyle:
   namingConventions: {}
 testing:
   required: true
-  coverage: 80
-  frameworks: []
+  coverage: 70
+  frameworks:
+    - vitest
 documentation:
   required: true
   format: markdown
@@ -17,4 +18,12 @@ git:
   commitFormat: conventional
   requireReview: true
 constraints: []
-customRules: []
+customRules:
+  - Files should be ≤500 LOC (guideline, hard limit 700)
+  - No @ts-nocheck or disabling no-explicit-any
+  - All exports should have JSDoc
+  - Avoid prototype mutation; use explicit inheritance/composition
+  - Use Conventional Commits (scripts/committer)
+  - Auto-resolve lint/format churn; only ask on semantic changes
+  - Multi-agent safety: no git stash/worktree/branch switches unless explicitly requested
+  - Test coverage: ≥70% lines/functions/statements, ≥55% branches (vitest)

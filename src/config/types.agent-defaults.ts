@@ -188,6 +188,13 @@ export type AgentDefaultsConfig = {
   /** Human-like delay between block replies. */
   humanDelay?: HumanDelayConfig;
   timeoutSeconds?: number;
+  /**
+   * Maximum number of auto-continue nudges before terminating the run.
+   * When the agent's response appears incomplete but should continue,
+   * the system will automatically re-prompt up to this many times.
+   * Default: 3. Set higher for complex multi-step tasks.
+   */
+  maxAutoContinueNudges?: number;
   /** Max inbound media size in MB for agent-visible attachments (text note or future image attach). */
   mediaMaxMb?: number;
   /**

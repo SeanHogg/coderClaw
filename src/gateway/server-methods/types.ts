@@ -83,6 +83,8 @@ export type GatewayRequestContext = {
     prompter: import("../../wizard/prompts.js").WizardPrompter,
   ) => Promise<void>;
   broadcastVoiceWakeChanged: (triggers: string[]) => void;
+  configReloader?: { trigger: () => Promise<void> };
+  skillsChangeBump?: (params?: { reason?: string; changedPath?: string }) => number;
 };
 
 export type GatewayRequestOptions = {

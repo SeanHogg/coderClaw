@@ -564,14 +564,20 @@ export function createEventHandlers(context: EventHandlerContext) {
       if (!evt.message) {
         maybeRefreshHistoryForRun(evt.runId);
         chatLog.dropAssistant(evt.runId);
+        // show user something so the conversation doesn't freeze
+        const reason =
+          termination.errorMessage || termination.lastToolFailure || termination.stopReason || "";
+        const systemMsg = reason
+          ? `run ended with no output (${reason})`
+          : "run ended with no output";
+        chatLog.addSystem(systemMsg);
+
         reportRunActivitySummary(evt.runId);
         noteFinalizedRun(evt.runId);
         clearActiveRunIfMatch(evt.runId);
         if (wasActiveRun) {
           setActivityStatus("idle");
         }
-        const reason =
-          termination.errorMessage || termination.lastToolFailure || termination.stopReason || "";
         if (reason) {
           emitExecutionAction(`run completed with no final message (${reason})`);
         } else {

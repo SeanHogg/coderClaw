@@ -131,6 +131,8 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
     { name: "quit", description: "Exit the TUI" },
     { name: "setup", description: "Run the setup/onboarding wizard" },
     { name: "onboard", description: "Alias for /setup" },
+    { name: "project", description: "Show project context from .coderClaw directory" },
+    { name: "sync", description: "Force sync .coderClaw directory to CoderClawLink" },
   ];
 
   const seen = new Set(commands.map((command) => command.name));
@@ -175,6 +177,8 @@ export function helpText(options: SlashCommandOptions = {}): string {
     "/logs [count]",
     "/init",
     "/handoff",
+    "/project",
+    "/sync",
     "/exit",
     "/setup or /onboard",
   ].join("\n");

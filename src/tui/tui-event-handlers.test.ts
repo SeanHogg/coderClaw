@@ -295,9 +295,10 @@ describe("tui-event-handlers: handleAgentEvent", () => {
   });
 
   it("surfaces tool failure detail and carries it into empty final diagnostics", () => {
-    const { state, reportAction, handleAgentEvent, handleChatEvent } = createHandlersHarness({
-      state: { activeChatRunId: "run-tool-fail" },
-    });
+    const { state, chatLog, reportAction, handleAgentEvent, handleChatEvent } =
+      createHandlersHarness({
+        state: { activeChatRunId: "run-tool-fail" },
+      });
 
     handleAgentEvent({
       runId: "run-tool-fail",
@@ -328,6 +329,9 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     );
     expect(reportAction).toHaveBeenCalledWith(
       "run completed with no final message (validation failed: unmatched block)",
+    );
+    expect(chatLog.addSystem).toHaveBeenCalledWith(
+      "run ended with no output (validation failed: unmatched block)",
     );
   });
 

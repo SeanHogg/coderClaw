@@ -7,6 +7,9 @@ import { ErrorCodes, errorShape } from "../protocol/index.js";
 import { broadcastPresenceSnapshot } from "../server/presence-events.js";
 import type { GatewayRequestHandlers } from "./types.js";
 
+// Import the config reloader from server.impl (we'll need to pass it in via context)
+// We'll need to extend the context type to include a configReloader
+
 export const systemHandlers: GatewayRequestHandlers = {
   "last-heartbeat": ({ respond }) => {
     respond(true, getLastHeartbeatEvent(), undefined);
@@ -129,6 +132,30 @@ export const systemHandlers: GatewayRequestHandlers = {
       incrementPresenceVersion: context.incrementPresenceVersion,
       getHealthVersion: context.getHealthVersion,
     });
+    respond(true, { ok: true }, undefined);
+  },
+  "config.reload": async ({ respond, context }) => {
+    // This will be available after we add configReloader to context
+    const configReloader = (context as any).configReloader;
+    if (!configReloader?.trigger) {
+      respond(
+        false,
+        undefined,
+        errorShape(ErrorCodes.METHOD_NOT_FOUND, "config.reload not available"),
+      );
+      return;
+    }
+    try {
+      await configReloader.trigger();
+      respond(true, { ok: true }, undefined);
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.INTERNAL_ERROR, String(err)));
+    }
+  },
+  "skills.reload": async ({ respond, context }) => {
+    // We need to export bumpSkillsSnapshotVersion and call it
+    const { bumpSkillsSnapshotVersion } = await import("../../agents/skills/refresh.js");
+    bumpSkillsSnapshotVersion({ reason: "manual" });
     respond(true, { ok: true }, undefined);
   },
 };

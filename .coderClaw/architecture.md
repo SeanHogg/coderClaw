@@ -3,7 +3,7 @@
 ## Overview
 
 CoderClaw is a self-hosted AI coding agent gateway that runs on developer machines.
-It provides 7 specialized agent roles, a multi-agent orchestrator, 56 skills, and
+It provides 7 specialized agent roles, a multi-agent orchestrator, 53 skills, and
 a WebSocket-based transport layer. It connects to **coderClawLink** (cloud portal)
 for fleet management, task delegation, approval workflows, and observability.
 
@@ -119,13 +119,13 @@ Human Developer (TUI / IDE / messaging channel)
 ### Extensions (`extensions/`)
 
 - Plugin system with lifecycle hooks (load, unload, on-message, etc.)
-- `diagnostics-otel` — 634 lines, 20+ metrics, OTel traces + logs via OTLP/HTTP
+- `diagnostics-otel` — 634 lines, 20+ metrics, OTel traces + logs via OTLP/http
 - `memory-core` / `memory-lancedb` — vector memory with node-llama-cpp embeddings
 - Channel extensions: Discord, Slack, Telegram, Matrix, IRC, etc.
 
 ### Skills (`skills/`)
 
-- 56 skill definitions, each with SKILL.md (instructions + tool mappings)
+- 53 skill definitions, each with SKILL.md (instructions + tool mappings)
 - `coderclaw` meta-skill: code_analysis, project_knowledge, git_history, orchestrate, workflow_status
 - `skill-creator` skill: scaffolds new skills from templates
 - `gh-issues`, `github`: Git/GitHub workflow automation

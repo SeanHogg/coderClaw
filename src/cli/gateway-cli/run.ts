@@ -1,5 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
+import { EventEmitter } from "node:events";
+
+// the agent tends to attach abort listeners dynamically in many
+// subsystems (file watchers, fetch controllers, etc).  a couple of
+// repeated tool calls in rapid succession used to trigger
+// "MaxListenersExceededWarning" messages which occasionally caused the
+// process to terminate under strict environments.  Bump the default so
+// these warnings are less likely and the gateway stays running during
+// long self‑improvement loops.
+EventEmitter.defaultMaxListeners = 50;
+
 import type { Command } from "commander";
 import type { GatewayAuthMode } from "../../config/config.js";
 import {

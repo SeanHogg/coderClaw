@@ -7,6 +7,7 @@ const CODERCLAW_DIR = ".coderClaw";
 const CONTEXT_FILE = "context.yaml";
 const ARCHITECTURE_FILE = "architecture.md";
 const RULES_FILE = "rules.yaml";
+const WORKSPACE_STATE_FILE = "workspace-state.json";
 const AGENTS_DIR = "agents";
 const SKILLS_DIR = "skills";
 const MEMORY_DIR = "memory";
@@ -436,6 +437,40 @@ export async function listIncompleteWorkflowIds(projectRoot: string): Promise<st
   } catch {
     return [];
   }
+}
+
+// ---------------------------------------------------------------------------
+// Workspace state (workspace-state.json)
+// ---------------------------------------------------------------------------
+
+export type WorkspaceState = {
+  version: number;
+  bootstrapSeededAt?: string;
+  lastSyncedAt?: string;
+  syncCount?: number;
+};
+
+export async function loadWorkspaceState(projectRoot: string): Promise<WorkspaceState> {
+  const dir = resolveCoderClawDir(projectRoot);
+  const filePath = path.join(dir.root, WORKSPACE_STATE_FILE);
+  try {
+    const raw = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(raw) as WorkspaceState;
+  } catch {
+    return { version: 1 };
+  }
+}
+
+export async function updateWorkspaceState(
+  projectRoot: string,
+  updates: Partial<WorkspaceState>,
+): Promise<void> {
+  const dir = resolveCoderClawDir(projectRoot);
+  const filePath = path.join(dir.root, WORKSPACE_STATE_FILE);
+  const existing = await loadWorkspaceState(projectRoot);
+  const updated: WorkspaceState = { ...existing, ...updates };
+  await fs.mkdir(dir.root, { recursive: true });
+  await fs.writeFile(filePath, JSON.stringify(updated, null, 2), "utf-8");
 }
 
 // ---------------------------------------------------------------------------

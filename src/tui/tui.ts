@@ -7,7 +7,13 @@ import {
   TUI,
 } from "@mariozechner/pi-tui";
 import { resolveDefaultAgentId } from "../agents/agent-scope.js";
+import {
+  loadProjectContext,
+  loadWorkspaceState,
+  type WorkspaceState,
+} from "../coderclaw/project-context.js";
 import { loadConfig } from "../config/config.js";
+import { formatTimeAgo } from "../infra/format-time/format-relative.ts";
 import {
   buildAgentMainSessionKey,
   normalizeAgentId,
@@ -228,6 +234,17 @@ export async function runTui(opts: TuiOptions) {
   let lastActivityStatus = activityStatus;
   let setupInProgress = false;
 
+  // Load project context for header display (best-effort, non-blocking)
+  let projectName: string | null = null;
+  let workspaceState: WorkspaceState | null = null;
+  void Promise.all([
+    loadProjectContext(process.cwd()).catch(() => null),
+    loadWorkspaceState(process.cwd()).catch(() => null),
+  ]).then(([ctx, ws]) => {
+    projectName = ctx?.projectName ?? null;
+    workspaceState = ws;
+  });
+
   const state: TuiStateAccess = {
     get agentDefaultId() {
       return agentDefaultId;
@@ -434,9 +451,13 @@ export async function runTui(opts: TuiOptions) {
   const updateHeader = () => {
     const sessionLabel = formatSessionKey(currentSessionKey);
     const agentLabel = formatAgentLabel(currentAgentId);
+    const projectPart = projectName ? ` · ${projectName}` : "";
+    const syncPart = workspaceState?.lastSyncedAt
+      ? ` [synced ${formatTimeAgo(Date.now() - new Date(workspaceState.lastSyncedAt).getTime())}]`
+      : "";
     header.setText(
       theme.header(
-        `coderclaw tui - ${client.connection.url} - agent ${agentLabel} - session ${sessionLabel}`,
+        `coderclaw tui${projectPart}${syncPart} - ${client.connection.url} - agent ${agentLabel} - session ${sessionLabel}`,
       ),
     );
   };

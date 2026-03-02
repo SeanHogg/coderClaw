@@ -192,10 +192,39 @@ describe("agent event handler", () => {
       state?: string;
       stopReason?: string;
       errorMessage?: string;
+      message?: any;
     };
     expect(payload.state).toBe("error");
     expect(payload.stopReason).toBe("error");
     expect(payload.errorMessage).toBe("provider timeout");
+    nowSpy?.mockRestore();
+  });
+
+  it("includes placeholder message when final has no text but stopReason present", () => {
+    const { broadcast, chatRunState, handler, nowSpy } = createHarness({ now: 4_000 });
+    chatRunState.registry.add("run-no-text", {
+      sessionKey: "session-no-text",
+      clientRunId: "client-no-text",
+    });
+
+    handler({
+      runId: "run-no-text",
+      seq: 1,
+      stream: "lifecycle",
+      ts: Date.now(),
+      data: { phase: "end", stopReason: "max_output_tokens" },
+    });
+
+    const chatCalls = broadcast.mock.calls.filter(([event]) => event === "chat");
+    expect(chatCalls).toHaveLength(1);
+    const payload = chatCalls[0]?.[1] as {
+      state?: string;
+      stopReason?: string;
+      message?: { content?: Array<{ text?: string }> };
+    };
+    expect(payload.state).toBe("final");
+    expect(payload.stopReason).toBe("max_output_tokens");
+    expect(payload.message?.content?.[0]?.text).toBe("(no output; max_output_tokens)");
     nowSpy?.mockRestore();
   });
 

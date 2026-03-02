@@ -472,7 +472,9 @@ export async function runEmbeddedPiAgent(
       }
 
       const MAX_OVERFLOW_COMPACTION_ATTEMPTS = 3;
-      const MAX_AUTO_CONTINUE_NUDGES = 3;
+      // Read max auto-continue nudges from config (default: 3)
+      const MAX_AUTO_CONTINUE_NUDGES =
+        params.config?.agents?.defaults?.maxAutoContinueNudges ?? 3;
       let overflowCompactionAttempts = 0;
       let toolResultTruncationAttempted = false;
       let autoContinueNudges = 0;
@@ -1092,8 +1094,19 @@ export async function runEmbeddedPiAgent(
               agentDir: params.agentDir,
             });
           }
+          // Guarantee at least one user-facing message even if payloads are empty.
+          // This ensures the run doesn't silently disappear without any output.
+          let finalPayloads = payloads.length ? payloads : undefined;
+          if (!finalPayloads || finalPayloads.length === 0) {
+            const summary =
+              autoContinueNudges >= MAX_AUTO_CONTINUE_NUDGES
+                ? `The agent reached the maximum auto-continue limit (${MAX_AUTO_CONTINUE_NUDGES}) without producing a final response. Consider breaking the task into smaller steps or increasing \`agents.defaults.maxAutoContinueNudges\` in your config.`
+                : "The agent completed without producing any output. This may indicate an issue with the model response or tool execution.";
+            finalPayloads = [{ text: summary, isError: true }];
+          }
+
           return {
-            payloads: payloads.length ? payloads : undefined,
+            payloads: finalPayloads,
             meta: {
               durationMs: Date.now() - started,
               agentMeta,
