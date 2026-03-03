@@ -3,6 +3,7 @@ import { TuiStreamAssembler } from "./tui-stream-assembler.js";
 import type { AgentEvent, ChatEvent, TuiStateAccess } from "./tui-types.js";
 
 type EventHandlerChatLog = {
+  addUser?: (text: string) => void;
   startTool: (toolCallId: string, toolName: string, args: unknown) => void;
   updateToolResult: (
     toolCallId: string,
@@ -570,6 +571,28 @@ export function createEventHandlers(context: EventHandlerContext) {
     if (evt.state === "final") {
       const wasActiveRun = state.activeChatRunId === evt.runId;
       const termination = getRunTermination(evt.runId);
+      const role =
+        evt.message && typeof evt.message === "object" && !Array.isArray(evt.message)
+          ? typeof (evt.message as Record<string, unknown>).role === "string"
+            ? String((evt.message as Record<string, unknown>).role)
+            : ""
+          : "";
+
+      if (role === "user") {
+        const text = extractTextFromMessage(evt.message);
+        if (text) {
+          chatLog.addUser?.(text);
+        }
+        noteFinalizedRun(evt.runId);
+        clearActiveRunIfMatch(evt.runId);
+        if (wasActiveRun) {
+          setActivityStatus("idle");
+        }
+        scheduleSessionInfoRefresh();
+        tui.requestRender();
+        return;
+      }
+
       if (!evt.message) {
         maybeRefreshHistoryForRun(evt.runId);
         chatLog.dropAssistant(evt.runId);

@@ -22,6 +22,31 @@ Last updated: 2026-03-02
 
 ## Roadmap
 
+### Cloudflare Relay Architecture (2026-03-02)
+
+- **Priority:** Critical
+- **Status:** Approved - Design Phase
+- **Description:** Migrate the gateway/relay layer to Cloudflare Workers while keeping local agents as durable "brains." Architecture:
+  - Cloudflare Worker acts as scalable WebSocket router and container orchestrator
+  - Local agent remains on user's machine with full filesystem, shell, and 53+ skills
+  - Containers are ephemeral "cattle" for build/preview tasks; code syncs through relay
+  - Durability: local agent holds all persistent state; relay is stateless; agents auto-reconnect and reconcile tasks
+  - Resiliency: exponential backoff reconnection, task manifest persistence, automatic retry on container failures
+- **Components:**
+  - Extend ClawLinkTransportAdapter for agent → relay registration and message proxying
+  - Design WebSocket message schema for registration, task dispatch, container control, file streaming
+  - Implement local agent task manifest system (`.coderclaw/tasks/`) for recovery
+  - Build Cloudflare Worker with routing layer + container orchestration (Docker/K8s integration)
+  - Preview URL management via Cloudflare Tunnel or similar
+- **Next steps:**
+  - Draft detailed protocol specification and failure scenario walkthroughs
+  - Prototype agent registration and reconnection logic
+  - Define container lifecycle API and file sync strategy
+- **Open questions:**
+  - Container placement: user's Docker daemon vs cloud compute? (tradeoff: latency vs availability)
+  - Authentication mechanism for agent → relay mutual TLS or bearer tokens?
+  - How many concurrent container tasks per agent? Resource limits?
+
 ### Suggestion System for Memory Management
 
 - **Priority:** High
@@ -48,6 +73,7 @@ Last updated: 2026-03-02
 - Automated cleanup is risky without human-in-the-loop for context-aware memory
 - The 50KB file size threshold and 20% overhead guardrails work well
 - Preference Inference Protocol (every 10 interactions) strikes good balance
+- Distributed architecture preserves local-first privacy while gaining cloud scale (approved 2026-03-02)
 
 ## Protocol Compliance
 

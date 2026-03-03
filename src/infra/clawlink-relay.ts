@@ -15,6 +15,41 @@ import { GatewayClient, type GatewayClientOptions } from "../gateway/client.js";
 import type { EventFrame } from "../gateway/protocol/index.js";
 import { logDebug, logWarn } from "../logger.js";
 
+function extractChatText(message: unknown): string {
+  if (!message || typeof message !== "object") {
+    return "";
+  }
+  const msg = message as { content?: unknown; text?: unknown };
+  if (typeof msg.text === "string") {
+    return msg.text;
+  }
+  if (!Array.isArray(msg.content)) {
+    return "";
+  }
+  const parts: string[] = [];
+  for (const block of msg.content) {
+    if (!block || typeof block !== "object") {
+      continue;
+    }
+    const text = (block as { text?: unknown }).text;
+    if (typeof text === "string" && text.trim().length > 0) {
+      parts.push(text);
+    }
+  }
+  return parts.join("\n").trim();
+}
+
+function extractChatRole(message: unknown): "user" | "assistant" {
+  if (!message || typeof message !== "object") {
+    return "assistant";
+  }
+  const role = (message as { role?: unknown }).role;
+  if (role === "user") {
+    return "user";
+  }
+  return "assistant";
+}
+
 export type ClawLinkRelayOptions = {
   /** Base HTTP(S) URL of coderClawLink, e.g. "https://api.coderclaw.ai" */
   baseUrl: string;
@@ -31,6 +66,9 @@ export class ClawLinkRelayService {
   private closed = false;
   private backoffMs = 1000;
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+  private logsTimer: ReturnType<typeof setInterval> | null = null;
+  private logsCursor: number | undefined;
+  private presenceTimer: ReturnType<typeof setInterval> | null = null;
   private gatewayClient: GatewayClient | null = null;
 
   private readonly upstreamWsUrl: string;
@@ -92,6 +130,8 @@ export class ClawLinkRelayService {
   stop(): void {
     this.closed = true;
     this.clearHeartbeat();
+    this.clearLogsPolling();
+    this.clearPresencePolling();
     this.ws?.close(1000, "stopped");
     this.ws = null;
     this.gatewayClient?.stop();
@@ -111,7 +151,7 @@ export class ClawLinkRelayService {
     this.ws = ws;
 
     ws.on("open", () => {
-      logDebug("[clawlink-relay] upstream connected");
+      logWarn("[clawlink-relay] upstream connected");
       this.backoffMs = 1000;
       this.scheduleHeartbeat();
     });
@@ -139,13 +179,13 @@ export class ClawLinkRelayService {
       if (this.ws === ws) {
         this.ws = null;
         this.clearHeartbeat();
-        logDebug("[clawlink-relay] upstream disconnected — reconnecting…");
+        logWarn("[clawlink-relay] upstream disconnected — reconnecting…");
         this.scheduleReconnect();
       }
     });
 
     ws.on("error", (err) => {
-      logDebug(`[clawlink-relay] upstream error: ${String(err)}`);
+      logWarn(`[clawlink-relay] upstream error: ${String(err)}`);
       // "close" follows automatically
     });
   }
@@ -188,6 +228,56 @@ export class ClawLinkRelayService {
       case "session.new":
         this.gatewayClient?.request("chat.new", {}).catch(() => {});
         break;
+
+      case "logs.subscribe":
+        this.startLogsPolling(true);
+        break;
+
+      case "presence.subscribe":
+        this.startPresencePolling();
+        break;
+
+      case "rpc.call": {
+        const requestId =
+          typeof msg.requestId === "string" && msg.requestId.trim().length > 0
+            ? msg.requestId
+            : randomUUID();
+        const method = typeof msg.method === "string" ? msg.method.trim() : "";
+        const params =
+          msg.params && typeof msg.params === "object" && !Array.isArray(msg.params)
+            ? (msg.params as Record<string, unknown>)
+            : {};
+
+        if (!method) {
+          this.sendToRelay({
+            type: "rpc.error",
+            requestId,
+            method,
+            error: "method required",
+          });
+          break;
+        }
+
+        this.gatewayClient
+          ?.request(method, params)
+          .then((result) => {
+            this.sendToRelay({
+              type: "rpc.result",
+              requestId,
+              method,
+              result,
+            });
+          })
+          .catch((err: unknown) => {
+            this.sendToRelay({
+              type: "rpc.error",
+              requestId,
+              method,
+              error: String(err),
+            });
+          });
+        break;
+      }
 
       case "remote.task": {
         // Peer claw delegated a task to this claw — execute it as a chat message.
@@ -254,6 +344,104 @@ export class ClawLinkRelayService {
     }
   }
 
+  private mapLogLine(line: string): { ts: string; level: string; message: string } {
+    const fallback = { ts: new Date().toISOString(), level: "info", message: line };
+    try {
+      const parsed = JSON.parse(line) as { time?: string; _meta?: { logLevelName?: string }; 1?: unknown; message?: unknown; 0?: unknown };
+      const level = typeof parsed?._meta?.logLevelName === "string"
+        ? parsed._meta.logLevelName.toLowerCase()
+        : "info";
+      const message = typeof parsed?.[1] === "string"
+        ? parsed[1]
+        : typeof parsed?.message === "string"
+          ? parsed.message
+          : typeof parsed?.[0] === "string"
+            ? parsed[0]
+            : line;
+      return {
+        ts: typeof parsed?.time === "string" ? parsed.time : fallback.ts,
+        level,
+        message,
+      };
+    } catch {
+      return fallback;
+    }
+  }
+
+  private async pollLogsOnce(): Promise<void> {
+    if (!this.gatewayClient) {
+      return;
+    }
+    try {
+      const res = await this.gatewayClient.request("logs.tail", {
+        cursor: this.logsCursor,
+        limit: 500,
+        maxBytes: 250_000,
+      }) as { cursor?: number; lines?: unknown[]; reset?: boolean };
+
+      if (typeof res.cursor === "number" && Number.isFinite(res.cursor)) {
+        this.logsCursor = res.cursor;
+      }
+      const lines = Array.isArray(res.lines) ? res.lines.filter((line): line is string => typeof line === "string") : [];
+      for (const line of lines) {
+        const mapped = this.mapLogLine(line);
+        this.sendToRelay({ type: "log", level: mapped.level, message: mapped.message, ts: mapped.ts });
+      }
+    } catch (err) {
+      logDebug(`[clawlink-relay] logs.tail failed: ${String(err)}`);
+    }
+  }
+
+  private startLogsPolling(resetCursor: boolean): void {
+    if (resetCursor) {
+      this.logsCursor = undefined;
+    }
+    if (this.logsTimer !== null) {
+      return;
+    }
+    void this.pollLogsOnce();
+    this.logsTimer = setInterval(() => {
+      void this.pollLogsOnce();
+    }, 2_000);
+  }
+
+  private clearLogsPolling(): void {
+    if (this.logsTimer !== null) {
+      clearInterval(this.logsTimer);
+      this.logsTimer = null;
+    }
+  }
+
+  private async pollPresenceOnce(): Promise<void> {
+    if (!this.gatewayClient) {
+      return;
+    }
+    try {
+      const res = await this.gatewayClient.request("system-presence", {});
+      const entries = Array.isArray(res) ? res : [];
+      this.sendToRelay({ type: "presence.snapshot", entries });
+    } catch (err) {
+      logDebug(`[clawlink-relay] system-presence failed: ${String(err)}`);
+    }
+  }
+
+  private startPresencePolling(): void {
+    if (this.presenceTimer !== null) {
+      return;
+    }
+    void this.pollPresenceOnce();
+    this.presenceTimer = setInterval(() => {
+      void this.pollPresenceOnce();
+    }, 5_000);
+  }
+
+  private clearPresencePolling(): void {
+    if (this.presenceTimer !== null) {
+      clearInterval(this.presenceTimer);
+      this.presenceTimer = null;
+    }
+  }
+
   private scheduleReconnect(): void {
     if (this.closed) {
       return;
@@ -293,6 +481,7 @@ export class ClawLinkRelayService {
     const p = evt.payload as
       | {
           type?: string;
+          sessionKey?: string;
           text?: string;
           role?: string;
           delta?: string;
@@ -304,16 +493,60 @@ export class ClawLinkRelayService {
       | null
       | undefined;
 
+    const legacy = evt.payload as
+      | {
+          sessionKey?: string;
+          state?: string;
+          message?: unknown;
+          errorMessage?: string;
+        }
+      | null
+      | undefined;
+
     if (!p) {
       return;
     }
 
+    if (legacy && typeof legacy.state === "string") {
+      const session = legacy.sessionKey ?? "default";
+      if (legacy.state === "final") {
+        const text = extractChatText(legacy.message);
+        const role = extractChatRole(legacy.message);
+        if (text) {
+          this.sendToRelay({
+            type: "chat.message",
+            role,
+            text,
+            session,
+          });
+        }
+        return;
+      }
+      if (legacy.state === "error") {
+        const text = legacy.errorMessage?.trim();
+        if (text) {
+          this.sendToRelay({
+            type: "chat.message",
+            role: "assistant",
+            text: `[error] ${text}`,
+            session,
+          });
+        }
+        return;
+      }
+    }
+
     switch (p.type) {
       case "delta":
-        this.sendToRelay({ type: "chat.delta", delta: p.delta ?? "" });
+        this.sendToRelay({ type: "chat.delta", delta: p.delta ?? "", session: p.sessionKey ?? "default" });
         break;
       case "message":
-        this.sendToRelay({ type: "chat.message", role: p.role ?? "assistant", text: p.text ?? "" });
+        this.sendToRelay({
+          type: "chat.message",
+          role: p.role ?? "assistant",
+          text: p.text ?? "",
+          session: p.sessionKey ?? "default",
+        });
         break;
       case "tool_use":
         this.sendToRelay({
@@ -321,6 +554,7 @@ export class ClawLinkRelayService {
           toolCallId: p.toolCallId,
           toolName: p.toolName,
           toolInput: p.toolInput,
+          session: p.sessionKey ?? "default",
         });
         break;
       case "tool_result":
@@ -328,10 +562,11 @@ export class ClawLinkRelayService {
           type: "tool.result",
           toolCallId: p.toolCallId,
           toolResult: p.toolResult,
+          session: p.sessionKey ?? "default",
         });
         break;
       case "abort":
-        this.sendToRelay({ type: "chat.abort" });
+        this.sendToRelay({ type: "chat.abort", session: p.sessionKey ?? "default" });
         break;
       default:
         break;

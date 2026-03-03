@@ -832,6 +832,20 @@ export const chatHandlers: GatewayRequestHandlers = {
       };
       respond(true, ackPayload, undefined, { runId: clientRunId });
 
+      const userBroadcastPayload = {
+        runId: `user-${clientRunId}`,
+        sessionKey: rawSessionKey,
+        seq: 0,
+        state: "final" as const,
+        message: {
+          role: "user",
+          content: [{ type: "text", text: parsedMessage }],
+          timestamp: now,
+        },
+      };
+      context.broadcast("chat", userBroadcastPayload, { dropIfSlow: true });
+      context.nodeSendToSession(rawSessionKey, "chat", userBroadcastPayload);
+
       const trimmedMessage = parsedMessage.trim();
       const injectThinking = Boolean(
         p.thinking && trimmedMessage && !trimmedMessage.startsWith("/"),
@@ -890,6 +904,7 @@ export const chatHandlers: GatewayRequestHandlers = {
       });
 
       let agentRunStarted = false;
+      let startedGatewayRunId = "";
       void dispatchInboundMessage({
         ctx,
         cfg,
@@ -900,6 +915,7 @@ export const chatHandlers: GatewayRequestHandlers = {
           images: parsedImages.length > 0 ? parsedImages : undefined,
           onAgentRunStart: (runId) => {
             agentRunStarted = true;
+            startedGatewayRunId = runId;
             const connId = typeof client?.connId === "string" ? client.connId : undefined;
             const wantsToolEvents = hasGatewayClientCap(
               client?.connect?.caps,
@@ -964,15 +980,19 @@ export const chatHandlers: GatewayRequestHandlers = {
               message: fallbackFinalMessage,
             });
           } else if (fallbackFinalMessage) {
-            // Some failures occur after onAgentRunStart but before lifecycle
-            // terminal events are emitted. In that case, emit a terminal chat
-            // final here so UIs don't remain stuck waiting forever.
-            broadcastChatFinal({
-              context,
-              runId: clientRunId,
-              sessionKey: rawSessionKey,
-              message: fallbackFinalMessage,
-            });
+            // Emit fallback terminal only if the run never emitted a lifecycle
+            // terminal chat event (registry entry still exists).
+            const pending = startedGatewayRunId
+              ? context.removeChatRun(startedGatewayRunId, clientRunId, rawSessionKey)
+              : undefined;
+            if (pending) {
+              broadcastChatFinal({
+                context,
+                runId: clientRunId,
+                sessionKey: rawSessionKey,
+                message: fallbackFinalMessage,
+              });
+            }
           }
           context.dedupe.set(`chat:${clientRunId}`, {
             ts: Date.now(),
