@@ -9,11 +9,17 @@ const env = {
 // avoids bundling TypeScript's CJS globals (__filename) into ESM output.
 const external = ["typescript"];
 
+// Minify whitespace and syntax for a smaller dist footprint while
+// preserving identifier names so stack traces, plugin discovery, and
+// dynamic property access remain reliable at runtime.
+const minify = { whitespace: true, syntax: true } as const;
+
 export default defineConfig([
   {
     entry: "src/index.ts",
     env,
     fixedExtension: false,
+    minify,
     platform: "node",
     external,
   },
@@ -21,6 +27,7 @@ export default defineConfig([
     entry: "src/entry.ts",
     env,
     fixedExtension: false,
+    minify,
     platform: "node",
     external,
   },
@@ -29,6 +36,7 @@ export default defineConfig([
     entry: "src/cli/daemon-cli.ts",
     env,
     fixedExtension: false,
+    minify,
     platform: "node",
     external,
   },
@@ -36,6 +44,7 @@ export default defineConfig([
     entry: "src/infra/warning-filter.ts",
     env,
     fixedExtension: false,
+    minify,
     platform: "node",
     external,
   },
@@ -44,6 +53,7 @@ export default defineConfig([
     outDir: "dist/plugin-sdk",
     env,
     fixedExtension: false,
+    minify,
     platform: "node",
     external,
   },
@@ -52,6 +62,7 @@ export default defineConfig([
     outDir: "dist/plugin-sdk",
     env,
     fixedExtension: false,
+    minify,
     platform: "node",
     external,
   },
@@ -59,6 +70,7 @@ export default defineConfig([
     entry: "src/extensionAPI.ts",
     env,
     fixedExtension: false,
+    minify,
     platform: "node",
     external,
   },
@@ -66,6 +78,7 @@ export default defineConfig([
     entry: ["src/hooks/bundled/*/handler.ts", "src/hooks/llm-slug-generator.ts"],
     env,
     fixedExtension: false,
+    minify,
     platform: "node",
     external,
   },
