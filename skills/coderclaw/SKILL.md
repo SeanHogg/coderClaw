@@ -1,6 +1,6 @@
 ---
 name: coderclaw
-description: "Multi-agent developer system for code creation, review, testing, debugging, and architecture. Use for complex development workflows requiring orchestration of specialized agents. Provides deep codebase understanding through AST parsing, dependency graphs, and git history analysis."
+description: "Multi-agent developer system for code creation, review, testing, debugging, and architecture. Use for complex development workflows requiring orchestration of specialized agents. Provides deep codebase understanding through AST parsing, dependency graphs, and git history analysis. Now includes memory-aware orchestration and cross-claw delegation."
 metadata: { "coderclaw": { "emoji": "🛠️" } }
 ---
 
@@ -12,43 +12,40 @@ coderClaw is a developer-first multi-agent system for comprehensive software dev
 
 ### Initialize a Project
 
-\`\`\`bash
-
-# Initialize coderClaw in current project
-
+```bash
+# Initialize coderclaw in current project
 coderclaw init
 
 # Check project status
-
 coderclaw project status
-\`\`\`
+```
 
 ### Use coderClaw Tools
 
-Once initialized, use coderClaw tools in agent conversations:
+Once initialized, use coderclaw tools in agent conversations:
 
-\`\`\`
-
+```
 # Analyze code structure
-
 code_analysis projectRoot:/path/to/project
 
 # Query project knowledge
-
 project_knowledge projectRoot:/path/to/project query:all
 
 # Analyze git history
-
 git_history projectRoot:/path/to/project limit:50
 
 # Orchestrate a feature workflow
-
 orchestrate workflow:feature description:"Add user authentication"
 
 # Check workflow status
-
 workflow_status workflowId:abc-123
-\`\`\`
+
+# Memory-aware operations
+index-memory
+suggest-memory
+share-memory
+delegate-to <clawId>
+```
 
 ## Core Capabilities
 
@@ -59,7 +56,22 @@ workflow_status workflowId:abc-123
 - **Code Maps**: Semantic understanding of codebase structure
 - **Git History**: Evolution, blame, and change patterns
 
-### 2. Multi-Agent Orchestration
+### 2. Memory-Aware Orchestration
+
+CoderClaw now integrates with the structured memory index:
+
+- **index-memory**: Build or rebuild `.coderClaw/memory-index.json` from daily logs
+- **suggest-memory**: Run advisory scan for stale entries, duplicates, and semantic clusters
+- **share-memory**: Opt-in push of index to peer claws (requires `.coderClaw/memory-sync/config.yaml`)
+- **delegate-to <clawId>**: Route specific subtasks to specialized claws in the fleet
+
+The memory index enables:
+- Fast lookup of past decisions and lessons
+- Cross-claw coordination (when sharing enabled)
+- Automated suggestion scans (non-destructive)
+- Pre-task context enrichment (fetches relevant past entries)
+
+### 3. Multi-Agent Orchestration
 
 Coordinate specialized agents for complex tasks:
 
@@ -68,7 +80,7 @@ Coordinate specialized agents for complex tasks:
 - **Refactor Workflow**: Code Reviewer → Refactor Agent → Test Generator
 - **Custom Workflows**: Define your own multi-step coordination
 
-### 3. Specialized Agent Roles
+### 4. Specialized Agent Roles
 
 Built-in developer-focused agents:
 
@@ -84,9 +96,9 @@ Built-in developer-focused agents:
 
 ### Feature Development
 
-\`\`\`
+```
 orchestrate workflow:feature description:"Add WebSocket support for real-time updates"
-\`\`\`
+```
 
 This automatically:
 
@@ -97,9 +109,9 @@ This automatically:
 
 ### Bug Fixing
 
-\`\`\`
+```
 orchestrate workflow:bugfix description:"Fix race condition in cache invalidation"
-\`\`\`
+```
 
 This automatically:
 
@@ -110,9 +122,9 @@ This automatically:
 
 ### Refactoring
 
-\`\`\`
+```
 orchestrate workflow:refactor description:"Refactor authentication module"
-\`\`\`
+```
 
 This automatically:
 
@@ -124,7 +136,7 @@ This automatically:
 
 Define your own steps:
 
-\`\`\`
+```
 orchestrate workflow:custom description:"Add payment processing" customSteps:[
 {
 role: "architecture-advisor",
@@ -151,7 +163,7 @@ task: "Review payment implementation for security",
 dependsOn: ["Create payment tests including edge cases", "Document payment API"]
 }
 ]
-\`\`\`
+```
 
 ## Project Configuration
 
@@ -159,7 +171,7 @@ dependsOn: ["Create payment tests including edge cases", "Document payment API"]
 
 Project metadata and structure:
 
-\`\`\`yaml
+```yaml
 version: 1
 projectName: my-app
 description: A web application
@@ -176,13 +188,13 @@ languages:
   patterns: - dependency-injection - repository-pattern
   buildSystem: webpack
   testFramework: vitest
-  \`\`\`
+```
 
 ### rules.yaml
 
 Coding standards and conventions:
 
-\`\`\`yaml
+```yaml
 version: 1
 codeStyle:
 indentation: spaces
@@ -200,13 +212,13 @@ git:
 branchNaming: "feature/_, fix/_, docs/\*"
 commitFormat: conventional
 requireReview: true
-\`\`\`
+```
 
 ### architecture.md
 
 High-level design documentation:
 
-\`\`\`markdown
+```markdown
 
 # Architecture
 
@@ -233,13 +245,13 @@ This project follows a layered architecture with clear separation of concerns.
 - Database queries
 - External API calls
 - Caching logic
-  \`\`\`
+  ```
 
 ## Custom Agents
 
 Create project-specific agent roles in `.coderClaw/agents/`:
 
-\`\`\`yaml
+```yaml
 
 # .coderClaw/agents/database-expert.yaml
 
@@ -263,7 +275,7 @@ capabilities:
   Use PostgreSQL best practices and follow the migration strategy in docs/database.md.
   model: anthropic/claude-sonnet-4-20250514
   thinking: medium
-  \`\`\`
+  ```
 
 ## Integration Patterns
 
@@ -271,7 +283,7 @@ capabilities:
 
 Combine coderClaw with other CoderClaw skills:
 
-\`\`\`bash
+```bash
 
 # Use coding-agent for interactive work
 
@@ -280,7 +292,7 @@ bash pty:true workdir:~/project command:"codex exec 'Implement feature X'"
 # Use coderClaw orchestration for complex workflows
 
 orchestrate workflow:feature description:"Feature X"
-\`\`\`
+```
 
 ### With Memory System
 
@@ -302,17 +314,17 @@ Workflows spawn subagents automatically:
 
 ### Project Not Initialized
 
-\`\`\`
+```
 Error: No project knowledge found. Initialize with 'coderclaw init' first.
-\`\`\`
+```
 
 Solution: Run `coderclaw init` in your project directory.
 
 ### Code Analysis Fails
 
-\`\`\`
+```
 Error: Failed to analyze code
-\`\`\`
+```
 
 Common causes:
 
@@ -324,9 +336,9 @@ Solution: Fix syntax errors and ensure dependencies are installed.
 
 ### Workflow Stuck
 
-\`\`\`
+```
 Error: Workflow stuck - cannot execute remaining tasks
-\`\`\`
+```
 
 Cause: Circular task dependencies
 
@@ -336,25 +348,25 @@ Solution: Review custom workflow dependencies and remove cycles.
 
 ### Analyze a Codebase
 
-\`\`\`
+```
 code_analysis projectRoot:~/projects/my-app filePatterns:["**/*.ts"]
-\`\`\`
+```
 
 ### Find Who Changed a File
 
-\`\`\`
+```
 git_history projectRoot:~/projects/my-app path:src/api/auth.ts limit:10
-\`\`\`
+```
 
 ### Build a Feature with Full Workflow
 
-\`\`\`
+```
 orchestrate workflow:feature description:"Add OAuth2 authentication with Google and GitHub providers"
-\`\`\`
+```
 
 ### Create Custom Agent for Your Stack
 
-\`\`\`yaml
+```yaml
 
 # .coderClaw/agents/frontend-specialist.yaml
 
@@ -387,7 +399,7 @@ Follow these principles:
 - Mobile-first responsive design
   model: anthropic/claude-sonnet-4-20250514
   thinking: medium
-  \`\`\`
+  ```
 
 ## Tips
 
