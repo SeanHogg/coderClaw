@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const rootDir = path.join(__dirname, '..', '..');
-const syncDir = path.join(rootDir, '.coderClaw', 'memory-sync');
-const configPath = path.join(syncDir, 'config.yaml');
+const rootDir = path.join(__dirname, "..", "..");
+const syncDir = path.join(rootDir, ".coderClaw", "memory-sync");
+const configPath = path.join(syncDir, "config.yaml");
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -12,7 +12,7 @@ function ensureDir(dir) {
 
 function enableSharing() {
   if (fs.existsSync(configPath)) {
-    console.log('✓ Memory sharing already enabled');
+    console.log("✓ Memory sharing already enabled");
     return;
   }
 
@@ -29,7 +29,7 @@ privacy:
 `;
   fs.writeFileSync(configPath, config);
   console.log(`✅ Memory sharing enabled. Config written to ${configPath}`);
-  console.log('   Peer discovery will populate peers list automatically.');
+  console.log("   Peer discovery will populate peers list automatically.");
 }
 
 ensureDir(syncDir);

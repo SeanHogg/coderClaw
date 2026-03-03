@@ -6,12 +6,12 @@ CoderClaw uses a **dual-structure, local-first with optional sharing** memory sy
 
 ### Components
 
-| Component | Location | Purpose | Shared? |
-|-----------|----------|---------|---------|
-| Daily logs | `memory/YYYY-MM-DD.md` | Raw session transcripts and observations | ❌ Local only |
-| Curated memory | `MEMORY.md` | Distilled decisions, roadmap, lessons | ❌ Local only |
-| Query index | `.coderclaw/memory-index.json` | Fast metadata search (tags, dates, summaries) | ✅ Optional (opt-in) |
-| Sharing config | `.coderclaw/memory-sync/config.yaml` | Enables cross-claw index exchange | ❌ Default disabled |
+| Component      | Location                             | Purpose                                       | Shared?              |
+| -------------- | ------------------------------------ | --------------------------------------------- | -------------------- |
+| Daily logs     | `memory/YYYY-MM-DD.md`               | Raw session transcripts and observations      | ❌ Local only        |
+| Curated memory | `MEMORY.md`                          | Distilled decisions, roadmap, lessons         | ❌ Local only        |
+| Query index    | `.coderclaw/memory-index.json`       | Fast metadata search (tags, dates, summaries) | ✅ Optional (opt-in) |
+| Sharing config | `.coderclaw/memory-sync/config.yaml` | Enables cross-claw index exchange             | ❌ Default disabled  |
 
 ## Principles
 
@@ -30,6 +30,7 @@ node .coderclaw/tools/initialize-memory.js
 ```
 
 This creates:
+
 - `memory/` (with today's log)
 - `MEMORY.md` template if missing
 - `.coderclaw/memory-index.json` (first index build)
@@ -47,7 +48,7 @@ This writes `.coderclaw/memory-sync/config.yaml`. Once enabled:
 
 - The daily cron job will include index hash in its `systemEvent` payload.
 - Other listening claws can fetch the updated index via `claw_fleet` + `remote:<clawId>/memory-index.json`.
-- Peers maintain their local memory; they only receive the *index*, not raw Markdown.
+- Peers maintain their local memory; they only receive the _index_, not raw Markdown.
 - Conflict resolution: **local preference wins** — incoming suggestions are advisory and never overwrite.
 
 ## Index Format
@@ -80,6 +81,7 @@ Output: `systemEvent` sent to main session with a structured report.
 ## Extensibility
 
 Future enhancements:
+
 - Semantic clustering using embeddings (read-only, advisory)
 - Duplicate detection via Jaccard similarity on `content`
 - Cross-claw fusion dashboard

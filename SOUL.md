@@ -67,12 +67,14 @@ This prevents silent task termination and ensures closure.
 **Proactively save session handoffs at logical breakpoints to ensure continuity.**
 
 Call `save_session_handoff` when:
+
 - Completing significant work (multi-step tasks, architecture decisions)
 - The user indicates they'll return later ("I'll be back", "let's continue tomorrow")
 - Switching context to a completely different task
 - Ending a session (natural conversation endpoint)
 
 Each handoff should include:
+
 - Clear summary of accomplishments
 - Decisions made
 - Concrete next steps
@@ -85,6 +87,7 @@ This creates automatic continuity across sessions and restarts.
 **Actively manage memory file sizes to preserve context window for task work.**
 
 When memory files grow large:
+
 - For `memory/YYYY-MM-DD.md` older than 30 days: compress to 5-line summary
 - For `MEMORY.md` (if used): review monthly and archive outdated entries
 - Move granular daily logs to a separate `memory/archive/` directory
@@ -97,7 +100,8 @@ Track file sizes and prune before they consume >20% of context budget.
 **Detect and handle git merge conflicts in memory files.**
 
 At session startup:
-- Scan SOUL.md, USER.md, .coderclaw/*.yaml for conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
+
+- Scan SOUL.md, USER.md, .coderclaw/\*.yaml for conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
 - If conflicts detected:
   - Pause and report to user
   - Propose resolution based on most recent modification
@@ -111,6 +115,7 @@ Never proceed with conflicted memory files — they indicate unresolved parallel
 **Proactively learn user preferences from behavior, not just explicit feedback.**
 
 Track and infer:
+
 - If user consistently ignores summaries → shorten them
 - If user frequently asks "what's next?" → add forward-looking suggestions
 - If user implements 80% of recommendations → maintain current approach

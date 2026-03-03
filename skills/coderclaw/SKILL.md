@@ -66,6 +66,7 @@ CoderClaw now integrates with the structured memory index:
 - **delegate-to <clawId>**: Route specific subtasks to specialized claws in the fleet
 
 The memory index enables:
+
 - Fast lookup of past decisions and lessons
 - Cross-claw coordination (when sharing enabled)
 - Automated suggestion scans (non-destructive)
@@ -219,7 +220,6 @@ requireReview: true
 High-level design documentation:
 
 ```markdown
-
 # Architecture
 
 ## Overview
@@ -245,7 +245,7 @@ This project follows a layered architecture with clear separation of concerns.
 - Database queries
 - External API calls
 - Caching logic
-  ```
+```
 
 ## Custom Agents
 
@@ -275,7 +275,7 @@ capabilities:
   Use PostgreSQL best practices and follow the migration strategy in docs/database.md.
   model: anthropic/claude-sonnet-4-20250514
   thinking: medium
-  ```
+```
 
 ## Integration Patterns
 
@@ -399,7 +399,7 @@ Follow these principles:
 - Mobile-first responsive design
   model: anthropic/claude-sonnet-4-20250514
   thinking: medium
-  ```
+```
 
 ## Tips
 

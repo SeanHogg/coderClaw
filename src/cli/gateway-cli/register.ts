@@ -283,7 +283,7 @@ export function registerGatewayCli(program: Command) {
       await runGatewayCommand(async () => {
         const rpcOpts = resolveGatewayRpcOptions(opts, command);
         const results: string[] = [];
-        
+
         // Trigger config reload
         const configResult = await callGatewayCli("config.reload", rpcOpts);
         if (configResult?.ok) {
@@ -291,7 +291,7 @@ export function registerGatewayCli(program: Command) {
         } else {
           defaultRuntime.error(`Config reload failed: ${JSON.stringify(configResult)}`);
         }
-        
+
         // Optionally reload skills
         if (opts.skills) {
           const skillsResult = await callGatewayCli("skills.reload", rpcOpts);
@@ -301,10 +301,10 @@ export function registerGatewayCli(program: Command) {
             defaultRuntime.error(`Skills reload failed: ${JSON.stringify(skillsResult)}`);
           }
         }
-        
+
         if (results.length > 0) {
           defaultRuntime.log(results.join("; "));
         }
       }, "gateway hot-reload failed");
     });
-  }
+}

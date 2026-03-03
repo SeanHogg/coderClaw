@@ -1,6 +1,6 @@
+import { EventEmitter } from "node:events";
 import fs from "node:fs";
 import path from "node:path";
-import { EventEmitter } from "node:events";
 
 // the agent tends to attach abort listeners dynamically in many
 // subsystems (file watchers, fetch controllers, etc).  a couple of

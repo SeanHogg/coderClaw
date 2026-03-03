@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 /**
  * self-improvement-reminder.js
- * 
+ *
  * Generates a daily self-improvement reminder based on system metrics and
  * recent activity patterns. Designed to nudge me toward autonomous growth.
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
 
-const rootDir = path.join(__dirname, '..');
-const remindersDir = path.join(rootDir, 'reminders');
-const memoryIndex = path.join(rootDir, 'memory-index.json');
-const memoryDir = path.join(rootDir, 'memory');
-const cronJobName = 'self-improvement-reminder';
+const rootDir = path.join(__dirname, "..");
+const remindersDir = path.join(rootDir, "reminders");
+const memoryIndex = path.join(rootDir, "memory-index.json");
+const memoryDir = path.join(rootDir, "memory");
+const cronJobName = "self-improvement-reminder";
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -22,20 +22,22 @@ function ensureDir(dir) {
 
 function loadMemoryIndex() {
   if (!fs.existsSync(memoryIndex)) return null;
-  const content = fs.readFileSync(memoryIndex, 'utf8');
+  const content = fs.readFileSync(memoryIndex, "utf8");
   return JSON.parse(content);
 }
 
 function countMemoryEntries() {
-  return fs.readdirSync(memoryDir).filter(f => f.endsWith('.md')).length;
+  return fs.readdirSync(memoryDir).filter((f) => f.endsWith(".md")).length;
 }
 
 function getRecentCronRuns() {
   try {
-    const result = execSync('coderclaw cron runs -j memory-suggestion-scan --limit 5', { encoding: 'utf8' });
+    const result = execSync("coderclaw cron runs -j memory-suggestion-scan --limit 5", {
+      encoding: "utf8",
+    });
     const runs = JSON.parse(result);
-    const today = new Date().toISOString().split('T')[0];
-    return runs.filter(run => run.startedAt && run.startedAt.startsWith(today));
+    const today = new Date().toISOString().split("T")[0];
+    return runs.filter((run) => run.startedAt && run.startedAt.startsWith(today));
   } catch (e) {
     return [];
   }
@@ -46,8 +48,8 @@ function generateNote() {
   const entryCount = memIdx ? memIdx.length : 0;
   const dailyEntries = countMemoryEntries();
   const recentRuns = getRecentCronRuns();
-  const lastRun = recentRuns.length > 0 ? recentRuns[0].startedAt : 'never';
-  
+  const lastRun = recentRuns.length > 0 ? recentRuns[0].startedAt : "never";
+
   return `# 🔄 Self-Improvement Reminder (${new Date().toLocaleString()})
 
 ## 📊 Status
@@ -86,10 +88,12 @@ function main() {
   const filePath = path.join(remindersDir, `reminder-${today}.md`);
   fs.writeFileSync(filePath, note);
   console.log(`✅ Reminder written to ${filePath}`);
-  
+
   // Also send a brief notification
   try {
-    execSync(`coderclaw sessions_send --sessionKey main --message "🗒️ Self-improvement reminder generated (${entryCount} indexed memories)"`);
+    execSync(
+      `coderclaw sessions_send --sessionKey main --message "🗒️ Self-improvement reminder generated (${entryCount} indexed memories)"`,
+    );
   } catch (e) {
     // Execution may fail if CLI not available, but we don't want to stop the script
   }

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
 
-const rootDir = path.join(__dirname, '..', '..');
-const memoryDir = path.join(rootDir, '.coderClaw', 'memory');
-const memIndexPath = path.join(rootDir, '.coderClaw', 'memory-index.json');
-const memFilePath = path.join(rootDir, 'MEMORY.md');
+const rootDir = path.join(__dirname, "..", "..");
+const memoryDir = path.join(rootDir, ".coderClaw", "memory");
+const memIndexPath = path.join(rootDir, ".coderClaw", "memory-index.json");
+const memFilePath = path.join(rootDir, "MEMORY.md");
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) {
@@ -58,18 +58,18 @@ Last updated: ${new Date().toISOString().slice(0, 10)}
 
 function generateIndex() {
   try {
-    const scriptPath = path.join(__dirname, 'generate-memory-index.cjs');
-    execSync(`node "${scriptPath}"`, { cwd: rootDir, stdio: 'inherit' });
+    const scriptPath = path.join(__dirname, "generate-memory-index.cjs");
+    execSync(`node "${scriptPath}"`, { cwd: rootDir, stdio: "inherit" });
   } catch (err) {
-    console.error('❌ Failed to generate memory index:', err.message);
+    console.error("❌ Failed to generate memory index:", err.message);
     process.exit(1);
   }
 }
 
 function scheduleCron() {
-  const cronJobName = 'memory-suggestion-scan';
+  const cronJobName = "memory-suggestion-scan";
   try {
-    const listResult = execSync('coderclaw cron list --includeDisabled', { encoding: 'utf8' });
+    const listResult = execSync("coderclaw cron list --includeDisabled", { encoding: "utf8" });
     if (listResult.includes(cronJobName)) {
       console.log(`✓ Cron job "${cronJobName}" already exists`);
       return;
@@ -79,20 +79,23 @@ function scheduleCron() {
   }
 
   try {
-    execSync(`coderclaw cron add --name "${cronJobName}" --every 86400000 --payload "Run memory suggestion scan" --sessionTarget main`, { cwd: rootDir, stdio: 'inherit' });
+    execSync(
+      `coderclaw cron add --name "${cronJobName}" --every 86400000 --payload "Run memory suggestion scan" --sessionTarget main`,
+      { cwd: rootDir, stdio: "inherit" },
+    );
     console.log(`✅ Scheduled cron job: ${cronJobName} (daily)`);
   } catch (err) {
-    console.error('❌ Failed to schedule cron job:', err.message);
+    console.error("❌ Failed to schedule cron job:", err.message);
   }
 }
 
 function main() {
-  console.log('🔧 Initializing CoderClaw memory infrastructure...\n');
+  console.log("🔧 Initializing CoderClaw memory infrastructure...\n");
   createMemoryDir();
   createMEMORYmd();
   generateIndex();
   scheduleCron();
-  console.log('\n✅ Memory initialization complete.');
+  console.log("\n✅ Memory initialization complete.");
 }
 
 main();

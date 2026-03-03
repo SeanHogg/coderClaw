@@ -473,8 +473,7 @@ export async function runEmbeddedPiAgent(
 
       const MAX_OVERFLOW_COMPACTION_ATTEMPTS = 3;
       // Read max auto-continue nudges from config (default: 3)
-      const MAX_AUTO_CONTINUE_NUDGES =
-        params.config?.agents?.defaults?.maxAutoContinueNudges ?? 3;
+      const MAX_AUTO_CONTINUE_NUDGES = params.config?.agents?.defaults?.maxAutoContinueNudges ?? 3;
       let overflowCompactionAttempts = 0;
       let toolResultTruncationAttempted = false;
       let autoContinueNudges = 0;

@@ -6,22 +6,24 @@ Last updated: 2026-03-02
 
 ### Rejected: Automated Semantic Memory Layer (2026-03-02)
 
-**Proposal:** A semantic memory layer with *automatic extraction*, vector-space clustering, episodic summaries, and *garbage collection* that *automatically cleans up* stale memories.
+**Proposal:** A semantic memory layer with _automatic extraction_, vector-space clustering, episodic summaries, and _garbage collection_ that _automatically cleans up_ stale memories.
 
 **Reason for rejection:**
+
 - Manual curation is valuable — I need to decide what's important based on task outcomes and lessons learned
 - Human preferences matter — automated systems can't distinguish important from noisy
 - Risk of over-aggressive cleanup discarding foundational but seemingly stale context
 - Added complexity introduces new failure modes to monitor
 - Current system (size thresholds, conflict detection, manual pruning) is sufficient and under 20% overhead
 
-**Key distinction:** The rejection applies to *automated modification* of memory. A *read-only structured index* that surfaces suggestions while I retain full write authority is acceptable.
+**Key distinction:** The rejection applies to _automated modification_ of memory. A _read-only structured index_ that surfaces suggestions while I retain full write authority is acceptable.
 
-**Alternative approved:** Implement a *suggestion system* that surfaces potentially outdated entries or semantic clusters for my review, keeping final decision authority. This uses a *parallel structured store* (JSON) for efficiency, but Markdown remains the canonical source of truth.
+**Alternative approved:** Implement a _suggestion system_ that surfaces potentially outdated entries or semantic clusters for my review, keeping final decision authority. This uses a _parallel structured store_ (JSON) for efficiency, but Markdown remains the canonical source of truth.
 
 ## Roadmap
 
 ### Suggestion System for Memory Management
+
 - **Priority:** High
 - **Status:** In Progress
 - **Description:** A lightweight assistant that:
@@ -34,8 +36,8 @@ Last updated: 2026-03-02
 - **Storage format:** Keep Markdown canonical + add `memory-index.json` (or `.coderclaw/memory-index.json`) with metadata: {id, date, tags (inferred), summary (auto-generated), filePath, wordCount, lastAccessed, clusterId}
 - **Compression:** The JSON index will be ~30-50% smaller than combined raw Markdown due to deduplication of headers and optional compression of summary text
 - **Constraints:** Must be advisory only; I retain final curation authority. No garbage collection without explicit command.
-- **Implementation approach:** 
-  - Build a parser that reads all memory/*.md and builds the index
+- **Implementation approach:**
+  - Build a parser that reads all memory/\*.md and builds the index
   - Add cron-triggered scan (already scheduled: daily)
   - Output suggestions via systemEvent for review
   - support for multi-claw sharing: index can be serialized and exchanged

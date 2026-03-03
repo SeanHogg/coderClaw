@@ -80,7 +80,9 @@ function isInvestigationOnly(toolNames: string[]): boolean {
 
 export function shouldAutoContinueRun(input: ContinuationPolicyInput): ContinuationPolicyDecision {
   if (input.aborted || input.timedOut || input.promptErrored || input.hasPendingClientToolCall) {
-    logDebug(`[auto-continue] blocked: abort/timeout/error status (aborted=${input.aborted} timedOut=${input.timedOut})`);
+    logDebug(
+      `[auto-continue] blocked: abort/timeout/error status (aborted=${input.aborted} timedOut=${input.timedOut})`,
+    );
     return { shouldContinue: false };
   }
 
@@ -139,7 +141,9 @@ export function shouldAutoContinueRun(input: ContinuationPolicyInput): Continuat
     return { shouldContinue: true, reason: "investigation_only_tools" };
   }
 
-  logDebug(`[auto-continue] blocked: no continuation signal (last text: "${lastAssistantText.slice(0, 100)}...")`);
+  logDebug(
+    `[auto-continue] blocked: no continuation signal (last text: "${lastAssistantText.slice(0, 100)}...")`,
+  );
   return { shouldContinue: false };
 }
 

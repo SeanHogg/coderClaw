@@ -6,10 +6,10 @@
  * Writes to .coderclaw/logs/session-<id>.jsonl for post-mortem analysis.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const logsDir = path.join(__dirname, '..', 'logs');
+const logsDir = path.join(__dirname, "..", "logs");
 ensureDir(logsDir);
 
 function ensureDir(dir) {
@@ -26,9 +26,9 @@ function log(sessionId, event) {
   const entry = {
     ts: new Date().toISOString(),
     sessionId: sessionId,
-    ...event
+    ...event,
   };
-  fs.appendFileSync(logPath, JSON.stringify(entry) + '\n');
+  fs.appendFileSync(logPath, JSON.stringify(entry) + "\n");
 }
 
 // Export hookable API

@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/nostr",
-  "version": "2026.3.1",
+  "version": "2026.3.3",
   "description": "CoderClaw Nostr channel plugin for NIP-04 encrypted DMs",
   "type": "module",
   "dependencies": {

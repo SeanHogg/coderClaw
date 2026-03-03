@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/msteams",
-  "version": "2026.3.1",
+  "version": "2026.3.3",
   "description": "CoderClaw Microsoft Teams channel plugin",
   "type": "module",
   "dependencies": {

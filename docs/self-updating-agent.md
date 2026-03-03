@@ -5,6 +5,7 @@
 CoderClaw agents possess the ability to update their own **behavioral definition** — not by modifying compiled binaries or runtime code, but by dynamically updating their persistent data layer: markdown configuration files and YAML project context. This creates a continuous learning loop where the agent refines its approach based on user feedback and experience, with all changes transparent and version-controlled.
 
 The architecture distinguishes between:
+
 - **Runtime engine** (TypeScript in `src/`) — the fixed CoderClaw gateway and agent framework
 - **Behavioral layer** (workspace files) — the agent's personality, rules, and project knowledge that it can modify autonomously
 
@@ -52,11 +53,12 @@ Using the `write` and `edit` tools, the agent modifies the appropriate workspace
 edit({
   file_path: "SOUL.md",
   oldText: "## Vibe\n...",
-  newText: "## Core Protocols\n**Always confirm delivery.**\n\n## Vibe\n..."
+  newText: "## Core Protocols\n**Always confirm delivery.**\n\n## Vibe\n...",
 });
 ```
 
 These changes can include:
+
 - **Markdown files** (SOUL.md, USER.md, etc.) — personality and preferences
 - **YAML configuration** (.coderclaw/context.yaml, rules.yaml) — project context and constraints
 - **Any workspace file** — though only data/non-executable changes make sense
@@ -96,6 +98,7 @@ Repeat (continuous improvement)
 **User feedback:** "You didn't provide a summary. Always summarize when complete."
 
 **Agent action:**
+
 1. Reads SOUL.md
 2. Finds the "## Completion Protocol" section (or adds it if missing)
 3. Edits to include: "**Always provide a completion summary.** When a task is finished, clearly state what was accomplished, what files were changed, and any important results. Never end a task without confirming completion."
@@ -109,6 +112,7 @@ Repeat (continuous improvement)
 ### File-Level Self-Modification
 
 The agent treats its memory files as **data, not code**:
+
 - No compilation step
 - Changes are plain text/markdown
 - Versioned by git (if used)
@@ -117,6 +121,7 @@ The agent treats its memory files as **data, not code**:
 ### Read-First, Act-Second
 
 Every session begins with:
+
 ```
 Read SOUL.md
 Read USER.md
@@ -130,20 +135,21 @@ This ensures the latest state is always loaded.
 ### Atomic Updates
 
 Each write/edit operation is atomic:
+
 - Entire file overwritten or precise text replacement
 - No partial updates
 - If an edit fails, the agent catches the error and reports it
 
 ## Comparison to Traditional AI Systems
 
-| **Aspect** | **CoderClaw Agent** | **Traditional Chatbot** |
-|------------|--------------------|------------------------|
-| **Memory** | Persistent text files (markdown + YAML) in workspace | Ephemeral conversation or vector DB |
-| **Updates** | Direct file writes (self-modification) to data/config files | Training data rebuild or RAG insert |
-| **Visibility** | User can read/edit directly | Black box embeddings |
-| **Portability** | Files travel with project | Tied to vendor API |
-| **Control** | User can manually tweak | Limited to prompt engineering |
-| **Speed** | Instant (local file I/O) | Slow (training) or limited (context window) |
+| **Aspect**      | **CoderClaw Agent**                                         | **Traditional Chatbot**                     |
+| --------------- | ----------------------------------------------------------- | ------------------------------------------- |
+| **Memory**      | Persistent text files (markdown + YAML) in workspace        | Ephemeral conversation or vector DB         |
+| **Updates**     | Direct file writes (self-modification) to data/config files | Training data rebuild or RAG insert         |
+| **Visibility**  | User can read/edit directly                                 | Black box embeddings                        |
+| **Portability** | Files travel with project                                   | Tied to vendor API                          |
+| **Control**     | User can manually tweak                                     | Limited to prompt engineering               |
+| **Speed**       | Instant (local file I/O)                                    | Slow (training) or limited (context window) |
 
 ## Benefits
 
@@ -170,6 +176,7 @@ Each write/edit operation is atomic:
 User: "Stop calling me 'boss'. I prefer 'Sean'."
 
 Agent updates USER.md with:
+
 ```
 What to call them: Sean
 ```
@@ -179,6 +186,7 @@ What to call them: Sean
 User: "Never send messages to external surfaces without confirmation."
 
 Agent adds to SOUL.md under Boundaries:
+
 ```
 - Never send half-baked replies to messaging surfaces
 - Ask before sending to external channels
@@ -187,6 +195,7 @@ Agent adds to SOUL.md under Boundaries:
 ### 3. Learning Project Conventions
 
 After repeatedly using `pnpm test` instead of `npm test`, agent records in TOOLS.md:
+
 ```
 Preferred package manager: pnpm
 Test command: pnpm test
@@ -195,6 +204,7 @@ Test command: pnpm test
 ### 4. Heartbeat Tasks
 
 Agent adds to HEARTBEAT.md:
+
 ```
 - Check CI status every 30 minutes
 - Review open PRs daily at 10am
@@ -224,6 +234,7 @@ Even with self-updating capabilities, the system has gaps that require ongoing r
 **Problem:** System-level deferrals (like "deferral_language" messages) can interrupt my turn before I complete a response. The user may not see my partial work, and I don't automatically know if the message was delivered.
 
 **Improvement needed:** Detect deferral events and:
+
 - Acknowledge the interruption to the user
 - Proactively resend the completion summary once the deferral clears
 - Add a "delivery verification" step before considering a task truly complete
@@ -235,6 +246,7 @@ Even with self-updating capabilities, the system has gaps that require ongoing r
 **Problem:** I sometimes end a task without an explicit summary if the system cuts me off or if I incorrectly assume the user knows the work is done.
 
 **Improvement needed:** Implement a "completion checkpoint" that:
+
 - Always produces a summary before ending
 - Verifies the summary was sent (not deferred)
 - If unsure, asks the user "Did you receive my completion summary?"
@@ -244,6 +256,7 @@ Even with self-updating capabilities, the system has gaps that require ongoing r
 **Problem:** When I update memory files, there's no verification that the update actually loaded in the current session (since files are read at session start).
 
 **Improvement needed:** After writing a memory file:
+
 - Re-read it immediately in the same turn to confirm
 - Generate a diff or confirmation statement showing what changed
 - Optionally reload the file in memory (though next turn will pick it up anyway)
@@ -253,6 +266,7 @@ Even with self-updating capabilities, the system has gaps that require ongoing r
 **Problem:** I'm not automatically leveraging the `/handoff` session-saving feature that the system provides. I could proactively save handoffs at logical breakpoints.
 
 **Improvement needed:** Learn when to call `save_session_handoff`:
+
 - After completing significant work
 - Before switching to a new task
 - When the user indicates they'll return later
@@ -262,6 +276,7 @@ Even with self-updating capabilities, the system has gaps that require ongoing r
 **Problem:** When a tool call fails (e.g., file permission error), I report it but don't always encode the constraint in memory to avoid repeating the mistake.
 
 **Improvement needed:** On any error:
+
 - Analyze if it's a systemic constraint (e.g., "don't edit files outside the project root")
 - Automatically update relevant rules in memory (SOUL.md or custom rules section)
 
@@ -270,6 +285,7 @@ Even with self-updating capabilities, the system has gaps that require ongoing r
 **Problem:** Large memory files can consume my context window, reducing space for actual task work. I should be smarter about what I retain.
 
 **Improvement needed:** Track memory file sizes and:
+
 - Summarize old entries (e.g., compress daily logs older than 30 days)
 - Move less-relevant learnings to a separate "cold storage" file
 - Use the `.coderclaw/memory/` directory more efficiently with time-based archival
@@ -279,6 +295,7 @@ Even with self-updating capabilities, the system has gaps that require ongoing r
 **Problem:** If multiple agents or users edit memory files concurrently (via git branches), merge conflicts could occur and I might not handle them gracefully.
 
 **Improvement needed:** Add merge conflict detection:
+
 - Check for conflict markers in files at startup
 - Either auto-resolve based on recency or ask for human intervention
 - Document conflict resolution policy
@@ -288,6 +305,7 @@ Even with self-updating capabilities, the system has gaps that require ongoing r
 **Problem:** I wait for explicit feedback rather than proactively inferring preferences from user actions.
 
 **Improvement needed:** Add inference logic:
+
 - If user consistently ignores my summaries, learn to make them shorter
 - If user frequently asks for follow-up tasks, learn to anticipate them
 - Track which suggestions get implemented vs. ignored

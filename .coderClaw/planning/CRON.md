@@ -8,6 +8,7 @@ This section defines all automated background tasks. Each job is described as co
 **Trigger:** `coderclaw cron add --name "memory-suggestion-scan" --every 86400000 --payload "Run memory suggestion scan" --sessionTarget main`
 
 **Algorithm:**
+
 ```
 1. Load memory-index.json (or regenerate if missing)
 2. For each entry:
@@ -27,6 +28,7 @@ This section defines all automated background tasks. Each job is described as co
 **Output:** Sent as a systemEvent to the main session for review. No automatic actions taken.
 
 **Configuration:**
+
 - Input: `.coderClaw/memory-index.json`
 - Output: systemEvent → main session
 - Side effects: none (read-only)
@@ -39,4 +41,4 @@ This section defines all automated background tasks. Each job is described as co
 
 ---
 
-*Note: All cron jobs are defined here for auditability. The actual registration is performed by `initialize-memory.js` and `enable-memory-sharing.js` scripts.*
+_Note: All cron jobs are defined here for auditability. The actual registration is performed by `initialize-memory.js` and `enable-memory-sharing.js` scripts._

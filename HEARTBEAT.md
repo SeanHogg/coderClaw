@@ -7,16 +7,19 @@
 ## Built-in Monitoring Tasks (Do not edit manually)
 
 ### Context Window Management
-- Track memory file sizes (SOUL.md, USER.md, .coderclaw/memory/*.md)
+
+- Track memory file sizes (SOUL.md, USER.md, .coderclaw/memory/\*.md)
 - If any file exceeds 50KB, trigger pruning: compress old entries, archive to .coderclaw/memory/archive/
 - Prune when total memory overhead >20% of estimated context budget
 
 ### Conflict Detection
-- On session startup, scan SOUL.md, USER.md, .coderclaw/*.yaml for merge conflict markers
+
+- On session startup, scan SOUL.md, USER.md, .coderclaw/\*.yaml for merge conflict markers
 - If conflicts found: pause, report, propose resolution, ask for confirmation
 - Never proceed with conflicted files
 
 ### Preference Inference
+
 - Every 10 interactions, review USER.md for implicit preference signals
 - Update "Learned Preferences" section with inferred patterns
 - Re-evaluate and prune outdated preferences monthly
