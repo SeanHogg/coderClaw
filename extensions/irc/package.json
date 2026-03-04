@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/irc",
-  "version": "2026.3.3",
+  "version": "2026.3.4",
   "description": "CoderClaw IRC channel plugin",
   "type": "module",
   "devDependencies": {

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+## [2026.3.4] - 2026-03-04
+
 ### Added
 
 - **Capability-based claw routing**: orchestrator now supports `remote:auto` (auto-select any online peer) and `remote:auto[cap1,cap2]` (select peer satisfying all listed capabilities) workflow step roles — no manual fleet lookup required
@@ -32,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 ### Optimized
 
 - Build output footprint: enabled whitespace and syntax minification in `tsdown.config.ts` for all dist entries, reducing bundle sizes without mangling identifier names (preserves stack traces, plugin discovery, and dynamic property access)
+
+### Fixed
+
+- `src/commands/health.ts`: removed local `formatDurationParts` duplicate; now uses centralized `formatDurationCompact` from `src/infra/format-time/`; session store last-active timestamps now use `formatTimeAgo` for consistent relative formatting
+- `src/commands/doctor-session-locks.ts`: removed local `formatAge` duplicate; now uses centralized `formatDurationCompact` from `src/infra/format-time/`
 
 ## [2026.3.3] - 2026-03-03
 

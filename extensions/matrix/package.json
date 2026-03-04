@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/matrix",
-  "version": "2026.3.3",
+  "version": "2026.3.4",
   "description": "CoderClaw Matrix channel plugin",
   "type": "module",
   "dependencies": {

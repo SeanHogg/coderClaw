@@ -10,6 +10,8 @@ import { buildGatewayConnectionDetails, callGateway } from "../gateway/call.js";
 import { info } from "../globals.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { formatErrorMessage } from "../infra/errors.js";
+import { formatDurationCompact } from "../infra/format-time/format-duration.js";
+import { formatTimeAgo } from "../infra/format-time/format-relative.js";
 import {
   type HeartbeatSummary,
   resolveHeartbeatSummaryForAgent,
@@ -77,35 +79,6 @@ const debugHealth = (...args: unknown[]) => {
   if (isTruthyEnvValue(process.env.CODERCLAW_DEBUG_HEALTH)) {
     console.warn("[health:debug]", ...args);
   }
-};
-
-const formatDurationParts = (ms: number): string => {
-  if (!Number.isFinite(ms)) {
-    return "unknown";
-  }
-  if (ms < 1000) {
-    return `${Math.max(0, Math.round(ms))}ms`;
-  }
-  const units: Array<{ label: string; size: number }> = [
-    { label: "w", size: 7 * 24 * 60 * 60 * 1000 },
-    { label: "d", size: 24 * 60 * 60 * 1000 },
-    { label: "h", size: 60 * 60 * 1000 },
-    { label: "m", size: 60 * 1000 },
-    { label: "s", size: 1000 },
-  ];
-  let remaining = Math.max(0, Math.floor(ms));
-  const parts: string[] = [];
-  for (const unit of units) {
-    const value = Math.floor(remaining / unit.size);
-    if (value > 0) {
-      parts.push(`${value}${unit.label}`);
-      remaining -= value * unit.size;
-    }
-  }
-  if (parts.length === 0) {
-    return "0s";
-  }
-  return parts.join(" ");
 };
 
 const resolveHeartbeatSummary = (cfg: ReturnType<typeof loadConfig>, agentId: string) =>
@@ -709,7 +682,7 @@ export async function healthCommand(
     const heartbeatParts = displayAgents
       .map((agent) => {
         const everyMs = agent.heartbeat?.everyMs;
-        const label = everyMs ? formatDurationParts(everyMs) : "disabled";
+        const label = everyMs ? (formatDurationCompact(everyMs, { spaced: true }) ?? "unknown") : "disabled";
         return `${label} (${agent.agentId})`;
       })
       .filter(Boolean);
@@ -723,7 +696,7 @@ export async function healthCommand(
       if (summary.sessions.recent.length > 0) {
         for (const r of summary.sessions.recent) {
           runtime.log(
-            `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)}m ago` : "no activity"})`,
+            `- ${r.key} (${r.updatedAt ? formatTimeAgo(Date.now() - r.updatedAt) : "no activity"})`,
           );
         }
       }
@@ -737,7 +710,7 @@ export async function healthCommand(
         if (agent.sessions.recent.length > 0) {
           for (const r of agent.sessions.recent) {
             runtime.log(
-              `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)}m ago` : "no activity"})`,
+              `- ${r.key} (${r.updatedAt ? formatTimeAgo(Date.now() - r.updatedAt) : "no activity"})`,
             );
           }
         }
