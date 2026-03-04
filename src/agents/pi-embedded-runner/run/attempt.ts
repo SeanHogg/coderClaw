@@ -651,6 +651,7 @@ export async function runEmbeddedAttempt(
           modelId: params.modelId,
           dtype,
           cacheDir,
+          workspaceDir: params.workspaceDir,
         });
       } else {
         // Force a stable streamFn reference so vitest can reliably mock @mariozechner/pi-ai.

@@ -5,7 +5,9 @@ import type { ApplyAuthChoiceParams, ApplyAuthChoiceResult } from "./auth-choice
 import { applyPrimaryModel } from "./model-picker.js";
 
 export const TRANSFORMERS_PROVIDER_ID = "transformers";
-export const TRANSFORMERS_DEFAULT_MODEL_ID = "HuggingFaceTB/SmolLM2-1.7B-Instruct";
+// onnx-community/SmolLM2-1.7B-Instruct ships ONNX-quantized weights that are
+// natively supported by @huggingface/transformers without any extra tooling.
+export const TRANSFORMERS_DEFAULT_MODEL_ID = "onnx-community/SmolLM2-1.7B-Instruct";
 export const TRANSFORMERS_DEFAULT_DTYPE = "q4";
 
 const DTYPE_OPTIONS = ["q4", "q5", "q8", "fp16", "fp32"] as const;

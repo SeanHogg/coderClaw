@@ -1,10 +1,45 @@
+import fs from "node:fs/promises";
+import path from "node:path";
 import type { StreamFn } from "@mariozechner/pi-agent-core";
 import type { AssistantMessage, StopReason, TextContent, Usage } from "@mariozechner/pi-ai";
 import { createAssistantMessageEventStream } from "@mariozechner/pi-ai";
 
-export const TRANSFORMERS_DEFAULT_MODEL_ID = "HuggingFaceTB/SmolLM2-1.7B-Instruct";
+// onnx-community/SmolLM2-1.7B-Instruct is the HuggingFace community ONNX build
+// with pre-quantized q4 weights — optimised for Transformers.js / Node.js inference.
+export const TRANSFORMERS_DEFAULT_MODEL_ID = "onnx-community/SmolLM2-1.7B-Instruct";
 export const TRANSFORMERS_DEFAULT_DTYPE = "q4";
 export const TRANSFORMERS_DEFAULT_CACHE_DIR = "./models";
+
+// Memory filenames that live inside the agent workspace directory.
+const MEMORY_FILES = ["SOUL.md", "USER.md", "MEMORY.md"] as const;
+
+// ── .coderclaw workspace memory loader ──────────────────────────────────────
+
+/**
+ * Reads SOUL.md, USER.md, and MEMORY.md from the agent workspace directory
+ * (default: ~/.coderclaw/workspace) and returns a consolidated system-prompt
+ * prefix so the model is grounded in the agent's identity and long-term memory.
+ *
+ * Files that don't exist are silently skipped; the function never throws.
+ */
+export async function loadCoderClawMemory(workspaceDir: string): Promise<string> {
+  const sections: string[] = [];
+  for (const filename of MEMORY_FILES) {
+    try {
+      const content = await fs.readFile(path.join(workspaceDir, filename), "utf-8");
+      const trimmed = content.trim();
+      if (trimmed) {
+        sections.push(`## ${filename}\n${trimmed}`);
+      }
+    } catch {
+      // File absent — skip silently.
+    }
+  }
+  if (sections.length === 0) {
+    return "";
+  }
+  return `# CoderClaw Memory\n\n${sections.join("\n\n")}`;
+}
 
 // ── Dynamic import helper ────────────────────────────────────────────────────
 
@@ -106,12 +141,17 @@ export type TransformersStreamOptions = {
   modelId?: string;
   dtype?: string;
   cacheDir?: string;
+  /** Agent workspace directory (e.g. ~/.coderclaw/workspace).
+   *  When provided, SOUL.md / USER.md / MEMORY.md are loaded and prepended
+   *  to the system prompt so the model is grounded in long-term memory. */
+  workspaceDir?: string;
 };
 
 export function createTransformersStreamFn(opts: TransformersStreamOptions = {}): StreamFn {
   const modelId = opts.modelId ?? TRANSFORMERS_DEFAULT_MODEL_ID;
   const dtype = opts.dtype ?? TRANSFORMERS_DEFAULT_DTYPE;
   const cacheDir = opts.cacheDir ?? TRANSFORMERS_DEFAULT_CACHE_DIR;
+  const workspaceDir = opts.workspaceDir;
 
   return (model, context, options) => {
     const stream = createAssistantMessageEventStream();
@@ -120,9 +160,22 @@ export function createTransformersStreamFn(opts: TransformersStreamOptions = {})
       try {
         const pipe = await getOrCreatePipeline(modelId, dtype, cacheDir);
 
+        // Load SOUL.md / USER.md / MEMORY.md from the .coderclaw workspace and
+        // prepend them to the system prompt so the model is grounded in the
+        // agent's identity and long-term memory on every inference call.
+        let effectiveSystem = context.systemPrompt ?? "";
+        if (workspaceDir) {
+          const memoryBlock = await loadCoderClawMemory(workspaceDir);
+          if (memoryBlock) {
+            effectiveSystem = effectiveSystem
+              ? `${memoryBlock}\n\n---\n\n${effectiveSystem}`
+              : memoryBlock;
+          }
+        }
+
         const chatMessages = convertToTransformersMessages(
           context.messages ?? [],
-          context.systemPrompt,
+          effectiveSystem || undefined,
         );
 
         const maxNewTokens =
