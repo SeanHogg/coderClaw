@@ -11,6 +11,17 @@ import {
   loadProjectContext,
   loadWorkspaceState,
 } from "../coderclaw/project-context.js";
+import {
+  buildStagedSummary,
+  buildUnifiedDiff,
+  acceptEdit,
+  acceptAllEdits,
+  rejectEdit,
+  rejectAllEdits,
+  getStagedEdit,
+  getStagedEdits,
+  hasStagedEdits,
+} from "../coderclaw/staged-edits.js";
 import type { SessionsPatchResult } from "../gateway/protocol/index.js";
 import { syncCoderClawDirectoryWithMetaUpdate } from "../infra/clawlink-directory-sync.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
@@ -889,6 +900,67 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             ? `Please check the status of workflow ${workflowId} using the workflow_status tool and report the results.`
             : "Please check the status of the latest workflow using the workflow_status tool and report the results.",
         );
+        break;
+      }
+      case "diff": {
+        const target = args.trim();
+        if (!hasStagedEdits()) {
+          chatLog.addSystem("No staged changes. Agent edits are applied immediately by default.\nRun CODERCLAW_STAGED=true or set staged mode to buffer edits for review.");
+          break;
+        }
+        if (target) {
+          const edit = getStagedEdit(target);
+          if (!edit) {
+            chatLog.addSystem(`No staged edit found for: ${target}\n\n${buildStagedSummary()}`);
+            break;
+          }
+          chatLog.addSystem(`Diff for ${edit.filePath}:\n\n\`\`\`diff\n${buildUnifiedDiff(edit)}\n\`\`\``);
+        } else {
+          const edits = getStagedEdits();
+          const diffs = edits.map((e) => `### ${e.filePath}\n\`\`\`diff\n${buildUnifiedDiff(e)}\n\`\`\``);
+          chatLog.addSystem([buildStagedSummary(), "", ...diffs].join("\n"));
+        }
+        break;
+      }
+      case "accept": {
+        const target = args.trim().toLowerCase();
+        if (!hasStagedEdits()) {
+          chatLog.addSystem("No staged changes to accept.");
+          break;
+        }
+        if (!target || target === "all") {
+          const { accepted, failed } = await acceptAllEdits();
+          const lines: string[] = [];
+          if (accepted.length > 0) lines.push(`✅ Applied ${accepted.length} change(s):\n${accepted.map((f) => `  ${f}`).join("\n")}`);
+          if (failed.length > 0) lines.push(`❌ Failed:\n${failed.map((f) => `  ${f.filePath}: ${f.error}`).join("\n")}`);
+          chatLog.addSystem(lines.join("\n\n") || "Done.");
+        } else {
+          const result = await acceptEdit(target);
+          if (result.accepted) {
+            chatLog.addSystem(`✅ Applied: ${result.filePath}`);
+          } else {
+            chatLog.addSystem(`❌ Failed: ${result.error ?? "unknown error"}`);
+          }
+        }
+        break;
+      }
+      case "reject": {
+        const target = args.trim().toLowerCase();
+        if (!hasStagedEdits()) {
+          chatLog.addSystem("No staged changes to reject.");
+          break;
+        }
+        if (!target || target === "all") {
+          const { rejected } = rejectAllEdits();
+          chatLog.addSystem(`🗑️ Discarded ${rejected.length} staged change(s).`);
+        } else {
+          const result = rejectEdit(target);
+          if (result.rejected) {
+            chatLog.addSystem(`🗑️ Discarded staged edit for: ${result.filePath}`);
+          } else {
+            chatLog.addSystem(`No staged edit found for: ${target}\n\n${buildStagedSummary()}`);
+          }
+        }
         break;
       }
       default:

@@ -1,6 +1,7 @@
 # CoderClaw Architecture
 
-> Last updated: 2026-03-04
+> Last updated: 2026-03-04  
+> See also: [Feature Gap Analysis](../docs/FEATURE_GAP_ANALYSIS.md) | [Business Roadmap](../docs/BUSINESS_ROADMAP.md)
 
 ## Overview
 
@@ -148,9 +149,15 @@ Human Developer
   `createAdversarialReviewWorkflow()`
 - `project-context.ts` — `.coderClaw/` directory management, YAML I/O, session handoff,
   workflow state persistence, knowledge memory append
+- `staged-edits.ts` — **staged edit buffer** for inline diff/accept/reject pair programming
+  mode (competes with Cursor Composer, Continue.dev `⌘K`); `stageEdit()`, `acceptEdit()`,
+  `acceptAllEdits()`, `rejectEdit()`, `buildUnifiedDiff()`, `buildStagedSummary()`
 - `types.ts` — ProjectContext, AgentRole, SessionHandoff, CodeMap types
 - `tools/` — orchestrate, workflow_status, code_analysis, project_knowledge,
   git_history, save_session_handoff, claw_fleet
+- `tools/codebase-search-tool.ts` — **`codebase_search`** tool: natural-language keyword
+  extraction → ripgrep/grep multi-keyword search → relevance ranking by hit count +
+  path bonus + breadth bonus → ranked snippets (competes with Cursor/Continue `@codebase`)
 
 ### TUI (`src/tui/`)
 
@@ -161,10 +168,23 @@ Human Developer
   - Agent: `/agent`, `/agents`, `/model`, `/models`, `/think`
   - Config: `/verbose`, `/reasoning`, `/usage`, `/elevated`, `/activation`
   - Project: `/init`, `/project`, `/sync`
+  - Staged diff: `/diff [file]`, `/accept [file|all]`, `/reject [file|all]`
   - System: `/gateway`, `/daemon`, `/logs`, `/setup`, `/settings`, `/exit`
 - `tui-command-handlers.ts` — command dispatch with `/spec` → planning workflow,
-  `/workflow` → status query, `/compact` → explicit compaction, `/new` → handoff hint
-- `components/chat-log.ts` — `hasUserMessages()` tracks session activity for handoff hints
+  `/workflow` → status query, `/compact` → explicit compaction, `/new` → handoff hint,
+  `/diff` → show staged changes, `/accept` → apply staged, `/reject` → discard staged
+
+### MCP Server (`src/gateway/mcp-server-http.ts`)
+
+- Exposes CoderClaw tools as an **MCP server** at `http://localhost:18789/mcp`
+- Implements MCP 2024-11-05 protocol: `initialize`, `tools/list`, `tools/call` via JSON-RPC 2.0
+- Legacy REST endpoint: `POST /mcp/call` for non-MCP clients
+- **Tools exposed**: `codebase_search`, `project_knowledge`, `git_history`,
+  `workflow_status`, `claw_fleet`
+- CORS headers set for browser-based IDE extensions
+- Auth: same Bearer token as gateway auth (loopback allowed without token)
+- **Integration**: Add `http://localhost:18789/mcp` to Cursor or Continue.dev as an MCP
+  server to use CoderClaw's semantic search and project knowledge inside your IDE
 
 ### Transport (`src/transport/`)
 
@@ -218,6 +238,26 @@ Human Developer
 10. ✅ Handoff hint — `/new` shows `/handoff` reminder when session has user messages
 11. ✅ Semantic knowledge — `deriveActivitySummary()` adds one-line semantic label to each run
 
+### Phase 2: Cursor / Continue.dev Parity ✅ Shipped (2026-03-04)
+
+12. ✅ `codebase_search` tool — ripgrep-based semantic code search with relevance ranking;
+    available to all agents and via MCP (`src/coderclaw/tools/codebase-search-tool.ts`)
+13. ✅ Staged edits system — `src/coderclaw/staged-edits.ts`; `/diff`, `/accept`, `/reject`
+    TUI commands for Cursor Composer-style accept/reject pair programming
+14. ✅ MCP server — CoderClaw tools exposed at `GET /mcp` and `POST /mcp` (JSON-RPC 2.0);
+    Cursor and Continue.dev can call `codebase_search`, `project_knowledge`, `git_history`
+    via `http://localhost:18789/mcp` (`src/gateway/mcp-server-http.ts`)
+
+### Phase 2: Remaining Open Items
+
+- 🔲 Remote task result streaming (claw-to-claw result channel)
+- 🔲 Capability-based claw routing (auto-select best claw by capability)
+- 🔲 Semantic knowledge synthesis (architecture.md auto-update after structural edits)
+- 🔲 coderClawLink: workflow/spec APIs, execution WebSocket streaming, spec portal UI
+- 🔲 VS Code extension (sidebar + inline diff decoration)
+- 🔲 Tab autocomplete / FIM proxy endpoint
+- 🔲 Session auto-checkpoint on exit
+- 🔲 Persona profiles (`.coderClaw/personas/*.yaml`)
 ### ✅ Distributed Runtime — Complete
 
 12. ✅ Transport abstraction layer — `LocalTransportAdapter` + `ClawLinkTransportAdapter`

@@ -19,6 +19,88 @@
 
 More broadly, **coderClaw.ai** is a **self-healing AI engineering agent and orchestration platform** that manages tasks, workflows, and collaboration across all AI agents. It provides persistent memory, context-aware reasoning, and self-repair, allowing AI systems to detect failures, fix themselves, and adapt over time. Every autonomous action surfaces a human-in-the-loop approval gate, so teams stay in control. The result: resilient, self-healing software systems with less engineering toil and better delivery outcomes.
 
+## 🔄 Why CoderClaw instead of Cursor or Continue.dev?
+
+|                                                 | **CoderClaw**                            | **Cursor**                    | **Continue.dev**          |
+| ----------------------------------------------- | ---------------------------------------- | ----------------------------- | ------------------------- |
+| **Price**                                       | Free (MIT)                               | $20/user/month                | Free (MIT)                |
+| **Self-hosted / open source**                   | ✅ MIT, fully self-hosted                | ❌ Cloud-required             | ✅ MIT, extension         |
+| **Any model provider**                          | ✅ 30+ providers (Ollama, API, Bedrock…) | ⚠️ Limited list               | ✅ Any model              |
+| **MCP support — consume**                       | ✅ via mcporter bridge                   | ✅ Native                     | ✅ Native                 |
+| **MCP support — expose as server** 🆕            | ✅ `/mcp` endpoint on gateway            | ❌                            | ❌                        |
+| **Codebase semantic search** 🆕                  | ✅ `codebase_search` tool                | ✅ `@codebase`                | ✅ `@codebase`            |
+| **Staged diff / accept-reject** 🆕               | ✅ `/diff`, `/accept`, `/reject`         | ✅ Composer panel             | ✅ `⌘K` diff              |
+| **Multi-agent orchestration**                   | ✅ 7 roles + dependency DAG              | ❌ Single agent               | ❌ Single agent           |
+| **Planning workflow (PRD → Arch → Tasks)**      | ✅ `/spec` command                       | ❌                            | ❌                        |
+| **Adversarial review pass**                     | ✅ Built-in workflow type                | ❌                            | ❌                        |
+| **Workflow persistence across restarts**        | ✅ YAML checkpoint + resume              | ❌                            | ❌                        |
+| **Post-task knowledge loop**                    | ✅ `.coderClaw/memory/` auto-updated     | ❌                            | ❌                        |
+| **Claw-to-claw distributed delegation**         | ✅ `remote:<clawId>` orchestration       | ❌                            | ❌                        |
+| **Works in WhatsApp / Telegram / Slack**        | ✅                                       | ❌                            | ❌                        |
+| **AST + git-history analysis**                  | ✅                                       | ⚠️ Basic RAG                  | ⚠️ Basic RAG              |
+| **RBAC + audit trails**                         | ✅                                       | ❌                            | ❌                        |
+
+🆕 = new capability added in this release. CoderClaw now competes feature-for-feature with Cursor
+Composer and Continue.dev while adding the multi-agent orchestration layer neither tool has.
+
+## 🔌 Connect Cursor or Continue.dev to CoderClaw (MCP)
+
+CoderClaw exposes its tools as an **MCP server** at `http://localhost:18789/mcp`.
+Add it to Cursor or Continue.dev to get CoderClaw's semantic search, project knowledge,
+and git history inside your existing IDE:
+
+**Cursor** (`~/.cursor/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "coderclaw": {
+      "url": "http://localhost:18789/mcp"
+    }
+  }
+}
+```
+
+**Continue.dev** (`~/.continue/config.json`):
+```json
+{
+  "contextProviders": [
+    {
+      "name": "mcp",
+      "params": {
+        "serverUrl": "http://localhost:18789/mcp"
+      }
+    }
+  ]
+}
+```
+
+Once connected, use `@codebase_search`, `@project_knowledge`, and `@git_history`
+as context in Cursor Composer or Continue.dev chat.
+
+## 🔍 Pair Programming with Staged Diffs
+
+CoderClaw now supports **staged edit mode** — agent file changes are buffered for
+your review before landing on disk, exactly like Cursor Composer's accept/reject panel:
+
+```bash
+# Enable staged mode (agent edits are buffered, not written immediately)
+CODERCLAW_STAGED=true coderclaw gateway
+
+# Review what the agent wants to change
+/diff
+
+# Review a specific file
+/diff src/auth/login.ts
+
+# Accept all changes
+/accept
+
+# Accept one file
+/accept src/auth/login.ts
+
+# Reject everything and start over
+/reject all
+```
 ## 🔄 Why CoderClaw instead of GitHub Copilot, Cursor, or Claude Code?
 
 |                                            | **CoderClaw**                          | GitHub Copilot              | Cursor / Windsurf  | Claude Code        |

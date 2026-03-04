@@ -377,6 +377,184 @@ deduplication, or conflict resolution.
 
 ---
 
+## Phase 2 Gaps — Orchestration Workspace & Semantic Search
+
+These items are derived from the competitor feature gap analysis
+(`docs/FEATURE_GAP_ANALYSIS.md`) and the business roadmap (`docs/BUSINESS_ROADMAP.md`).
+
+---
+
+### P0-3: Live Orchestration Workspace (Agent + Persona Visibility)
+
+**Problem**  
+The coderClaw TUI shows workflow output as plain text. There is no graphical view of
+which agents are executing, which tasks are pending/running/failed, or what the active
+agent persona is doing in real time. Devin, Windsurf Cascade, and OpenHands all show
+this live.
+
+**Required Changes to coderClawLink**
+
+1. **New relay frames** from upstream WS:
+   ```json
+   { "type": "task.started",    "workflowId": "…", "taskId": "…", "role": "code-creator", "model": "…", "ts": "…" }
+   { "type": "task.output_delta", "workflowId": "…", "taskId": "…", "delta": "<text chunk>", "ts": "…" }
+   { "type": "task.completed",  "workflowId": "…", "taskId": "…", "status": "completed"|"failed", "durationMs": 1234, "ts": "…" }
+   { "type": "persona.active",  "workflowId": "…", "taskId": "…", "role": "…", "action": "calling bash", "ts": "…" }
+   ```
+
+2. **SPA Orchestration Workspace page** (`/workspace`):
+   - Live workflow DAG visualisation: nodes = tasks, edges = dependencies
+   - Per-node: status badge (pending/running/completed/failed), elapsed time, role name, model
+   - Output panel: streaming delta text for the active task
+   - Persona panel: avatar/icon for the active agent role with current action label
+   - "Abort task" and "Abort workflow" controls
+
+3. **WebSocket relay**: ClawRelayDO must forward `task.*` and `persona.*` frames to all
+   connected browser clients without buffering.
+
+**coderClaw side** (`src/coderclaw/orchestrator.ts`, `src/infra/clawlink-relay.ts`):  
+After each task state transition, emit the corresponding relay frame via the upstream WS.
+
+**Acceptance**: When a workflow runs, the portal DAG updates in real time; the active
+agent persona, model, and action are visible; output streams character-by-character.
+
+---
+
+### P0-4: MCP Server — CoderClaw as an MCP Provider
+
+**Problem**  
+CoderClaw's `project_knowledge`, `codebase_search`, and `git_history` tools are only
+available inside CoderClaw sessions. Developers using Cursor, Windsurf, Continue.dev,
+or Goose cannot call them. The `mcporter` bridge enables consuming external MCP servers
+but does not expose CoderClaw as a provider.
+
+**Required Changes to coderClawLink**
+
+1. **MCP endpoint**: expose `GET /api/mcp/manifest` (MCP tool manifest) and
+   `POST /api/mcp/call` (tool invocation) authenticated by API key.
+
+2. **Tools exposed via MCP**:
+   - `project_knowledge` — query `.coderClaw/memory/` and project context
+   - `codebase_search` — semantic vector search over project source (requires lancedb)
+   - `git_history` — git blame, commits, hotspot analysis
+   - `workflow_status` — query running workflow state
+   - `claw_fleet` — list connected claws
+
+3. **SSE streaming** for long-running tools (codebase_search on large repos).
+
+**coderClaw side** (`src/mcp-server/`):  
+New module: `MpcServerService` — Hono router mounted at `/mcp` on the local gateway
+(port 18789) that serves the MCP manifest and dispatches tool calls through the same
+tool registry as regular agent runs.
+
+**Acceptance**: Cursor can add `http://localhost:18789/mcp` as an MCP server and call
+`codebase_search` from the `@codebase` context picker; results appear in Cursor chat.
+
+---
+
+### P1-4: Diff Staging & Inline Approval API
+
+**Problem**  
+When a CoderClaw agent edits files, changes are applied immediately with no pre-apply
+review. For teams or risky refactors, developers want to review diffs before they land.
+Aider and Cursor Composer both offer this. The existing approval workflow API (P3-3)
+is for destructive tool calls, not file diffs.
+
+**Required Changes to coderClawLink**
+
+1. **New table**: `pending_diffs`
+   ```sql
+   id           uuid PRIMARY KEY
+   claw_id      int NOT NULL
+   session_key  text NOT NULL
+   file_path    text NOT NULL
+   diff_unified text NOT NULL       -- unified diff format
+   tool_call_id text NOT NULL       -- correlates to the agent's edit tool call
+   status       enum('pending','accepted','rejected') DEFAULT 'pending'
+   created_at   timestamptz DEFAULT now()
+   ```
+
+2. **New endpoints**:
+   ```
+   POST   /api/diffs                 Submit a pending diff (from claw on edit call)
+   GET    /api/diffs?clawId=&status= List pending diffs
+   PATCH  /api/diffs/:id             Accept or reject a diff
+   DELETE /api/diffs/:id             Discard diff without action
+   ```
+
+3. **Relay frame** for live notification:
+   ```json
+   { "type": "diff.pending", "diffId": "…", "filePath": "…", "clawId": "…", "ts": "…" }
+   ```
+
+4. **SPA diff review panel**: shows unified diff with syntax highlighting; Accept/Reject buttons.
+
+**coderClaw side** (`src/agents/tools/`):  
+Optional staged mode (`CODERCLAW_STAGED_EDITS=true`): instead of writing immediately,
+POST diff to `/api/diffs` and await `diff.accepted` relay frame before applying.
+
+---
+
+### P2-5: Persona Registry API
+
+**Problem**  
+Agent personas (model + system-prompt customization) are currently local YAML files.
+Teams cannot share personas or enforce a standard persona set across all claws.
+
+**Required Changes to coderClawLink**
+
+1. **New table**: `personas`
+   ```sql
+   id           uuid PRIMARY KEY
+   tenant_id    int NOT NULL
+   name         text NOT NULL
+   model        text
+   system_prompt_addition text
+   thinking_level text
+   tools        jsonb            -- allowed/denied tool list
+   is_shared    boolean DEFAULT false
+   created_by   int REFERENCES users
+   ```
+
+2. **New endpoints**:
+   ```
+   POST   /api/personas            Create persona
+   GET    /api/personas            List tenant personas (own + shared)
+   GET    /api/personas/:id        Get persona
+   PATCH  /api/personas/:id        Update persona
+   DELETE /api/personas/:id        Delete persona
+   ```
+
+3. **Sync to claw**: heartbeat response should include `personas` array so claws
+   can load team personas without manual file sync.
+
+**coderClaw side** (`src/coderclaw/personas.ts`):  
+On startup, fetch tenant personas from coderClawLink and write to
+`.coderClaw/personas/<name>.yaml`; `/persona` TUI command activates one.
+
+---
+
+## Summary Table (Updated)
+
+| ID    | Priority | Feature                              | Backend | SPA | coderClaw |
+| ----- | -------- | ------------------------------------ | ------- | --- | --------- |
+| P0-1  | P0       | Remote task result streaming         | ✅ New  | —   | ✅ Update |
+| P0-2  | P0       | Execution WS streaming               | ✅ New  | —   | ✅ Update |
+| P0-3  | P0       | Live orchestration workspace         | ✅ New  | ✅  | ✅ Update |
+| P0-4  | P0       | MCP server (CoderClaw as provider)   | ✅ New  | —   | ✅ New    |
+| P1-1  | P1       | Spec / planning storage API          | ✅ New  | —   | ✅ Update |
+| P1-2  | P1       | Workflow execution portal API        | ✅ New  | —   | ✅ Update |
+| P1-3  | P1       | Spec review + workflow portal SPA    | —       | ✅  | —         |
+| P1-4  | P1       | Diff staging & inline approval API   | ✅ New  | ✅  | ✅ Update |
+| P2-1  | P2       | Knowledge / memory query API         | ✅ New  | ✅  | —         |
+| P2-2  | P2       | Token usage dashboard                | ✅ New  | ✅  | ✅ Update |
+| P2-3  | P2       | Fleet capability management          | ✅ New  | ✅  | ✅ Update |
+| P2-4  | P2       | Agent run audit trail                | ✅ New  | ✅  | ✅ Update |
+| P2-5  | P2       | Persona registry API                 | ✅ New  | ✅  | ✅ New    |
+| P3-1  | P3       | Cross-claw memory sharing API        | ✅ New  | —   | —         |
+| P3-2  | P3       | Model cost tracking                  | ✅ New  | ✅  | —         |
+| P3-3  | P3       | Approval workflow API                | ✅ New  | ✅  | ✅ Update |
+| P3-4  | P3       | Spec import (GitHub/Linear/Jira)     | ✅ New  | ✅  | ✅ Update |
 ## Summary Table
 
 | ID   | Priority | Feature                           | Backend | SPA | coderClaw         |

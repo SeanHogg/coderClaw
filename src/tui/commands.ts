@@ -141,6 +141,18 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
       name: "workflow",
       description: "Show status of the latest (or a specific) workflow",
     },
+    {
+      name: "diff",
+      description: "Show staged file changes (or a specific file). Use after agent edits.",
+    },
+    {
+      name: "accept",
+      description: "Apply staged changes to disk. /accept [file] or /accept all",
+    },
+    {
+      name: "reject",
+      description: "Discard staged changes. /reject [file] or /reject all",
+    },
   ];
 
   const seen = new Set(commands.map((command) => command.name));
@@ -190,6 +202,9 @@ export function helpText(options: SlashCommandOptions = {}): string {
     "/sync",
     "/spec <goal>",
     "/workflow [id]",
+    "/diff [file]",
+    "/accept [file|all]",
+    "/reject [file|all]",
     "/exit",
     "/setup or /onboard",
   ].join("\n");
