@@ -1,5 +1,5 @@
 /**
- * Identity & Security Model for Phase 2
+ * Identity & Security Model — RBAC, device trust, granular policy enforcement
  * Supports OIDC, GitHub SSO, device trust, and RBAC
  */
 

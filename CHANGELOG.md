@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ### Added
 
+- **Capability-based claw routing**: orchestrator now supports `remote:auto` (auto-select any online peer) and `remote:auto[cap1,cap2]` (select peer satisfying all listed capabilities) workflow step roles — no manual fleet lookup required
+- `selectClawByCapability()` in `src/infra/remote-subagent.ts`: queries `GET /api/claws/fleet`, filters online peers by required capabilities, returns highest-scoring match
+- `claw_fleet` tool: new `requireCapabilities` parameter to filter fleet results to claws with specific capabilities; updated tip to document `remote:auto` usage
+- `FleetEntry` type exported from `src/infra/remote-subagent.ts` and reused in `claw-fleet-tool.ts` to eliminate duplication
+
 - `/spec <goal>` TUI slash command: triggers spec-driven planning workflow (PRD → architecture spec → ordered task list) via the `orchestrate` tool; outputs saved to `.coderClaw/planning/`
 - `/workflow [id]` TUI slash command: queries orchestrator workflow status from TUI using the `workflow_status` tool; accepts optional workflow ID
 - `/compact [instructions]` explicit TUI handler and added to `/help` output (was already functional via gateway fallthrough but undiscoverable)
@@ -20,9 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ### Updated
 
-- `.coderClaw/architecture.md`: full rewrite reflecting Phase 0 completions, new TUI commands, semantic knowledge loop, updated system diagram, new data flows (spec-driven, multi-claw)
+- `.coderClaw/architecture.md`: full rewrite reflecting completed TUI commands, semantic knowledge loop, updated system diagram, new data flows (spec-driven, multi-claw)
 - `.coderClaw/planning/CAPABILITY_GAPS.md`: added Gaps 7–11 (all resolved) and Open Gaps I–K with acceptance criteria
-- `.coderClaw/planning/ROADMAP.md`: added Phase 0 (complete) and Phase 1 open items with canonical code paths
+- `.coderClaw/planning/ROADMAP.md`: updated with completed items and open items with canonical code paths
 
 ### Optimized
 

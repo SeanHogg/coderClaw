@@ -2,8 +2,7 @@
  * ClawLink transport adapter
  *
  * Connects CoderClaw's orchestration engine to a running CoderClawLink
- * instance (https://github.com/SeanHogg/coderClawLink) over its Phase 2
- * HTTP runtime API.  Both sides share the same transport abstraction
+ * instance (https://github.com/SeanHogg/coderClawLink) over its HTTP runtime API.  Both sides share the same transport abstraction
  * contract, so CoderClaw can delegate task execution to CoderClawLink
  * seamlessly — local agents and remote ClawLink agents are interchangeable.
  *

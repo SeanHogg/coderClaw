@@ -81,6 +81,29 @@ Coordinate specialized agents for complex tasks:
 - **Refactor Workflow**: Code Reviewer → Refactor Agent → Test Generator
 - **Custom Workflows**: Define your own multi-step coordination
 
+### 4. Multi-Claw Fleet Orchestration
+
+Distribute work across peer CoderClaw instances in the same tenant:
+
+- **Explicit routing**: `remote:<clawId>` — delegate a workflow step to a named peer claw
+- **Auto-routing**: `remote:auto` — orchestrator automatically selects the best available online peer
+- **Capability routing**: `remote:auto[gpu,high-memory]` — select a peer that satisfies ALL listed capabilities
+- **Fleet discovery**: `claw_fleet` tool lists all peers with IDs, online status, and capabilities
+- **Capability filtering**: `claw_fleet requireCapabilities:["gpu"]` returns only matching claws
+
+```
+# Discover available claws
+claw_fleet projectRoot:/path/to/project onlineOnly:true
+
+# Discover claws with specific capabilities
+claw_fleet projectRoot:/path/to/project requireCapabilities:["gpu","high-memory"]
+
+# Route workflow step to any available peer
+orchestrate workflow:feature description:"Run GPU-intensive analysis" customSteps:[
+  { role: "remote:auto[gpu]", task: "Run model training job" }
+]
+```
+
 ### 4. Specialized Agent Roles
 
 Built-in developer-focused agents:

@@ -404,6 +404,7 @@ agent explicitly. There was no `/spec` command.
 - Tests added in `src/tui/tui-command-handlers.test.ts` (2 tests).
 
 **Acceptance**:
+
 - `/spec` → usage hint
 - `/spec Add real-time collaboration` → agent runs planning workflow (PRD → arch → tasks)
 
@@ -469,7 +470,7 @@ session is cleared), so a UX hint was the correct closure for this gap.
 **Status**: ✅ RESOLVED (2026-03-04)
 
 **Problem**: `.coderClaw/memory/YYYY-MM-DD.md` entries listed files created/edited and
-tools used, but contained no human-readable summary of *what* was accomplished. Memory
+tools used, but contained no human-readable summary of _what_ was accomplished. Memory
 queries returned raw lists that were hard for agents and humans to interpret at a glance.
 
 **Resolution**:
@@ -514,22 +515,25 @@ steps that use `remote:<clawId>` roles cannot receive output from the remote exe
 
 ---
 
-### J) Capability-Based Claw Routing
+### J) Capability-Based Claw Routing ✅ RESOLVED
 
-**Current**: Orchestrator `remote:<clawId>` steps require the caller to specify an
-explicit claw ID. There is no auto-selection of the best claw by matching required
-capabilities.
+**Resolution** (2026-03-04): Implemented in `src/coderclaw/orchestrator.ts` and
+`src/infra/remote-subagent.ts`.
 
-**Required**:
+- `remote:auto` — orchestrator queries `GET /api/claws/fleet`, filters to online
+  peer claws (excluding self), selects the first available.
+- `remote:auto[cap1,cap2]` — filters further to claws satisfying ALL listed
+  capabilities; selects highest-scoring match. Fails with descriptive error if no
+  match is found.
+- `selectClawByCapability()` helper in `src/infra/remote-subagent.ts`.
+- `claw_fleet` tool accepts `requireCapabilities` parameter for agent-level
+  fleet discovery.
 
-- Extend `WorkflowStep` with optional `requiredCapabilities: string[]`.
-- At dispatch time, call `claw_fleet` to find claws with matching capabilities.
-- Route to the highest-priority online match; fall back to local if none found.
+**Acceptance criteria — met**:
 
-**Acceptance criteria**:
-
-- `orchestrate` step with `role: "remote:auto"` and `requiredCapabilities: ["gpu"]`
-  routes to a claw that reports `"gpu"` in its capabilities heartbeat.
+- `orchestrate` step with `role: "remote:auto[gpu]"` routes to a claw reporting
+  `"gpu"` in its heartbeat capabilities.
+- `role: "remote:auto"` routes to any online peer without specifying a claw ID.
 
 ---
 
@@ -554,19 +558,19 @@ only writes to daily memory files.
 
 ## Updated Priority Order
 
-| Priority | Gap  | Item                               | Status   |
-| -------- | ---- | ---------------------------------- | -------- |
-| ✅       | -1.1 | Wire executeWorkflow               | RESOLVED |
-| ✅       | -1.2 | Wire agent roles                   | RESOLVED |
-| ✅       | -1.3 | Session handoff save/load          | RESOLVED |
-| ✅       | -1.4 | Workflow persistence               | RESOLVED |
-| ✅       | -1.5 | Knowledge loop                     | RESOLVED |
-| ✅       | -1.6 | Claw-to-claw mesh                  | RESOLVED |
-| ✅       | 7    | `/spec` TUI command                | RESOLVED |
-| ✅       | 8    | `/workflow` TUI command            | RESOLVED |
-| ✅       | 9    | `/compact` in help                 | RESOLVED |
-| ✅       | 10   | Handoff hint on /new               | RESOLVED |
-| ✅       | 11   | Semantic knowledge summaries       | RESOLVED |
-| 🔲       | I    | Remote task result streaming       | OPEN     |
-| 🔲       | J    | Capability-based claw routing      | OPEN     |
-| 🔲       | K    | Architecture.md auto-update        | OPEN     |
+| Priority | Gap  | Item                          | Status   |
+| -------- | ---- | ----------------------------- | -------- |
+| ✅       | -1.1 | Wire executeWorkflow          | RESOLVED |
+| ✅       | -1.2 | Wire agent roles              | RESOLVED |
+| ✅       | -1.3 | Session handoff save/load     | RESOLVED |
+| ✅       | -1.4 | Workflow persistence          | RESOLVED |
+| ✅       | -1.5 | Knowledge loop                | RESOLVED |
+| ✅       | -1.6 | Claw-to-claw mesh             | RESOLVED |
+| ✅       | 7    | `/spec` TUI command           | RESOLVED |
+| ✅       | 8    | `/workflow` TUI command       | RESOLVED |
+| ✅       | 9    | `/compact` in help            | RESOLVED |
+| ✅       | 10   | Handoff hint on /new          | RESOLVED |
+| ✅       | 11   | Semantic knowledge summaries  | RESOLVED |
+| 🔲       | I    | Remote task result streaming  | OPEN     |
+| ✅       | J    | Capability-based claw routing | RESOLVED |
+| 🔲       | K    | Architecture.md auto-update   | OPEN     |

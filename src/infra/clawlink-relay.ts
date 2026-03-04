@@ -347,17 +347,25 @@ export class ClawLinkRelayService {
   private mapLogLine(line: string): { ts: string; level: string; message: string } {
     const fallback = { ts: new Date().toISOString(), level: "info", message: line };
     try {
-      const parsed = JSON.parse(line) as { time?: string; _meta?: { logLevelName?: string }; 1?: unknown; message?: unknown; 0?: unknown };
-      const level = typeof parsed?._meta?.logLevelName === "string"
-        ? parsed._meta.logLevelName.toLowerCase()
-        : "info";
-      const message = typeof parsed?.[1] === "string"
-        ? parsed[1]
-        : typeof parsed?.message === "string"
-          ? parsed.message
-          : typeof parsed?.[0] === "string"
-            ? parsed[0]
-            : line;
+      const parsed = JSON.parse(line) as {
+        time?: string;
+        _meta?: { logLevelName?: string };
+        1?: unknown;
+        message?: unknown;
+        0?: unknown;
+      };
+      const level =
+        typeof parsed?._meta?.logLevelName === "string"
+          ? parsed._meta.logLevelName.toLowerCase()
+          : "info";
+      const message =
+        typeof parsed?.[1] === "string"
+          ? parsed[1]
+          : typeof parsed?.message === "string"
+            ? parsed.message
+            : typeof parsed?.[0] === "string"
+              ? parsed[0]
+              : line;
       return {
         ts: typeof parsed?.time === "string" ? parsed.time : fallback.ts,
         level,
@@ -373,19 +381,26 @@ export class ClawLinkRelayService {
       return;
     }
     try {
-      const res = await this.gatewayClient.request("logs.tail", {
+      const res = (await this.gatewayClient.request("logs.tail", {
         cursor: this.logsCursor,
         limit: 500,
         maxBytes: 250_000,
-      }) as { cursor?: number; lines?: unknown[]; reset?: boolean };
+      })) as { cursor?: number; lines?: unknown[]; reset?: boolean };
 
       if (typeof res.cursor === "number" && Number.isFinite(res.cursor)) {
         this.logsCursor = res.cursor;
       }
-      const lines = Array.isArray(res.lines) ? res.lines.filter((line): line is string => typeof line === "string") : [];
+      const lines = Array.isArray(res.lines)
+        ? res.lines.filter((line): line is string => typeof line === "string")
+        : [];
       for (const line of lines) {
         const mapped = this.mapLogLine(line);
-        this.sendToRelay({ type: "log", level: mapped.level, message: mapped.message, ts: mapped.ts });
+        this.sendToRelay({
+          type: "log",
+          level: mapped.level,
+          message: mapped.message,
+          ts: mapped.ts,
+        });
       }
     } catch (err) {
       logDebug(`[clawlink-relay] logs.tail failed: ${String(err)}`);
@@ -538,7 +553,11 @@ export class ClawLinkRelayService {
 
     switch (p.type) {
       case "delta":
-        this.sendToRelay({ type: "chat.delta", delta: p.delta ?? "", session: p.sessionKey ?? "default" });
+        this.sendToRelay({
+          type: "chat.delta",
+          delta: p.delta ?? "",
+          session: p.sessionKey ?? "default",
+        });
         break;
       case "message":
         this.sendToRelay({

@@ -5,13 +5,16 @@
  * needed. Returns each claw's ID, name, online status, and capabilities.
  *
  * Use the returned claw IDs with the "remote:<clawId>" workflow step role to
- * delegate tasks to specific peer claws.
+ * delegate tasks to specific peer claws. Use "remote:auto" to let the
+ * orchestrator automatically select the best available online claw, or
+ * "remote:auto[cap1,cap2]" to require specific capabilities.
  */
 
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import { jsonResult } from "../../agents/tools/common.js";
 import { readSharedEnvVar } from "../../infra/env-file.js";
+import type { FleetEntry } from "../../infra/remote-subagent.js";
 import { loadProjectContext } from "../project-context.js";
 
 const ClawFleetSchema = Type.Object({
@@ -23,31 +26,28 @@ const ClawFleetSchema = Type.Object({
       description: "If true, return only currently connected (online) claws. Default: false.",
     }),
   ),
+  requireCapabilities: Type.Optional(
+    Type.Array(Type.String(), {
+      description:
+        "Filter to claws that have all listed capabilities. Example: ['gpu', 'high-memory'].",
+    }),
+  ),
 });
 
 type ClawFleetParams = {
   projectRoot: string;
   onlineOnly?: boolean;
-};
-
-type FleetEntry = {
-  id: number;
-  name: string;
-  slug: string;
-  online: boolean;
-  connectedAt: string | null;
-  lastSeenAt: string | null;
-  capabilities: string[];
+  requireCapabilities?: string[];
 };
 
 export const clawFleetTool: AgentTool<typeof ClawFleetSchema, string> = {
   name: "claw_fleet",
   label: "Claw Fleet",
   description:
-    "List peer CoderClaw instances in the same tenant. Returns each claw's ID, name, connection status, and capabilities. Use the claw ID with 'remote:<clawId>' workflow step roles to delegate tasks to specific claws. Requires CODERCLAW_LINK_API_KEY and clawLink.instanceId to be configured.",
+    "List peer CoderClaw instances in the same tenant. Returns each claw's ID, name, connection status, and capabilities. Use the claw ID with 'remote:<clawId>' to delegate tasks, 'remote:auto' to auto-select the best online claw, or 'remote:auto[cap1,cap2]' to require specific capabilities. Requires CODERCLAW_LINK_API_KEY and clawLink.instanceId to be configured.",
   parameters: ClawFleetSchema,
   async execute(_toolCallId: string, params: ClawFleetParams) {
-    const { projectRoot, onlineOnly = false } = params;
+    const { projectRoot, onlineOnly = false, requireCapabilities } = params;
 
     try {
       const apiKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
@@ -84,14 +84,27 @@ export const clawFleetTool: AgentTool<typeof ClawFleetSchema, string> = {
       }
 
       const data = (await res.json()) as { fleet: FleetEntry[] };
-      const fleet = onlineOnly ? data.fleet.filter((c) => c.online) : data.fleet;
+      let fleet = onlineOnly ? data.fleet.filter((c) => c.online) : data.fleet;
+
+      // Apply capability filter if requested
+      if (requireCapabilities && requireCapabilities.length > 0) {
+        fleet = fleet.filter((c) =>
+          requireCapabilities.every((cap) => c.capabilities.includes(cap)),
+        );
+      }
+
+      const autoTip =
+        requireCapabilities && requireCapabilities.length > 0
+          ? `Use 'remote:auto[${requireCapabilities.join(",")}]' to auto-select a claw with these capabilities.`
+          : "Use 'remote:<id>' or 'remote:auto' as the agentRole in an orchestrate workflow step.";
 
       return jsonResult({
         ok: true,
         fleet,
         total: data.fleet.length,
         online: data.fleet.filter((c) => c.online).length,
-        tip: "Use 'remote:<id>' as the agentRole in an orchestrate workflow step to delegate a task to a specific claw.",
+        filtered: fleet.length,
+        tip: autoTip,
       }) as AgentToolResult<string>;
     } catch (error) {
       return jsonResult({

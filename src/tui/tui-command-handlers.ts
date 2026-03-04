@@ -636,9 +636,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         try {
           // Hint about saving a handoff when the session has had user activity
           if (state.isConnected && chatLog.hasUserMessages()) {
-            chatLog.addSystem(
-              "Tip: Run /handoff first to save session context before resetting.",
-            );
+            chatLog.addSystem("Tip: Run /handoff first to save session context before resetting.");
             tui.requestRender();
           }
 

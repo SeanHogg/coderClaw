@@ -43,9 +43,7 @@ export function deriveActivitySummary(params: {
     !toolSet.has("bash");
 
   const isReview =
-    toolSet.has("git_history") ||
-    toolSet.has("code_analysis") ||
-    toolSet.has("project_knowledge");
+    toolSet.has("git_history") || toolSet.has("code_analysis") || toolSet.has("project_knowledge");
 
   const isOrchestration = toolSet.has("orchestrate") || toolSet.has("workflow_status");
 

@@ -1,5 +1,5 @@
 /**
- * Transport abstraction layer types for Phase 2
+ * Transport abstraction layer types for the distributed runtime
  * Enables distributed AI runtime without protocol dependencies
  */
 

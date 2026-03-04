@@ -4,7 +4,11 @@
 
 import crypto from "node:crypto";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
-import { dispatchToRemoteClaw, type RemoteDispatchOptions } from "../infra/remote-subagent.js";
+import {
+  dispatchToRemoteClaw,
+  selectClawByCapability,
+  type RemoteDispatchOptions,
+} from "../infra/remote-subagent.js";
 import { logDebug } from "../logger.js";
 import { findAgentRole } from "./agent-roles.js";
 import {
@@ -234,9 +238,9 @@ export class AgentOrchestrator {
       }
     }
 
-    // Remote dispatch: role "remote:<clawId>" delegates the task to a peer claw.
+    // Remote dispatch: role "remote:<clawId>", "remote:auto", or "remote:auto[cap1,cap2]"
+    // delegates the task to a peer claw via CoderClawLink.
     if (task.agentRole.startsWith("remote:")) {
-      const targetClawId = task.agentRole.slice("remote:".length);
       if (!this.remoteDispatchOpts) {
         task.status = "failed";
         task.error =
@@ -245,6 +249,33 @@ export class AgentOrchestrator {
         this.persistWorkflow(workflow);
         throw new Error(task.error);
       }
+
+      let targetClawId = task.agentRole.slice("remote:".length);
+
+      // Capability-based routing: "remote:auto" or "remote:auto[cap1,cap2]"
+      if (targetClawId === "auto" || targetClawId.startsWith("auto[")) {
+        const capMatch = targetClawId.match(/^auto\[(.+)]$/);
+        const requiredCaps = capMatch
+          ? capMatch[1]
+              .split(",")
+              .map((c) => c.trim())
+              .filter(Boolean)
+          : [];
+        logDebug(`[orchestrator] capability routing — required: [${requiredCaps.join(", ")}]`);
+        const selected = await selectClawByCapability(this.remoteDispatchOpts, requiredCaps);
+        if (!selected) {
+          task.status = "failed";
+          task.error = requiredCaps.length
+            ? `No online claw satisfies required capabilities: ${requiredCaps.join(", ")}`
+            : "No online peer claws available for automatic routing";
+          task.completedAt = new Date();
+          this.persistWorkflow(workflow);
+          throw new Error(task.error);
+        }
+        targetClawId = String(selected.id);
+        logDebug(`[orchestrator] selected claw ${targetClawId} (${selected.name})`);
+      }
+
       const remoteResult = await dispatchToRemoteClaw(
         this.remoteDispatchOpts,
         targetClawId,

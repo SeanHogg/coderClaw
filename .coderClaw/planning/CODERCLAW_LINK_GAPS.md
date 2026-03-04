@@ -1,7 +1,7 @@
 # coderClawLink Feature Gaps
 
 > Repo: https://github.com/SeanHogg/coderClawLink  
-> Last updated: 2026-03-04  
+> Last updated: 2026-03-04 (revised 2026-03-04 — capability routing implemented)  
 > Source: Deep audit of coderClaw ↔ coderClawLink API surface, capability gap analysis,
 > and comparison with market-leading agents (Claude Code, Cursor, mini-swe-agent, Devin).
 
@@ -9,16 +9,22 @@ This document is the **canonical requirements handoff** from the coderClaw clien
 the coderClawLink backend/portal team. Each item is prioritised, self-contained, and
 traceable to a specific coderClaw gap or market capability.
 
+> **Note on P2-3 (Fleet Capability Management)**: The coderClaw orchestrator now supports
+> `remote:auto` and `remote:auto[cap1,cap2]` capability-based routing using the existing
+> `GET /api/claws/fleet` heartbeat capabilities. The coderClaw-side implementation is
+> complete. The SPA management UI for declaring additional capabilities is still a
+> coderClawLink-side gap.
+
 ---
 
 ## Priority Levels
 
-| Level    | Meaning                                         |
-| -------- | ----------------------------------------------- |
-| P0       | Blocking a shipped coderClaw feature today      |
-| P1       | Required for spec-driven workflow parity        |
-| P2       | Improves observability / developer experience   |
-| P3       | Nice-to-have / future-proofing                  |
+| Level | Meaning                                       |
+| ----- | --------------------------------------------- |
+| P0    | Blocking a shipped coderClaw feature today    |
+| P1    | Required for spec-driven workflow parity      |
+| P2    | Improves observability / developer experience |
+| P3    | Nice-to-have / future-proofing                |
 
 ---
 
@@ -99,6 +105,7 @@ The `/spec <goal>` TUI command triggers a planning workflow that saves outputs t
 `.coderClaw/planning/` locally. These files are eventually synced to coderClawLink
 via the directory-sync endpoint, but they are stored as raw blobs with no structured
 schema. There is no way to:
+
 - Query specs by goal / project
 - Track spec status (draft → reviewed → approved → implemented)
 - Link a spec to workflow executions
@@ -106,6 +113,7 @@ schema. There is no way to:
 **Required Changes to coderClawLink**
 
 1. **New table**: `specs`
+
    ```sql
    id           uuid PRIMARY KEY
    tenant_id    int NOT NULL REFERENCES tenants
@@ -121,6 +129,7 @@ schema. There is no way to:
    ```
 
 2. **New endpoints**:
+
    ```
    POST   /api/specs                    Create spec (from /spec command result)
    GET    /api/specs                    List specs for tenant/project
@@ -149,6 +158,7 @@ task breakdown, timings, or outputs.
 **Required Changes to coderClawLink**
 
 1. **New table**: `workflows`
+
    ```sql
    id           uuid PRIMARY KEY
    tenant_id    int NOT NULL
@@ -162,6 +172,7 @@ task breakdown, timings, or outputs.
    ```
 
 2. **New table**: `workflow_tasks`
+
    ```sql
    id           uuid PRIMARY KEY
    workflow_id  uuid NOT NULL REFERENCES workflows
@@ -177,6 +188,7 @@ task breakdown, timings, or outputs.
    ```
 
 3. **New endpoints**:
+
    ```
    POST   /api/workflows                 Register a workflow (push from claw on create)
    GET    /api/workflows                 List workflows (filterable by status, type, claw)
@@ -232,6 +244,7 @@ them. Agents currently query memory only locally via `project_knowledge memory`.
    and extract structured entries (timestamp, session key, created/edited/tools, summary).
 
 2. **New endpoints**:
+
    ```
    GET  /api/memory?clawId=&from=&to=&q=   Full-text search memory entries
    GET  /api/memory/stats                  Aggregate activity stats (files touched, tools used)
@@ -324,6 +337,7 @@ Memory sharing between claws is opt-in via local config but has no backend enfor
 deduplication, or conflict resolution.
 
 **Required**:
+
 - `/api/memory/share` endpoint for claw-to-claw memory sync with tenant-scoped access control.
 - Deduplication by content hash.
 - Privacy filter: entries tagged `#private` in the source never shared.
@@ -333,6 +347,7 @@ deduplication, or conflict resolution.
 ### P3-2: Model Cost Tracking
 
 **Required**:
+
 - Per-session model cost estimate (token count × model pricing).
 - Monthly budget alerts.
 - Per-project cost breakdown.
@@ -342,6 +357,7 @@ deduplication, or conflict resolution.
 ### P3-3: Approval Workflow API
 
 **Required**:
+
 - When an agent wants to perform a destructive action (rm, force-push, deploy), it can
   request human approval via coderClawLink.
 - `POST /api/approvals` creates a pending approval.
@@ -354,6 +370,7 @@ deduplication, or conflict resolution.
 ### P3-4: Spec Import (GitHub Issues / Linear / Jira)
 
 **Required**:
+
 - OAuth connections to issue trackers.
 - "Import as spec" converts a GitHub Issue / Linear ticket into a coderClawLink spec.
 - `/spec import <url>` TUI command triggers the import and starts planning.
@@ -362,21 +379,26 @@ deduplication, or conflict resolution.
 
 ## Summary Table
 
-| ID    | Priority | Feature                            | Backend | SPA | coderClaw |
-| ----- | -------- | ---------------------------------- | ------- | --- | --------- |
-| P0-1  | P0       | Remote task result streaming       | ✅ New  | —   | ✅ Update |
-| P0-2  | P0       | Execution WS streaming             | ✅ New  | —   | ✅ Update |
-| P1-1  | P1       | Spec / planning storage API        | ✅ New  | —   | ✅ Update |
-| P1-2  | P1       | Workflow execution portal API      | ✅ New  | —   | ✅ Update |
-| P1-3  | P1       | Spec review + workflow portal SPA  | —       | ✅  | —         |
-| P2-1  | P2       | Knowledge / memory query API       | ✅ New  | ✅  | —         |
-| P2-2  | P2       | Token usage dashboard              | ✅ New  | ✅  | ✅ Update |
-| P2-3  | P2       | Fleet capability management        | ✅ New  | ✅  | ✅ Update |
-| P2-4  | P2       | Agent run audit trail              | ✅ New  | ✅  | ✅ Update |
-| P3-1  | P3       | Cross-claw memory sharing API      | ✅ New  | —   | —         |
-| P3-2  | P3       | Model cost tracking                | ✅ New  | ✅  | —         |
-| P3-3  | P3       | Approval workflow API              | ✅ New  | ✅  | ✅ Update |
-| P3-4  | P3       | Spec import (GitHub/Linear/Jira)   | ✅ New  | ✅  | ✅ Update |
+| ID   | Priority | Feature                           | Backend | SPA | coderClaw         |
+| ---- | -------- | --------------------------------- | ------- | --- | ----------------- |
+| P0-1 | P0       | Remote task result streaming      | ✅ New  | —   | ✅ Update         |
+| P0-2 | P0       | Execution WS streaming            | ✅ New  | —   | ✅ Update         |
+| P1-1 | P1       | Spec / planning storage API       | ✅ New  | —   | ✅ Update         |
+| P1-2 | P1       | Workflow execution portal API     | ✅ New  | —   | ✅ Update         |
+| P1-3 | P1       | Spec review + workflow portal SPA | —       | ✅  | —                 |
+| P2-1 | P2       | Knowledge / memory query API      | ✅ New  | ✅  | —                 |
+| P2-2 | P2       | Token usage dashboard             | ✅ New  | ✅  | ✅ Update         |
+| P2-3 | P2       | Fleet capability management       | ✅ New  | ✅  | ✅ Done (routing) |
+| P2-4 | P2       | Agent run audit trail             | ✅ New  | ✅  | ✅ Update         |
+| P3-1 | P3       | Cross-claw memory sharing API     | ✅ New  | —   | —                 |
+| P3-2 | P3       | Model cost tracking               | ✅ New  | ✅  | —                 |
+| P3-3 | P3       | Approval workflow API             | ✅ New  | ✅  | ✅ Update         |
+| P3-4 | P3       | Spec import (GitHub/Linear/Jira)  | ✅ New  | ✅  | ✅ Update         |
+
+> **P2-3 coderClaw status**: `remote:auto` and `remote:auto[cap1,cap2]` capability routing
+> implemented in `src/coderclaw/orchestrator.ts` and `src/infra/remote-subagent.ts`.
+> The SPA fleet management UI (declared capabilities, fleet routing endpoint) is the
+> remaining coderClawLink-side work.
 
 ---
 
@@ -384,23 +406,23 @@ deduplication, or conflict resolution.
 
 All endpoints currently implemented and called by coderClaw:
 
-| Method  | Endpoint                              | Auth         | Purpose                      |
-| ------- | ------------------------------------- | ------------ | ---------------------------- |
-| POST    | `/api/auth/web/register`              | None         | Create account               |
-| POST    | `/api/auth/web/login`                 | None         | Login                        |
-| GET     | `/api/auth/my-tenants`                | JWT (web)    | List user workspaces         |
-| POST    | `/api/auth/tenant-token`              | JWT (web)    | Get workspace token          |
-| POST    | `/api/tenants/create`                 | JWT (web)    | Create workspace             |
-| POST    | `/api/claws`                          | JWT (tenant) | Register claw instance       |
-| GET     | `/api/claws/fleet`                    | API Key      | List peer claws              |
-| WS      | `/api/claws/:id/upstream`             | API Key      | Bidirectional relay          |
-| PATCH   | `/api/claws/:id/heartbeat`            | API Key      | Keep-alive + capabilities    |
-| POST    | `/api/claws/:id/forward`              | API Key      | Remote task dispatch         |
-| POST    | `/api/projects/upsert`                | JWT (tenant) | Create/update project        |
-| PUT     | `/api/claws/:id/projects/:pid`        | JWT (tenant) | Link project to claw         |
-| PUT     | `/api/claws/:id/directories/sync`     | API Key      | Upload .coderClaw/ files     |
-| POST    | `/api/runtime/executions`             | Bearer       | Submit execution             |
-| GET     | `/api/runtime/executions/:id`         | Bearer       | Poll execution status        |
-| POST    | `/api/runtime/executions/:id/cancel`  | Bearer       | Cancel execution             |
-| GET     | `/api/agents`                         | Bearer       | List agents                  |
-| GET     | `/api/skills`                         | Bearer       | List skills                  |
+| Method | Endpoint                             | Auth         | Purpose                   |
+| ------ | ------------------------------------ | ------------ | ------------------------- |
+| POST   | `/api/auth/web/register`             | None         | Create account            |
+| POST   | `/api/auth/web/login`                | None         | Login                     |
+| GET    | `/api/auth/my-tenants`               | JWT (web)    | List user workspaces      |
+| POST   | `/api/auth/tenant-token`             | JWT (web)    | Get workspace token       |
+| POST   | `/api/tenants/create`                | JWT (web)    | Create workspace          |
+| POST   | `/api/claws`                         | JWT (tenant) | Register claw instance    |
+| GET    | `/api/claws/fleet`                   | API Key      | List peer claws           |
+| WS     | `/api/claws/:id/upstream`            | API Key      | Bidirectional relay       |
+| PATCH  | `/api/claws/:id/heartbeat`           | API Key      | Keep-alive + capabilities |
+| POST   | `/api/claws/:id/forward`             | API Key      | Remote task dispatch      |
+| POST   | `/api/projects/upsert`               | JWT (tenant) | Create/update project     |
+| PUT    | `/api/claws/:id/projects/:pid`       | JWT (tenant) | Link project to claw      |
+| PUT    | `/api/claws/:id/directories/sync`    | API Key      | Upload .coderClaw/ files  |
+| POST   | `/api/runtime/executions`            | Bearer       | Submit execution          |
+| GET    | `/api/runtime/executions/:id`        | Bearer       | Poll execution status     |
+| POST   | `/api/runtime/executions/:id/cancel` | Bearer       | Cancel execution          |
+| GET    | `/api/agents`                        | Bearer       | List agents               |
+| GET    | `/api/skills`                        | Bearer       | List skills               |

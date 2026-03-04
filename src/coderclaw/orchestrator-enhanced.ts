@@ -1,5 +1,5 @@
 /**
- * Enhanced multi-agent orchestration engine for coderClaw Phase 2
+ * Enhanced multi-agent orchestration engine for coderClaw
  * Integrates with distributed task engine and transport layer
  */
 
