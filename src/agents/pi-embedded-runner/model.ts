@@ -121,10 +121,10 @@ const LOCAL_PROVIDER_HINTS: Record<string, string> = {
     "vLLM requires authentication to be registered as a provider. " +
     'Set VLLM_API_KEY (any value works) or run "coderclaw configure". ' +
     "See: https://docs.coderclaw.ai/providers/vllm",
-  transformers:
-    "The Transformers.js provider requires '@huggingface/transformers' to be installed and a provider " +
-    'configured via "coderclaw configure" (choose "Transformers.js — SmolLM2"). ' +
-    "See: https://docs.coderclaw.ai/providers/transformers",
+  "coderclawllm-local":
+    "The CoderClawLLM local brain requires '@huggingface/transformers' to be installed and a " +
+    'provider configured via "coderclaw configure" (choose "CoderClawLLM local brain"). ' +
+    "See: https://docs.coderclaw.ai/providers/coderclawllm-local",
 };
 
 function buildUnknownModelError(provider: string, modelId: string): string {

@@ -10,35 +10,83 @@ export const TRANSFORMERS_DEFAULT_MODEL_ID = "onnx-community/SmolLM2-1.7B-Instru
 export const TRANSFORMERS_DEFAULT_DTYPE = "q4";
 export const TRANSFORMERS_DEFAULT_CACHE_DIR = "./models";
 
-// Memory filenames that live inside the agent workspace directory.
-const MEMORY_FILES = ["SOUL.md", "USER.md", "MEMORY.md"] as const;
+// Long-term memory files in the workspace root.
+// MEMORY.md contains personal/curated knowledge — omit in shared/group contexts.
+const LONG_TERM_FILES_ALL = ["SOUL.md", "USER.md", "MEMORY.md", "AGENTS.md"] as const;
+const LONG_TERM_FILES_SHARED = ["SOUL.md", "USER.md", "AGENTS.md"] as const;
+// Character budget for brain context — leaves headroom for system prompt + conversation.
+const BRAIN_CONTEXT_CHAR_BUDGET = 20000;
 
-// ── .coderclaw workspace memory loader ──────────────────────────────────────
+// ── .coderclaw brain context loader ─────────────────────────────────────────
+
+function dailyNoteFilenames(): string[] {
+  const now = new Date();
+  const fmt = (d: Date) => d.toISOString().slice(0, 10);
+  const yesterday = new Date(now.getTime() - 86_400_000);
+  return [`${fmt(now)}.md`, `${fmt(yesterday)}.md`];
+}
 
 /**
- * Reads SOUL.md, USER.md, and MEMORY.md from the agent workspace directory
- * (default: ~/.coderclaw/workspace) and returns a consolidated system-prompt
- * prefix so the model is grounded in the agent's identity and long-term memory.
+ * Loads the full brain context from the agent workspace directory:
+ *   - Long-term memory: SOUL.md, USER.md, MEMORY.md*, AGENTS.md
+ *   - Short-term memory: workspace/memory/YYYY-MM-DD.md (today + yesterday)
  *
- * Files that don't exist are silently skipped; the function never throws.
+ * *MEMORY.md contains personal curated knowledge and is skipped when
+ * `isSharedContext` is true (Discord, group chats, multi-user sessions)
+ * to avoid leaking personal data to third parties.
+ *
+ * Missing files are silently skipped; this function never throws.
  */
-export async function loadCoderClawMemory(workspaceDir: string): Promise<string> {
+export async function loadCoderClawMemory(
+  workspaceDir: string,
+  opts?: { isSharedContext?: boolean },
+): Promise<string> {
+  const longTermFiles = opts?.isSharedContext ? LONG_TERM_FILES_SHARED : LONG_TERM_FILES_ALL;
   const sections: string[] = [];
-  for (const filename of MEMORY_FILES) {
+  let remaining = BRAIN_CONTEXT_CHAR_BUDGET;
+
+  // Long-term memory
+  for (const filename of longTermFiles) {
+    if (remaining <= 0) break;
     try {
-      const content = await fs.readFile(path.join(workspaceDir, filename), "utf-8");
-      const trimmed = content.trim();
-      if (trimmed) {
-        sections.push(`## ${filename}\n${trimmed}`);
+      const raw = (await fs.readFile(path.join(workspaceDir, filename), "utf-8")).trim();
+      if (!raw) continue;
+      const entry = `### ${filename}\n${raw}`;
+      if (entry.length <= remaining) {
+        sections.push(entry);
+        remaining -= entry.length;
+      } else if (remaining > 200) {
+        sections.push(`### ${filename}\n${raw.slice(0, remaining - 50)}…`);
+        remaining = 0;
       }
     } catch {
       // File absent — skip silently.
     }
   }
-  if (sections.length === 0) {
-    return "";
+
+  // Short-term memory: today's and yesterday's daily notes
+  const memoryDir = path.join(workspaceDir, "memory");
+  for (const filename of dailyNoteFilenames()) {
+    if (remaining <= 0) break;
+    try {
+      const raw = (await fs.readFile(path.join(memoryDir, filename), "utf-8")).trim();
+      if (!raw) continue;
+      const label = filename.replace(".md", "");
+      const entry = `### Daily note (${label})\n${raw}`;
+      if (entry.length <= remaining) {
+        sections.push(entry);
+        remaining -= entry.length;
+      } else if (remaining > 200) {
+        sections.push(`### Daily note (${label})\n${raw.slice(0, remaining - 50)}…`);
+        remaining = 0;
+      }
+    } catch {
+      // File absent — skip silently.
+    }
   }
-  return `# CoderClaw Memory\n\n${sections.join("\n\n")}`;
+
+  if (sections.length === 0) return "";
+  return `## CoderClaw Memory\n\n${sections.join("\n\n")}`;
 }
 
 // ── Dynamic import helper ────────────────────────────────────────────────────
@@ -62,9 +110,14 @@ type TextGenerationPipeline = Awaited<
   ReturnType<typeof import("@huggingface/transformers").pipeline>
 >;
 
+// Reusable dtype cast — avoids repeating the conditional type expression.
+type PipelineDtype = Parameters<
+  typeof import("@huggingface/transformers").pipeline
+>[2] extends { dtype?: infer D } ? D : string;
+
 const pipelineCache = new Map<string, TextGenerationPipeline>();
 
-async function getOrCreatePipeline(
+export async function getOrCreatePipeline(
   modelId: string,
   dtype: string,
   cacheDir: string,
@@ -80,13 +133,45 @@ async function getOrCreatePipeline(
   transformers.env.allowRemoteModels = true;
 
   const pipe = await transformers.pipeline("text-generation", modelId, {
-    dtype: dtype as Parameters<typeof transformers.pipeline>[2] extends { dtype?: infer D }
-      ? D
-      : string,
+    dtype: dtype as PipelineDtype,
   });
 
   pipelineCache.set(key, pipe);
   return pipe;
+}
+
+/**
+ * Pre-downloads and caches the CoderClawLLM brain model.
+ * Calls `onProgress(file, pct)` for each file as it downloads so callers can
+ * show a live progress indicator.  Resolves when the full pipeline is ready.
+ */
+export async function downloadCoderClawLlmModel(opts: {
+  modelId: string;
+  dtype: string;
+  cacheDir: string;
+  onProgress?: (file: string, percent: number) => void;
+}): Promise<void> {
+  const transformers = await importTransformers();
+  transformers.env.cacheDir = opts.cacheDir;
+  transformers.env.allowRemoteModels = true;
+
+  const key = `${opts.modelId}:${opts.dtype}`;
+
+  const progressCallback = opts.onProgress
+    ? (info: unknown) => {
+        const ev = info as { file?: string; progress?: number; status?: string };
+        if (ev.status === "progress" && typeof ev.file === "string") {
+          opts.onProgress!(ev.file, Math.round(ev.progress ?? 0));
+        }
+      }
+    : undefined;
+
+  const pipe = await transformers.pipeline("text-generation", opts.modelId, {
+    dtype: opts.dtype as PipelineDtype,
+    ...(progressCallback ? { progress_callback: progressCallback } : {}),
+  });
+
+  pipelineCache.set(key, pipe);
 }
 
 // ── Message conversion ───────────────────────────────────────────────────────

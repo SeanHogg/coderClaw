@@ -1,10 +1,14 @@
 import os from "node:os";
 import path from "node:path";
 import type { CoderClawConfig } from "../config/config.js";
+import { downloadCoderClawLlmModel } from "../agents/transformers-stream.js";
 import type { ApplyAuthChoiceParams, ApplyAuthChoiceResult } from "./auth-choice.apply.js";
 import { applyPrimaryModel } from "./model-picker.js";
 
-export const TRANSFORMERS_PROVIDER_ID = "transformers";
+/** Provider ID written into the config for the local-brain entry. */
+export const CODERCLAWLLM_LOCAL_PROVIDER_ID = "coderclawllm-local";
+/** @deprecated Use CODERCLAWLLM_LOCAL_PROVIDER_ID */
+export const TRANSFORMERS_PROVIDER_ID = CODERCLAWLLM_LOCAL_PROVIDER_ID;
 // onnx-community/SmolLM2-1.7B-Instruct ships ONNX-quantized weights that are
 // natively supported by @huggingface/transformers without any extra tooling.
 export const TRANSFORMERS_DEFAULT_MODEL_ID = "onnx-community/SmolLM2-1.7B-Instruct";
@@ -62,18 +66,19 @@ function applyTransformersProviderConfig(
 export async function applyAuthChoiceTransformers(
   params: ApplyAuthChoiceParams,
 ): Promise<ApplyAuthChoiceResult | null> {
-  if (params.authChoice !== "transformers-local") {
+  if (params.authChoice !== "coderclawllm-local") {
     return null;
   }
 
   await params.prompter.note(
     [
-      "Transformers.js runs HuggingFace models directly in Node.js — no Ollama, no Python, no API key.",
-      "The model is downloaded once and cached locally (~1 GB for SmolLM2-1.7B q4).",
-      "Supported dtypes: q4 (default, ~1 GB), q5, q8 (higher accuracy, more RAM).",
+      "CoderClawLLM local runs an ONNX-quantized brain (SmolLM2) directly in Node.js.",
+      "It loads your .coderclaw memory on every request and routes heavy tasks to any",
+      "other LLM you have configured (Ollama, OpenAI, vLLM, etc.).",
+      "No server, no API key, no Python required.",
       "Requires: npm install @huggingface/transformers",
     ].join("\n"),
-    "Transformers.js local inference",
+    "CoderClawLLM local brain",
   );
 
   const modelIdInput = await params.prompter.text({
@@ -120,14 +125,42 @@ export async function applyAuthChoiceTransformers(
 
   await params.prompter.note(
     [
-      `Configured Transformers.js provider with model: ${modelId}`,
-      `Dtype: ${String(dtype)}   Cache: ${cacheDir}`,
-      `Default model key: ${toModelKey(modelId)}`,
-      "",
-      "The model will be downloaded on first use (~1 GB for q4).",
+      `CoderClawLLM local brain configured.`,
+      `Model: ${modelId}   Dtype: ${String(dtype)}`,
+      `Cache: ${cacheDir}`,
+      `Model key: ${toModelKey(modelId)}`,
     ].join("\n"),
-    "Transformers.js setup complete",
+    "CoderClawLLM local — setup complete",
   );
+
+  // ── Model download (required) ──────────────────────────────────────────────
+  // The brain model must be present for CoderClawLLM to function.
+  // Download it now with live progress rather than blocking silently on first use.
+  let lastFile = "";
+  const spinner = params.prompter.progress(
+    `Downloading CoderClawLLM brain model (${modelId}, ${String(dtype)})…`,
+  );
+  try {
+    await downloadCoderClawLlmModel({
+      modelId,
+      dtype: String(dtype),
+      cacheDir,
+      onProgress: (file, pct) => {
+        if (file !== lastFile) {
+          lastFile = file;
+        }
+        spinner.message(`Downloading ${path.basename(file)} — ${pct}%`);
+      },
+    });
+    spinner.stop("Brain model downloaded and ready.");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    spinner.stop(
+      `Download failed: ${msg}\nCheck your internet connection and re-run "coderclaw configure".`,
+    );
+    throw new Error(`CoderClawLLM brain model download failed: ${msg}`);
+  }
 
   return { config: nextConfig };
 }
+

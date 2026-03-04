@@ -37,7 +37,7 @@ import { resolveImageSanitizationLimits } from "../../image-sanitization.js";
 import { resolveModelAuthMode } from "../../model-auth.js";
 import { resolveDefaultModelForAgent } from "../../model-selection.js";
 import { createOllamaStreamFn, OLLAMA_NATIVE_BASE_URL } from "../../ollama-stream.js";
-import { createTransformersStreamFn } from "../../transformers-stream.js";
+import { createCoderClawLlmLocalStreamFn } from "../../coderclawllm-local-stream.js";
 import {
   isCloudCodeAssistFormatError,
   resolveBootstrapMaxChars,
@@ -636,8 +636,8 @@ export async function runEmbeddedAttempt(
         const ollamaBaseUrl = modelBaseUrl || providerBaseUrl || OLLAMA_NATIVE_BASE_URL;
         activeSession.agent.streamFn = createOllamaStreamFn(ollamaBaseUrl);
       } else if (params.model.api === "transformers") {
-        // Transformers.js in-process inference: resolve model ID, dtype, and cache dir
-        // from the provider config. baseUrl is repurposed as the cache directory.
+        // CoderClawLLM local brain: SmolLM2 ONNX reasons with full .coderclaw
+        // memory context, then routes to a configured execution LLM if needed.
         const providerConfig = params.config?.models?.providers?.[params.model.provider];
         const cacheDir =
           typeof providerConfig?.baseUrl === "string" && providerConfig.baseUrl.trim()
@@ -647,11 +647,14 @@ export async function runEmbeddedAttempt(
           typeof params.model.headers?.["x-transformers-dtype"] === "string"
             ? params.model.headers["x-transformers-dtype"]
             : undefined;
-        activeSession.agent.streamFn = createTransformersStreamFn({
+        activeSession.agent.streamFn = createCoderClawLlmLocalStreamFn({
+          config: params.config,
           modelId: params.modelId,
           dtype,
           cacheDir,
           workspaceDir: params.workspaceDir,
+          // Skip MEMORY.md in shared/channel contexts to avoid leaking personal data.
+          isSharedContext: !!(params.messageChannel ?? params.messageProvider),
         });
       } else {
         // Force a stable streamFn reference so vitest can reliably mock @mariozechner/pi-ai.
