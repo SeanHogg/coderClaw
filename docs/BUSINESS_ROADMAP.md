@@ -159,7 +159,12 @@ The AI developer tools market is growing rapidly. Key segments:
 | ✅ Multi-agent orchestration | 7 roles, DAG workflows | Foundation |
 | ✅ coderClawLink relay | Cloud portal integration | Foundation |
 | ✅ Knowledge loop | Memory, semantic summaries | Foundation |
+| ✅ Persona plugin architecture | Plugin registry, PERSONA.yaml format, marketplace types, coderClawLink assignment | Foundation |
+| ✅ Structured inter-agent context | `buildStructuredContext()` with labelled role sections + `outputFormat.outputPrefix` | Quality |
+| ✅ Persona → brain injection | `--- Agent Persona ---` block in every sub-agent's system prompt; brain uses it on all paths | Quality |
+| ✅ CoderClawLLM syscheck | RAM + disk check before SmolLM2 load; automatic external LLM fallback | Reliability |
 | 🔲 Live workflow UI (P0) | DAG + task progress in portal | Pro unlock |
+| 🔲 ClawHub persona marketplace (P0) | Purchase + install personas; assignment API in coderClawLink | Pro unlock / rev share |
 | 🔲 MCP semantic search (P0) | Vector codebase search | Retention |
 
 ### Q2 2026
@@ -169,8 +174,8 @@ The AI developer tools market is growing rapidly. Key segments:
 | 🔲 Inline diff / pair mode | Accept/reject diff workflow | Acquisition |
 | 🔲 GitHub issue → PR workflow | End-to-end issue resolution | Acquisition |
 | 🔲 coderClawLink Pro launch | Subscription billing | $19–149/mo |
-| 🔲 Persona profiles | Per-session model+system prompt | Retention |
 | 🔲 Session auto-checkpoint | Auto-save on exit | Retention |
+| 🔲 coderClawLink: Persona Assignment API | Assign marketplace personas to claws from portal | Pro unlock |
 
 ### Q3 2026
 
@@ -187,7 +192,7 @@ The AI developer tools market is growing rapidly. Key segments:
 | Item | Description | Revenue impact |
 |------|-------------|----------------|
 | 🔲 Enterprise license GA | On-prem deployment | $50K+ contracts |
-| 🔲 ClawHub marketplace | Skill/agent marketplace | 30% rev share |
+| 🔲 ClawHub marketplace GA | Skill + persona marketplace | 30% rev share |
 | 🔲 Cross-claw memory sharing | Team memory mesh | Team plan |
 | 🔲 SOC 2 Type I | Compliance cert | Enterprise gate |
 

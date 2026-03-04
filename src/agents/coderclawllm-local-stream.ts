@@ -11,13 +11,11 @@
  *   4. Multi-step chain (on DELEGATE) — plan pass → execution LLM code pass
  *      → code-execution feedback → optional fix pass
  *
- * Architectural note: the execution LLM is called via direct HTTP fetch and its
- * response is returned as TextContent. CoderClaw's native tools (bash, write_file)
- * require ToolCallContent in the AssistantMessage to trigger; they will not fire
- * from brain or execution-LLM responses. The brain's own tools (read_file,
- * list_files, grep_files, run_code) DO execute directly inside this StreamFn.
- * Native-tool execution for file writes / bash commands happens in the NEXT
- * agent turn when CoderClaw processes the text response as a new prompt.
+ * System requirements check:
+ *   On first use, the factory checks available RAM and disk space.
+ *   If the local model cannot be loaded (insufficient resources), the
+ *   execution LLM configured in the runtime config is used as the brain
+ *   instead, giving the same interface with no degradation to the caller.
  *
  * Sub-agents: each spawn creates a new runEmbeddedAttempt which re-runs the
  * streamFn setup, giving every sub-agent its own brain instance with freshly
@@ -28,6 +26,7 @@ import type { StreamFn } from "@mariozechner/pi-agent-core";
 import type { AssistantMessage, StopReason, TextContent, Usage } from "@mariozechner/pi-ai";
 import { createAssistantMessageEventStream } from "@mariozechner/pi-ai";
 import type { CoderClawConfig } from "../config/config.js";
+import { logInfo } from "../logger.js";
 import {
   TRANSFORMERS_DEFAULT_CACHE_DIR,
   TRANSFORMERS_DEFAULT_DTYPE,
@@ -45,6 +44,7 @@ import {
   type ToolResult,
 } from "./coderclawllm-tools.js";
 import { retrieveRelevantContext } from "./coderclawllm-rag.js";
+import { checkLocalBrainRequirements } from "./coderclawllm-syscheck.js";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -342,11 +342,27 @@ export function createCoderClawLlmLocalStreamFn(
   const dtype = opts.dtype ?? TRANSFORMERS_DEFAULT_DTYPE;
   const cacheDir = opts.cacheDir ?? TRANSFORMERS_DEFAULT_CACHE_DIR;
 
+  // Lazy system-requirements check — performed once on the first request,
+  // then cached for the lifetime of this factory instance.
+  // null  = not yet checked
+  // true  = local brain eligible
+  // false = requirements not met; route all requests to external LLM
+  let localBrainEligible: boolean | null = null;
+
   return (model, context, options) => {
     const stream = createAssistantMessageEventStream();
 
     const run = async () => {
       try {
+        // ── 0. One-time system requirements check ─────────────────────────────
+        if (localBrainEligible === null) {
+          const check = await checkLocalBrainRequirements({ cacheDir, modelId });
+          localBrainEligible = check.eligible;
+          if (!check.eligible) {
+            logInfo(`[coderclawllm] ${check.reason ?? "System requirements not met."}`);
+          }
+        }
+
         // ── 1. Load .coderclaw memory (long-term + short-term daily notes) ────
         const memoryBlock = opts.workspaceDir
           ? await loadCoderClawMemory(opts.workspaceDir, { isSharedContext: opts.isSharedContext })
@@ -365,22 +381,85 @@ export function createCoderClawLlmLocalStreamFn(
             ? await retrieveRelevantContext({ query: queryText, workspaceDir: opts.workspaceDir })
             : "";
 
-        const brainSystem = [memoryBlock, ragContext, BRAIN_SYSTEM_PROMPT]
+        const maxTokens = typeof options?.maxTokens === "number" ? options.maxTokens : 512;
+        const temperature = typeof options?.temperature === "number" ? options.temperature : 0.6;
+        const rawMessages = context.messages ?? [];
+
+        // ── External brain fallback (requirements not met) ────────────────────
+        // When the local model cannot be loaded, the configured execution LLM
+        // acts as the brain.  Memory and RAG context are prepended to the
+        // system prompt so it is grounded in the same .coderclaw knowledge.
+        if (!localBrainEligible) {
+          const externalSystemParts = [
+            context.systemPrompt,
+            memoryBlock,
+            ragContext,
+            BRAIN_SYSTEM_PROMPT,
+          ].filter(Boolean);
+
+          const externalMessages = convertToTransformersMessages(
+            rawMessages,
+            externalSystemParts.join("\n\n---\n\n") || undefined,
+          );
+
+          const externalResult = await callExecutionLlm({
+            config: opts.config,
+            messages: externalMessages,
+            maxTokens,
+            temperature,
+            signal: options?.signal,
+          });
+
+          const finalText =
+            externalResult ??
+            "I'm unable to process this request: no local brain model and no external LLM is configured.";
+
+          const externalContent: TextContent[] = finalText
+            ? [{ type: "text" as const, text: finalText }]
+            : [];
+          stream.push({
+            type: "done",
+            reason: "stop",
+            message: {
+              role: "assistant",
+              content: externalContent,
+              stopReason: "stop" as StopReason,
+              api: model.api,
+              provider: model.provider,
+              model: model.id,
+              // Token usage is not tracked for the brain provider (local or external fallback).
+              // Zero values are intentional — same convention as the local-brain path below.
+              usage: {
+                input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0,
+                cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+              },
+              timestamp: Date.now(),
+            } satisfies AssistantMessage,
+          });
+          return;
+        }
+
+        const brainSystem = [
+          // Role/persona identity from the spawning context — this is where the
+          // "--- Agent Persona ---" block injected by subagent-spawn.ts lives.
+          // Including it here means the brain knows WHO it is on BOTH the direct
+          // path AND the DELEGATE path (contextSystemPrompt already carries it).
+          context.systemPrompt,
+          memoryBlock,
+          ragContext,
+          BRAIN_SYSTEM_PROMPT,
+        ]
           .filter(Boolean)
           .join("\n\n---\n\n");
 
-        const maxTokens = typeof options?.maxTokens === "number" ? options.maxTokens : 512;
-        const temperature = typeof options?.temperature === "number" ? options.temperature : 0.6;
-
         const pipe = await getOrCreatePipeline(modelId, dtype, cacheDir);
-        const rawMessages = context.messages ?? [];
 
         // ── 3. Brain reasoning pass (always SmolLM2) ──────────────────────────
         let brainMessages = convertToTransformersMessages(rawMessages, brainSystem);
         let brainText = await runPipeline(pipe, brainMessages, 256, 0.4);
 
         // ── 4. Tool loop — execute tool calls the brain emitted ───────────────
-        
+
         const wsDir = opts.workspaceDir;
         let toolRounds = 0;
         while (toolRounds < MAX_TOOL_ROUNDS && wsDir) {

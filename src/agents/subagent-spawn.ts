@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { formatThinkingLevels, normalizeThinkLevel } from "../auto-reply/thinking.js";
 import type { AgentRole } from "../coderclaw/types.js";
+import { buildPersonaSystemBlock } from "../coderclaw/personas.js";
 import { loadConfig } from "../config/config.js";
 import { callGateway } from "../gateway/call.js";
 import { normalizeAgentId, parseAgentSessionKey } from "../routing/session-key.js";
@@ -273,9 +274,17 @@ export async function spawnSubagentDirect(
     maxSpawnDepth,
   });
 
-  // Inject role-specific system prompt if provided
-  if (params.roleConfig?.systemPrompt) {
-    childSystemPrompt += "\n\n--- Role Guidance ---\n" + params.roleConfig.systemPrompt;
+  // Inject role-specific system prompt and persona identity block if provided.
+  // Both are encoded into childSystemPrompt so they are visible to all
+  // reasoning paths in the brain, including the coderClawLLM direct path.
+  if (params.roleConfig) {
+    if (params.roleConfig.systemPrompt) {
+      childSystemPrompt += "\n\n--- Role Guidance ---\n" + params.roleConfig.systemPrompt;
+    }
+    const personaBlock = buildPersonaSystemBlock(params.roleConfig);
+    if (personaBlock) {
+      childSystemPrompt += "\n\n" + personaBlock;
+    }
   }
 
   const childTaskMessage = [

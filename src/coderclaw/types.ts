@@ -41,6 +41,13 @@ export type ProjectContext = {
     /** CoderClawLink server URL */
     url?: string;
   };
+  /**
+   * Persona assignments for this claw.
+   * Managed by coderClawLink — do not edit manually.
+   */
+  personas?: {
+    assignments: PersonaAssignment[];
+  };
 };
 
 /**
@@ -255,4 +262,75 @@ export type SessionHandoff = {
   artifacts: string[];
   /** Arbitrary extra context to carry forward */
   context?: Record<string, unknown>;
+};
+
+// ---------------------------------------------------------------------------
+// Persona Plugin System
+// ---------------------------------------------------------------------------
+
+/**
+ * Where a persona plugin originates.
+ * Used to determine loading precedence and trust level.
+ */
+export type PersonaSource =
+  | "builtin" // Shipped with coderClaw core
+  | "user-global" // ~/.coderclaw/personas/ (user-installed, all projects)
+  | "project-local" // .coderClaw/personas/ (project-scoped)
+  | "clawhub" // Installed from ClawHub marketplace
+  | "clawlink-assigned"; // Pushed to this claw from coderClawLink
+
+/**
+ * Marketplace and versioning metadata for a persona plugin.
+ * Present when a persona was installed from ClawHub or assigned via coderClawLink.
+ */
+export type PersonaPluginMetadata = {
+  /** ClawHub marketplace identifier, e.g. "acme/senior-security-reviewer" */
+  clawhubId?: string;
+  /** Semver version string, e.g. "1.2.0" */
+  version?: string;
+  /** Publisher name on ClawHub */
+  author?: string;
+  /** SPDX license identifier, e.g. "MIT" or "Commercial" */
+  license?: string;
+  /** Whether activating this persona requires a valid paid license */
+  requiresLicense?: boolean;
+  /** ClawHub marketplace listing URL */
+  marketplaceUrl?: string;
+  /** Minimum coderClaw version required (semver range) */
+  coderClawVersion?: string;
+  /** Discovery tags, e.g. ["security", "backend", "compliance"] */
+  tags?: string[];
+  /** SHA-256 hex digest of the PERSONA.yaml file for integrity verification */
+  checksum?: string;
+};
+
+/**
+ * A persona plugin — an `AgentRole` enriched with plugin lifecycle metadata.
+ * Installed from the ClawHub marketplace or assigned to a claw via coderClawLink.
+ */
+export type PersonaPlugin = AgentRole & {
+  /** Where this persona was loaded from */
+  source: PersonaSource;
+  /** Marketplace metadata (present for clawhub / clawlink-assigned personas) */
+  pluginMetadata?: PersonaPluginMetadata;
+  /** Absolute path to the PERSONA.yaml file on disk; undefined for built-ins */
+  filePath?: string;
+  /** Whether this persona is currently active on this claw */
+  active?: boolean;
+};
+
+/**
+ * A persona assignment record stored in `context.yaml` under `personas.assignments`.
+ * Created by coderClawLink when an operator assigns a persona to a specific claw,
+ * or locally when a user activates a persona with `coderclaw persona activate <name>`.
+ */
+export type PersonaAssignment = {
+  /** Name of the persona to activate (must match a loaded PersonaPlugin) */
+  name: string;
+  /** ClawHub ID — used for license verification on activation */
+  clawhubId?: string;
+  /** True when this assignment was pushed from coderClawLink (not manually set) */
+  assignedByClawLink?: boolean;
+  /** ISO 8601 timestamp of when the assignment was created */
+  assignedAt?: string;
 };

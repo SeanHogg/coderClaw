@@ -556,21 +556,155 @@ only writes to daily memory files.
 
 ---
 
+## Gap L: Sub-Agent Context — Naive Text Concatenation
+
+**Status**: ✅ RESOLVED — `buildStructuredContext()` with labelled sections (2026-03-04)
+
+**Problem**: The orchestrator was passing prior-agent results to the next agent by
+appending raw text (`taskInput += "\n\nPrevious Results:\n" + result`). With no
+labels, the receiving agent could not tell which role produced which output.
+
+**Resolution (2026-03-04)**:
+
+- `buildStructuredContext(task, workflow)` in `src/coderclaw/orchestrator.ts` now
+  produces a structured Markdown block per prior agent:
+  ```markdown
+  ## Your Task
+  <task.input>
+
+  ## Context from Prior Agents
+
+  ### REVIEW: (code-reviewer)
+  <result>
+
+  ---
+
+  ### ARCH: (architecture-advisor)
+  <result>
+  ```
+- The label uses `outputFormat.outputPrefix` from each role's definition, so e.g.
+  the code-reviewer prefixes its section "REVIEW:" and the arch-advisor prefixes "ARCH:".
+- All 7 built-in roles have `outputFormat.outputPrefix` defined.
+
+**Acceptance criteria — met**: receiving agent sees clearly labelled context blocks.
+
+---
+
+## Gap M: Agent Personas Not Loaded into Brain
+
+**Status**: ✅ RESOLVED — `--- Agent Persona ---` block injected; brain reads it on all paths (2026-03-04)
+
+**Problem**: Even when a sub-agent was spawned with a `roleConfig` containing
+`persona` (voice, perspective, decisionStyle), the CoderClawLLM brain completely
+ignored it. The `BRAIN_SYSTEM_PROMPT` was static — the brain had no idea which role
+it was playing.
+
+**Resolution (2026-03-04)**:
+
+1. `buildPersonaSystemBlock(role)` in `src/coderclaw/personas.ts`:
+   Encodes `role.persona` + `outputFormat` + `constraints` into:
+   ```
+   --- Agent Persona ---
+   Role: code-reviewer
+   Voice: critical yet constructive
+   Perspective: all code is a future maintenance burden
+   Decision style: thorough: surface all issues, ranked by severity
+   Required output sections: ## Review Summary, ## Issues Found, ...
+   Prefix your summary with: REVIEW:
+   ---
+   ```
+
+2. `spawnSubagentDirect()` in `src/agents/subagent-spawn.ts`:
+   Appends the persona block to `childSystemPrompt` alongside the role guidance.
+
+3. `createCoderClawLlmLocalStreamFn()` in `src/agents/coderclawllm-local-stream.ts`:
+   `brainSystem` now prepends `context.systemPrompt` (which carries the persona block):
+   ```typescript
+   const brainSystem = [context.systemPrompt, memoryBlock, ragContext, BRAIN_SYSTEM_PROMPT]
+   ```
+   **Both** the direct path and the DELEGATE path now see the persona.
+
+**Acceptance criteria — met**: brain system prompt contains role identity on all execution paths.
+
+---
+
+## Gap N: Persona Plugin Architecture (Marketplace-Ready)
+
+**Status**: ✅ RESOLVED — `PersonaRegistry`, PERSONA.yaml format, coderClawLink assignment (2026-03-04)
+
+**Problem**: Roles were a flat list in `agent-roles.ts`. No install lifecycle, no
+versioning, no marketplace metadata, no way to assign from coderClawLink.
+
+**Resolution (2026-03-04)**:
+
+- **`PersonaPlugin` type** — `AgentRole` + `source` + `pluginMetadata` + `filePath` + `active`
+- **`PersonaPluginMetadata`** — `clawhubId`, `version`, `author`, `license`, `requiresLicense`,
+  `marketplaceUrl`, `coderClawVersion`, `tags`, `checksum`
+- **`PersonaRegistry` class** (`src/coderclaw/personas.ts`):
+  - `registerBuiltins()`, `register()`, `loadFromDir()`, `applyAssignments()`
+  - `activate()`, `deactivate()`, `resolve()`, `listAll()`, `listActive()`
+  - Source precedence: builtin(1) < user-global(2) < project-local(3) < clawhub(4) < clawlink-assigned(5)
+- **PERSONA.yaml format** — same structure as `AgentRole` YAML + marketplace fields
+- **Project context** (`src/coderclaw/project-context.ts`):
+  - `personasDir` added to `CoderClawDirectory`
+  - `loadProjectPersonaPlugins()`, `loadPersonaAssignments()`, `savePersonaAssignment()`,
+    `removePersonaAssignment()`
+  - `context.yaml` `personas.assignments` field for coderClawLink assignments
+- **Gateway bootstrap** (`src/gateway/server.impl.ts`):
+  Loads built-ins → user-global → project-local → applies assignments on startup
+- **`findAgentRole()` delegation**: checks registry as third tier after built-ins + custom roles
+
+**Remaining**: ClawHub download/install CLI flow; coderClawLink Persona Assignment API endpoint.
+
+---
+
+## Gap O: CoderClawLLM — No System Requirements Check
+
+**Status**: ✅ RESOLVED — syscheck with external LLM fallback (2026-03-04)
+
+**Problem**: `getOrCreatePipeline()` attempted to download and load SmolLM2-1.7B-Instruct
+(~900 MB, needs ~2 GB RAM) with zero pre-flight checks. On constrained machines it failed
+late with cryptic errors; there was no fallback.
+
+**Resolution (2026-03-04)**:
+
+- `checkLocalBrainRequirements()` in `src/agents/coderclawllm-syscheck.ts`:
+  1. `os.freemem() < 2 GB` → fail: insufficient RAM
+  2. `isModelCached()` → if cached, skip disk check
+  3. `fs.statfs(cacheDir).bavail < 1.5 GB` → fail: insufficient disk space
+- Lazy singleton per factory instance: check runs once on first request, result cached
+- When eligible=false: **external LLM becomes the brain** — memory + RAG + persona block
+  all injected into `callExecutionLlm()` so the external model has the same grounding
+- `logInfo("[coderclawllm] <reason>")` explains why local brain is not in use
+
+**Acceptance criteria — met**:
+- Machine with < 2 GB free RAM → uses configured Ollama/OpenAI provider as brain
+- Machine with ≥ 2 GB RAM + model cached → uses SmolLM2 as brain
+- Machine with ≥ 2 GB RAM + model not cached + < 1.5 GB disk → uses external LLM
+
+---
+
 ## Updated Priority Order
 
-| Priority | Gap  | Item                          | Status   |
-| -------- | ---- | ----------------------------- | -------- |
-| ✅       | -1.1 | Wire executeWorkflow          | RESOLVED |
-| ✅       | -1.2 | Wire agent roles              | RESOLVED |
-| ✅       | -1.3 | Session handoff save/load     | RESOLVED |
-| ✅       | -1.4 | Workflow persistence          | RESOLVED |
-| ✅       | -1.5 | Knowledge loop                | RESOLVED |
-| ✅       | -1.6 | Claw-to-claw mesh             | RESOLVED |
-| ✅       | 7    | `/spec` TUI command           | RESOLVED |
-| ✅       | 8    | `/workflow` TUI command       | RESOLVED |
-| ✅       | 9    | `/compact` in help            | RESOLVED |
-| ✅       | 10   | Handoff hint on /new          | RESOLVED |
-| ✅       | 11   | Semantic knowledge summaries  | RESOLVED |
-| 🔲       | I    | Remote task result streaming  | OPEN     |
-| ✅       | J    | Capability-based claw routing | RESOLVED |
-| 🔲       | K    | Architecture.md auto-update   | OPEN     |
+| Priority | Gap  | Item                              | Status   |
+| -------- | ---- | --------------------------------- | -------- |
+| ✅       | -1.1 | Wire executeWorkflow              | RESOLVED |
+| ✅       | -1.2 | Wire agent roles                  | RESOLVED |
+| ✅       | -1.3 | Session handoff save/load         | RESOLVED |
+| ✅       | -1.4 | Workflow persistence              | RESOLVED |
+| ✅       | -1.5 | Knowledge loop                    | RESOLVED |
+| ✅       | -1.6 | Claw-to-claw mesh                 | RESOLVED |
+| ✅       | 7    | `/spec` TUI command               | RESOLVED |
+| ✅       | 8    | `/workflow` TUI command           | RESOLVED |
+| ✅       | 9    | `/compact` in help                | RESOLVED |
+| ✅       | 10   | Handoff hint on /new              | RESOLVED |
+| ✅       | 11   | Semantic knowledge summaries      | RESOLVED |
+| 🔲       | I    | Remote task result streaming      | OPEN     |
+| ✅       | J    | Capability-based claw routing     | RESOLVED |
+| 🔲       | K    | Architecture.md auto-update       | OPEN     |
+| ✅       | L    | Structured inter-agent context    | RESOLVED |
+| ✅       | M    | Persona → brain injection         | RESOLVED |
+| ✅       | N    | Persona plugin architecture       | RESOLVED |
+| ✅       | O    | CoderClawLLM syscheck + fallback  | RESOLVED |
+| 🔲       | P    | ClawHub persona marketplace       | OPEN     |
+| 🔲       | Q    | coderClawLink Persona Assignment API | OPEN  |

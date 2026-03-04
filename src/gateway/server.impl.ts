@@ -8,8 +8,12 @@ import type { CanvasHostServer } from "../canvas-host/server.js";
 import { type ChannelId, listChannelPlugins } from "../channels/plugins/index.js";
 import { formatCliCommand } from "../cli/command-format.js";
 import { createDefaultDeps } from "../cli/deps.js";
-import { registerCustomRoles } from "../coderclaw/agent-roles.js";
-import { loadCustomAgentRoles } from "../coderclaw/project-context.js";
+import { registerCustomRoles, getBuiltInAgentRoles } from "../coderclaw/agent-roles.js";
+import {
+  loadCustomAgentRoles,
+  loadPersonaAssignments,
+} from "../coderclaw/project-context.js";
+import { globalPersonaRegistry, USER_PERSONAS_DIR } from "../coderclaw/personas.js";
 import {
   CONFIG_PATH,
   isNixMode,
@@ -250,6 +254,32 @@ export async function startGatewayServer(
     }
   } catch (err) {
     log.warn(`Failed to load custom agent roles from ${projectRoot}: ${String(err)}`);
+  }
+
+  // Bootstrap PersonaRegistry: built-ins → user-global → project-local → assignments
+  try {
+    globalPersonaRegistry.registerBuiltins(getBuiltInAgentRoles());
+
+    const userCount = await globalPersonaRegistry.loadFromDir(USER_PERSONAS_DIR, "user-global");
+    if (userCount > 0) {
+      log.info(`Loaded ${userCount} user-global persona plugin(s) from ~/.coderclaw/personas`);
+    }
+
+    const projectCount = await globalPersonaRegistry.loadFromDir(
+      path.join(projectRoot, ".coderClaw", "personas"),
+      "project-local",
+    );
+    if (projectCount > 0) {
+      log.info(`Loaded ${projectCount} project-local persona plugin(s) from .coderClaw/personas`);
+    }
+
+    const assignments = await loadPersonaAssignments(projectRoot);
+    if (assignments.length > 0) {
+      globalPersonaRegistry.applyAssignments(assignments);
+      log.info(`Applied ${assignments.length} persona assignment(s) from context.yaml`);
+    }
+  } catch (err) {
+    log.warn(`Failed to initialise persona registry: ${String(err)}`);
   }
 
   const defaultAgentId = resolveDefaultAgentId(cfgAtStart);

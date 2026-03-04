@@ -3,6 +3,7 @@
  */
 
 import type { AgentRole } from "./types.js";
+import { globalPersonaRegistry } from "./personas.js";
 
 // Registry for custom agent roles loaded from .coderClaw/agents/
 let globalCustomRoles: AgentRole[] = [];
@@ -332,12 +333,28 @@ export function getBuiltInAgentRoles(): AgentRole[] {
 }
 
 /**
- * Find an agent role by name
+ * Find an agent role by name.
+ *
+ * Resolution order (first match wins):
+ *  1. Built-in roles (always available)
+ *  2. Custom roles registered via `registerCustomRoles()` (.coderClaw/agents/)
+ *  3. Persona plugins from the `globalPersonaRegistry` (marketplace / coderClawLink)
+ *
+ * This means built-ins cannot be accidentally overridden by marketplace personas,
+ * while marketplace personas can extend the set with new names.
  */
 export function findAgentRole(
   name: string,
   customRoles: AgentRole[] = globalCustomRoles,
 ): AgentRole | null {
-  const allRoles = [...getBuiltInAgentRoles(), ...customRoles];
-  return allRoles.find((role) => role.name === name) || null;
+  // 1. Check built-ins first (they take precedence)
+  const builtin = getBuiltInAgentRoles().find((role) => role.name === name);
+  if (builtin) return builtin;
+
+  // 2. Check manually registered custom roles (.coderClaw/agents/)
+  const custom = customRoles.find((role) => role.name === name);
+  if (custom) return custom;
+
+  // 3. Delegate to PersonaRegistry (marketplace / coderClawLink / personas dirs)
+  return globalPersonaRegistry.resolve(name);
 }

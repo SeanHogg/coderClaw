@@ -300,13 +300,17 @@ These are genuine, durable advantages over Cursor and Continue.dev today:
 
 ## Implementation Priority (Cursor + Continue Focus)
 
-| # | Feature | Priority | Effort | Target Quarter |
-|---|---------|----------|--------|----------------|
-| 1 | MCP server (expose CoderClaw tools) | P0 | M | Q2 2026 |
-| 2 | Codebase semantic search + auto-context | P0 | M | Q2 2026 |
-| 3 | Inline diff / accept-reject (staged edits) | P1 | M | Q2 2026 |
-| 4 | VS Code extension (sidebar + diff decoration) | P1 | L | Q3 2026 |
-| 5 | Tab autocomplete (FIM proxy) | P2 | M | Q3 2026 |
-| 6 | Session auto-checkpoint | P1 | S | Q2 2026 |
-| 7 | Persona profiles | P1 | M | Q2 2026 |
-| 8 | GitHub issue → PR workflow | P1 | M | Q2 2026 |
+| # | Feature | Priority | Effort | Status | Target Quarter |
+|---|---------|----------|--------|--------|----------------|
+| 1 | MCP server (expose CoderClaw tools) | P0 | M | ✅ Shipped | Q1 2026 |
+| 2 | Codebase semantic search + auto-context | P0 | M | ✅ Shipped | Q1 2026 |
+| 3 | Inline diff / accept-reject (staged edits) | P1 | M | ✅ Shipped | Q1 2026 |
+| 4 | Persona plugin architecture (registry, PERSONA.yaml, marketplace types) | P0 | M | ✅ Shipped | Q1 2026 |
+| 5 | Structured inter-agent context (labelled sections, outputPrefix) | P0 | S | ✅ Shipped | Q1 2026 |
+| 6 | Persona → brain injection (voice/perspective/decisionStyle in brain) | P0 | S | ✅ Shipped | Q1 2026 |
+| 7 | CoderClawLLM syscheck + external brain fallback | P0 | S | ✅ Shipped | Q1 2026 |
+| 8 | ClawHub persona marketplace + coderClawLink assignment API | P0 | L | 🔲 Planned | Q1–Q2 2026 |
+| 9 | VS Code extension (sidebar + diff decoration) | P1 | L | 🔲 Planned | Q3 2026 |
+| 10 | Tab autocomplete (FIM proxy) | P2 | M | 🔲 Planned | Q3 2026 |
+| 11 | Session auto-checkpoint | P1 | S | 🔲 Planned | Q2 2026 |
+| 12 | GitHub issue → PR workflow | P1 | M | 🔲 Planned | Q2 2026 |

@@ -222,6 +222,10 @@ export class AgentOrchestrator {
    * agents can quickly scan for the section they care about.
    */
   private buildStructuredContext(task: Task, workflow: Workflow): string {
+    // Per-dependency result truncation: prevents runaway context when a prior agent
+    // produces an unexpectedly large output (e.g. a full codebase dump).
+    const MAX_RESULT_CHARS = 8_000;
+
     const lines: string[] = [];
 
     lines.push(`## Your Task\n\n${task.input}`);
@@ -234,7 +238,11 @@ export class AgentOrchestrator {
         if (depTask && result) {
           const roleConfig = findAgentRole(depTask.agentRole);
           const prefix = roleConfig?.outputFormat?.outputPrefix ?? depTask.agentRole.toUpperCase();
-          lines.push(`### ${prefix} (${depTask.agentRole})\n\n${result}\n`);
+          const body =
+            result.length > MAX_RESULT_CHARS
+              ? `${result.slice(0, MAX_RESULT_CHARS)}\n…(truncated — ${result.length - MAX_RESULT_CHARS} chars omitted)`
+              : result;
+          lines.push(`### ${prefix} (${depTask.agentRole})\n\n${body}\n`);
         }
       }
     }
