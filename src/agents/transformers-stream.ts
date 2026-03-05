@@ -122,15 +122,17 @@ export async function getOrCreatePipeline(
   dtype: string,
   cacheDir: string,
 ): Promise<TextGenerationPipeline> {
-  const key = `${modelId}:${dtype}`;
+  const resolvedCacheDir = path.resolve(cacheDir);
+  const key = `${modelId}:${dtype}:${resolvedCacheDir}`;
   const cached = pipelineCache.get(key);
+
+  const transformers = await importTransformers();
+  transformers.env.cacheDir = resolvedCacheDir;
+  transformers.env.allowRemoteModels = true;
+
   if (cached) {
     return cached;
   }
-
-  const transformers = await importTransformers();
-  transformers.env.cacheDir = cacheDir;
-  transformers.env.allowRemoteModels = true;
 
   const pipe = await transformers.pipeline("text-generation", modelId, {
     dtype: dtype as PipelineDtype,
@@ -151,11 +153,12 @@ export async function downloadCoderClawLlmModel(opts: {
   cacheDir: string;
   onProgress?: (file: string, percent: number) => void;
 }): Promise<void> {
+  const resolvedCacheDir = path.resolve(opts.cacheDir);
   const transformers = await importTransformers();
-  transformers.env.cacheDir = opts.cacheDir;
+  transformers.env.cacheDir = resolvedCacheDir;
   transformers.env.allowRemoteModels = true;
 
-  const key = `${opts.modelId}:${opts.dtype}`;
+  const key = `${opts.modelId}:${opts.dtype}:${resolvedCacheDir}`;
 
   const progressCallback = opts.onProgress
     ? (info: unknown) => {

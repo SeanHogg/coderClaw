@@ -67,8 +67,10 @@ export function parseToolCalls(text: string): ToolCall[] {
 // ── Path sandboxing ───────────────────────────────────────────────────────────
 
 function sandboxedPath(workspaceDir: string, userPath: string): string {
-  const resolved = path.resolve(workspaceDir, userPath);
-  if (!resolved.startsWith(path.resolve(workspaceDir))) {
+  const workspaceRoot = path.resolve(workspaceDir);
+  const resolved = path.resolve(workspaceRoot, userPath);
+  const relative = path.relative(workspaceRoot, resolved);
+  if (path.isAbsolute(relative) || relative === ".." || relative.startsWith(`..${path.sep}`)) {
     throw new Error(`Path traversal blocked: ${userPath}`);
   }
   return resolved;
@@ -141,19 +143,32 @@ async function toolRunCode(
   call: { code: string; lang?: string },
 ): Promise<string> {
   const lang = (call.lang ?? "js").toLowerCase();
-  const ext = lang === "ts" || lang === "typescript" ? ".ts" : ".mjs";
-  // FIX #3: use mkdtemp + pid for unique, collision-free temp paths.
+  const isTs = lang === "ts" || lang === "typescript";
+  const ext = isTs ? ".ts" : ".mjs";
+
+  // TypeScript execution requires tsx, which is a devDependency.
+  // Check at runtime so consumers without tsx get a clear message.
+  if (isTs) {
+    try {
+      await import("tsx");
+    } catch {
+      return (
+        "Error: TypeScript code execution requires 'tsx' to be installed. " +
+        "Run `npm install tsx` (or pnpm/yarn equivalent), then retry. " +
+        "Alternatively, provide the code in JavaScript."
+      );
+    }
+  }
+
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), `coderclawllm-${process.pid}-`));
   const tmpFile = path.join(tmpDir, `run${ext}`);
 
   try {
     await fs.writeFile(tmpFile, call.code, "utf-8");
 
-    // FIX #2: use spawn with array args — never interpolate paths into shell strings.
-    const [cmd, ...args] =
-      ext === ".ts"
-        ? ["node", "--import", "tsx/esm", tmpFile]
-        : ["node", tmpFile];
+    const [cmd, ...args] = isTs
+      ? ["node", "--import", "tsx/esm", tmpFile]
+      : ["node", tmpFile];
 
     const output = await new Promise<string>((resolve) => {
       const chunks: Buffer[] = [];

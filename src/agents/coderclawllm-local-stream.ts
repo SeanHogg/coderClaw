@@ -158,9 +158,9 @@ async function callOllama(opts: {
   }
 }
 
-// ── Non-streaming OpenAI-compatible call ──────────────────────────────────────
+// ── Non-streaming OpenAI Chat Completions call ────────────────────────────────
 
-async function callOpenAiCompatible(opts: {
+async function callOpenAiCompletions(opts: {
   baseUrl: string;
   apiKey: string;
   modelId: string;
@@ -190,6 +190,54 @@ async function callOpenAiCompatible(opts: {
   }
 }
 
+// ── Non-streaming OpenAI Responses API call ───────────────────────────────────
+// The Responses API (POST /responses) uses `input` instead of `messages`
+// and returns output via `output[].content[].text`.
+
+async function callOpenAiResponses(opts: {
+  baseUrl: string;
+  apiKey: string;
+  modelId: string;
+  messages: Array<{ role: string; content: string }>;
+  maxTokens: number;
+  temperature: number;
+  signal?: AbortSignal;
+}): Promise<string | null> {
+  type ResponsesOutput = {
+    output?: Array<{
+      type?: string;
+      content?: Array<{ type?: string; text?: string }>;
+    }>;
+  };
+  try {
+    const res = await fetch(`${opts.baseUrl.replace(/\/+$/, "")}/responses`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${opts.apiKey}` },
+      body: JSON.stringify({
+        model: opts.modelId,
+        input: opts.messages,
+        max_output_tokens: opts.maxTokens,
+        temperature: opts.temperature,
+        stream: false,
+        store: false,
+      }),
+      signal: opts.signal ?? AbortSignal.timeout(60_000),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as ResponsesOutput;
+    for (const block of data.output ?? []) {
+      if (block.type === "message") {
+        for (const part of block.content ?? []) {
+          if (part.type === "output_text" && part.text) return part.text.trim();
+        }
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // ── Execution LLM router ──────────────────────────────────────────────────────
 
 async function callExecutionLlm(opts: {
@@ -206,16 +254,20 @@ async function callExecutionLlm(opts: {
     const modelId = cfg.models?.[0]?.id;
     if (!modelId) continue;
 
-    // Extract shared call args once to avoid duplication (#6).
     const callArgs = { modelId, messages, maxTokens, temperature, signal };
 
     if (cfg.api === "ollama") {
       const r = await callOllama({ baseUrl: cfg.baseUrl, ...callArgs });
       if (r !== null) return r;
-    } else if (cfg.api === "openai-completions" || cfg.api === "openai-responses") {
+    } else if (cfg.api === "openai-completions") {
       const apiKey = resolveApiKey(cfg.apiKey ?? "");
       if (!apiKey) continue;
-      const r = await callOpenAiCompatible({ baseUrl: cfg.baseUrl, apiKey, ...callArgs });
+      const r = await callOpenAiCompletions({ baseUrl: cfg.baseUrl, apiKey, ...callArgs });
+      if (r !== null) return r;
+    } else if (cfg.api === "openai-responses") {
+      const apiKey = resolveApiKey(cfg.apiKey ?? "");
+      if (!apiKey) continue;
+      const r = await callOpenAiResponses({ baseUrl: cfg.baseUrl, apiKey, ...callArgs });
       if (r !== null) return r;
     }
   }
