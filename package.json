@@ -37,7 +37,7 @@
     "README-header.png",
     "README.md",
     "assets/",
-    "docs/reference/templates/",
+    "foundation/",
     "dist/",
     "extensions/",
     "skills/"
