@@ -1,4 +1,5 @@
 import { asString, extractTextFromMessage, isCommandMessage } from "./tui-formatters.js";
+import { normalizeAgentId, parseAgentSessionKey } from "../routing/session-key.js";
 import { TuiStreamAssembler } from "./tui-stream-assembler.js";
 import type { AgentEvent, ChatEvent, TuiStateAccess } from "./tui-types.js";
 
@@ -291,6 +292,53 @@ export function createEventHandlers(context: EventHandlerContext) {
   let streamAssembler = new TuiStreamAssembler();
   let lastSessionKey = state.currentSessionKey;
 
+  const normalizeLegacySessionAlias = (value: string) => {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "default") {
+      return "main";
+    }
+    return normalized;
+  };
+
+  const sessionsMatch = (incoming: string | undefined, current: string): boolean => {
+    const incomingRaw = normalizeLegacySessionAlias(incoming ?? "");
+    const currentRaw = normalizeLegacySessionAlias(current);
+    if (!incomingRaw || !currentRaw) {
+      return false;
+    }
+    if (incomingRaw === currentRaw) {
+      return true;
+    }
+
+    const incomingParsed = parseAgentSessionKey(incomingRaw);
+    const currentParsed = parseAgentSessionKey(currentRaw);
+    const currentAgent = normalizeAgentId(state.currentAgentId);
+
+    if (incomingParsed && currentParsed) {
+      return (
+        normalizeAgentId(incomingParsed.agentId) === normalizeAgentId(currentParsed.agentId) &&
+        normalizeLegacySessionAlias(incomingParsed.rest) ===
+          normalizeLegacySessionAlias(currentParsed.rest)
+      );
+    }
+
+    if (incomingParsed && !currentParsed) {
+      return (
+        normalizeAgentId(incomingParsed.agentId) === currentAgent &&
+        normalizeLegacySessionAlias(incomingParsed.rest) === currentRaw
+      );
+    }
+
+    if (!incomingParsed && currentParsed) {
+      return (
+        normalizeAgentId(currentParsed.agentId) === currentAgent &&
+        incomingRaw === normalizeLegacySessionAlias(currentParsed.rest)
+      );
+    }
+
+    return false;
+  };
+
   const clearPendingFinalTimeout = (runId: string) => {
     const timer = pendingFinalTimeouts.get(runId);
     if (!timer) {
@@ -540,7 +588,7 @@ export function createEventHandlers(context: EventHandlerContext) {
     }
     const evt = payload as ChatEvent;
     syncSessionKey();
-    if (evt.sessionKey !== state.currentSessionKey) {
+    if (!sessionsMatch(evt.sessionKey, state.currentSessionKey)) {
       return;
     }
     if (finalizedRuns.has(evt.runId)) {

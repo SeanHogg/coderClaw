@@ -98,7 +98,7 @@ export class ClawLinkRelayService {
 
     this.gatewayClient
       ?.request("chat.send", {
-        sessionKey: "default",
+        sessionKey: "main",
         message,
         idempotencyKey: `task-${payload.sourceType}-${payload.taskId ?? "na"}-${payload.executionId ?? Date.now()}`,
       })
@@ -208,7 +208,7 @@ export class ClawLinkRelayService {
 
       case "chat": {
         const message = typeof msg.message === "string" ? msg.message : "";
-        const session = typeof msg.session === "string" ? msg.session : "default";
+            const session = typeof msg.session === "string" ? msg.session : "main";
         this.gatewayClient
           ?.request("chat.send", {
             sessionKey: session,
@@ -289,7 +289,7 @@ export class ClawLinkRelayService {
         logDebug(`[clawlink-relay] remote task from claw ${fromClawId}: ${task.slice(0, 80)}…`);
         this.gatewayClient
           ?.request("chat.send", {
-            sessionKey: "default",
+            sessionKey: "main",
             message: `[Remote task from claw ${fromClawId}]\n\n${task}`,
             idempotencyKey: `remote-${fromClawId}-${Date.now()}`,
           })
@@ -523,7 +523,7 @@ export class ClawLinkRelayService {
     }
 
     if (legacy && typeof legacy.state === "string") {
-      const session = legacy.sessionKey ?? "default";
+      const session = legacy.sessionKey ?? "main";
       if (legacy.state === "final") {
         const text = extractChatText(legacy.message);
         const role = extractChatRole(legacy.message);
@@ -556,7 +556,7 @@ export class ClawLinkRelayService {
         this.sendToRelay({
           type: "chat.delta",
           delta: p.delta ?? "",
-          session: p.sessionKey ?? "default",
+          session: p.sessionKey ?? "main",
         });
         break;
       case "message":
@@ -564,7 +564,7 @@ export class ClawLinkRelayService {
           type: "chat.message",
           role: p.role ?? "assistant",
           text: p.text ?? "",
-          session: p.sessionKey ?? "default",
+          session: p.sessionKey ?? "main",
         });
         break;
       case "tool_use":
@@ -573,7 +573,7 @@ export class ClawLinkRelayService {
           toolCallId: p.toolCallId,
           toolName: p.toolName,
           toolInput: p.toolInput,
-          session: p.sessionKey ?? "default",
+          session: p.sessionKey ?? "main",
         });
         break;
       case "tool_result":
@@ -581,11 +581,11 @@ export class ClawLinkRelayService {
           type: "tool.result",
           toolCallId: p.toolCallId,
           toolResult: p.toolResult,
-          session: p.sessionKey ?? "default",
+          session: p.sessionKey ?? "main",
         });
         break;
       case "abort":
-        this.sendToRelay({ type: "chat.abort", session: p.sessionKey ?? "default" });
+        this.sendToRelay({ type: "chat.abort", session: p.sessionKey ?? "main" });
         break;
       default:
         break;

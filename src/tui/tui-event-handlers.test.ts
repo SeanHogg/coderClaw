@@ -511,6 +511,47 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     expect(loadHistory).toHaveBeenCalledTimes(1);
   });
 
+  it("accepts chat events for legacy main session aliases", () => {
+    const { chatLog, handleChatEvent } = createHandlersHarness({
+      state: { activeChatRunId: null, currentSessionKey: "agent:main:main", currentAgentId: "main" },
+    });
+
+    handleChatEvent({
+      runId: "run-alias-main",
+      sessionKey: "main",
+      state: "final",
+      message: { content: [{ type: "text", text: "main alias" }] },
+    });
+
+    handleChatEvent({
+      runId: "run-alias-default",
+      sessionKey: "default",
+      state: "final",
+      message: { content: [{ type: "text", text: "default alias" }] },
+    });
+
+    expect(chatLog.finalizeAssistant).toHaveBeenCalledWith("main alias", "run-alias-main");
+    expect(chatLog.finalizeAssistant).toHaveBeenCalledWith("default alias", "run-alias-default");
+  });
+
+  it("ignores chat events from other agent sessions", () => {
+    const { chatLog, handleChatEvent } = createHandlersHarness({
+      state: { activeChatRunId: null, currentSessionKey: "agent:main:main", currentAgentId: "main" },
+    });
+
+    handleChatEvent({
+      runId: "run-other-agent",
+      sessionKey: "agent:ops:main",
+      state: "final",
+      message: { content: [{ type: "text", text: "should be ignored" }] },
+    });
+
+    expect(chatLog.finalizeAssistant).not.toHaveBeenCalledWith(
+      "should be ignored",
+      "run-other-agent",
+    );
+  });
+
   it("reports activity summary with unique files read on run completion", () => {
     const { state, reportAction, handleAgentEvent, handleChatEvent } = createHandlersHarness({
       state: { activeChatRunId: "run-summary" },
