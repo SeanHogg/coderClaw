@@ -56,7 +56,7 @@ async function runNewWithPreviousSessionEntry(params: {
 
   await handler(event);
 
-  const memoryDir = path.join(params.tempDir, "memory");
+  const memoryDir = path.join(params.tempDir, ".coderclaw", "memory");
   const files = await fs.readdir(memoryDir);
   const memoryContent =
     files.length > 0 ? await fs.readFile(path.join(memoryDir, files[0]), "utf-8") : "";
@@ -122,7 +122,7 @@ describe("session-memory hook", () => {
     await handler(event);
 
     // Memory directory should not be created for non-command events
-    const memoryDir = path.join(tempDir, "memory");
+    const memoryDir = path.join(tempDir, ".coderclaw", "memory");
     await expect(fs.access(memoryDir)).rejects.toThrow();
   });
 
@@ -136,7 +136,7 @@ describe("session-memory hook", () => {
     await handler(event);
 
     // Memory directory should not be created for other commands
-    const memoryDir = path.join(tempDir, "memory");
+    const memoryDir = path.join(tempDir, ".coderclaw", "memory");
     await expect(fs.access(memoryDir)).rejects.toThrow();
   });
 

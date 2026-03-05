@@ -78,7 +78,7 @@ async function loadTemplate(name: string): Promise<string> {
         return embedded;
       }
       throw new Error(
-        `Missing workspace template: ${name} (${templatePath}). Ensure docs/reference/templates are packaged.`,
+        `Missing workspace template: ${name} (${templatePath}). Ensure foundation/ templates are packaged.`,
       );
     }
   })();

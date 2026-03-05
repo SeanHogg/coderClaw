@@ -44,6 +44,53 @@ export function normalizeExtraMemoryPaths(workspaceDir: string, extraPaths?: str
   return Array.from(new Set(resolved));
 }
 
+// Helpers for working with the various built‑in memory locations. These
+// functions centralize the canonical paths so that callers no longer duplicate
+// the same literal strings across multiple modules.
+
+/**
+ * Legacy memory directory under the workspace root (`workspace/memory`).
+ */
+export function getLegacyMemoryDir(workspaceDir: string): string {
+  return path.join(workspaceDir, "memory");
+}
+
+/**
+ * Canonical memory directory under `.coderclaw` (`workspace/.coderclaw/memory`).
+ */
+export function getCanonicalMemoryDir(workspaceDir: string): string {
+  return path.join(workspaceDir, ".coderclaw", "memory");
+}
+
+/**
+ * Returns both the legacy and canonical memory directories (in that order).
+ */
+export function getDefaultMemoryDirs(workspaceDir: string): string[] {
+  return [getLegacyMemoryDir(workspaceDir), getCanonicalMemoryDir(workspaceDir)];
+}
+
+/**
+ * Returns the standard files that are treated as memory roots.
+ */
+export function getDefaultMemoryFilePaths(workspaceDir: string): string[] {
+  return [path.join(workspaceDir, "MEMORY.md"), path.join(workspaceDir, "memory.md")];
+}
+
+/**
+ * Patterns appropriate for passing to watchers; includes the markdown glob for
+ * each default directory.
+ */
+export function getDefaultMemoryWatchPatterns(workspaceDir: string): string[] {
+  const files = getDefaultMemoryFilePaths(workspaceDir);
+  const dirs = getDefaultMemoryDirs(workspaceDir);
+  const patterns: string[] = [];
+  patterns.push(...files);
+  for (const d of dirs) {
+    patterns.push(path.join(d, "**", "*.md"));
+  }
+  return patterns;
+}
+
 export function isMemoryPath(relPath: string): boolean {
   const normalized = normalizeRelPath(relPath);
   if (!normalized) {
@@ -52,7 +99,12 @@ export function isMemoryPath(relPath: string): boolean {
   if (normalized === "MEMORY.md" || normalized === "memory.md") {
     return true;
   }
-  return normalized.startsWith("memory/");
+  // Daily logs are in .coderclaw/memory/*.md
+  return (
+    normalized === "memory" ||
+    normalized.startsWith("memory/") ||
+    normalized.startsWith(".coderclaw/memory/")
+  );
 }
 
 async function walkDir(dir: string, files: string[]) {
@@ -81,9 +133,8 @@ export async function listMemoryFiles(
   extraPaths?: string[],
 ): Promise<string[]> {
   const result: string[] = [];
-  const memoryFile = path.join(workspaceDir, "MEMORY.md");
-  const altMemoryFile = path.join(workspaceDir, "memory.md");
-  const memoryDir = path.join(workspaceDir, "memory");
+  const [memoryFile, altMemoryFile] = getDefaultMemoryFilePaths(workspaceDir);
+  const [legacyDir, canonicalDir] = getDefaultMemoryDirs(workspaceDir);
 
   const addMarkdownFile = async (absPath: string) => {
     try {
@@ -100,12 +151,17 @@ export async function listMemoryFiles(
 
   await addMarkdownFile(memoryFile);
   await addMarkdownFile(altMemoryFile);
-  try {
-    const dirStat = await fs.lstat(memoryDir);
-    if (!dirStat.isSymbolicLink() && dirStat.isDirectory()) {
-      await walkDir(memoryDir, result);
-    }
-  } catch {}
+
+  // Check both the legacy and canonical directories for markdown content.
+  const dirsToScan = [legacyDir, canonicalDir];
+  for (const dir of dirsToScan) {
+    try {
+      const dirStat = await fs.lstat(dir);
+      if (!dirStat.isSymbolicLink() && dirStat.isDirectory()) {
+        await walkDir(dir, result);
+      }
+    } catch {}
+  }
 
   const normalizedExtraPaths = normalizeExtraMemoryPaths(workspaceDir, extraPaths);
   if (normalizedExtraPaths.length > 0) {

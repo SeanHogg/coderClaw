@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CoderClawConfig } from "../config/config.js";
 import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
+import { getDefaultMemoryDirs } from "./internal.js";
 import { createOpenAIEmbeddingProviderMock } from "./test-embeddings-mock.js";
 import { hasNodeSqliteSupport } from "./test-sqlite-support.js";
 import "./test-runtime-mocks.js";
@@ -137,7 +138,7 @@ describeIfSqlite("memory indexing with OpenAI batches", () => {
   beforeAll(async () => {
     fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-mem-batch-"));
     workspaceDir = path.join(fixtureRoot, "workspace");
-    memoryDir = path.join(workspaceDir, "memory");
+    memoryDir = getDefaultMemoryDirs(workspaceDir)[1];
     indexPath = path.join(fixtureRoot, "index.sqlite");
     await fs.mkdir(memoryDir, { recursive: true });
 

@@ -16,6 +16,14 @@
  */
 
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { clawFleetTool } from "../coderclaw/tools/claw-fleet-tool.js";
+import { codebaseSearchTool } from "../coderclaw/tools/codebase-search-tool.js";
+import { gitHistoryTool } from "../coderclaw/tools/git-history-tool.js";
+import { projectKnowledgeTool } from "../coderclaw/tools/project-knowledge-tool.js";
+import { workflowStatusTool } from "../coderclaw/tools/workflow-status-tool.js";
+import { loadConfig } from "../config/config.js";
+import type { AuthRateLimiter } from "./auth-rate-limit.js";
+import { authorizeGatewayConnect, type ResolvedGatewayAuth } from "./auth.js";
 import {
   readJsonBodyOrError,
   sendJson,
@@ -23,14 +31,6 @@ import {
   sendInvalidRequest,
 } from "./http-common.js";
 import { getBearerToken } from "./http-utils.js";
-import { authorizeGatewayConnect, type ResolvedGatewayAuth } from "./auth.js";
-import type { AuthRateLimiter } from "./auth-rate-limit.js";
-import { loadConfig } from "../config/config.js";
-import { codebaseSearchTool } from "../coderclaw/tools/codebase-search-tool.js";
-import { projectKnowledgeTool } from "../coderclaw/tools/project-knowledge-tool.js";
-import { gitHistoryTool } from "../coderclaw/tools/git-history-tool.js";
-import { workflowStatusTool } from "../coderclaw/tools/workflow-status-tool.js";
-import { clawFleetTool } from "../coderclaw/tools/claw-fleet-tool.js";
 
 const MCP_VERSION = "2024-11-05";
 const SERVER_NAME = "coderclaw";

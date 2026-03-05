@@ -21,7 +21,7 @@ android {
     applicationId = "ai.coderclaw.android"
     minSdk = 31
     targetSdk = 36
-    versionCode = 202602230
+    versionCode = 202603050
     versionName = "2026.2.20"
     ndk {
       // Support all major ABIs — native libs are tiny (~47 KB per ABI)

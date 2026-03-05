@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CoderClawConfig } from "../config/config.js";
 import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
+import { getDefaultMemoryWatchPatterns, getDefaultMemoryDirs } from "./internal.js";
 import { hasNodeSqliteSupport } from "./test-sqlite-support.js";
 
 const { watchMock } = vi.hoisted(() => ({
@@ -57,7 +58,8 @@ describeIfSqlite("memory watcher config", () => {
   it("watches markdown globs and ignores dependency directories", async () => {
     workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-memory-watch-"));
     extraDir = path.join(workspaceDir, "extra");
-    await fs.mkdir(path.join(workspaceDir, "memory"), { recursive: true });
+    // make sure the canonical memory dir exists
+    await fs.mkdir(getDefaultMemoryDirs(workspaceDir)[1], { recursive: true });
     await fs.mkdir(extraDir, { recursive: true });
     await fs.writeFile(path.join(extraDir, "notes.md"), "hello");
 
@@ -90,23 +92,19 @@ describeIfSqlite("memory watcher config", () => {
       string[],
       Record<string, unknown>,
     ];
+    const defaultPatterns = getDefaultMemoryWatchPatterns(workspaceDir);
     expect(watchedPaths).toEqual(
-      expect.arrayContaining([
-        path.join(workspaceDir, "MEMORY.md"),
-        path.join(workspaceDir, "memory.md"),
-        path.join(workspaceDir, "memory", "**", "*.md"),
-        path.join(extraDir, "**", "*.md"),
-      ]),
+      expect.arrayContaining([...defaultPatterns, path.join(extraDir, "**", "*.md")]),
     );
     expect(options.ignoreInitial).toBe(true);
     expect(options.awaitWriteFinish).toEqual({ stabilityThreshold: 25, pollInterval: 100 });
 
     const ignored = options.ignored as ((watchPath: string) => boolean) | undefined;
     expect(ignored).toBeTypeOf("function");
-    expect(ignored?.(path.join(workspaceDir, "memory", "node_modules", "pkg", "index.md"))).toBe(
-      true,
-    );
-    expect(ignored?.(path.join(workspaceDir, "memory", ".venv", "lib", "python.md"))).toBe(true);
-    expect(ignored?.(path.join(workspaceDir, "memory", "project", "notes.md"))).toBe(false);
+    // canonical directory should also be ignored for dependency paths
+    const canon = path.join(workspaceDir, ".coderclaw", "memory");
+    expect(ignored?.(path.join(canon, "node_modules", "pkg", "index.md"))).toBe(true);
+    expect(ignored?.(path.join(canon, ".venv", "lib", "python.md"))).toBe(true);
+    expect(ignored?.(path.join(canon, "project", "notes.md"))).toBe(false);
   });
 });

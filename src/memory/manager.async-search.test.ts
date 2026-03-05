@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CoderClawConfig } from "../config/config.js";
 import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
+import { getDefaultMemoryDirs } from "./internal.js";
 import { createOpenAIEmbeddingProviderMock } from "./test-embeddings-mock.js";
 import { hasNodeSqliteSupport } from "./test-sqlite-support.js";
 
@@ -28,8 +29,9 @@ describeIfSqlite("memory search async sync", () => {
   beforeEach(async () => {
     workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-mem-async-"));
     indexPath = path.join(workspaceDir, "index.sqlite");
-    await fs.mkdir(path.join(workspaceDir, "memory"));
-    await fs.writeFile(path.join(workspaceDir, "memory", "2026-01-07.md"), "hello\n");
+    const memDir = getDefaultMemoryDirs(workspaceDir)[1];
+    await fs.mkdir(memDir, { recursive: true });
+    await fs.writeFile(path.join(memDir, "2026-01-07.md"), "hello\n");
   });
 
   afterEach(async () => {

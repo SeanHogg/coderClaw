@@ -20,7 +20,7 @@ Every CoderClaw workspace includes an `AGENTS.md` file at its root. This is the 
 
 ## The Default Template
 
-The default template is available in the repo at [`docs/reference/templates/AGENTS.md`](https://docs.coderclaw.ai/reference/templates/agents). This is what gets placed in a new workspace when you run `coderclaw onboard` or bootstrap a workspace manually.
+The default template is available in the repo at [`foundation/AGENTS.md`](https://docs.coderclaw.ai/reference/templates/agents). This is what gets placed in a new workspace when you run `coderclaw onboard` or bootstrap a workspace manually.
 
 You should edit `AGENTS.md` to reflect your specific needs — it's a starting point, not a final answer.
 

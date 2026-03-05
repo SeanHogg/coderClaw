@@ -90,5 +90,16 @@ USER.md
 /local/
 package-lock.json
 
+# Agent workspace files seeded from foundation/ templates (recreated by build)
+/AGENTS.md
+/SOUL.md
+/TOOLS.md
+/HEARTBEAT.md
+/MEMORY.md
+/IDENTITY.md
+/USER.md
+/BOOTSTRAP.md
+/BOOT.md
+
 # Local iOS signing overrides
 apps/ios/LocalSigning.xcconfig

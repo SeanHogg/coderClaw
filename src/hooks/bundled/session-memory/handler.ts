@@ -184,7 +184,8 @@ const saveSessionToMemory: HookHandler = async (event) => {
     const workspaceDir = cfg
       ? resolveAgentWorkspaceDir(cfg, agentId)
       : path.join(resolveStateDir(process.env, os.homedir), "workspace");
-    const memoryDir = path.join(workspaceDir, "memory");
+    // Memory logs go in .coderclaw/memory inside the workspace (not workspace/memory)
+    const memoryDir = path.join(workspaceDir, ".coderclaw", "memory");
     await fs.mkdir(memoryDir, { recursive: true });
 
     // Get today's date for filename

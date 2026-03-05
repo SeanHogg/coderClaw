@@ -7,6 +7,9 @@ import {
   listMemoryFiles,
   normalizeExtraMemoryPaths,
   remapChunkLines,
+  getDefaultMemoryFilePaths,
+  getDefaultMemoryDirs,
+  getDefaultMemoryWatchPatterns,
 } from "./internal.js";
 
 describe("normalizeExtraMemoryPaths", () => {
@@ -24,11 +27,36 @@ describe("normalizeExtraMemoryPaths", () => {
   });
 });
 
+describe("memory path helpers", () => {
+  it("generates sane defaults based on workspaceDir", () => {
+    const workspaceDir = path.join("/home", "user", "proj");
+    const files = getDefaultMemoryFilePaths(workspaceDir);
+    expect(files).toEqual([
+      path.join(workspaceDir, "MEMORY.md"),
+      path.join(workspaceDir, "memory.md"),
+    ]);
+    const dirs = getDefaultMemoryDirs(workspaceDir);
+    expect(dirs).toEqual([
+      path.join(workspaceDir, "memory"),
+      path.join(workspaceDir, ".coderclaw", "memory"),
+    ]);
+    const patterns = getDefaultMemoryWatchPatterns(workspaceDir);
+    expect(patterns).toEqual([
+      ...files,
+      path.join(dirs[0], "**", "*.md"),
+      path.join(dirs[1], "**", "*.md"),
+    ]);
+  });
+});
+
 describe("listMemoryFiles", () => {
   let tmpDir: string;
 
   beforeEach(async () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "memory-test-"));
+    // create canonical memory directory to ensure scanning works there too
+    const [, canon] = getDefaultMemoryDirs(tmpDir);
+    await fs.mkdir(canon, { recursive: true });
   });
 
   afterEach(async () => {
@@ -44,6 +72,7 @@ describe("listMemoryFiles", () => {
     await fs.writeFile(path.join(extraDir, "ignore.txt"), "Not a markdown file");
 
     const files = await listMemoryFiles(tmpDir, [extraDir]);
+    // should include the root file + two notes (ignoring canonical path absence)
     expect(files).toHaveLength(3);
     expect(files.some((file) => file.endsWith("MEMORY.md"))).toBe(true);
     expect(files.some((file) => file.endsWith("note1.md"))).toBe(true);
@@ -77,6 +106,14 @@ describe("listMemoryFiles", () => {
 
     const files = await listMemoryFiles(tmpDir, ["/does/not/exist"]);
     expect(files).toHaveLength(1);
+  });
+
+  it("finds entries in the canonical .coderclaw memory directory", async () => {
+    const [_, canon] = getDefaultMemoryDirs(tmpDir);
+    const note = path.join(canon, "daily.md");
+    await fs.writeFile(note, "# Canonical");
+    const files = await listMemoryFiles(tmpDir);
+    expect(files.some((f) => f === note)).toBe(true);
   });
 
   it("ignores symlinked files and directories", async () => {

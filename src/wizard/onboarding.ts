@@ -462,6 +462,7 @@ export async function runOnboardingWizard(
           [
             "CoderClawLLM requires CoderClawLink registration.",
             "Complete login/registration now so /model coderclawllm/auto works immediately.",
+            "You can skip this and connect later — use /setup or: coderclaw init --reconnect",
           ].join("\n"),
           "CoderClawLLM",
         );
@@ -473,6 +474,21 @@ export async function runOnboardingWizard(
           defaultInstanceName,
           forcePrompt: true,
         });
+
+        // If still no key after the wizard, warn but don't block — the user
+        // can switch models or connect later.
+        const keyAfterWizard =
+          process.env.CODERCLAW_LINK_API_KEY?.trim() ??
+          readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+        if (!keyAfterWizard) {
+          await prompter.note(
+            [
+              "CoderClawLLM won't work until you connect to CoderClawLink.",
+              "You can still use CoderClaw — switch models with /model or connect later.",
+            ].join("\n"),
+            "Skipped",
+          );
+        }
       }
     }
 

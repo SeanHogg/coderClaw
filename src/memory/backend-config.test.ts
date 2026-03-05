@@ -35,6 +35,8 @@ describe("resolveMemoryBackendConfig", () => {
     expect(names.has("memory-root-main")).toBe(true);
     expect(names.has("memory-alt-main")).toBe(true);
     expect(names.has("memory-dir-main")).toBe(true);
+    // canonical path should also be present
+    expect(names.has("coderclaw-memory-dir-main")).toBe(true);
   });
 
   it("parses quoted qmd command paths", () => {
@@ -103,7 +105,9 @@ describe("resolveMemoryBackendConfig", () => {
       (devResolved.qmd?.collections ?? []).map((collection) => collection.name),
     );
     expect(mainNames.has("memory-dir-main")).toBe(true);
+    expect(mainNames.has("coderclaw-memory-dir-main")).toBe(true);
     expect(devNames.has("memory-dir-dev")).toBe(true);
+    expect(devNames.has("coderclaw-memory-dir-dev")).toBe(true);
     expect(mainNames.has("workspace-main")).toBe(true);
     expect(devNames.has("workspace-dev")).toBe(true);
   });

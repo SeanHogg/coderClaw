@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
+import { getDefaultMemoryDirs } from "./internal.js";
 import "./test-runtime-mocks.js";
 import { hasNodeSqliteSupport } from "./test-sqlite-support.js";
 
@@ -49,7 +50,7 @@ describeIfSqlite("memory index", () => {
   beforeAll(async () => {
     fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-mem-fixtures-"));
     workspaceDir = path.join(fixtureRoot, "workspace");
-    memoryDir = path.join(workspaceDir, "memory");
+    memoryDir = getDefaultMemoryDirs(workspaceDir)[1];
     extraDir = path.join(workspaceDir, "extra");
     indexMainPath = path.join(workspaceDir, "index-main.sqlite");
     indexVectorPath = path.join(workspaceDir, "index-vector.sqlite");

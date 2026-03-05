@@ -905,7 +905,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
       case "diff": {
         const target = args.trim();
         if (!hasStagedEdits()) {
-          chatLog.addSystem("No staged changes. Agent edits are applied immediately by default.\nRun CODERCLAW_STAGED=true or set staged mode to buffer edits for review.");
+          chatLog.addSystem(
+            "No staged changes. Agent edits are applied immediately by default.\nRun CODERCLAW_STAGED=true or set staged mode to buffer edits for review.",
+          );
           break;
         }
         if (target) {
@@ -914,10 +916,14 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             chatLog.addSystem(`No staged edit found for: ${target}\n\n${buildStagedSummary()}`);
             break;
           }
-          chatLog.addSystem(`Diff for ${edit.filePath}:\n\n\`\`\`diff\n${buildUnifiedDiff(edit)}\n\`\`\``);
+          chatLog.addSystem(
+            `Diff for ${edit.filePath}:\n\n\`\`\`diff\n${buildUnifiedDiff(edit)}\n\`\`\``,
+          );
         } else {
           const edits = getStagedEdits();
-          const diffs = edits.map((e) => `### ${e.filePath}\n\`\`\`diff\n${buildUnifiedDiff(e)}\n\`\`\``);
+          const diffs = edits.map(
+            (e) => `### ${e.filePath}\n\`\`\`diff\n${buildUnifiedDiff(e)}\n\`\`\``,
+          );
           chatLog.addSystem([buildStagedSummary(), "", ...diffs].join("\n"));
         }
         break;
@@ -931,8 +937,14 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         if (!target || target === "all") {
           const { accepted, failed } = await acceptAllEdits();
           const lines: string[] = [];
-          if (accepted.length > 0) lines.push(`✅ Applied ${accepted.length} change(s):\n${accepted.map((f) => `  ${f}`).join("\n")}`);
-          if (failed.length > 0) lines.push(`❌ Failed:\n${failed.map((f) => `  ${f.filePath}: ${f.error}`).join("\n")}`);
+          if (accepted.length > 0)
+            lines.push(
+              `✅ Applied ${accepted.length} change(s):\n${accepted.map((f) => `  ${f}`).join("\n")}`,
+            );
+          if (failed.length > 0)
+            lines.push(
+              `❌ Failed:\n${failed.map((f) => `  ${f.filePath}: ${f.error}`).join("\n")}`,
+            );
           chatLog.addSystem(lines.join("\n\n") || "Done.");
         } else {
           const result = await acceptEdit(target);

@@ -9,12 +9,12 @@
 
 The AI developer tools market is growing rapidly. Key segments:
 
-| Segment | TAM estimate | Current leaders |
-|---------|-------------|-----------------|
-| IDE AI assistants | $3B+ (2025) | GitHub Copilot, Cursor, Windsurf |
-| Autonomous coding agents | $800M+ (2025) | Devin, SWE-agent, OpenHands |
-| CI/CD AI review | $500M+ (2025) | CodeRabbit, Ellipsis |
-| Enterprise AI orchestration | $2B+ (2026) | Devin, custom |
+| Segment                     | TAM estimate  | Current leaders                  |
+| --------------------------- | ------------- | -------------------------------- |
+| IDE AI assistants           | $3B+ (2025)   | GitHub Copilot, Cursor, Windsurf |
+| Autonomous coding agents    | $800M+ (2025) | Devin, SWE-agent, OpenHands      |
+| CI/CD AI review             | $500M+ (2025) | CodeRabbit, Ellipsis             |
+| Enterprise AI orchestration | $2B+ (2026)   | Devin, custom                    |
 
 **CoderClaw's differentiated position**: The only open-source, self-hosted, multi-agent coding orchestration platform that works across all messaging channels and any model provider.
 
@@ -36,11 +36,11 @@ The AI developer tools market is growing rapidly. Key segments:
 - **Target**: Individual developers and small teams (2–20 developers)
 - **Pricing model**: Per-seat/month subscription
 
-| Plan | Price | Features |
-|------|-------|----------|
-| **Developer** | $19/month | 1 claw, workflow portal, spec storage, memory timeline, 100K tokens/day via coderClawLLM |
-| **Team** | $49/user/month | Unlimited claws, fleet management, shared personas, PR review bot, 1M tokens/day |
-| **Business** | $149/user/month | RBAC, audit trail, SSO, SLA, dedicated support, unlimited tokens |
+| Plan          | Price           | Features                                                                                 |
+| ------------- | --------------- | ---------------------------------------------------------------------------------------- |
+| **Developer** | $19/month       | 1 claw, workflow portal, spec storage, memory timeline, 100K tokens/day via coderClawLLM |
+| **Team**      | $49/user/month  | Unlimited claws, fleet management, shared personas, PR review bot, 1M tokens/day         |
+| **Business**  | $149/user/month | RBAC, audit trail, SSO, SLA, dedicated support, unlimited tokens                         |
 
 - **Key features unlocked by Pro**:
   - Live workflow DAG visualization
@@ -58,11 +58,11 @@ The AI developer tools market is growing rapidly. Key segments:
 - **Target**: Developers who want managed model access without vendor accounts
 - **Model**: Pay-per-token (usage-based)
 
-| Pool | Pricing | Features |
-|------|---------|----------|
-| **Free pool** | Free (rate-limited) | Shared capacity, community models |
-| **Pro pool** | $0.002–$0.015/1K tokens | Claude Sonnet/Opus, GPT-4o, Gemini Pro |
-| **GPU pool** | Custom pricing | Dedicated GPU for local model inference |
+| Pool          | Pricing                 | Features                                |
+| ------------- | ----------------------- | --------------------------------------- |
+| **Free pool** | Free (rate-limited)     | Shared capacity, community models       |
+| **Pro pool**  | $0.002–$0.015/1K tokens | Claude Sonnet/Opus, GPT-4o, Gemini Pro  |
+| **GPU pool**  | Custom pricing          | Dedicated GPU for local model inference |
 
 - **Revenue share**: 20% margin on model API pass-through
 - **Strategic value**: Removes the barrier of obtaining 10+ API keys; one credential for everything
@@ -100,6 +100,7 @@ The AI developer tools market is growing rapidly. Key segments:
 **Goal**: 10,000 GitHub stars, 1,000 Discord members, 500 active daily users
 
 **Actions**:
+
 1. Submit to Hacker News "Show HN" with a live demo video showing multi-agent workflow
 2. Post workflow demos on YouTube (feature dev, bug fix, adversarial review)
 3. Create "CoderClaw vs. Cursor" and "CoderClaw vs. Aider" comparison blog posts
@@ -108,6 +109,7 @@ The AI developer tools market is growing rapidly. Key segments:
 6. Produce screencasts for each workflow type (planning, feature, bugfix, refactor)
 
 **Key messages**:
+
 - "Run AI agents on your own machine. No cloud, no subscriptions, no IDE tether."
 - "7 specialized agents in one workflow — not one model doing everything"
 - "Works in WhatsApp, Telegram, Slack, Discord — wherever you already work"
@@ -117,6 +119,7 @@ The AI developer tools market is growing rapidly. Key segments:
 **Goal**: 100 paying Pro users, 5,000 active daily users
 
 **Actions**:
+
 1. Launch coderClawLink Pro with live workflow DAG (P0 feature gap)
 2. Ship inline diff / pair programming mode (P1 gap — targets Aider switchers)
 3. MCP semantic codebase search (targets Cursor/Continue.dev switchers)
@@ -130,6 +133,7 @@ The AI developer tools market is growing rapidly. Key segments:
 **Goal**: 10 enterprise pilots, 500 paying Team users
 
 **Actions**:
+
 1. Launch Team plan with shared personas and fleet management
 2. PR review GitHub App (competes with CodeRabbit — free for open source)
 3. Linear / Jira / GitHub Issues → spec import (P3-4)
@@ -142,6 +146,7 @@ The AI developer tools market is growing rapidly. Key segments:
 **Goal**: $1M ARR, 3 enterprise contracts
 
 **Actions**:
+
 1. Enterprise license GA with on-premises deployment
 2. FedRAMP-adjacent compliance documentation
 3. Partnerships with SI/GSI partners
@@ -154,47 +159,42 @@ The AI developer tools market is growing rapidly. Key segments:
 
 ### Q1 2026 (Now)
 
-| Item | Description | Revenue impact |
-|------|-------------|----------------|
-| ✅ Multi-agent orchestration | 7 roles, DAG workflows | Foundation |
-| ✅ coderClawLink relay | Cloud portal integration | Foundation |
-| ✅ Knowledge loop | Memory, semantic summaries | Foundation |
-| ✅ Persona plugin architecture | Plugin registry, PERSONA.yaml format, marketplace types, coderClawLink assignment | Foundation |
-| ✅ Structured inter-agent context | `buildStructuredContext()` with labelled role sections + `outputFormat.outputPrefix` | Quality |
-| ✅ Persona → brain injection | `--- Agent Persona ---` block in every sub-agent's system prompt; brain uses it on all paths | Quality |
-| ✅ CoderClawLLM syscheck | RAM + disk check before SmolLM2 load; automatic external LLM fallback | Reliability |
-| 🔲 Live workflow UI (P0) | DAG + task progress in portal | Pro unlock |
-| 🔲 ClawHub persona marketplace (P0) | Purchase + install personas; assignment API in coderClawLink | Pro unlock / rev share |
-| 🔲 MCP semantic search (P0) | Vector codebase search | Retention |
+| Item                         | Description                   | Revenue impact |
+| ---------------------------- | ----------------------------- | -------------- |
+| ✅ Multi-agent orchestration | 7 roles, DAG workflows        | Foundation     |
+| ✅ coderClawLink relay       | Cloud portal integration      | Foundation     |
+| ✅ Knowledge loop            | Memory, semantic summaries    | Foundation     |
+| 🔲 Live workflow UI (P0)     | DAG + task progress in portal | Pro unlock     |
+| 🔲 MCP semantic search (P0)  | Vector codebase search        | Retention      |
 
 ### Q2 2026
 
-| Item | Description | Revenue impact |
-|------|-------------|----------------|
-| 🔲 Inline diff / pair mode | Accept/reject diff workflow | Acquisition |
-| 🔲 GitHub issue → PR workflow | End-to-end issue resolution | Acquisition |
-| 🔲 coderClawLink Pro launch | Subscription billing | $19–149/mo |
-| 🔲 Session auto-checkpoint | Auto-save on exit | Retention |
-| 🔲 coderClawLink: Persona Assignment API | Assign marketplace personas to claws from portal | Pro unlock |
+| Item                          | Description                     | Revenue impact |
+| ----------------------------- | ------------------------------- | -------------- |
+| 🔲 Inline diff / pair mode    | Accept/reject diff workflow     | Acquisition    |
+| 🔲 GitHub issue → PR workflow | End-to-end issue resolution     | Acquisition    |
+| 🔲 coderClawLink Pro launch   | Subscription billing            | $19–149/mo     |
+| 🔲 Persona profiles           | Per-session model+system prompt | Retention      |
+| 🔲 Session auto-checkpoint    | Auto-save on exit               | Retention      |
 
 ### Q3 2026
 
-| Item | Description | Revenue impact |
-|------|-------------|----------------|
-| 🔲 PR review GitHub App | Auto-review on PR events | Acquisition |
-| 🔲 Team plan | Shared personas, fleet UI | $49/user/mo |
-| 🔲 coderClawLLM Pro pool | Dedicated model compute | $0.002/1K |
-| 🔲 Multi-model role routing | Per-step model assignment | Retention |
-| 🔲 Spec import (GitHub/Linear) | Issue tracker → spec | Acquisition |
+| Item                           | Description               | Revenue impact |
+| ------------------------------ | ------------------------- | -------------- |
+| 🔲 PR review GitHub App        | Auto-review on PR events  | Acquisition    |
+| 🔲 Team plan                   | Shared personas, fleet UI | $49/user/mo    |
+| 🔲 coderClawLLM Pro pool       | Dedicated model compute   | $0.002/1K      |
+| 🔲 Multi-model role routing    | Per-step model assignment | Retention      |
+| 🔲 Spec import (GitHub/Linear) | Issue tracker → spec      | Acquisition    |
 
 ### Q4 2026
 
-| Item | Description | Revenue impact |
-|------|-------------|----------------|
-| 🔲 Enterprise license GA | On-prem deployment | $50K+ contracts |
-| 🔲 ClawHub marketplace GA | Skill + persona marketplace | 30% rev share |
-| 🔲 Cross-claw memory sharing | Team memory mesh | Team plan |
-| 🔲 SOC 2 Type I | Compliance cert | Enterprise gate |
+| Item                         | Description             | Revenue impact  |
+| ---------------------------- | ----------------------- | --------------- |
+| 🔲 Enterprise license GA     | On-prem deployment      | $50K+ contracts |
+| 🔲 ClawHub marketplace       | Skill/agent marketplace | 30% rev share   |
+| 🔲 Cross-claw memory sharing | Team memory mesh        | Team plan       |
+| 🔲 SOC 2 Type I              | Compliance cert         | Enterprise gate |
 
 ---
 
@@ -220,25 +220,25 @@ The AI developer tools market is growing rapidly. Key segments:
 
 ### Revenue
 
-| Period | Target ARR | Key driver |
-|--------|-----------|------------|
-| Q2 2026 | $10K | Early Pro subscribers |
-| Q3 2026 | $50K | Team plan + coderClawLLM |
-| Q4 2026 | $200K | Enterprise pilots + ClawHub |
-| Q1 2027 | $500K | Enterprise + marketplace |
-| Q2 2027 | $1M | Scale + enterprise contracts |
+| Period  | Target ARR | Key driver                   |
+| ------- | ---------- | ---------------------------- |
+| Q2 2026 | $10K       | Early Pro subscribers        |
+| Q3 2026 | $50K       | Team plan + coderClawLLM     |
+| Q4 2026 | $200K      | Enterprise pilots + ClawHub  |
+| Q1 2027 | $500K      | Enterprise + marketplace     |
+| Q2 2027 | $1M        | Scale + enterprise contracts |
 
 ---
 
 ## 6. Competitive Pricing Analysis
 
-| Tool | Pricing | Our response |
-|------|---------|--------------|
-| GitHub Copilot | $19/user/mo (Individual), $39 (Business) | Match Individual; beat Business with more value |
-| Cursor Pro | $20/user/mo | Match on price; win on self-hosting + multi-agent |
-| Devin | $500/month (early access) | Undercut massively; comparable autonomous capability |
-| CodeRabbit Pro | $15/user/mo | Free for open source; match for private |
-| Continue.dev | Free (OSS) | Match free tier; win on portal + cloud features |
+| Tool           | Pricing                                  | Our response                                         |
+| -------------- | ---------------------------------------- | ---------------------------------------------------- |
+| GitHub Copilot | $19/user/mo (Individual), $39 (Business) | Match Individual; beat Business with more value      |
+| Cursor Pro     | $20/user/mo                              | Match on price; win on self-hosting + multi-agent    |
+| Devin          | $500/month (early access)                | Undercut massively; comparable autonomous capability |
+| CodeRabbit Pro | $15/user/mo                              | Free for open source; match for private              |
+| Continue.dev   | Free (OSS)                               | Match free tier; win on portal + cloud features      |
 
 **Pricing principle**: Match or undercut Cursor/Copilot at the Developer tier. At the Team tier, provide more value (fleet management, adversarial review, audit trail) that justifies $49 vs. $39 for Copilot Business.
 
@@ -246,10 +246,10 @@ The AI developer tools market is growing rapidly. Key segments:
 
 ## 7. Risk Register
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| Anthropic/OpenAI ships multi-agent IDE tool | High | High | Double down on self-hosting + open source moat |
-| Cursor/Windsurf adds MCP + multi-agent | Medium | High | Ship live workflow UI and claw mesh — unique differentiators |
-| Model API costs too high for free tier | Medium | Medium | Aggressive rate limiting + coderClawLLM margin |
-| Enterprise sales cycle too long | High | Low | Focus on SMB Team plan first; use as reference for enterprise |
-| Community fragmentation (forks) | Low | Medium | Engage contributors early; offer ClawHub as incentive |
+| Risk                                        | Probability | Impact | Mitigation                                                    |
+| ------------------------------------------- | ----------- | ------ | ------------------------------------------------------------- |
+| Anthropic/OpenAI ships multi-agent IDE tool | High        | High   | Double down on self-hosting + open source moat                |
+| Cursor/Windsurf adds MCP + multi-agent      | Medium      | High   | Ship live workflow UI and claw mesh — unique differentiators  |
+| Model API costs too high for free tier      | Medium      | Medium | Aggressive rate limiting + coderClawLLM margin                |
+| Enterprise sales cycle too long             | High        | Low    | Focus on SMB Team plan first; use as reference for enterprise |
+| Community fragmentation (forks)             | Low         | Medium | Engage contributors early; offer ClawHub as incentive         |

@@ -1,8 +1,9 @@
 # Changelog
 
-## 2026.3.4
+## 2026.3.5
 
 ### Changes
+
 - Version alignment with core CoderClaw release numbers.
 
 ## 2026.3.3

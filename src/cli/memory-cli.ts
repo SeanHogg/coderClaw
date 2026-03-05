@@ -9,7 +9,12 @@ import { resolveStateDir } from "../config/paths.js";
 import { resolveSessionTranscriptsDirForAgent } from "../config/sessions/paths.js";
 import { setVerbose } from "../globals.js";
 import { getMemorySearchManager, type MemorySearchManagerResult } from "../memory/index.js";
-import { listMemoryFiles, normalizeExtraMemoryPaths } from "../memory/internal.js";
+import {
+  listMemoryFiles,
+  normalizeExtraMemoryPaths,
+  getDefaultMemoryFilePaths,
+  getDefaultMemoryDirs,
+} from "../memory/internal.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
 import { colorize, isRich, theme } from "../terminal/theme.js";
@@ -46,7 +51,7 @@ type MemorySourceScan = {
 function formatSourceLabel(source: string, workspaceDir: string, agentId: string): string {
   if (source === "memory") {
     return shortenHomeInString(
-      `memory (MEMORY.md + ${path.join(workspaceDir, "memory")}${path.sep}*.md)`,
+      `memory (MEMORY.md + ${path.join(workspaceDir, ".coderclaw", "memory")}${path.sep}*.md)`,
     );
   }
   if (source === "sessions") {
@@ -125,9 +130,9 @@ async function scanMemoryFiles(
   extraPaths: string[] = [],
 ): Promise<SourceScan> {
   const issues: string[] = [];
-  const memoryFile = path.join(workspaceDir, "MEMORY.md");
-  const altMemoryFile = path.join(workspaceDir, "memory.md");
-  const memoryDir = path.join(workspaceDir, "memory");
+  const [memoryFile, altMemoryFile] = getDefaultMemoryFilePaths(workspaceDir);
+  const [legacyMemoryDir, coderclawMemoryDir] = getDefaultMemoryDirs(workspaceDir);
+  const memoryDir = legacyMemoryDir; // used for readability checks, we still prefer canonical in messages
 
   const primary = await checkReadableFile(memoryFile);
   const alt = await checkReadableFile(altMemoryFile);
@@ -162,20 +167,34 @@ async function scanMemoryFiles(
   }
 
   let dirReadable: boolean | null = null;
-  try {
-    await fs.access(memoryDir, fsSync.constants.R_OK);
-    dirReadable = true;
-  } catch (err) {
-    const code = (err as NodeJS.ErrnoException).code;
-    if (code === "ENOENT") {
-      issues.push(`memory directory missing (${shortenHomePath(memoryDir)})`);
-      dirReadable = false;
-    } else {
-      issues.push(
-        `memory directory not accessible (${shortenHomePath(memoryDir)}): ${code ?? "error"}`,
-      );
-      dirReadable = null;
+  let dirChecked = "";
+  // Check both memory/ and .coderclaw/memory/ (canonical)
+  const dirsToCheck = [memoryDir, coderclawMemoryDir];
+  for (const dir of dirsToCheck) {
+    try {
+      await fs.access(dir, fsSync.constants.R_OK);
+      dirReadable = true;
+      dirChecked = dir;
+      break;
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code === "ENOENT") {
+        // continue to next dir
+      } else {
+        issues.push(
+          `memory directory not accessible (${shortenHomePath(dir)}): ${code ?? "error"}`,
+        );
+        dirReadable = null;
+        dirChecked = dir;
+        break;
+      }
     }
+  }
+  if (dirReadable === null && dirChecked === "") {
+    // none exist, report missing
+    issues.push(
+      `memory directories missing (${shortenHomePath(memoryDir)} and ${shortenHomePath(coderclawMemoryDir)})`,
+    );
   }
 
   let listed: string[] = [];
@@ -186,8 +205,9 @@ async function scanMemoryFiles(
   } catch (err) {
     const code = (err as NodeJS.ErrnoException).code;
     if (dirReadable !== null) {
+      const reportDir = dirChecked || memoryDir;
       issues.push(
-        `memory directory scan failed (${shortenHomePath(memoryDir)}): ${code ?? "error"}`,
+        `memory directory scan failed (${shortenHomePath(reportDir)}): ${code ?? "error"}`,
       );
       dirReadable = null;
     }

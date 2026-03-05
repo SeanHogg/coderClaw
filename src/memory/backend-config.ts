@@ -12,6 +12,7 @@ import type {
 } from "../config/types.memory.js";
 import { resolveUserPath } from "../utils.js";
 import { splitShellArgs } from "../utils/shell-argv.js";
+import { getDefaultMemoryFilePaths, getDefaultMemoryDirs } from "./internal.js";
 
 export type ResolvedMemoryBackendConfig = {
   backend: MemoryBackend;
@@ -246,17 +247,35 @@ function resolveDefaultCollections(
   if (!include) {
     return [];
   }
-  const entries: Array<{ path: string; pattern: string; base: string }> = [
-    { path: workspaceDir, pattern: "MEMORY.md", base: "memory-root" },
-    { path: workspaceDir, pattern: "memory.md", base: "memory-alt" },
-    { path: path.join(workspaceDir, "memory"), pattern: "**/*.md", base: "memory-dir" },
-  ];
-  return entries.map((entry) => ({
-    name: ensureUniqueName(scopeCollectionBase(entry.base, agentId), existing),
-    path: entry.path,
-    pattern: entry.pattern,
-    kind: "memory",
-  }));
+
+  const collections: ResolvedQmdCollection[] = [];
+  // files (root memory files)
+  const filePaths = getDefaultMemoryFilePaths(workspaceDir);
+  const fileBases = ["memory-root", "memory-alt"];
+  filePaths.forEach((p, idx) => {
+    const base = fileBases[idx] || `memory-file-${idx + 1}`;
+    collections.push({
+      name: ensureUniqueName(scopeCollectionBase(base, agentId), existing),
+      path: p,
+      pattern: path.basename(p),
+      kind: "memory",
+    });
+  });
+
+  // directories (legacy + canonical)
+  const dirPaths = getDefaultMemoryDirs(workspaceDir);
+  const dirBases = ["memory-dir", "coderclaw-memory-dir"];
+  dirPaths.forEach((p, idx) => {
+    const base = dirBases[idx] || `memory-dir-${idx + 1}`;
+    collections.push({
+      name: ensureUniqueName(scopeCollectionBase(base, agentId), existing),
+      path: p,
+      pattern: "**/*.md",
+      kind: "memory",
+    });
+  });
+
+  return collections;
 }
 
 export function resolveMemoryBackendConfig(params: {

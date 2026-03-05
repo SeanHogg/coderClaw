@@ -27,6 +27,7 @@ import {
   listMemoryFiles,
   normalizeExtraMemoryPaths,
   runWithConcurrency,
+  getDefaultMemoryWatchPatterns,
 } from "./internal.js";
 import { type MemoryFileEntry } from "./internal.js";
 import { ensureMemoryIndexSchema } from "./memory-schema.js";
@@ -352,11 +353,7 @@ export abstract class MemoryManagerSyncOps {
     if (!this.sources.has("memory") || !this.settings.sync.watch || this.watcher) {
       return;
     }
-    const watchPaths = new Set<string>([
-      path.join(this.workspaceDir, "MEMORY.md"),
-      path.join(this.workspaceDir, "memory.md"),
-      path.join(this.workspaceDir, "memory", "**", "*.md"),
-    ]);
+    const watchPaths = new Set<string>(getDefaultMemoryWatchPatterns(this.workspaceDir));
     const additionalPaths = normalizeExtraMemoryPaths(this.workspaceDir, this.settings.extraPaths);
     for (const entry of additionalPaths) {
       try {

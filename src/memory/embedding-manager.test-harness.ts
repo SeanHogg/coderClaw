@@ -9,6 +9,7 @@ import {
   type MemoryIndexManager,
   type MemorySearchManager,
 } from "./index.js";
+import { getDefaultMemoryDirs } from "./internal.js";
 
 export function installEmbeddingManagerFixture(opts: {
   fixturePrefix: string;
@@ -58,7 +59,7 @@ export function installEmbeddingManagerFixture(opts: {
   beforeAll(async () => {
     fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), opts.fixturePrefix));
     workspaceDir = path.join(fixtureRoot, "workspace");
-    memoryDir = path.join(workspaceDir, "memory");
+    memoryDir = getDefaultMemoryDirs(workspaceDir)[1];
     await fs.mkdir(memoryDir, { recursive: true });
 
     const indexPathLarge = path.join(fixtureRoot, "index.large.sqlite");

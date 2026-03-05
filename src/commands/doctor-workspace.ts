@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { DEFAULT_AGENTS_FILENAME } from "../agents/workspace.js";
+import { getDefaultMemoryFilePaths, getDefaultMemoryDirs } from "../memory/internal.js";
 import { shortenHomePath } from "../utils.js";
 
 export const MEMORY_SYSTEM_PROMPT = [
@@ -13,7 +14,8 @@ export const MEMORY_SYSTEM_PROMPT = [
 ].join("\n");
 
 export async function shouldSuggestMemorySystem(workspaceDir: string): Promise<boolean> {
-  const memoryPaths = [path.join(workspaceDir, "MEMORY.md"), path.join(workspaceDir, "memory.md")];
+  // look for the standard root files first
+  const memoryPaths = getDefaultMemoryFilePaths(workspaceDir);
 
   for (const memoryPath of memoryPaths) {
     try {
@@ -22,6 +24,17 @@ export async function shouldSuggestMemorySystem(workspaceDir: string): Promise<b
     } catch {
       // keep scanning
     }
+  }
+
+  // also consider the canonical whisper memory directory – if it exists we
+  // assume the user has enabled the memory system already.
+  const canonDir = getDefaultMemoryDirs(workspaceDir)[1];
+  try {
+    await fs.promises.access(canonDir);
+    // directory exists; no need to nag about installing memory system
+    return false;
+  } catch {
+    // dir missing, continue to other checks below
   }
 
   const agentsPath = path.join(workspaceDir, DEFAULT_AGENTS_FILENAME);

@@ -208,7 +208,7 @@ export class ClawLinkRelayService {
 
       case "chat": {
         const message = typeof msg.message === "string" ? msg.message : "";
-            const session = typeof msg.session === "string" ? msg.session : "main";
+        const session = typeof msg.session === "string" ? msg.session : "main";
         this.gatewayClient
           ?.request("chat.send", {
             sessionKey: session,

@@ -529,6 +529,32 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
     chosen === "gemini"
   ) {
     if (chosen === "coderclawllm") {
+      // CoderClawLLM routes through CoderClawLink's managed proxy, so it
+      // requires a Link API key. If the user doesn't have one yet, offer
+      // inline registration (mirrors the gateway onboarding wizard flow).
+      const existingKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+      if (!existingKey) {
+        const { promptCoderClawLinkOnboarding } = await import("./coderclaw-link-onboarding.js");
+        const defaultInstanceName = path.basename(projectRoot) || "coderclaw";
+        await promptCoderClawLinkOnboarding({
+          projectRoot,
+          defaultInstanceName,
+          forcePrompt: true,
+        });
+
+        // Re-check after the registration wizard — user may have skipped.
+        const keyAfter = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+        if (!keyAfter) {
+          note(
+            [
+              "CoderClawLLM requires a CoderClawLink account to work.",
+              "You can connect later with: coderclaw init --reconnect",
+              "Or switch to a different provider with: coderclaw init",
+            ].join("\n"),
+            "Skipped — CoderClawLLM won't be available yet",
+          );
+        }
+      }
       await applyLlmProviderModel(projectRoot, chosen, meta.defaultModel);
       return `${meta.label} configured, model → ${meta.defaultModel}`;
     }
@@ -841,12 +867,15 @@ async function promptClawLink(
   }
 
   const connect = await confirm({
-    message: "Connect to coderClawLink? (manage projects, tasks & agents across your mesh)",
+    message:
+      "Connect to coderClawLink? (optional — manage projects, tasks & agents across your mesh)",
     initialValue: true,
   });
   if (typeof connect === "symbol" || !connect) {
-    // Remember the choice so we never ask again
+    // Remember the choice so we never ask again during init.
+    // The user can connect later: coderclaw init --reconnect
     upsertSharedEnvVar({ key: "CODERCLAW_LINK_SKIPPED", value: "1" });
+    note("You can connect to coderClawLink anytime with: coderclaw init --reconnect", "Skipped");
     return null;
   }
 

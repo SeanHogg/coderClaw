@@ -91,7 +91,8 @@ export async function promptCoderClawLinkOnboarding(params: {
   }
 
   const connect = await confirm({
-    message: "Connect to coderClawLink? (manage projects, tasks & agents across your mesh)",
+    message:
+      "Connect to coderClawLink? (optional — manage projects, tasks & agents across your mesh)",
     initialValue: true,
   });
   if (typeof connect === "symbol" || !connect) {

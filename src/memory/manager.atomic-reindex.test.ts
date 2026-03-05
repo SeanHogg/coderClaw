@@ -5,6 +5,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import type { CoderClawConfig } from "../config/config.js";
 import { getEmbedBatchMock, resetEmbeddingMocks } from "./embedding.test-mocks.js";
 import type { MemoryIndexManager } from "./index.js";
+import { getDefaultMemoryDirs } from "./internal.js";
 import { getRequiredMemoryIndexManager } from "./test-manager-helpers.js";
 import { hasNodeSqliteSupport } from "./test-sqlite-support.js";
 
@@ -37,8 +38,9 @@ describeIfSqlite("memory manager atomic reindex", () => {
     workspaceDir = path.join(fixtureRoot, `case-${caseId++}`);
     await fs.mkdir(workspaceDir, { recursive: true });
     indexPath = path.join(workspaceDir, "index.sqlite");
-    await fs.mkdir(path.join(workspaceDir, "memory"));
-    await fs.writeFile(path.join(workspaceDir, "MEMORY.md"), "Hello memory.");
+    const memDir = getDefaultMemoryDirs(workspaceDir)[1];
+    await fs.mkdir(memDir, { recursive: true });
+    await fs.writeFile(path.join(memDir, "MEMORY.md"), "Hello memory.");
   });
 
   afterEach(async () => {

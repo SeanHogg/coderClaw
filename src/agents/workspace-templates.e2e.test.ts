@@ -18,7 +18,7 @@ describe("resolveWorkspaceTemplateDir", () => {
     const root = await makeTempRoot();
     await fs.writeFile(path.join(root, "package.json"), JSON.stringify({ name: "coderclaw" }));
 
-    const templatesDir = path.join(root, "docs", "reference", "templates");
+    const templatesDir = path.join(root, "foundation");
     await fs.mkdir(templatesDir, { recursive: true });
     await fs.writeFile(path.join(templatesDir, "AGENTS.md"), "# ok\n");
 

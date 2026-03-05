@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
-## [2026.3.4] - 2026-03-04
+## [2026.3.5] - 2026-03-05
+
+### Changes
+
+- **Workspace templates consolidated into `foundation/`**: moved templates from `docs/reference/templates/` to top-level `foundation/` directory; merged enriched content from root-level files (SOUL.md protocols, HEARTBEAT.md monitoring tasks, USER.md preferences) into foundation templates with YAML front matter preserved; removed redundant root-level duplicates (AGENTS.md, SOUL.md, TOOLS.md, HEARTBEAT.md, MEMORY.md)
+- Updated template resolution paths in `workspace-templates.ts`, `workspace.ts`, `package.json`, and documentation references
 
 ### Added
 
@@ -35,10 +40,12 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 - Build output footprint: enabled whitespace and syntax minification in `tsdown.config.ts` for all dist entries, reducing bundle sizes without mangling identifier names (preserves stack traces, plugin discovery, and dynamic property access)
 
-### Fixed
+### Fixes
 
-- `src/commands/health.ts`: removed local `formatDurationParts` duplicate; now uses centralized `formatDurationCompact` from `src/infra/format-time/`; session store last-active timestamps now use `formatTimeAgo` for consistent relative formatting
-- `src/commands/doctor-session-locks.ts`: removed local `formatAge` duplicate; now uses centralized `formatDurationCompact` from `src/infra/format-time/`
+- Fix `asString()` in `server-chat.ts` to accept optional fallback parameter (was causing TS2554 with 2-arg calls)
+- Add `METHOD_NOT_FOUND` and `INTERNAL_ERROR` to `ErrorCodes` in gateway protocol schema
+- Add missing `bumpSkillsSnapshotVersion` import in `server.impl.ts`
+- Fix `daemon-cli-compat.ts` export alias resolution for minified bundles (post-build `write-cli-compat` was failing because mangled local names broke map lookups)
 
 ## [2026.3.3] - 2026-03-03
 
