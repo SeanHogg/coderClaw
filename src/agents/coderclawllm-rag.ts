@@ -4,6 +4,18 @@
  * Walks the workspace directory, scores source files by keyword overlap
  * with the user query, and returns the top-N most relevant excerpts.
  * No external dependencies — pure Node.js fs + simple TF-IDF-style scoring.
+ *
+ * ## v1 Implementation Note (keyword overlap only)
+ *
+ * The current scorer uses **term frequency without IDF** — it counts how many
+ * query tokens appear anywhere in a file.  This is essentially a weighted
+ * keyword grep, not full semantic retrieval.  It works well for exact symbol
+ * lookups (function names, type names) but produces poor results for semantic
+ * or conceptual queries (e.g. "how does authentication work").
+ *
+ * @todo Replace the tokenise/score pair with a proper TF-IDF implementation,
+ *       or embed a lightweight sentence-transformer for semantic similarity, once
+ *       the retrieval quality becomes a measurable bottleneck.
  */
 
 import fs from "node:fs/promises";

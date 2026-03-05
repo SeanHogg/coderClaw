@@ -288,6 +288,8 @@ async function runMultiStepChain(opts: {
   maxTokens: number;
   temperature: number;
   workspaceDir: string | undefined;
+  /** Forwarded from factory opts — user must have explicitly opted in. */
+  allowRunCode: boolean;
   signal?: AbortSignal;
 }): Promise<string> {
   const { pipe, brainPlan, memoryBlock, ragContext, maxTokens, temperature } = opts;
@@ -331,6 +333,7 @@ async function runMultiStepChain(opts: {
         const result = await executeToolCall(
           { tool: "run_code", code: block.code, lang: block.lang },
           wsDir,
+          { allowRunCode: opts.allowRunCode },
         );
         if (result.output.startsWith("Error:") || result.output.includes("SyntaxError")) {
           errorParts.push(result);
@@ -385,6 +388,19 @@ export type CoderClawLlmLocalStreamOptions = {
    * avoid leaking personal curated knowledge to third parties.
    */
   isSharedContext?: boolean;
+  /**
+   * Allow the brain to execute model-generated code via the `run_code` tool.
+   *
+   * **Security**: `run_code` spawns a Node.js child process inheriting the
+   * same OS privileges as the CoderClaw process.  It is limited to a 10-second
+   * timeout and the workspace directory, but it is NOT containerised.
+   *
+   * Only set this to `true` when the user has explicitly chosen the
+   * `coderclawllm-local` provider (i.e. they already opted into local inference
+   * and understand that model-generated code will run on their machine).
+   * Defaults to `false` — `run_code` calls are silently blocked.
+   */
+  allowRunCode?: boolean;
 };
 
 export function createCoderClawLlmLocalStreamFn(
@@ -520,7 +536,7 @@ export function createCoderClawLlmLocalStreamFn(
 
           const results: ToolResult[] = [];
           for (const call of calls) {
-            results.push(await executeToolCall(call, wsDir));
+            results.push(await executeToolCall(call, wsDir, { allowRunCode: opts.allowRunCode }));
           }
           brainMessages = [
             ...brainMessages,
@@ -546,6 +562,7 @@ export function createCoderClawLlmLocalStreamFn(
               maxTokens,
               temperature,
               workspaceDir: wsDir,
+              allowRunCode: opts.allowRunCode ?? false,
               signal: options?.signal,
             })
           : brainText;

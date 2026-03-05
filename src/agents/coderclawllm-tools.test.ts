@@ -100,6 +100,8 @@ describe("executeToolCall — path traversal protection", () => {
   beforeEach(async () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "cc-tools-test-"));
     await fs.writeFile(path.join(tmpDir, "hello.txt"), "hello world", "utf-8");
+    // Also create a .ts file so the grep tool (which only scans source files) can match.
+    await fs.writeFile(path.join(tmpDir, "hello.ts"), "// hello world", "utf-8");
   });
 
   afterEach(async () => {
@@ -137,16 +139,58 @@ describe("executeToolCall — path traversal protection", () => {
     expect(result.output).toContain("hello.txt");
   });
 
-  it("greps files inside the workspace", async () => {
+  it("greps source files inside the workspace", async () => {
+    // grep_files only scans source file extensions (.ts, .tsx, .js, .jsx, .md, .json)
     const result = await executeToolCall(
       { tool: "grep_files", pattern: "hello" },
       tmpDir,
     );
-    expect(result.output).toContain("hello.txt");
+    expect(result.output).toContain("hello.ts");
+  });
+
+  it("does not grep non-source files (.txt)", async () => {
+    // hello.txt has content "hello world" but .txt is not a scanned extension
+    const result = await executeToolCall(
+      { tool: "grep_files", pattern: "hello world" },
+      tmpDir,
+    );
+    // The .ts file contains "// hello world" so it will match; the .txt will not appear as path
+    expect(result.output).not.toMatch(/hello\.txt/);
   });
 });
 
 // ── run_code ──────────────────────────────────────────────────────────────────
+
+describe("executeToolCall — run_code blocked by default", () => {
+  let tmpDir: string;
+
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "cc-run-blocked-"));
+  });
+
+  afterEach(async () => {
+    await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => undefined);
+  });
+
+  it("blocks run_code when allowRunCode is not set (default)", async () => {
+    const result = await executeToolCall(
+      { tool: "run_code", code: "process.stdout.write('should not run')", lang: "js" },
+      tmpDir,
+    );
+    expect(result.output).toMatch(/disabled/i);
+    expect(result.output).toMatch(/allowRunCode/i);
+    expect(result.output).not.toContain("should not run");
+  });
+
+  it("blocks run_code when allowRunCode is explicitly false", async () => {
+    const result = await executeToolCall(
+      { tool: "run_code", code: "process.stdout.write('blocked')", lang: "js" },
+      tmpDir,
+      { allowRunCode: false },
+    );
+    expect(result.output).toMatch(/disabled/i);
+  });
+});
 
 describe("executeToolCall — run_code (JavaScript)", () => {
   let tmpDir: string;
@@ -159,10 +203,11 @@ describe("executeToolCall — run_code (JavaScript)", () => {
     await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => undefined);
   });
 
-  it("executes a simple JS snippet and returns stdout", async () => {
+  it("executes a simple JS snippet and returns stdout when allowRunCode is true", async () => {
     const result = await executeToolCall(
       { tool: "run_code", code: "process.stdout.write('42')", lang: "js" },
       tmpDir,
+      { allowRunCode: true },
     );
     expect(result.output).toContain("42");
   });
@@ -171,6 +216,7 @@ describe("executeToolCall — run_code (JavaScript)", () => {
     const result = await executeToolCall(
       { tool: "run_code", code: "process.stderr.write('err')", lang: "js" },
       tmpDir,
+      { allowRunCode: true },
     );
     expect(result.output).toContain("err");
   });
@@ -179,6 +225,7 @@ describe("executeToolCall — run_code (JavaScript)", () => {
     const result = await executeToolCall(
       { tool: "run_code", code: "const x = {{{", lang: "js" },
       tmpDir,
+      { allowRunCode: true },
     );
     expect(result.output).toMatch(/error/i);
   });

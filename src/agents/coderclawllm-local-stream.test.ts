@@ -87,10 +87,20 @@ describe("loadCoderClawMemory", () => {
 // Test the detection logic in isolation (not the full stream fn which requires
 // the real pipeline).
 
+/**
+ * This mirrors the routing predicate in coderclawllm-local-stream.ts:
+ *   const isDelegating = brainText.toUpperCase().trimStart().startsWith("DELEGATE");
+ *
+ * Smoke-testing it here with representative inputs gives confidence that
+ * SmolLM2 HANDLE vs DELEGATE routing decisions are correctly interpreted,
+ * regardless of which exact words the model produces after "DELEGATE".
+ */
 describe("DELEGATE detection logic", () => {
   function isDelegating(text: string): boolean {
     return text.toUpperCase().trimStart().startsWith("DELEGATE");
   }
+
+  // ── cases that SHOULD delegate ──────────────────────────────────────────
 
   it("detects plain DELEGATE at the start", () => {
     expect(isDelegating("DELEGATE: implement this feature")).toBe(true);
@@ -100,7 +110,32 @@ describe("DELEGATE detection logic", () => {
     expect(isDelegating("delegate this task")).toBe(true);
   });
 
-  it("does not delegate a normal response", () => {
+  it("detects DELEGATE with leading whitespace", () => {
+    expect(isDelegating("  DELEGATE\ndo something complex")).toBe(true);
+  });
+
+  it("detects DELEGATE followed by a colon and plan", () => {
+    expect(isDelegating("DELEGATE: Refactor the entire authentication module across 12 files."))
+      .toBe(true);
+  });
+
+  it("detects DELEGATE followed by newline and multi-line plan", () => {
+    const brainOutput = [
+      "DELEGATE",
+      "1. Rewrite the database layer",
+      "2. Migrate all SQL queries to the ORM",
+      "3. Update all integration tests",
+    ].join("\n");
+    expect(isDelegating(brainOutput)).toBe(true);
+  });
+
+  it("detects DELEGATE with mixed case", () => {
+    expect(isDelegating("Delegate: This requires deep codebase understanding.")).toBe(true);
+  });
+
+  // ── cases that should HANDLE directly ───────────────────────────────────
+
+  it("does not delegate a normal conversational response", () => {
     expect(isDelegating("Here is my answer: ...")).toBe(false);
   });
 
@@ -108,8 +143,55 @@ describe("DELEGATE detection logic", () => {
     expect(isDelegating("I will not delegate this.")).toBe(false);
   });
 
-  it("detects DELEGATE with leading whitespace", () => {
-    expect(isDelegating("  DELEGATE\ndo something complex")).toBe(true);
+  it("does not delegate a simple reasoning response", () => {
+    expect(isDelegating("The answer is 42.")).toBe(false);
+  });
+
+  it("does not delegate a memory-recall answer", () => {
+    expect(isDelegating("Based on your preferences from SOUL.md, you prefer TypeScript."))
+      .toBe(false);
+  });
+
+  it("does not delegate a short code snippet response", () => {
+    const inlineCode = `Here is a simple utility function:\n\`\`\`ts\nconst add = (a: number, b: number) => a + b;\n\`\`\``;
+    expect(isDelegating(inlineCode)).toBe(false);
+  });
+
+  it("does not delegate a planning/explanation response", () => {
+    expect(
+      isDelegating(
+        "To implement this feature you will need to: 1. Add a route, 2. Create a handler.",
+      ),
+    ).toBe(false);
+  });
+
+  it("does not delegate an empty string", () => {
+    expect(isDelegating("")).toBe(false);
+  });
+
+  // ── brain plan extraction ────────────────────────────────────────────────
+  // Verify the plan stripping mirrors what coderclawllm-local-stream.ts does:
+  //   const brainPlan = brainText.replace(/^DELEGATE[:\s]*/i, "").trim();
+
+  // Helper mirrors the exact extraction logic from coderclawllm-local-stream.ts.
+  function extractBrainPlan(brainText: string): string {
+    return brainText.replace(/^DELEGATE[:\s]*/i, "").trim();
+  }
+
+  it("strips 'DELEGATE: ' prefix to expose the plan text", () => {
+    const plan = extractBrainPlan("DELEGATE: implement OAuth2 with PKCE across three services");
+    expect(plan).toBe("implement OAuth2 with PKCE across three services");
+  });
+
+  it("strips 'DELEGATE\\n' prefix correctly", () => {
+    const plan = extractBrainPlan("DELEGATE\n1. Add authentication middleware\n2. Protect all routes");
+    expect(plan).toContain("1. Add authentication middleware");
+    expect(plan).not.toContain("DELEGATE");
+  });
+
+  it("strips lowercase 'delegate: ' prefix", () => {
+    const plan = extractBrainPlan("delegate: write a complete test suite for the API");
+    expect(plan).toBe("write a complete test suite for the API");
   });
 });
 

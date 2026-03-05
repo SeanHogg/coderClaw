@@ -195,9 +195,25 @@ async function toolRunCode(
 
 // ── Public executor ───────────────────────────────────────────────────────────
 
+export type ExecuteToolCallOptions = {
+  /**
+   * Explicit opt-in required to execute model-generated code via `run_code`.
+   *
+   * `run_code` spawns a Node.js child process with the same OS privileges as
+   * the CoderClaw process.  While it is sandboxed to the workspace directory
+   * and a 10-second timeout, the code runs without containerisation.
+   *
+   * Set to `true` only when the user has knowingly opted into the
+   * `coderclawllm-local` provider (local brain, local execution).
+   * Defaults to `false` — `run_code` calls are blocked by default.
+   */
+  allowRunCode?: boolean;
+};
+
 export async function executeToolCall(
   call: ToolCall,
   workspaceDir: string,
+  opts: ExecuteToolCallOptions = {},
 ): Promise<ToolResult> {
   try {
     let output: string;
@@ -212,7 +228,14 @@ export async function executeToolCall(
         output = await toolGrepFiles(workspaceDir, call);
         break;
       case "run_code":
-        output = await toolRunCode(workspaceDir, call);
+        if (!opts.allowRunCode) {
+          output =
+            "run_code is disabled. To allow model-generated code execution, enable the " +
+            "coderclawllm-local provider (which sets allowRunCode) or pass allowRunCode: true " +
+            "explicitly. See docs/SECURITY.md for the trust model.";
+        } else {
+          output = await toolRunCode(workspaceDir, call);
+        }
         break;
       default:
         output = `Unknown tool: ${(call as ToolCall).tool}`;
