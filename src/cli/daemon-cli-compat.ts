@@ -44,6 +44,11 @@ function parseExportAliases(bundleSource: string): Map<string, string> | null {
     const original = parsed[1];
     const alias = parsed[2] ?? original;
     aliases.set(original, alias);
+    // Also key by export name so lookups work with minified bundles
+    // where local names are mangled (e.g. `export { s_ as registerDaemonCli }`)
+    if (alias !== original) {
+      aliases.set(alias, alias);
+    }
   }
   return aliases;
 }

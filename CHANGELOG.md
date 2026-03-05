@@ -40,6 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 - Build output footprint: enabled whitespace and syntax minification in `tsdown.config.ts` for all dist entries, reducing bundle sizes without mangling identifier names (preserves stack traces, plugin discovery, and dynamic property access)
 
+### Fixes
+
+- Fix `asString()` in `server-chat.ts` to accept optional fallback parameter (was causing TS2554 with 2-arg calls)
+- Add `METHOD_NOT_FOUND` and `INTERNAL_ERROR` to `ErrorCodes` in gateway protocol schema
+- Add missing `bumpSkillsSnapshotVersion` import in `server.impl.ts`
+- Fix `daemon-cli-compat.ts` export alias resolution for minified bundles (post-build `write-cli-compat` was failing because mangled local names broke map lookups)
+
 ## [2026.3.3] - 2026-03-03
 
 ### Added
