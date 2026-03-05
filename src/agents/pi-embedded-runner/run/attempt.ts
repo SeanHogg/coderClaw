@@ -636,8 +636,9 @@ export async function runEmbeddedAttempt(
         const ollamaBaseUrl = modelBaseUrl || providerBaseUrl || OLLAMA_NATIVE_BASE_URL;
         activeSession.agent.streamFn = createOllamaStreamFn(ollamaBaseUrl);
       } else if (params.model.api === "transformers") {
-        // CoderClawLLM local brain: SmolLM2 ONNX reasons with full .coderclaw
-        // memory context, then routes to a configured execution LLM if needed.
+        // CoderClawLLM local brain: dual ONNX preprocessor layer.
+        // Amygdala (SmolLM2) routes requests; hippocampus (Phi-3.5) handles plans.
+        // Cortex (user's LLM) executes complex tasks on DELEGATE.
         // Gated by config.localBrain.enabled and CODERCLAW_LOCAL_BRAIN env var.
         const localBrainEnv = process.env.CODERCLAW_LOCAL_BRAIN?.trim();
         const localBrainEnabled =
@@ -658,10 +659,18 @@ export async function runEmbeddedAttempt(
             typeof params.model.headers?.["x-transformers-dtype"] === "string"
               ? params.model.headers["x-transformers-dtype"]
               : undefined;
+
+          // Resolve hippocampus model from config or provider model list.
+          const localBrainModels = params.config?.localBrain?.models;
+          const hippocampusModelId = localBrainModels?.hippocampus?.modelId;
+          const hippocampusDtype = localBrainModels?.hippocampus?.dtype;
+
           activeSession.agent.streamFn = createCoderClawLlmLocalStreamFn({
             config: params.config,
             modelId: params.modelId,
             dtype,
+            hippocampusModelId,
+            hippocampusDtype,
             cacheDir,
             workspaceDir: params.workspaceDir,
             // Skip MEMORY.md in shared/channel contexts to avoid leaking personal data.

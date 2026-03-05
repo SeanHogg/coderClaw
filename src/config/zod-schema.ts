@@ -655,6 +655,31 @@ export const CoderClawSchema = z
       })
       .strict()
       .optional(),
+    localBrain: z
+      .object({
+        enabled: z.boolean().optional(),
+        models: z
+          .object({
+            amygdala: z
+              .object({
+                modelId: z.string().optional(),
+                dtype: z.string().optional(),
+              })
+              .strict()
+              .optional(),
+            hippocampus: z
+              .object({
+                modelId: z.string().optional(),
+                dtype: z.string().optional(),
+              })
+              .strict()
+              .optional(),
+          })
+          .strict()
+          .optional(),
+      })
+      .strict()
+      .optional(),
   })
   .strict()
   .superRefine((cfg, ctx) => {

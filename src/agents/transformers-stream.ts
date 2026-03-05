@@ -10,6 +10,15 @@ export const TRANSFORMERS_DEFAULT_MODEL_ID = "HuggingFaceTB/SmolLM2-1.7B-Instruc
 export const TRANSFORMERS_DEFAULT_DTYPE = "q4";
 export const TRANSFORMERS_DEFAULT_CACHE_DIR = "./models";
 
+// ── Anatomical model defaults ────────────────────────────────────────────────
+// Amygdala  = SmolLM2 (fast routing / triage, <200 ms, 8K ctx)
+// Hippocampus = Phi-3.5-mini (memory consolidation, prompt compression, 128K ctx)
+// Cortex    = user's registered LLM (the actual agent model)
+export const AMYGDALA_DEFAULT_MODEL_ID = TRANSFORMERS_DEFAULT_MODEL_ID;
+export const AMYGDALA_DEFAULT_DTYPE = TRANSFORMERS_DEFAULT_DTYPE;
+export const HIPPOCAMPUS_DEFAULT_MODEL_ID = "microsoft/Phi-3.5-mini-instruct";
+export const HIPPOCAMPUS_DEFAULT_DTYPE = "q4";
+
 // Long-term memory files in the workspace root.
 // MEMORY.md contains personal/curated knowledge — omit in shared/group contexts.
 const LONG_TERM_FILES_ALL = ["SOUL.md", "USER.md", "MEMORY.md", "AGENTS.md"] as const;
@@ -140,9 +149,21 @@ export async function getOrCreatePipeline(
     return cached;
   }
 
-  const pipe = await transformers.pipeline("text-generation", modelId, {
-    dtype: dtype as PipelineDtype,
-  });
+  // Suppress noisy upstream warning about missing Content-Length headers.
+  const origWarn = console.warn;
+  console.warn = (...args: unknown[]) => {
+    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length")) return;
+    origWarn.apply(console, args);
+  };
+
+  let pipe: TextGenerationPipeline;
+  try {
+    pipe = await transformers.pipeline("text-generation", modelId, {
+      dtype: dtype as PipelineDtype,
+    });
+  } finally {
+    console.warn = origWarn;
+  }
 
   pipelineCache.set(key, pipe);
   return pipe;
@@ -175,12 +196,24 @@ export async function downloadCoderClawLlmModel(opts: {
       }
     : undefined;
 
-  const pipe = await transformers.pipeline("text-generation", opts.modelId, {
-    dtype: opts.dtype as PipelineDtype,
-    ...(progressCallback ? { progress_callback: progressCallback } : {}),
-  });
+  // Suppress noisy upstream warning about missing Content-Length headers
+  // that would alarm users during normal model downloads.
+  const origWarn = console.warn;
+  console.warn = (...args: unknown[]) => {
+    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length")) return;
+    origWarn.apply(console, args);
+  };
 
-  pipelineCache.set(key, pipe);
+  try {
+    const pipe = await transformers.pipeline("text-generation", opts.modelId, {
+      dtype: opts.dtype as PipelineDtype,
+      ...(progressCallback ? { progress_callback: progressCallback } : {}),
+    });
+
+    pipelineCache.set(key, pipe);
+  } finally {
+    console.warn = origWarn;
+  }
 }
 
 // ── Message conversion ───────────────────────────────────────────────────────

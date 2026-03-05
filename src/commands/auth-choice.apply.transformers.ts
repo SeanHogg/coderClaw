@@ -11,15 +11,25 @@ import { applyPrimaryModel } from "./model-picker.js";
 export const CODERCLAWLLM_LOCAL_PROVIDER_ID = "coderclawllm-local";
 /** @deprecated Use CODERCLAWLLM_LOCAL_PROVIDER_ID */
 export const TRANSFORMERS_PROVIDER_ID = CODERCLAWLLM_LOCAL_PROVIDER_ID;
-// HuggingFaceTB/SmolLM2-1.7B-Instruct ships ONNX-quantized weights that are
-// natively supported by @huggingface/transformers without any extra tooling.
-export const TRANSFORMERS_DEFAULT_MODEL_ID = "HuggingFaceTB/SmolLM2-1.7B-Instruct";
-export const TRANSFORMERS_DEFAULT_DTYPE = "q4";
+
+// ── Anatomical model defaults ────────────────────────────────────────────────
+// Amygdala  = SmolLM2 (fast routing / triage, <200 ms)
+// Hippocampus = Phi-3.5-mini (memory consolidation, prompt compression)
+// Cortex    = user's registered LLM (the actual agent model)
+export const AMYGDALA_MODEL_ID = "HuggingFaceTB/SmolLM2-1.7B-Instruct";
+export const AMYGDALA_DTYPE = "q4";
+export const HIPPOCAMPUS_MODEL_ID = "microsoft/Phi-3.5-mini-instruct";
+export const HIPPOCAMPUS_DTYPE = "q4";
+
+/** @deprecated Use AMYGDALA_MODEL_ID */
+export const TRANSFORMERS_DEFAULT_MODEL_ID = AMYGDALA_MODEL_ID;
+/** @deprecated Use AMYGDALA_DTYPE */
+export const TRANSFORMERS_DEFAULT_DTYPE = AMYGDALA_DTYPE;
 
 const DTYPE_OPTIONS = ["q4", "q5", "q8", "fp16", "fp32"] as const;
 type TransformersDtype = (typeof DTYPE_OPTIONS)[number];
 
-function defaultCacheDir(): string {
+export function defaultCacheDir(): string {
   return path.join(resolveStateDir(), "models");
 }
 
@@ -27,10 +37,12 @@ function toModelKey(modelId: string): string {
   return `${TRANSFORMERS_PROVIDER_ID}/${modelId}`;
 }
 
-function applyTransformersProviderConfig(
+export function applyTransformersProviderConfig(
   cfg: CoderClawConfig,
-  modelId: string,
-  dtype: string,
+  amygdalaModelId: string,
+  amygdalaDtype: string,
+  hippocampusModelId: string,
+  hippocampusDtype: string,
   cacheDir: string,
 ): CoderClawConfig {
   return {
@@ -44,20 +56,40 @@ function applyTransformersProviderConfig(
           // baseUrl is repurposed as the model cache directory for this provider.
           baseUrl: cacheDir,
           api: "transformers",
+          // pi-ai ModelRegistry requires apiKey for custom providers; use a
+          // sentinel value since local inference needs no remote auth.
+          apiKey: "local",
           models: [
             {
-              id: modelId,
-              name: modelId,
+              id: amygdalaModelId,
+              name: `amygdala (${amygdalaModelId})`,
               reasoning: false,
               input: ["text"],
               cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
               contextWindow: 8192,
               maxTokens: 2048,
-              // dtype is stored as a custom header so attempt.ts can read it.
-              headers: { "x-transformers-dtype": dtype },
+              headers: { "x-transformers-dtype": amygdalaDtype, "x-brain-role": "amygdala" },
+            },
+            {
+              id: hippocampusModelId,
+              name: `hippocampus (${hippocampusModelId})`,
+              reasoning: false,
+              input: ["text"],
+              cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+              contextWindow: 131072,
+              maxTokens: 4096,
+              headers: { "x-transformers-dtype": hippocampusDtype, "x-brain-role": "hippocampus" },
             },
           ],
         },
+      },
+    },
+    localBrain: {
+      ...cfg.localBrain,
+      enabled: true,
+      models: {
+        amygdala: { modelId: amygdalaModelId, dtype: amygdalaDtype },
+        hippocampus: { modelId: hippocampusModelId, dtype: hippocampusDtype },
       },
     },
   };
@@ -109,40 +141,67 @@ export async function downloadAndWireLocalBrain(opts: {
   let nextConfig = opts.config;
   const configuredModelKey = extractPrimaryModel(nextConfig);
 
-  const modelId = TRANSFORMERS_DEFAULT_MODEL_ID;
-  const dtype = TRANSFORMERS_DEFAULT_DTYPE;
+  const amygdalaModelId = nextConfig.localBrain?.models?.amygdala?.modelId ?? AMYGDALA_MODEL_ID;
+  const amygdalaDtype = nextConfig.localBrain?.models?.amygdala?.dtype ?? AMYGDALA_DTYPE;
+  const hippocampusModelId = nextConfig.localBrain?.models?.hippocampus?.modelId ?? HIPPOCAMPUS_MODEL_ID;
+  const hippocampusDtype = nextConfig.localBrain?.models?.hippocampus?.dtype ?? HIPPOCAMPUS_DTYPE;
   const cacheDir = defaultCacheDir();
 
-  // Register the transformers provider in the config.
-  nextConfig = applyTransformersProviderConfig(nextConfig, modelId, dtype, cacheDir);
+  // Register both models in the provider config.
+  nextConfig = applyTransformersProviderConfig(
+    nextConfig, amygdalaModelId, amygdalaDtype,
+    hippocampusModelId, hippocampusDtype, cacheDir,
+  );
 
-  // Download the model with live progress.
+  // ── Download amygdala (SmolLM2 — fast router) ──────────────────────────
   let lastFile = "";
-  const spinner = opts.prompter.progress(
-    `Downloading local brain (${dtype})…`,
+  const amygdalaSpinner = opts.prompter.progress(
+    `Downloading amygdala (${amygdalaModelId}, ${amygdalaDtype})…`,
   );
   try {
     await downloadCoderClawLlmModel({
-      modelId,
-      dtype,
+      modelId: amygdalaModelId,
+      dtype: amygdalaDtype,
       cacheDir,
       onProgress: (file, pct) => {
-        if (file !== lastFile) {
-          lastFile = file;
-        }
-        spinner.update(`Downloading ${path.basename(file)} — ${pct}%`);
+        if (file !== lastFile) lastFile = file;
+        amygdalaSpinner.update(`Amygdala: ${path.basename(file)} — ${pct}%`);
       },
     });
-    spinner.stop("Local brain downloaded and ready.");
+    amygdalaSpinner.stop("Amygdala (fast router) downloaded and ready.");
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    spinner.stop(
-      `Download failed: ${msg}\nThe configured LLM will be used without a local brain.\nRe-run "coderclaw configure" to try again.`,
+    amygdalaSpinner.stop(
+      `Amygdala download failed: ${msg}\nThe cortex (registered LLM) will be used without a local brain.\nRe-run "coderclaw configure" to try again.`,
     );
     return { config: nextConfig };
   }
 
-  const localModelKey = toModelKey(modelId);
+  // ── Download hippocampus (Phi-3.5-mini — memory / compression) ─────────
+  lastFile = "";
+  const hippoSpinner = opts.prompter.progress(
+    `Downloading hippocampus (${hippocampusModelId}, ${hippocampusDtype})…`,
+  );
+  try {
+    await downloadCoderClawLlmModel({
+      modelId: hippocampusModelId,
+      dtype: hippocampusDtype,
+      cacheDir,
+      onProgress: (file, pct) => {
+        if (file !== lastFile) lastFile = file;
+        hippoSpinner.update(`Hippocampus: ${path.basename(file)} — ${pct}%`);
+      },
+    });
+    hippoSpinner.stop("Hippocampus (memory model) downloaded and ready.");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    hippoSpinner.stop(
+      `Hippocampus download failed: ${msg}\nAmygdala will run solo; hippocampus features disabled.\nRe-run "coderclaw configure" to try again.`,
+    );
+    // Don't bail — amygdala is still functional.
+  }
+
+  const localModelKey = toModelKey(amygdalaModelId);
   if (configuredModelKey && configuredModelKey !== localModelKey) {
     nextConfig = setModelWithFallback(nextConfig, localModelKey, configuredModelKey);
   } else {

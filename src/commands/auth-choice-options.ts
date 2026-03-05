@@ -194,7 +194,7 @@ const BASE_AUTH_CHOICE_OPTIONS: ReadonlyArray<AuthChoiceOption> = [
   {
     value: "coderclawllm",
     label: "CoderClawLLM (recommended)",
-    hint: "Uses api.coderclaw.ai/llm with automatic free-model failover (no local key)",
+    hint: "Uses api.coderclaw.ai/llm with automatic model failover (no local key needed)",
   },
   {
     value: "token",

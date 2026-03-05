@@ -6,6 +6,8 @@ import {
   normalizeUsageDisplay,
   resolveResponseUsageMode,
 } from "../auto-reply/thinking.js";
+import type { CoderClawConfig } from "../config/types.js";
+import { loadConfig, writeConfigFile } from "../config/config.js";
 import {
   initializeCoderClawProject,
   loadProjectContext,
@@ -26,6 +28,16 @@ import type { SessionsPatchResult } from "../gateway/protocol/index.js";
 import { syncCoderClawDirectoryWithMetaUpdate } from "../infra/clawlink-directory-sync.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
+import { isModelCached } from "../agents/coderclawllm-syscheck.js";
+import { downloadCoderClawLlmModel } from "../agents/transformers-stream.js";
+import {
+  AMYGDALA_MODEL_ID,
+  AMYGDALA_DTYPE,
+  HIPPOCAMPUS_MODEL_ID,
+  HIPPOCAMPUS_DTYPE,
+  defaultCacheDir,
+  applyTransformersProviderConfig,
+} from "../commands/auth-choice.apply.transformers.js";
 import { logDebug, logWarn } from "../logger.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import { helpText, parseCommand } from "./commands.js";
@@ -71,6 +83,7 @@ type CommandHandlerContext = {
     lines: string[];
   }>;
   runLocalCliCommand?: (args: string[]) => Promise<{ ok: boolean; lines: string[] }>;
+  config?: CoderClawConfig;
 };
 
 async function executeGatewayServiceCommand(
@@ -972,6 +985,151 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           } else {
             chatLog.addSystem(`No staged edit found for: ${target}\n\n${buildStagedSummary()}`);
           }
+        }
+        break;
+      }
+      case "localbrain": {
+        const action = args.trim().toLowerCase();
+        const LOCALBRAIN_ACTIONS = ["on", "off", "refresh"];
+        if (action && !LOCALBRAIN_ACTIONS.includes(action)) {
+          chatLog.addSystem("usage: /localbrain <on|off|refresh>");
+          break;
+        }
+
+        // Status (no args)
+        if (!action) {
+          const cfg = loadConfig();
+          const enabled = cfg.localBrain?.enabled !== false && Boolean(cfg.models?.providers?.["coderclawllm-local"]);
+          const amygdala = cfg.localBrain?.models?.amygdala?.modelId ?? "(not configured)";
+          const hippocampus = cfg.localBrain?.models?.hippocampus?.modelId ?? "(not configured)";
+          chatLog.addSystem(
+            [
+              `Local brain: ${enabled ? "on" : "off"}`,
+              `  amygdala: ${amygdala}`,
+              `  hippocampus: ${hippocampus}`,
+              "",
+              "Commands: /localbrain <on|off|refresh>",
+            ].join("\n"),
+          );
+          break;
+        }
+
+        if (action === "off") {
+          try {
+            const cfg = loadConfig();
+            const updated: CoderClawConfig = {
+              ...cfg,
+              localBrain: { ...cfg.localBrain, enabled: false },
+            };
+            await writeConfigFile(updated);
+            if (context.config) {
+              context.config.localBrain = { ...context.config.localBrain, enabled: false };
+            }
+            chatLog.addSystem("Local brain disabled.");
+            chatLog.addSystem("The cortex (your configured LLM) will handle all requests.");
+            updateFooter?.();
+          } catch (err) {
+            chatLog.addSystem(`Failed to update config: ${err instanceof Error ? err.message : String(err)}`);
+          }
+          break;
+        }
+
+        if (action === "on") {
+          try {
+            let cfg = loadConfig();
+            const cacheDir = defaultCacheDir();
+            const amygdalaModelId = cfg.localBrain?.models?.amygdala?.modelId ?? AMYGDALA_MODEL_ID;
+            const amygdalaDtype = cfg.localBrain?.models?.amygdala?.dtype ?? AMYGDALA_DTYPE;
+            const hippocampusModelId = cfg.localBrain?.models?.hippocampus?.modelId ?? HIPPOCAMPUS_MODEL_ID;
+            const hippocampusDtype = cfg.localBrain?.models?.hippocampus?.dtype ?? HIPPOCAMPUS_DTYPE;
+
+            const amygdalaCached = await isModelCached(cacheDir, amygdalaModelId);
+            const hippocampusCached = await isModelCached(cacheDir, hippocampusModelId);
+
+            if (!amygdalaCached || !hippocampusCached) {
+              chatLog.addSystem("Some local brain models are missing — downloading…");
+              tui.requestRender();
+            }
+
+            if (!amygdalaCached) {
+              chatLog.addSystem(`Downloading amygdala (${amygdalaModelId}, ${amygdalaDtype})…`);
+              tui.requestRender();
+              try {
+                await downloadCoderClawLlmModel({
+                  modelId: amygdalaModelId,
+                  dtype: amygdalaDtype,
+                  cacheDir,
+                  onProgress: (_file, pct) => {
+                    setActivityStatus(`Amygdala: ${pct}%`);
+                    tui.requestRender();
+                  },
+                });
+                setActivityStatus("");
+                chatLog.addSystem("Amygdala downloaded.");
+              } catch (err) {
+                setActivityStatus("");
+                chatLog.addSystem(`Amygdala download failed: ${err instanceof Error ? err.message : String(err)}`);
+              }
+            }
+
+            if (!hippocampusCached) {
+              chatLog.addSystem(`Downloading hippocampus (${hippocampusModelId}, ${hippocampusDtype})…`);
+              tui.requestRender();
+              try {
+                await downloadCoderClawLlmModel({
+                  modelId: hippocampusModelId,
+                  dtype: hippocampusDtype,
+                  cacheDir,
+                  onProgress: (_file, pct) => {
+                    setActivityStatus(`Hippocampus: ${pct}%`);
+                    tui.requestRender();
+                  },
+                });
+                setActivityStatus("");
+                chatLog.addSystem("Hippocampus downloaded.");
+              } catch (err) {
+                setActivityStatus("");
+                chatLog.addSystem(`Hippocampus download failed: ${err instanceof Error ? err.message : String(err)}`);
+              }
+            }
+
+            // Ensure provider config is wired up.
+            const hasProvider = Boolean(cfg.models?.providers?.["coderclawllm-local"]);
+            if (!hasProvider || !amygdalaCached || !hippocampusCached) {
+              cfg = applyTransformersProviderConfig(
+                cfg, amygdalaModelId, amygdalaDtype,
+                hippocampusModelId, hippocampusDtype, cacheDir,
+              );
+            }
+
+            const updated: CoderClawConfig = {
+              ...cfg,
+              localBrain: { ...cfg.localBrain, enabled: true },
+            };
+            await writeConfigFile(updated);
+            if (context.config) {
+              context.config.localBrain = { ...updated.localBrain };
+            }
+            chatLog.addSystem("Local brain enabled.");
+            updateFooter?.();
+          } catch (err) {
+            chatLog.addSystem(`Failed to enable local brain: ${err instanceof Error ? err.message : String(err)}`);
+          }
+          break;
+        }
+
+        if (action === "refresh") {
+          // Re-download local brain models via the setup wizard.
+          if (onSetup) {
+            chatLog.addSystem("Launching setup wizard to refresh local brain models…");
+            tui.requestRender();
+            await onSetup();
+          } else {
+            chatLog.addSystem(
+              "Run: coderclaw onboard\nThis will re-download the latest local brain models.",
+            );
+          }
+          break;
         }
         break;
       }

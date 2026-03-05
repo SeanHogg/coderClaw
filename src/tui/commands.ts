@@ -131,6 +131,14 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
     { name: "quit", description: "Exit the TUI" },
     { name: "setup", description: "Run the setup/onboarding wizard" },
     { name: "onboard", description: "Alias for /setup" },
+    {
+      name: "localbrain",
+      description: "Toggle local brain on/off/refresh",
+      getArgumentCompletions: (prefix) =>
+        ["on", "off", "refresh"]
+          .filter((v) => v.startsWith(prefix.toLowerCase()))
+          .map((value) => ({ value, label: value })),
+    },
     { name: "project", description: "Show project context from .coderClaw directory" },
     { name: "sync", description: "Force sync .coderClaw directory to CoderClawLink" },
     {
@@ -206,6 +214,7 @@ export function helpText(options: SlashCommandOptions = {}): string {
     "/accept [file|all]",
     "/reject [file|all]",
     "/exit",
+    "/localbrain <on|off|refresh>",
     "/setup or /onboard",
   ].join("\n");
 }

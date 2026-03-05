@@ -54,14 +54,14 @@ describe("isModelCached", () => {
 
   it("returns true when the HuggingFace cache slug directory exists", async () => {
     // HuggingFace cache uses models--<org>--<name> slug
-    const slug = "models--onnx-community--SmolLM2-1.7B-Instruct";
+    const slug = "models--HuggingFaceTB--SmolLM2-1.7B-Instruct";
     await fs.mkdir(path.join(tmpDir, slug), { recursive: true });
     const result = await isModelCached(tmpDir, "HuggingFaceTB/SmolLM2-1.7B-Instruct");
     expect(result).toBe(true);
   });
 
   it("returns false when the slug path is a file, not a directory", async () => {
-    const slug = "models--onnx-community--SmolLM2-1.7B-Instruct";
+    const slug = "models--HuggingFaceTB--SmolLM2-1.7B-Instruct";
     await fs.writeFile(path.join(tmpDir, slug), "not a dir", "utf-8");
     const result = await isModelCached(tmpDir, "HuggingFaceTB/SmolLM2-1.7B-Instruct");
     expect(result).toBe(false);
@@ -108,7 +108,7 @@ describe("checkLocalBrainRequirements", () => {
   it("returns eligible when model is already cached (skips disk check)", async () => {
     vi.spyOn(os, "freemem").mockReturnValue(MIN_RAM_BYTES + 1);
     // Create the cache slug so isModelCached returns true
-    const slug = "models--onnx-community--SmolLM2-1.7B-Instruct";
+    const slug = "models--HuggingFaceTB--SmolLM2-1.7B-Instruct";
     await fs.mkdir(path.join(tmpDir, slug), { recursive: true });
 
     const result = await checkLocalBrainRequirements({

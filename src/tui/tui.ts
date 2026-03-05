@@ -665,10 +665,12 @@ export async function runTui(opts: TuiOptions) {
     const reasoning = sessionInfo.reasoningLevel ?? "off";
     const reasoningLabel =
       reasoning === "on" ? "reasoning" : reasoning === "stream" ? "reasoning:stream" : null;
+    const localBrainLabel = config.localBrain?.enabled ? "local brain" : null;
     const footerParts = [
       `agent ${agentLabel}`,
       `session ${sessionLabel}`,
       modelLabel,
+      localBrainLabel,
       think !== "off" ? `think ${think}` : null,
       verbose !== "off" ? `verbose ${verbose}` : null,
       reasoningLabel,
@@ -790,6 +792,7 @@ export async function runTui(opts: TuiOptions) {
       noteLocalRunId,
       forgetLocalRunId,
       onSetup: handleSetup,
+      config,
     });
 
   const { runLocalShellLine } = createLocalShellRunner({
@@ -894,7 +897,7 @@ export async function runTui(opts: TuiOptions) {
     setConnectionStatus(`gateway disconnected: ${reasonLabel}`, 5000);
     setActivityStatus("idle");
     if (isFirstFailure) {
-      chatLog.addSystem("Gateway not reachable. Type /setup or /onboard to run the setup wizard.");
+      chatLog.addSystem("Gateway not reachable. Type /setup or /onboard to run the setup wizard, or /gateway restart to restart the gateway.");
     }
     updateFooter();
     tui.requestRender();

@@ -1,25 +1,33 @@
 /**
- * CoderClawLLM local brain — two-tier reasoning + execution engine.
+ * CoderClawLLM local brain — dual ONNX preprocessor + cortex execution engine.
  *
- * Every request flows through four capabilities:
+ * Anatomy:
  *
- *   1. RAG  — relevant workspace files are retrieved and injected into context
- *   2. Brain (SmolLM2 ONNX) — reasons with full .coderclaw memory + RAG context,
- *      decides to handle directly or DELEGATE, and may call tools
- *   3. Tool loop — if the brain emits tool calls, execute them and loop back
- *      (up to MAX_TOOL_ROUNDS rounds)
- *   4. Multi-step chain (on DELEGATE) — plan pass → execution LLM code pass
+ *   **Amygdala** (SmolLM2-1.7B, 8K ctx)
+ *     — fast intent routing / triage (<200 ms)
+ *     — decides HANDLE or DELEGATE
+ *     — runs tool loop (read_file, list_files, grep_files, run_code)
+ *
+ *   **Hippocampus** (Phi-3.5-mini, 128K ctx)
+ *     — memory consolidation & synthesis
+ *     — prompt compression for the cortex
+ *     — plan pass in the DELEGATE multi-step chain
+ *
+ *   **Cortex** (user's registered LLM)
+ *     — complex reasoning, multi-file implementations
+ *     — called on DELEGATE via callExecutionLlm()
+ *
+ * Request flow:
+ *   1. RAG — relevant workspace files injected into context
+ *   2. Amygdala — reasons with .coderclaw memory + RAG, runs tools, decides
+ *      HANDLE or DELEGATE
+ *   3. If HANDLE → amygdala response returned directly
+ *   4. If DELEGATE → hippocampus distils a plan → cortex implements
  *      → code-execution feedback → optional fix pass
  *
- * System requirements check:
- *   On first use, the factory checks available RAM and disk space.
- *   If the local model cannot be loaded (insufficient resources), the
- *   execution LLM configured in the runtime config is used as the brain
- *   instead, giving the same interface with no degradation to the caller.
- *
- * Sub-agents: each spawn creates a new runEmbeddedAttempt which re-runs the
- * streamFn setup, giving every sub-agent its own brain instance with freshly
- * loaded memory + RAG. No shared mutable state between invocations.
+ * Graceful degradation:
+ *   - If amygdala can't load → cortex handles everything
+ *   - If hippocampus can't load → amygdala does the plan pass (smaller context)
  */
 
 import type { StreamFn } from "@mariozechner/pi-agent-core";
@@ -31,6 +39,8 @@ import {
   TRANSFORMERS_DEFAULT_CACHE_DIR,
   TRANSFORMERS_DEFAULT_DTYPE,
   TRANSFORMERS_DEFAULT_MODEL_ID,
+  HIPPOCAMPUS_DEFAULT_MODEL_ID,
+  HIPPOCAMPUS_DEFAULT_DTYPE,
   convertToTransformersMessages,
   getOrCreatePipeline,
   loadCoderClawMemory,
@@ -52,8 +62,8 @@ const MAX_TOOL_ROUNDS = 3;
 
 // ── Brain system prompt ───────────────────────────────────────────────────────
 
-const BRAIN_SYSTEM_PROMPT = `\
-You are the CoderClaw brain — a reasoning intelligence grounded in memory and context.
+const AMYGDALA_SYSTEM_PROMPT = `\
+You are the CoderClaw amygdala — the fast-routing intelligence grounded in memory and context.
 
 Your loaded memory above contains everything you know: your identity, the user's preferences, \
 long-term learnings, and recent daily activity. Use it to inform every response.
@@ -63,7 +73,7 @@ ${TOOL_USAGE_HINT}
 Your role:
 1. Reason about the request using your memory and any relevant context provided.
 2. Call tools if you need more information before answering (read_file, list_files, grep_files, run_code).
-3. Decide: can you answer this well directly, or does it need a more capable model?
+3. Decide: can you answer this well directly, or does it need the cortex (a more capable model)?
 
 HANDLE DIRECTLY — respond normally:
 - Reasoning, planning, decisions, and explanations
@@ -277,7 +287,8 @@ async function callExecutionLlm(opts: {
 // ── Multi-step chain: plan → code → execution feedback ───────────────────────
 
 async function runMultiStepChain(opts: {
-  pipe: Awaited<ReturnType<typeof getOrCreatePipeline>>;
+  amygdalaPipe: Awaited<ReturnType<typeof getOrCreatePipeline>>;
+  hippocampusPipe: Awaited<ReturnType<typeof getOrCreatePipeline>> | null;
   config: CoderClawConfig | undefined;
   // Raw context messages (content: unknown) — converted internally as needed.
   rawMessages: Array<{ role: string; content: unknown }>;
@@ -292,18 +303,23 @@ async function runMultiStepChain(opts: {
   allowRunCode: boolean;
   signal?: AbortSignal;
 }): Promise<string> {
-  const { pipe, brainPlan, memoryBlock, ragContext, maxTokens, temperature } = opts;
+  const { amygdalaPipe, hippocampusPipe, brainPlan, memoryBlock, ragContext, maxTokens, temperature } = opts;
 
-  // ── Step 1: Plan pass — brain distils a numbered implementation plan ───────
+  // Use hippocampus for the plan pass when available (128K ctx → better plans).
+  // Fallback to amygdala if hippocampus couldn't be loaded.
+  const planPipe = hippocampusPipe ?? amygdalaPipe;
+  const planMaxTokens = hippocampusPipe ? 512 : 256;
+
+  // ── Step 1: Plan pass — hippocampus distils a numbered implementation plan ─
   const planContext = [memoryBlock, ragContext, brainPlan].filter(Boolean).join("\n\n");
   const planMessages = convertToTransformersMessages(opts.rawMessages, planContext || undefined);
   planMessages.push({
     role: "user",
     content: "Produce a concise numbered implementation plan for the task above. Be specific.",
   });
-  const plan = await runPipeline(pipe, planMessages, 256, 0.4);
+  const plan = await runPipeline(planPipe, planMessages, planMaxTokens, 0.4);
 
-  // ── Step 2: Code pass — execution LLM implements the plan ─────────────────
+  // ── Step 2: Code pass — cortex (execution LLM) implements the plan ────────
   const codeSystemParts = [
     opts.contextSystemPrompt ?? "",
     ragContext,
@@ -362,26 +378,30 @@ async function runMultiStepChain(opts: {
 
   if (codeResult !== null) return codeResult;
 
-  // Fallback: brain handles directly with memory context only (no routing prompt).
+  // Fallback: amygdala handles directly with memory context only.
   const directMessages = convertToTransformersMessages(
     opts.rawMessages,
     [memoryBlock, ragContext].filter(Boolean).join("\n\n") || undefined,
   );
-  return runPipeline(pipe, directMessages, maxTokens, temperature);
+  return runPipeline(amygdalaPipe, directMessages, maxTokens, temperature);
 }
 
 // ── Main StreamFn factory ─────────────────────────────────────────────────────
 
 export type CoderClawLlmLocalStreamOptions = {
-  /** Full runtime config — used to find and call configured execution LLMs. */
+  /** Full runtime config — used to find and call the cortex (execution LLM). */
   config?: CoderClawConfig;
   /** Agent workspace dir (e.g. ~/.coderclaw/workspace) — for memory + RAG. */
   workspaceDir?: string;
-  /** HuggingFace model ID for the local brain. */
+  /** Amygdala: HuggingFace model ID for the fast-routing brain. */
   modelId?: string;
-  /** Quantization dtype (q4, q5, q8, fp16, fp32). */
+  /** Amygdala: quantization dtype (q4, q5, q8, fp16, fp32). */
   dtype?: string;
-  /** Directory where the ONNX model is cached. */
+  /** Hippocampus: HuggingFace model ID for memory/compression brain. */
+  hippocampusModelId?: string;
+  /** Hippocampus: quantization dtype. */
+  hippocampusDtype?: string;
+  /** Directory where the ONNX models are cached. */
   cacheDir?: string;
   /**
    * When true (Discord, Slack, group sessions), MEMORY.md is not loaded to
@@ -389,7 +409,7 @@ export type CoderClawLlmLocalStreamOptions = {
    */
   isSharedContext?: boolean;
   /**
-   * Allow the brain to execute model-generated code via the `run_code` tool.
+   * Allow the amygdala to execute model-generated code via the `run_code` tool.
    *
    * **Security**: `run_code` spawns a Node.js child process inheriting the
    * same OS privileges as the CoderClaw process.  It is limited to a 10-second
@@ -408,14 +428,17 @@ export function createCoderClawLlmLocalStreamFn(
 ): StreamFn {
   const modelId = opts.modelId ?? TRANSFORMERS_DEFAULT_MODEL_ID;
   const dtype = opts.dtype ?? TRANSFORMERS_DEFAULT_DTYPE;
+  const hippocampusModelId = opts.hippocampusModelId ?? HIPPOCAMPUS_DEFAULT_MODEL_ID;
+  const hippocampusDtype = opts.hippocampusDtype ?? HIPPOCAMPUS_DEFAULT_DTYPE;
   const cacheDir = opts.cacheDir ?? TRANSFORMERS_DEFAULT_CACHE_DIR;
 
   // Lazy system-requirements check — performed once on the first request,
   // then cached for the lifetime of this factory instance.
   // null  = not yet checked
-  // true  = local brain eligible
-  // false = requirements not met; route all requests to external LLM
-  let localBrainEligible: boolean | null = null;
+  // true  = amygdala eligible
+  // false = requirements not met; route all requests to cortex
+  let amygdalaEligible: boolean | null = null;
+  let hippocampusEligible: boolean | null = null;
 
   return (model, context, options) => {
     const stream = createAssistantMessageEventStream();
@@ -423,11 +446,19 @@ export function createCoderClawLlmLocalStreamFn(
     const run = async () => {
       try {
         // ── 0. One-time system requirements check ─────────────────────────────
-        if (localBrainEligible === null) {
-          const check = await checkLocalBrainRequirements({ cacheDir, modelId });
-          localBrainEligible = check.eligible;
+        if (amygdalaEligible === null) {
+          const check = await checkLocalBrainRequirements({
+            cacheDir,
+            modelId,
+            hippocampusModelId,
+          });
+          amygdalaEligible = check.eligible;
+          hippocampusEligible = check.hippocampusEligible;
           if (!check.eligible) {
-            logInfo(`[coderclawllm] ${check.reason ?? "System requirements not met."}`);
+            logInfo(`[amygdala] ${check.reason ?? "System requirements not met."}`);
+          }
+          if (!check.hippocampusEligible) {
+            logInfo(`[hippocampus] Insufficient RAM for hippocampus model — plan pass will use amygdala.`);
           }
         }
 
@@ -453,16 +484,15 @@ export function createCoderClawLlmLocalStreamFn(
         const temperature = typeof options?.temperature === "number" ? options.temperature : 0.6;
         const rawMessages = context.messages ?? [];
 
-        // ── External brain fallback (requirements not met) ────────────────────
-        // When the local model cannot be loaded, the configured execution LLM
-        // acts as the brain.  Memory and RAG context are prepended to the
-        // system prompt so it is grounded in the same .coderclaw knowledge.
-        if (!localBrainEligible) {
+        // ── Cortex fallback (amygdala requirements not met) ───────────────────
+        // When the amygdala can't load, the cortex handles everything directly.
+        // Memory and RAG context are prepended so it's grounded in .coderclaw.
+        if (!amygdalaEligible) {
           const externalSystemParts = [
             context.systemPrompt,
             memoryBlock,
             ragContext,
-            BRAIN_SYSTEM_PROMPT,
+            AMYGDALA_SYSTEM_PROMPT,
           ].filter(Boolean);
 
           const externalMessages = convertToTransformersMessages(
@@ -480,7 +510,7 @@ export function createCoderClawLlmLocalStreamFn(
 
           const finalText =
             externalResult ??
-            "I'm unable to process this request: no local brain model and no external LLM is configured.";
+            "I'm unable to process this request: no amygdala model and no cortex (external LLM) is configured.";
 
           const externalContent: TextContent[] = finalText
             ? [{ type: "text" as const, text: finalText }]
@@ -495,8 +525,6 @@ export function createCoderClawLlmLocalStreamFn(
               api: model.api,
               provider: model.provider,
               model: model.id,
-              // Token usage is not tracked for the brain provider (local or external fallback).
-              // Zero values are intentional — same convention as the local-brain path below.
               usage: {
                 input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0,
                 cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
@@ -507,52 +535,61 @@ export function createCoderClawLlmLocalStreamFn(
           return;
         }
 
-        const brainSystem = [
-          // Role/persona identity from the spawning context — this is where the
-          // "--- Agent Persona ---" block injected by subagent-spawn.ts lives.
-          // Including it here means the brain knows WHO it is on BOTH the direct
-          // path AND the DELEGATE path (contextSystemPrompt already carries it).
+        const amygdalaSystem = [
           context.systemPrompt,
           memoryBlock,
           ragContext,
-          BRAIN_SYSTEM_PROMPT,
+          AMYGDALA_SYSTEM_PROMPT,
         ]
           .filter(Boolean)
           .join("\n\n---\n\n");
 
-        const pipe = await getOrCreatePipeline(modelId, dtype, cacheDir);
+        const amygdalaPipe = await getOrCreatePipeline(modelId, dtype, cacheDir);
 
-        // ── 3. Brain reasoning pass (always SmolLM2) ──────────────────────────
-        let brainMessages = convertToTransformersMessages(rawMessages, brainSystem);
-        let brainText = await runPipeline(pipe, brainMessages, 256, 0.4);
+        // Lazily load hippocampus pipeline only when eligible.
+        let hippocampusPipe: Awaited<ReturnType<typeof getOrCreatePipeline>> | null = null;
+        if (hippocampusEligible) {
+          try {
+            hippocampusPipe = await getOrCreatePipeline(hippocampusModelId, hippocampusDtype, cacheDir);
+          } catch {
+            logInfo("[hippocampus] Failed to load hippocampus pipeline — plan pass will use amygdala.");
+            hippocampusEligible = false;
+          }
+        }
 
-        // ── 4. Tool loop — execute tool calls the brain emitted ───────────────
+        // ── 3. Amygdala reasoning pass (fast routing) ─────────────────────────
+        let amygdalaMessages = convertToTransformersMessages(rawMessages, amygdalaSystem);
+        let amygdalaText = await runPipeline(amygdalaPipe, amygdalaMessages, 256, 0.4);
+
+        // ── 4. Tool loop — execute tool calls the amygdala emitted ────────────
 
         const wsDir = opts.workspaceDir;
         let toolRounds = 0;
         while (toolRounds < MAX_TOOL_ROUNDS && wsDir) {
-          const calls = parseToolCalls(brainText);
+          const calls = parseToolCalls(amygdalaText);
           if (calls.length === 0) break;
 
           const results: ToolResult[] = [];
           for (const call of calls) {
             results.push(await executeToolCall(call, wsDir, { allowRunCode: opts.allowRunCode }));
           }
-          brainMessages = [
-            ...brainMessages,
-            { role: "assistant", content: brainText },
+          amygdalaMessages = [
+            ...amygdalaMessages,
+            { role: "assistant", content: amygdalaText },
             { role: "user", content: `Tool results:\n\n${formatToolResults(results)}` },
           ];
-          brainText = await runPipeline(pipe, brainMessages, 256, 0.4);
+          amygdalaText = await runPipeline(amygdalaPipe, amygdalaMessages, 256, 0.4);
           toolRounds++;
         }
 
-        const isDelegating = brainText.toUpperCase().trimStart().startsWith("DELEGATE");
-        const brainPlan = brainText.replace(/^DELEGATE[:\s]*/i, "").trim();
+        const isDelegating = amygdalaText.toUpperCase().trimStart().startsWith("DELEGATE");
+        const brainPlan = amygdalaText.replace(/^DELEGATE[:\s]*/i, "").trim();
 
+        // ── 5. DELEGATE → hippocampus plans, cortex executes ──────────────────
         const finalText = isDelegating
           ? await runMultiStepChain({
-              pipe,
+              amygdalaPipe,
+              hippocampusPipe,
               config: opts.config,
               rawMessages,
               contextSystemPrompt: context.systemPrompt,
@@ -565,7 +602,7 @@ export function createCoderClawLlmLocalStreamFn(
               allowRunCode: opts.allowRunCode ?? false,
               signal: options?.signal,
             })
-          : brainText;
+          : amygdalaText;
 
         const content: TextContent[] = finalText
           ? [{ type: "text" as const, text: finalText }]

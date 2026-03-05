@@ -500,19 +500,19 @@ export async function runOnboardingWizard(
     await warnIfModelConfigLooksOff(nextConfig, prompter);
   }
 
-  // ── Optional local brain (CoderClawLLM-local / SmolLM2 ONNX) ─────────────
+  // ── Optional local brain (amygdala + hippocampus ONNX preprocessors) ────
   if (nextConfig.models?.providers?.["coderclawllm-local"]?.api !== "transformers") {
     const localBrainChoice = await prompter.select({
-      message: "Enable CoderClawLLM local brain?",
+      message: "Enable local brain (amygdala + hippocampus)?",
       options: [
         {
           value: "smart",
-          label: "Smarter with CoderClawLLM-local",
-          hint: "Enhances .coderclaw memory locally.",
+          label: "Enable dual local brain",
+          hint: "Downloads amygdala (fast router) + hippocampus (memory). ~4 GB.",
         },
         {
           value: "skip",
-          label: "Skip — use my configured LLM only",
+          label: "Skip — use my cortex (configured LLM) only",
           hint: "No extra download. Uses whatever model you configured above.",
         },
       ],
@@ -527,7 +527,7 @@ export async function runOnboardingWizard(
         config: nextConfig,
         prompter,
       });
-      nextConfig = { ...result.config, localBrain: { enabled: true } };
+      nextConfig = { ...result.config };
     } else {
       nextConfig = { ...nextConfig, localBrain: { enabled: false } };
     }

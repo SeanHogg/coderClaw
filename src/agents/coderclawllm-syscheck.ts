@@ -1,16 +1,16 @@
 /**
  * System requirements checker for the CoderClawLLM local brain.
  *
- * Before the first attempt to load the SmolLM2 ONNX pipeline we verify:
+ * Before the first attempt to load the ONNX pipelines we verify:
  *   1. Enough free RAM to run inference in-process
- *   2. Enough free disk space to download the model (skipped if already cached)
+ *   2. Enough free disk space to download the models (skipped if already cached)
  *
  * The check is cheap (no network calls) and is performed once per process;
  * the result is cached so it does not add latency to subsequent requests.
  *
- * Model footprint for HuggingFaceTB/SmolLM2-1.7B-Instruct (q4):
- *   Disk  ~900 MB — downloaded once and cached in cacheDir
- *   RAM   ~1.5 GB — loaded into Node.js heap during inference
+ * Dual-model anatomy:
+ *   Amygdala    — SmolLM2-1.7B-Instruct (q4):  ~900 MB disk, ~1.5 GB RAM
+ *   Hippocampus — Phi-3.5-mini-instruct  (q4):  ~2.5 GB disk, ~2.5 GB RAM
  */
 
 import fs from "node:fs/promises";
@@ -21,19 +21,25 @@ import path from "node:path";
 // Thresholds
 // ---------------------------------------------------------------------------
 
-/** Free disk space needed to safely download the model (bytes). */
-export const MIN_DISK_BYTES = 1.5 * 1024 ** 3; // 1.5 GB
+/** Free disk space needed to safely download both models (bytes). */
+export const MIN_DISK_BYTES = 4 * 1024 ** 3; // 4 GB
 
-/** Free RAM needed to load and run the model in-process (bytes). */
-export const MIN_RAM_BYTES = 2 * 1024 ** 3; // 2 GB
+/** Free RAM needed to load the amygdala in-process (bytes).
+ *  Hippocampus is loaded on demand; its RAM is checked separately. */
+export const MIN_RAM_BYTES = 2 * 1024 ** 3; // 2 GB (amygdala only)
+
+/** Additional free RAM needed to load the hippocampus model (bytes). */
+export const HIPPOCAMPUS_MIN_RAM_BYTES = 2.5 * 1024 ** 3; // 2.5 GB
 
 // ---------------------------------------------------------------------------
 // Public types
 // ---------------------------------------------------------------------------
 
 export type LocalBrainCheckResult = {
-  /** Whether the system meets all requirements to run the local brain. */
+  /** Whether the amygdala (fast router) can be loaded. */
   eligible: boolean;
+  /** Whether the hippocampus (memory model) can be loaded. */
+  hippocampusEligible: boolean;
   /**
    * Human-readable explanation when `eligible` is false.
    * Also logged at INFO level the first time the check runs.
@@ -43,8 +49,10 @@ export type LocalBrainCheckResult = {
   freeRamBytes: number;
   /** Free disk space at check time (bytes); undefined when disk check was skipped. */
   freeDiskBytes?: number;
-  /** True when model files are already present in cacheDir. */
+  /** True when amygdala model files are already present in cacheDir. */
   modelAlreadyCached: boolean;
+  /** True when hippocampus model files are already present in cacheDir. */
+  hippocampusModelCached: boolean;
 };
 
 // ---------------------------------------------------------------------------
@@ -100,35 +108,49 @@ async function getFreeDiskBytes(targetPath: string): Promise<number | null> {
 
 /**
  * Check whether the current system meets the minimum requirements to run
- * the local CoderClawLLM brain model.
+ * the local CoderClawLLM brain models (amygdala + hippocampus).
  *
  * Safe to call concurrently — I/O is minimal (a stat + optional statfs).
  */
 export async function checkLocalBrainRequirements(opts: {
   cacheDir: string;
   modelId: string;
+  hippocampusModelId?: string;
 }): Promise<LocalBrainCheckResult> {
   const freeRamBytes = os.freemem();
 
-  // ── RAM check (always required) ──────────────────────────────────────────
+  // ── RAM check (amygdala — always required) ───────────────────────────────
   if (freeRamBytes < MIN_RAM_BYTES) {
     return {
       eligible: false,
+      hippocampusEligible: false,
       reason:
         `Insufficient RAM for local brain: ${formatBytes(freeRamBytes)} free, ` +
         `${formatBytes(MIN_RAM_BYTES)} required. ` +
-        `Routing to external LLM.`,
+        `Routing to cortex (external LLM).`,
       freeRamBytes,
       modelAlreadyCached: false,
+      hippocampusModelCached: false,
     };
   }
 
-  // ── Model cache check ────────────────────────────────────────────────────
+  // ── Model cache checks ───────────────────────────────────────────────────
   const modelAlreadyCached = await isModelCached(opts.cacheDir, opts.modelId);
+  const hippocampusModelCached = opts.hippocampusModelId
+    ? await isModelCached(opts.cacheDir, opts.hippocampusModelId)
+    : false;
+
+  // ── Hippocampus RAM eligibility (checked separately — it loads on demand)
+  const hippocampusEligible = freeRamBytes >= MIN_RAM_BYTES + HIPPOCAMPUS_MIN_RAM_BYTES;
 
   if (modelAlreadyCached) {
-    // Model is on disk — no download needed, RAM is sufficient.
-    return { eligible: true, freeRamBytes, modelAlreadyCached: true };
+    return {
+      eligible: true,
+      hippocampusEligible,
+      freeRamBytes,
+      modelAlreadyCached: true,
+      hippocampusModelCached,
+    };
   }
 
   // ── Disk space check (only when download is needed) ──────────────────────
@@ -137,20 +159,24 @@ export async function checkLocalBrainRequirements(opts: {
   if (freeDiskBytes !== null && freeDiskBytes < MIN_DISK_BYTES) {
     return {
       eligible: false,
+      hippocampusEligible: false,
       reason:
         `Insufficient disk space to download local brain: ${formatBytes(freeDiskBytes)} free, ` +
         `${formatBytes(MIN_DISK_BYTES)} required. ` +
-        `Routing to external LLM.`,
+        `Routing to cortex (external LLM).`,
       freeRamBytes,
       freeDiskBytes,
       modelAlreadyCached: false,
+      hippocampusModelCached,
     };
   }
 
   return {
     eligible: true,
+    hippocampusEligible,
     freeRamBytes,
     freeDiskBytes: freeDiskBytes ?? undefined,
     modelAlreadyCached: false,
+    hippocampusModelCached,
   };
 }
