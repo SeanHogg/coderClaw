@@ -7,6 +7,7 @@
 ## Conversation Summary
 
 user: Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "02564ca9-68e4-4bd9-9240-8fd49ecb861c",

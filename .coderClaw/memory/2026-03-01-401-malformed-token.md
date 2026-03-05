@@ -16,6 +16,7 @@ System: [2026-03-01 11:45:51 EST] Exec completed (cool-fjo, code 1) :: ise<void>
 System: [2026-03-01 11:48:48 EST] Exec completed (dawn-kel, code 0) :: 2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m [32m✓[39m src/coderclaw/orchestrator.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m [2m Test Files [22m [1m[32m2 pass…
 
 Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "3eda0f9b-4df8-411e-ba52-ff09f464b707",
@@ -41,6 +42,7 @@ System: [2026-03-01 11:45:51 EST] Exec completed (cool-fjo, code 1) :: ise<void>
 System: [2026-03-01 11:48:48 EST] Exec completed (dawn-kel, code 0) :: 2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m [32m✓[39m src/coderclaw/orchestrator.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m [2m Test Files [22m [1m[32m2 pass…
 
 Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "3eda0f9b-4df8-411e-ba52-ff09f464b707",
@@ -55,6 +57,7 @@ I'll review the .coderClaw working directory and identify any remaining gaps to 
 
 Continue executing the user's requested tasks now. Do not summarize your plan. Perform concrete implementation and test steps. Only stop if you need a specific user decision or missing required information.
 user: Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "04106e40-554c-4df6-bc34-e64ee32f35ba",
@@ -64,6 +67,7 @@ user: Conversation info (untrusted metadata):
 
 [Sun 2026-03-01 11:58 EST] why did you stop executing, isn't your directive to review, plan and execute?
 user: Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "652ad293-b9c0-4c26-85e6-8a1e040a6281",
@@ -74,6 +78,7 @@ user: Conversation info (untrusted metadata):
 [Sun 2026-03-01 12:00 EST] again you stopped executing. Review your code determine why
 assistant: ⚠️ 📝 Edit: `in C:\code\agentic\coderClaw\src\web\session.ts (219 chars)` failed: Could not find the exact text in C:\code\agentic\coderClaw\src\web\session.ts. The old text must match exactly including all whitespace and newlines.
 user: Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "747756ad-fdcc-48bc-9ef4-d0f84c01cfbf",

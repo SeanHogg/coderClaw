@@ -94,10 +94,7 @@ describeIfSqlite("memory watcher config", () => {
     ];
     const defaultPatterns = getDefaultMemoryWatchPatterns(workspaceDir);
     expect(watchedPaths).toEqual(
-      expect.arrayContaining([
-        ...defaultPatterns,
-        path.join(extraDir, "**", "*.md"),
-      ]),
+      expect.arrayContaining([...defaultPatterns, path.join(extraDir, "**", "*.md")]),
     );
     expect(options.ignoreInitial).toBe(true);
     expect(options.awaitWriteFinish).toEqual({ stabilityThreshold: 25, pollInterval: 100 });

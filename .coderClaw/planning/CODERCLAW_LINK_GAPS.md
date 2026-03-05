@@ -395,6 +395,7 @@ this live.
 **Required Changes to coderClawLink**
 
 1. **New relay frames** from upstream WS:
+
    ```json
    { "type": "task.started",    "workflowId": "…", "taskId": "…", "role": "code-creator", "model": "…", "ts": "…" }
    { "type": "task.output_delta", "workflowId": "…", "taskId": "…", "delta": "<text chunk>", "ts": "…" }
@@ -463,6 +464,7 @@ is for destructive tool calls, not file diffs.
 **Required Changes to coderClawLink**
 
 1. **New table**: `pending_diffs`
+
    ```sql
    id           uuid PRIMARY KEY
    claw_id      int NOT NULL
@@ -475,6 +477,7 @@ is for destructive tool calls, not file diffs.
    ```
 
 2. **New endpoints**:
+
    ```
    POST   /api/diffs                 Submit a pending diff (from claw on edit call)
    GET    /api/diffs?clawId=&status= List pending diffs
@@ -483,6 +486,7 @@ is for destructive tool calls, not file diffs.
    ```
 
 3. **Relay frame** for live notification:
+
    ```json
    { "type": "diff.pending", "diffId": "…", "filePath": "…", "clawId": "…", "ts": "…" }
    ```
@@ -504,6 +508,7 @@ Teams cannot share personas or enforce a standard persona set across all claws.
 **Required Changes to coderClawLink**
 
 1. **New table**: `personas`
+
    ```sql
    id           uuid PRIMARY KEY
    tenant_id    int NOT NULL
@@ -517,6 +522,7 @@ Teams cannot share personas or enforce a standard persona set across all claws.
    ```
 
 2. **New endpoints**:
+
    ```
    POST   /api/personas            Create persona
    GET    /api/personas            List tenant personas (own + shared)
@@ -536,25 +542,26 @@ On startup, fetch tenant personas from coderClawLink and write to
 
 ## Summary Table (Updated)
 
-| ID    | Priority | Feature                              | Backend | SPA | coderClaw |
-| ----- | -------- | ------------------------------------ | ------- | --- | --------- |
-| P0-1  | P0       | Remote task result streaming         | ✅ New  | —   | ✅ Update |
-| P0-2  | P0       | Execution WS streaming               | ✅ New  | —   | ✅ Update |
-| P0-3  | P0       | Live orchestration workspace         | ✅ New  | ✅  | ✅ Update |
-| P0-4  | P0       | MCP server (CoderClaw as provider)   | ✅ New  | —   | ✅ New    |
-| P1-1  | P1       | Spec / planning storage API          | ✅ New  | —   | ✅ Update |
-| P1-2  | P1       | Workflow execution portal API        | ✅ New  | —   | ✅ Update |
-| P1-3  | P1       | Spec review + workflow portal SPA    | —       | ✅  | —         |
-| P1-4  | P1       | Diff staging & inline approval API   | ✅ New  | ✅  | ✅ Update |
-| P2-1  | P2       | Knowledge / memory query API         | ✅ New  | ✅  | —         |
-| P2-2  | P2       | Token usage dashboard                | ✅ New  | ✅  | ✅ Update |
-| P2-3  | P2       | Fleet capability management          | ✅ New  | ✅  | ✅ Update |
-| P2-4  | P2       | Agent run audit trail                | ✅ New  | ✅  | ✅ Update |
-| P2-5  | P2       | Persona registry API                 | ✅ New  | ✅  | ✅ New    |
-| P3-1  | P3       | Cross-claw memory sharing API        | ✅ New  | —   | —         |
-| P3-2  | P3       | Model cost tracking                  | ✅ New  | ✅  | —         |
-| P3-3  | P3       | Approval workflow API                | ✅ New  | ✅  | ✅ Update |
-| P3-4  | P3       | Spec import (GitHub/Linear/Jira)     | ✅ New  | ✅  | ✅ Update |
+| ID   | Priority | Feature                            | Backend | SPA | coderClaw |
+| ---- | -------- | ---------------------------------- | ------- | --- | --------- |
+| P0-1 | P0       | Remote task result streaming       | ✅ New  | —   | ✅ Update |
+| P0-2 | P0       | Execution WS streaming             | ✅ New  | —   | ✅ Update |
+| P0-3 | P0       | Live orchestration workspace       | ✅ New  | ✅  | ✅ Update |
+| P0-4 | P0       | MCP server (CoderClaw as provider) | ✅ New  | —   | ✅ New    |
+| P1-1 | P1       | Spec / planning storage API        | ✅ New  | —   | ✅ Update |
+| P1-2 | P1       | Workflow execution portal API      | ✅ New  | —   | ✅ Update |
+| P1-3 | P1       | Spec review + workflow portal SPA  | —       | ✅  | —         |
+| P1-4 | P1       | Diff staging & inline approval API | ✅ New  | ✅  | ✅ Update |
+| P2-1 | P2       | Knowledge / memory query API       | ✅ New  | ✅  | —         |
+| P2-2 | P2       | Token usage dashboard              | ✅ New  | ✅  | ✅ Update |
+| P2-3 | P2       | Fleet capability management        | ✅ New  | ✅  | ✅ Update |
+| P2-4 | P2       | Agent run audit trail              | ✅ New  | ✅  | ✅ Update |
+| P2-5 | P2       | Persona registry API               | ✅ New  | ✅  | ✅ New    |
+| P3-1 | P3       | Cross-claw memory sharing API      | ✅ New  | —   | —         |
+| P3-2 | P3       | Model cost tracking                | ✅ New  | ✅  | —         |
+| P3-3 | P3       | Approval workflow API              | ✅ New  | ✅  | ✅ Update |
+| P3-4 | P3       | Spec import (GitHub/Linear/Jira)   | ✅ New  | ✅  | ✅ Update |
+
 ## Summary Table
 
 | ID   | Priority | Feature                           | Backend | SPA | coderClaw         |

@@ -953,14 +953,7 @@
     "filePath": "memory\\2026-03-02.md",
     "session": "DECISION: Rejected automated semantic memory layer",
     "content": "User proposed a semantic memory layer with automatic extraction, vector clustering, and garbage collection.\nDECISION: Rejected. Reason: Manual curation is valuable, human preferences matter, risk of over-aggressive cleanup, added complexity.\nALTERNATIVE: Approved implementation of a _suggestion system_ (advisory only, I retain final curation authority). Added to roadmap as \"Suggestion System for Memory Management\" (Priority: Medium).\nProtocols updated: MEMORY.md created/updated with this decision and roadmap item.\nSelf-validation: ✓ MEMORY.md written and verified (1953 bytes)",
-    "tags": [
-      "memory",
-      "decision",
-      "rejected",
-      "approved",
-      "roadmap",
-      "suggestion"
-    ],
+    "tags": ["memory", "decision", "rejected", "approved", "roadmap", "suggestion"],
     "summary": "User proposed a semantic memory layer with automatic extraction, vector clustering, and garbage collection.\nDECISION: Re...",
     "wordCount": 73,
     "clusterId": null,

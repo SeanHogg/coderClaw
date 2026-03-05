@@ -73,10 +73,7 @@ export function getDefaultMemoryDirs(workspaceDir: string): string[] {
  * Returns the standard files that are treated as memory roots.
  */
 export function getDefaultMemoryFilePaths(workspaceDir: string): string[] {
-  return [
-    path.join(workspaceDir, "MEMORY.md"),
-    path.join(workspaceDir, "memory.md"),
-  ];
+  return [path.join(workspaceDir, "MEMORY.md"), path.join(workspaceDir, "memory.md")];
 }
 
 /**
@@ -103,7 +100,11 @@ export function isMemoryPath(relPath: string): boolean {
     return true;
   }
   // Daily logs are in .coderclaw/memory/*.md
-  return normalized === "memory" || normalized.startsWith("memory/") || normalized.startsWith(".coderclaw/memory/");
+  return (
+    normalized === "memory" ||
+    normalized.startsWith("memory/") ||
+    normalized.startsWith(".coderclaw/memory/")
+  );
 }
 
 async function walkDir(dir: string, files: string[]) {

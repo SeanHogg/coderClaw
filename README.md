@@ -26,6 +26,7 @@ Add it to Cursor or Continue.dev to get CoderClaw's semantic search, project kno
 and git history inside your existing IDE:
 
 **Cursor** (`~/.cursor/mcp.json`):
+
 ```json
 {
   "mcpServers": {
@@ -37,6 +38,7 @@ and git history inside your existing IDE:
 ```
 
 **Continue.dev** (`~/.continue/config.json`):
+
 ```json
 {
   "contextProviders": [
@@ -77,32 +79,34 @@ CODERCLAW_STAGED=true coderclaw gateway
 # Reject everything and start over
 /reject all
 ```
+
 ## 🔄 Why CoderClaw instead of GitHub Copilot, Cursor, or Claude Code?
 
-|                                                 | **CoderClaw**                          | GitHub Copilot              | Cursor / Windsurf            | Claude Code        | Continue.dev              |
-| ----------------------------------------------- | -------------------------------------- | --------------------------- | ---------------------------- | ------------------ | ------------------------- |
-| **Price**                                       | Free (MIT)                             | $19/user/month              | $20/user/month               | Usage-based        | Free (MIT)                |
-| **Self-hosted / open source**                   | ✅ MIT, fully self-hosted               | ❌ Microsoft cloud          | ❌ Vendor cloud              | ❌ Anthropic cloud | ✅ MIT, extension         |
-| **IDE-independent**                             | ✅ Any channel / CLI                   | ❌ VS Code only             | ❌ Fork of VS Code           | ⚠️ Terminal only   | ❌ IDE extension          |
-| **Any model provider**                          | ✅ 30+ providers (Ollama, API, Bedrock…) | ❌ GPT-4o / Claude only   | ⚠️ Limited list              | ❌ Anthropic only  | ✅ Any model              |
-| **MCP support — consume**                       | ✅ via mcporter bridge                  | ❌                          | ✅ Native                    | ❌                 | ✅ Native                 |
-| **MCP support — expose as server**              | ✅ `/mcp` endpoint on gateway          | ❌                          | ❌                           | ❌                 | ❌                        |
-| **Codebase semantic search**                    | ✅ `codebase_search` tool              | ⚠️ Limited                  | ✅ `@codebase`               | ⚠️ Basic RAG       | ✅ `@codebase`            |
-| **Staged diff / accept-reject**                 | ✅ `/diff`, `/accept`, `/reject`       | ❌                          | ✅ Composer panel            | ❌                 | ✅ `⌘K` diff              |
-| **Multi-agent orchestration**                   | ✅ 7 roles + dependency DAG            | ❌ Single inline suggestion | ❌ Single agent              | ❌ Single agent    | ❌ Single agent           |
-| **Planning workflow (PRD → Arch → Tasks)**      | ✅ `/spec` command                     | ❌                          | ❌                           | ❌                 | ❌                        |
-| **Adversarial review pass**                     | ✅ Built-in workflow type              | ❌                          | ❌                           | ❌                 | ❌                        |
-| **Session handoffs**                            | ✅ `/handoff` cmd + auto-load          | ❌                          | ❌                           | ❌                 | ❌                        |
-| **Workflow persistence across restarts**        | ✅ YAML checkpoint + resume            | ❌                          | ❌                           | ❌                 | ❌                        |
-| **Post-task knowledge loop**                    | ✅ `.coderClaw/memory/` auto-updated   | ❌                          | ❌                           | ❌                 | ❌                        |
-| **Claw-to-claw distributed delegation**         | ✅ `remote:<id>` / `remote:auto[caps]` | ❌                          | ❌                           | ❌                 | ❌                        |
-| **Deep AST + git-history analysis**             | ✅                                     | ❌                          | ⚠️ Basic RAG                 | ⚠️ Basic RAG       | ⚠️ Basic RAG              |
-| **Persistent project knowledge**                | ✅ `.coderClaw/`                       | ❌                          | ⚠️ In-session only           | ⚠️ In-session only | ❌                        |
-| **Works in WhatsApp / Telegram / Slack**        | ✅                                     | ❌                          | ❌                           | ❌                 | ❌                        |
-| **RBAC + audit trails**                         | ✅                                     | ❌                          | ❌                           | ❌                 | ❌                        |
-| **Open source (MIT)**                           | ✅                                     | ❌                          | ❌                           | ❌                 | ✅                        |
+|                                            | **CoderClaw**                            | GitHub Copilot              | Cursor / Windsurf  | Claude Code        | Continue.dev      |
+| ------------------------------------------ | ---------------------------------------- | --------------------------- | ------------------ | ------------------ | ----------------- |
+| **Price**                                  | Free (MIT)                               | $19/user/month              | $20/user/month     | Usage-based        | Free (MIT)        |
+| **Self-hosted / open source**              | ✅ MIT, fully self-hosted                | ❌ Microsoft cloud          | ❌ Vendor cloud    | ❌ Anthropic cloud | ✅ MIT, extension |
+| **IDE-independent**                        | ✅ Any channel / CLI                     | ❌ VS Code only             | ❌ Fork of VS Code | ⚠️ Terminal only   | ❌ IDE extension  |
+| **Any model provider**                     | ✅ 30+ providers (Ollama, API, Bedrock…) | ❌ GPT-4o / Claude only     | ⚠️ Limited list    | ❌ Anthropic only  | ✅ Any model      |
+| **MCP support — consume**                  | ✅ via mcporter bridge                   | ❌                          | ✅ Native          | ❌                 | ✅ Native         |
+| **MCP support — expose as server**         | ✅ `/mcp` endpoint on gateway            | ❌                          | ❌                 | ❌                 | ❌                |
+| **Codebase semantic search**               | ✅ `codebase_search` tool                | ⚠️ Limited                  | ✅ `@codebase`     | ⚠️ Basic RAG       | ✅ `@codebase`    |
+| **Staged diff / accept-reject**            | ✅ `/diff`, `/accept`, `/reject`         | ❌                          | ✅ Composer panel  | ❌                 | ✅ `⌘K` diff      |
+| **Multi-agent orchestration**              | ✅ 7 roles + dependency DAG              | ❌ Single inline suggestion | ❌ Single agent    | ❌ Single agent    | ❌ Single agent   |
+| **Planning workflow (PRD → Arch → Tasks)** | ✅ `/spec` command                       | ❌                          | ❌                 | ❌                 | ❌                |
+| **Adversarial review pass**                | ✅ Built-in workflow type                | ❌                          | ❌                 | ❌                 | ❌                |
+| **Session handoffs**                       | ✅ `/handoff` cmd + auto-load            | ❌                          | ❌                 | ❌                 | ❌                |
+| **Workflow persistence across restarts**   | ✅ YAML checkpoint + resume              | ❌                          | ❌                 | ❌                 | ❌                |
+| **Post-task knowledge loop**               | ✅ `.coderClaw/memory/` auto-updated     | ❌                          | ❌                 | ❌                 | ❌                |
+| **Claw-to-claw distributed delegation**    | ✅ `remote:<id>` / `remote:auto[caps]`   | ❌                          | ❌                 | ❌                 | ❌                |
+| **Deep AST + git-history analysis**        | ✅                                       | ❌                          | ⚠️ Basic RAG       | ⚠️ Basic RAG       | ⚠️ Basic RAG      |
+| **Persistent project knowledge**           | ✅ `.coderClaw/`                         | ❌                          | ⚠️ In-session only | ⚠️ In-session only | ❌                |
+| **Works in WhatsApp / Telegram / Slack**   | ✅                                       | ❌                          | ❌                 | ❌                 | ❌                |
+| **RBAC + audit trails**                    | ✅                                       | ❌                          | ❌                 | ❌                 | ❌                |
+| **Open source (MIT)**                      | ✅                                       | ❌                          | ❌                 | ❌                 | ✅                |
 
 CoderClaw is not a plugin or an IDE extension. It is a **full orchestration runtime** that understands your codebase, coordinates specialized agents, and works wherever you do — in your terminal, your chat apps, or your CI pipeline.
+
 ## 🎯 Core Mission
 
 The complete software development lifecycle — planning, coding, reviewing, testing, debugging, refactoring, documenting — orchestrated by specialized agents that deeply understand your codebase. No IDE required. No cloud lock-in. Runs on your infra.

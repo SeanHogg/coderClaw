@@ -353,9 +353,7 @@ export abstract class MemoryManagerSyncOps {
     if (!this.sources.has("memory") || !this.settings.sync.watch || this.watcher) {
       return;
     }
-    const watchPaths = new Set<string>(
-      getDefaultMemoryWatchPatterns(this.workspaceDir),
-    );
+    const watchPaths = new Set<string>(getDefaultMemoryWatchPatterns(this.workspaceDir));
     const additionalPaths = normalizeExtraMemoryPaths(this.workspaceDir, this.settings.extraPaths);
     for (const entry of additionalPaths) {
       try {

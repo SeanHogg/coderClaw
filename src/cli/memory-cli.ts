@@ -192,7 +192,9 @@ async function scanMemoryFiles(
   }
   if (dirReadable === null && dirChecked === "") {
     // none exist, report missing
-    issues.push(`memory directories missing (${shortenHomePath(memoryDir)} and ${shortenHomePath(coderclawMemoryDir)})`);
+    issues.push(
+      `memory directories missing (${shortenHomePath(memoryDir)} and ${shortenHomePath(coderclawMemoryDir)})`,
+    );
   }
 
   let listed: string[] = [];

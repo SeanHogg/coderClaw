@@ -1,11 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { DEFAULT_AGENTS_FILENAME } from "../agents/workspace.js";
+import { getDefaultMemoryFilePaths, getDefaultMemoryDirs } from "../memory/internal.js";
 import { shortenHomePath } from "../utils.js";
-import {
-  getDefaultMemoryFilePaths,
-  getDefaultMemoryDirs,
-} from "../memory/internal.js";
 
 export const MEMORY_SYSTEM_PROMPT = [
   "Memory system not found in workspace.",

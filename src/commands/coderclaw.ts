@@ -534,11 +534,8 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
       // inline registration (mirrors the gateway onboarding wizard flow).
       const existingKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
       if (!existingKey) {
-        const { promptCoderClawLinkOnboarding } = await import(
-          "./coderclaw-link-onboarding.js"
-        );
-        const defaultInstanceName =
-          path.basename(projectRoot) || "coderclaw";
+        const { promptCoderClawLinkOnboarding } = await import("./coderclaw-link-onboarding.js");
+        const defaultInstanceName = path.basename(projectRoot) || "coderclaw";
         await promptCoderClawLinkOnboarding({
           projectRoot,
           defaultInstanceName,
@@ -878,10 +875,7 @@ async function promptClawLink(
     // Remember the choice so we never ask again during init.
     // The user can connect later: coderclaw init --reconnect
     upsertSharedEnvVar({ key: "CODERCLAW_LINK_SKIPPED", value: "1" });
-    note(
-      "You can connect to coderClawLink anytime with: coderclaw init --reconnect",
-      "Skipped",
-    );
+    note("You can connect to coderClawLink anytime with: coderclaw init --reconnect", "Skipped");
     return null;
   }
 

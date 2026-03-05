@@ -513,7 +513,11 @@ describe("tui-event-handlers: handleAgentEvent", () => {
 
   it("accepts chat events for legacy main session aliases", () => {
     const { chatLog, handleChatEvent } = createHandlersHarness({
-      state: { activeChatRunId: null, currentSessionKey: "agent:main:main", currentAgentId: "main" },
+      state: {
+        activeChatRunId: null,
+        currentSessionKey: "agent:main:main",
+        currentAgentId: "main",
+      },
     });
 
     handleChatEvent({
@@ -536,7 +540,11 @@ describe("tui-event-handlers: handleAgentEvent", () => {
 
   it("ignores chat events from other agent sessions", () => {
     const { chatLog, handleChatEvent } = createHandlersHarness({
-      state: { activeChatRunId: null, currentSessionKey: "agent:main:main", currentAgentId: "main" },
+      state: {
+        activeChatRunId: null,
+        currentSessionKey: "agent:main:main",
+        currentAgentId: "main",
+      },
     });
 
     handleChatEvent({

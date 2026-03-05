@@ -27,6 +27,7 @@ Perfect! I now understand the architecture. Let me plan and implement Phase -1.1
 **Root cause**: `orchestrateTool` is a plain exported object without access to session context. It can't call `executeWorkflow()` because it lacks `SpawnSubagentContext`.
 
 **Solution**:
+
 1. Convert `orchestrateTool` from a plain object to a factory function `createOrchestrateTool(opts)` that captures session context (like `createSubagentsTool`)
 2. After creating the workflow, immediately call `globalOrchestrator.executeWorkflow(workflowId, context)` in a fire-and-forget pattern
 3. Update all registration sites to use the factory
@@ -41,6 +42,7 @@ Now add orchestrate tool to the tools array with proper context:
 
 Now let's run the tests to ensure everything compiles and works:
 user: Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "4c9aee3f-563d-4dff-8b28-85305a17c1ac",
@@ -55,6 +57,7 @@ user: System: [2026-02-28 01:53:34 EST] Exec completed (plaid-co, code 0) :: oni
 System: [2026-02-28 01:55:39 EST] Exec failed (amber-ke, code 1)
 
 Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "b40a86af-f08c-444e-bf6d-f1a36d24a75e",

@@ -12,10 +12,7 @@ import type {
 } from "../config/types.memory.js";
 import { resolveUserPath } from "../utils.js";
 import { splitShellArgs } from "../utils/shell-argv.js";
-import {
-  getDefaultMemoryFilePaths,
-  getDefaultMemoryDirs,
-} from "./internal.js";
+import { getDefaultMemoryFilePaths, getDefaultMemoryDirs } from "./internal.js";
 
 export type ResolvedMemoryBackendConfig = {
   backend: MemoryBackend;

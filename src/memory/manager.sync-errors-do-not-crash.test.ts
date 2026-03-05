@@ -3,9 +3,9 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CoderClawConfig } from "../config/config.js";
-import { getDefaultMemoryDirs } from "./internal.js";
 import { getEmbedBatchMock, resetEmbeddingMocks } from "./embedding.test-mocks.js";
 import type { MemoryIndexManager } from "./index.js";
+import { getDefaultMemoryDirs } from "./internal.js";
 import { getRequiredMemoryIndexManager } from "./test-manager-helpers.js";
 import { hasNodeSqliteSupport } from "./test-sqlite-support.js";
 

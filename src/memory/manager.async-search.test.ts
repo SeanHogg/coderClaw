@@ -3,8 +3,8 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CoderClawConfig } from "../config/config.js";
-import { getDefaultMemoryDirs } from "./internal.js";
 import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
+import { getDefaultMemoryDirs } from "./internal.js";
 import { createOpenAIEmbeddingProviderMock } from "./test-embeddings-mock.js";
 import { hasNodeSqliteSupport } from "./test-sqlite-support.js";
 

@@ -8,9 +8,9 @@
  * This is the same UX as Cursor Composer's accept/reject panel and Aider's diff mode.
  */
 
+import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { createHash } from "node:crypto";
 
 export type StagedEdit = {
   /** Absolute path of the file */
@@ -108,7 +108,9 @@ export async function stageEdit(params: {
  * Apply a staged edit to disk (accept).
  * Returns the file path on success.
  */
-export async function acceptEdit(filePath: string): Promise<{ accepted: boolean; filePath: string; error?: string }> {
+export async function acceptEdit(
+  filePath: string,
+): Promise<{ accepted: boolean; filePath: string; error?: string }> {
   const abs = path.resolve(filePath);
   const edit = _store.get(abs);
   if (!edit) {
@@ -132,7 +134,10 @@ export async function acceptEdit(filePath: string): Promise<{ accepted: boolean;
 /**
  * Accept all staged edits.
  */
-export async function acceptAllEdits(): Promise<{ accepted: string[]; failed: Array<{ filePath: string; error: string }> }> {
+export async function acceptAllEdits(): Promise<{
+  accepted: string[];
+  failed: Array<{ filePath: string; error: string }>;
+}> {
   const accepted: string[] = [];
   const failed: Array<{ filePath: string; error: string }> = [];
 
@@ -151,7 +156,11 @@ export async function acceptAllEdits(): Promise<{ accepted: string[]; failed: Ar
 /**
  * Discard a staged edit without applying it (reject).
  */
-export function rejectEdit(filePath: string): { rejected: boolean; filePath: string; error?: string } {
+export function rejectEdit(filePath: string): {
+  rejected: boolean;
+  filePath: string;
+  error?: string;
+} {
   const abs = path.resolve(filePath);
   if (!_store.has(abs)) {
     return { rejected: false, filePath: abs, error: "No staged edit found for this file." };

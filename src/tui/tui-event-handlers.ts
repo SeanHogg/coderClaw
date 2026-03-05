@@ -1,5 +1,5 @@
-import { asString, extractTextFromMessage, isCommandMessage } from "./tui-formatters.js";
 import { normalizeAgentId, parseAgentSessionKey } from "../routing/session-key.js";
+import { asString, extractTextFromMessage, isCommandMessage } from "./tui-formatters.js";
 import { TuiStreamAssembler } from "./tui-stream-assembler.js";
 import type { AgentEvent, ChatEvent, TuiStateAccess } from "./tui-types.js";
 
