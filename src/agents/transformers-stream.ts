@@ -12,11 +12,11 @@ export const TRANSFORMERS_DEFAULT_CACHE_DIR = "./models";
 
 // ── Anatomical model defaults ────────────────────────────────────────────────
 // Amygdala  = SmolLM2 (fast routing / triage, <200 ms, 8K ctx)
-// Hippocampus = Phi-3.5-mini (memory consolidation, prompt compression, 128K ctx)
+// Hippocampus = Phi-4-mini (memory consolidation, prompt compression, 128K ctx)
 // Cortex    = user's registered LLM (the actual agent model)
 export const AMYGDALA_DEFAULT_MODEL_ID = TRANSFORMERS_DEFAULT_MODEL_ID;
 export const AMYGDALA_DEFAULT_DTYPE = TRANSFORMERS_DEFAULT_DTYPE;
-export const HIPPOCAMPUS_DEFAULT_MODEL_ID = "microsoft/Phi-3.5-mini-instruct";
+export const HIPPOCAMPUS_DEFAULT_MODEL_ID = "microsoft/Phi-4-mini-instruct";
 export const HIPPOCAMPUS_DEFAULT_DTYPE = "q4";
 
 // Long-term memory files in the workspace root.

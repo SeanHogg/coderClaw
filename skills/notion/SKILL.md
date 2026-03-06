@@ -1,6 +1,8 @@
 ---
 name: notion
 description: Notion API for creating and managing pages, databases, and blocks.
+author: Notion
+author-url: https://developers.notion.com
 homepage: https://developers.notion.com
 metadata:
   {

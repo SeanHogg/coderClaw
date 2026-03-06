@@ -8,7 +8,7 @@
  *     — decides HANDLE or DELEGATE
  *     — runs tool loop (read_file, list_files, grep_files, run_code)
  *
- *   **Hippocampus** (Phi-3.5-mini, 128K ctx)
+ *   **Hippocampus** (Phi-4-mini, 128K ctx)
  *     — memory consolidation & synthesis
  *     — prompt compression for the cortex
  *     — plan pass in the DELEGATE multi-step chain

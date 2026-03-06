@@ -10,7 +10,7 @@
  *
  * Dual-model anatomy:
  *   Amygdala    — SmolLM2-1.7B-Instruct (q4):  ~900 MB disk, ~1.5 GB RAM
- *   Hippocampus — Phi-3.5-mini-instruct  (q4):  ~2.5 GB disk, ~2.5 GB RAM
+ *   Hippocampus — Phi-4-mini-instruct    (q4):  ~2.3 GB disk, ~2.8 GB RAM
  */
 
 import fs from "node:fs/promises";

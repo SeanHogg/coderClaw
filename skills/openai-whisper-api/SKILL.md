@@ -1,6 +1,8 @@
 ---
 name: openai-whisper-api
 description: Transcribe audio via OpenAI Audio Transcriptions API (Whisper).
+author: OpenAI
+author-url: https://platform.openai.com
 homepage: https://platform.openai.com/docs/guides/speech-to-text
 metadata:
   {

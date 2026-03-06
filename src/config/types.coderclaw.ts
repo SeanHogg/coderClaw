@@ -102,7 +102,7 @@ export type CoderClawConfig = {
    *
    * Anatomy:
    *  - **Amygdala** (SmolLM2-1.7B) — fast intent routing / triage (<200 ms)
-   *  - **Hippocampus** (Phi-3.5-mini)  — memory consolidation, prompt compression
+   *  - **Hippocampus** (Phi-4-mini)  — memory consolidation, prompt compression
    *  - **Cortex** = the user's registered LLM (the agent model)
    *
    * Env override: CODERCLAW_LOCAL_BRAIN=0 disables both preprocessors.
@@ -114,7 +114,7 @@ export type CoderClawConfig = {
     models?: {
       /** Amygdala: fast routing model (default: SmolLM2-1.7B-Instruct, q4). */
       amygdala?: { modelId?: string; dtype?: string };
-      /** Hippocampus: memory / compression model (default: Phi-3.5-mini-instruct, q4). */
+      /** Hippocampus: memory / compression model (default: Phi-4-mini-instruct, q4). */
       hippocampus?: { modelId?: string; dtype?: string };
     };
   };

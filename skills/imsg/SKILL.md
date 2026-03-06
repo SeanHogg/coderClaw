@@ -1,6 +1,8 @@
 ---
 name: imsg
 description: iMessage/SMS CLI for listing chats, history, and sending messages via Messages.app.
+author: iMsg
+author-url: https://imsg.to
 homepage: https://imsg.to
 metadata:
   {

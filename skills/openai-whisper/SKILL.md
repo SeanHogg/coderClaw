@@ -1,6 +1,8 @@
 ---
 name: openai-whisper
 description: Local speech-to-text with the Whisper CLI (no API key).
+author: OpenAI
+author-url: https://openai.com/research/whisper
 homepage: https://openai.com/research/whisper
 metadata:
   {

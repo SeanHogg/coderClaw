@@ -501,7 +501,7 @@ export async function runOnboardingWizard(
   }
 
   // ── Optional local brain (amygdala + hippocampus ONNX preprocessors) ────
-  if (nextConfig.models?.providers?.["coderclawllm-local"]?.api !== "transformers") {
+  if (!opts.skipProviders && nextConfig.models?.providers?.["coderclawllm-local"]?.api !== "transformers") {
     const localBrainChoice = await prompter.select({
       message: "Enable local brain (amygdala + hippocampus)?",
       options: [

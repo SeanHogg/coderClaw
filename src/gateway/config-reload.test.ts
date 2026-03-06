@@ -108,6 +108,12 @@ describe("buildGatewayReloadPlan", () => {
     expect(plan.noopPaths).toContain("gateway.remote.url");
   });
 
+  it("treats localBrain changes as no-op", () => {
+    const plan = buildGatewayReloadPlan(["localBrain.enabled"]);
+    expect(plan.restartGateway).toBe(false);
+    expect(plan.noopPaths).toContain("localBrain.enabled");
+  });
+
   it("defaults unknown paths to restart", () => {
     const plan = buildGatewayReloadPlan(["unknownField"]);
     expect(plan.restartGateway).toBe(true);

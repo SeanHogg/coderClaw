@@ -290,6 +290,8 @@ export type PersonaPluginMetadata = {
   version?: string;
   /** Publisher name on ClawHub */
   author?: string;
+  /** Author homepage or profile URL */
+  authorUrl?: string;
   /** SPDX license identifier, e.g. "MIT" or "Commercial" */
   license?: string;
   /** Whether activating this persona requires a valid paid license */

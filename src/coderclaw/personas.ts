@@ -211,6 +211,7 @@ export async function loadPersonaFromFile(
       clawhubId: metaStr(pluginMeta, raw, "clawhubId"),
       version: metaStr(pluginMeta, raw, "version"),
       author: metaStr(pluginMeta, raw, "author"),
+      authorUrl: metaStr(pluginMeta, raw, "authorUrl"),
       license: metaStr(pluginMeta, raw, "license"),
       requiresLicense:
         pluginMeta?.requiresLicense ??

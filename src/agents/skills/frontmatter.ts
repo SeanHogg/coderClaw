@@ -77,7 +77,17 @@ export function resolveCoderClawMetadata(
   frontmatter: ParsedSkillFrontmatter,
 ): CoderClawSkillMetadata | undefined {
   const metadataObj = resolveCoderClawManifestBlock({ frontmatter });
+
+  // Author attribution lives in top-level frontmatter, not inside the metadata JSON5 block
+  const author = getFrontmatterString(frontmatter, "author");
+  const authorUrl = getFrontmatterString(frontmatter, "author-url");
+  const license = getFrontmatterString(frontmatter, "license");
+
   if (!metadataObj) {
+    // Still return attribution-only metadata when author info is present
+    if (author || authorUrl || license) {
+      return { author, authorUrl, license };
+    }
     return undefined;
   }
   const requires = resolveCoderClawManifestRequires(metadataObj);
@@ -89,6 +99,9 @@ export function resolveCoderClawMetadata(
     homepage: typeof metadataObj.homepage === "string" ? metadataObj.homepage : undefined,
     skillKey: typeof metadataObj.skillKey === "string" ? metadataObj.skillKey : undefined,
     primaryEnv: typeof metadataObj.primaryEnv === "string" ? metadataObj.primaryEnv : undefined,
+    author,
+    authorUrl,
+    license,
     os: osRaw.length > 0 ? osRaw : undefined,
     requires: requires,
     install: install.length > 0 ? install : undefined,

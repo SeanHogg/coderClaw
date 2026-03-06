@@ -1,6 +1,8 @@
 ---
 name: gemini
 description: Gemini CLI for one-shot Q&A, summaries, and generation.
+author: Google
+author-url: https://ai.google.dev
 homepage: https://ai.google.dev/
 metadata:
   {

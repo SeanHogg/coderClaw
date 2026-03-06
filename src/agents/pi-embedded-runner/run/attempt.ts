@@ -637,7 +637,7 @@ export async function runEmbeddedAttempt(
         activeSession.agent.streamFn = createOllamaStreamFn(ollamaBaseUrl);
       } else if (params.model.api === "transformers") {
         // CoderClawLLM local brain: dual ONNX preprocessor layer.
-        // Amygdala (SmolLM2) routes requests; hippocampus (Phi-3.5) handles plans.
+        // Amygdala (SmolLM2) routes requests; hippocampus (Phi-4) handles plans.
         // Cortex (user's LLM) executes complex tasks on DELEGATE.
         // Gated by config.localBrain.enabled and CODERCLAW_LOCAL_BRAIN env var.
         const localBrainEnv = process.env.CODERCLAW_LOCAL_BRAIN?.trim();

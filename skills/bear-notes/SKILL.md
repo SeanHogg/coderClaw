@@ -1,6 +1,8 @@
 ---
 name: bear-notes
 description: Create, search, and manage Bear notes via grizzly CLI.
+author: tylerwince
+author-url: https://github.com/tylerwince/grizzly
 homepage: https://bear.app
 metadata:
   {

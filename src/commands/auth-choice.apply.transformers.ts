@@ -14,11 +14,11 @@ export const TRANSFORMERS_PROVIDER_ID = CODERCLAWLLM_LOCAL_PROVIDER_ID;
 
 // ── Anatomical model defaults ────────────────────────────────────────────────
 // Amygdala  = SmolLM2 (fast routing / triage, <200 ms)
-// Hippocampus = Phi-3.5-mini (memory consolidation, prompt compression)
+// Hippocampus = Phi-4-mini (memory consolidation, prompt compression)
 // Cortex    = user's registered LLM (the actual agent model)
 export const AMYGDALA_MODEL_ID = "HuggingFaceTB/SmolLM2-1.7B-Instruct";
 export const AMYGDALA_DTYPE = "q4";
-export const HIPPOCAMPUS_MODEL_ID = "microsoft/Phi-3.5-mini-instruct";
+export const HIPPOCAMPUS_MODEL_ID = "microsoft/Phi-4-mini-instruct";
 export const HIPPOCAMPUS_DTYPE = "q4";
 
 /** @deprecated Use AMYGDALA_MODEL_ID */
@@ -177,7 +177,7 @@ export async function downloadAndWireLocalBrain(opts: {
     return { config: nextConfig };
   }
 
-  // ── Download hippocampus (Phi-3.5-mini — memory / compression) ─────────
+  // ── Download hippocampus (Phi-4-mini — memory / compression) ─────────
   lastFile = "";
   const hippoSpinner = opts.prompter.progress(
     `Downloading hippocampus (${hippocampusModelId}, ${hippocampusDtype})…`,

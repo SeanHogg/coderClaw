@@ -990,9 +990,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
       }
       case "localbrain": {
         const action = args.trim().toLowerCase();
-        const LOCALBRAIN_ACTIONS = ["on", "off", "refresh"];
+        const LOCALBRAIN_ACTIONS = ["on", "off", "refresh", "reset"];
         if (action && !LOCALBRAIN_ACTIONS.includes(action)) {
-          chatLog.addSystem("usage: /localbrain <on|off|refresh>");
+          chatLog.addSystem("usage: /localbrain <on|off|refresh|reset>");
           break;
         }
 
@@ -1008,7 +1008,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
               `  amygdala: ${amygdala}`,
               `  hippocampus: ${hippocampus}`,
               "",
-              "Commands: /localbrain <on|off|refresh>",
+              "Commands: /localbrain <on|off|refresh|reset>",
             ].join("\n"),
           );
           break;
@@ -1038,10 +1038,13 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           try {
             let cfg = loadConfig();
             const cacheDir = defaultCacheDir();
-            const amygdalaModelId = cfg.localBrain?.models?.amygdala?.modelId ?? AMYGDALA_MODEL_ID;
-            const amygdalaDtype = cfg.localBrain?.models?.amygdala?.dtype ?? AMYGDALA_DTYPE;
-            const hippocampusModelId = cfg.localBrain?.models?.hippocampus?.modelId ?? HIPPOCAMPUS_MODEL_ID;
-            const hippocampusDtype = cfg.localBrain?.models?.hippocampus?.dtype ?? HIPPOCAMPUS_DTYPE;
+            // Always use the built-in defaults — stale model IDs in config
+            // (e.g. from a previous release) must not override the current
+            // recommended models.
+            const amygdalaModelId = AMYGDALA_MODEL_ID;
+            const amygdalaDtype = AMYGDALA_DTYPE;
+            const hippocampusModelId = HIPPOCAMPUS_MODEL_ID;
+            const hippocampusDtype = HIPPOCAMPUS_DTYPE;
 
             const amygdalaCached = await isModelCached(cacheDir, amygdalaModelId);
             const hippocampusCached = await isModelCached(cacheDir, hippocampusModelId);
@@ -1104,7 +1107,14 @@ export function createCommandHandlers(context: CommandHandlerContext) {
 
             const updated: CoderClawConfig = {
               ...cfg,
-              localBrain: { ...cfg.localBrain, enabled: true },
+              localBrain: {
+                ...cfg.localBrain,
+                enabled: true,
+                models: {
+                  amygdala: { modelId: amygdalaModelId, dtype: amygdalaDtype },
+                  hippocampus: { modelId: hippocampusModelId, dtype: hippocampusDtype },
+                },
+              },
             };
             await writeConfigFile(updated);
             if (context.config) {
@@ -1128,6 +1138,32 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             chatLog.addSystem(
               "Run: coderclaw onboard\nThis will re-download the latest local brain models.",
             );
+          }
+          break;
+        }
+
+        if (action === "reset") {
+          try {
+            const cfg = loadConfig();
+            const { localBrain: _removed, ...rest } = cfg;
+            const { ["coderclawllm-local"]: _removedProvider, ...remainingProviders } =
+              cfg.models?.providers ?? {};
+            const updated: CoderClawConfig = {
+              ...rest,
+              models: {
+                ...cfg.models,
+                providers: remainingProviders,
+              },
+            };
+            await writeConfigFile(updated);
+            if (context.config) {
+              delete context.config.localBrain;
+            }
+            chatLog.addSystem("Local brain config cleared. Models on disk are unchanged.");
+            chatLog.addSystem("Run /localbrain on to re-initialize with current defaults.");
+            updateFooter?.();
+          } catch (err) {
+            chatLog.addSystem(`Failed to reset local brain config: ${err instanceof Error ? err.message : String(err)}`);
           }
           break;
         }

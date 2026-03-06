@@ -54,7 +54,16 @@ export function resolveCoderClawMetadata(
   frontmatter: ParsedHookFrontmatter,
 ): CoderClawHookMetadata | undefined {
   const metadataObj = resolveCoderClawManifestBlock({ frontmatter });
+
+  // Author attribution lives in top-level frontmatter
+  const author = getFrontmatterString(frontmatter, "author");
+  const authorUrl = getFrontmatterString(frontmatter, "author-url");
+  const license = getFrontmatterString(frontmatter, "license");
+
   if (!metadataObj) {
+    if (author || authorUrl || license) {
+      return { author, authorUrl, license, events: [] };
+    }
     return undefined;
   }
   const requires = resolveCoderClawManifestRequires(metadataObj);
@@ -67,6 +76,9 @@ export function resolveCoderClawMetadata(
     homepage: typeof metadataObj.homepage === "string" ? metadataObj.homepage : undefined,
     hookKey: typeof metadataObj.hookKey === "string" ? metadataObj.hookKey : undefined,
     export: typeof metadataObj.export === "string" ? metadataObj.export : undefined,
+    author,
+    authorUrl,
+    license,
     os: osRaw.length > 0 ? osRaw : undefined,
     events: eventsRaw.length > 0 ? eventsRaw : [],
     requires: requires,

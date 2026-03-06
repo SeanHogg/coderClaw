@@ -1,6 +1,8 @@
 ---
 name: coderclaw
 description: "Multi-agent developer system for code creation, review, testing, debugging, and architecture. Use for complex development workflows requiring orchestration of specialized agents. Provides deep codebase understanding through AST parsing, dependency graphs, and git history analysis. Now includes memory-aware orchestration and cross-claw delegation."
+author: coderClaw
+author-url: https://coderclaw.ai
 metadata: { "coderclaw": { "emoji": "🛠️" } }
 ---
 
@@ -199,6 +201,8 @@ Project metadata and structure:
 version: 1
 projectName: my-app
 description: A web application
+author: coderClaw
+author-url: https://coderclaw.ai
 languages:
 
 - typescript
@@ -280,6 +284,8 @@ Create project-specific agent roles in `.coderClaw/agents/`:
 
 name: database-expert
 description: Specialist in database design and optimization
+author: coderClaw
+author-url: https://coderclaw.ai
 capabilities:
 
 - Design database schemas
@@ -395,6 +401,8 @@ orchestrate workflow:feature description:"Add OAuth2 authentication with Google 
 
 name: frontend-specialist
 description: Expert in React and modern frontend development
+author: coderClaw
+author-url: https://coderclaw.ai
 capabilities:
 
 - Build React components

@@ -1,6 +1,8 @@
 ---
 name: tmux
 description: Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.
+author: coderClaw
+author-url: https://coderclaw.ai
 metadata:
   { "coderclaw": { "emoji": "🧵", "os": ["darwin", "linux"], "requires": { "bins": ["tmux"] } } }
 ---

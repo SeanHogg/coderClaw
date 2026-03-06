@@ -22,6 +22,12 @@ export type CoderClawSkillMetadata = {
   primaryEnv?: string;
   emoji?: string;
   homepage?: string;
+  /** Original author / publisher name */
+  author?: string;
+  /** Author homepage or profile URL */
+  authorUrl?: string;
+  /** SPDX license identifier, e.g. "MIT" or "Apache-2.0" */
+  license?: string;
   os?: string[];
   requires?: {
     bins?: string[];

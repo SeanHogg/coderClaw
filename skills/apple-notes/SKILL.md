@@ -1,6 +1,8 @@
 ---
 name: apple-notes
 description: Manage Apple Notes via the `memo` CLI on macOS (create, view, edit, delete, search, move, and export notes). Use when a user asks CoderClaw to add a note, list notes, search notes, or manage note folders.
+author: antoniorodr
+author-url: https://github.com/antoniorodr/memo
 homepage: https://github.com/antoniorodr/memo
 metadata:
   {

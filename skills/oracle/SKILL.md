@@ -1,6 +1,8 @@
 ---
 name: oracle
 description: Best practices for using the oracle CLI (prompt + file bundling, engines, sessions, and file attachment patterns).
+author: AskOracle
+author-url: https://askoracle.dev
 homepage: https://askoracle.dev
 metadata:
   {
