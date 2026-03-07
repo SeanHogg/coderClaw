@@ -1,4 +1,4 @@
-import { getLogger, isFileLogLevelEnabled } from "./logging/logger.js";
+import { getLogger, isFileLogLevelEnabled } from "./logging/file.js";
 import { theme } from "./terminal/theme.js";
 
 let globalVerbose = false;

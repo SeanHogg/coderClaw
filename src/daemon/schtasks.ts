@@ -26,6 +26,11 @@ export function resolveTaskScriptPath(env: Record<string, string | undefined>): 
   return path.join(stateDir, scriptName);
 }
 
+export function resolveTaskLauncherPath(env: Record<string, string | undefined>): string {
+  const stateDir = resolveGatewayStateDir(env);
+  return path.join(stateDir, "gateway-launcher.ps1");
+}
+
 function quoteCmdArg(value: string): string {
   if (!/[ \t"]/g.test(value)) {
     return value;
@@ -163,6 +168,53 @@ function buildTaskScript({
   return `${lines.join("\r\n")}\r\n`;
 }
 
+/**
+ * Build a PowerShell launcher script that:
+ * 1. Hides the console window (when invoked with `powershell -WindowStyle Hidden`)
+ * 2. Detects crash loops by tracking recent non-zero exits in a `.crashlog` file
+ *
+ * The launcher delegates to the companion `.cmd` script so
+ * {@link readScheduledTaskCommand} continues to work unchanged.
+ */
+export function buildTaskLauncher(cmdScriptPath: string): string {
+  // Escape single-quotes for embedding in a PowerShell single-quoted string.
+  const escaped = cmdScriptPath.replace(/'/g, "''");
+  // Use a here-string–style template so the launcher is easy to read on disk.
+  return [
+    "# CoderClaw Gateway Launcher — hidden window + crash-loop protection",
+    `$cmdScript = '${escaped}'`,
+    "$scriptDir = Split-Path -Parent $cmdScript",
+    '$crashFile = Join-Path $scriptDir "gateway.crashlog"',
+    "$maxCrashes = 5",
+    "$windowSec  = 120",
+    "$now = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()",
+    "",
+    "# Prune old entries and check for crash loop",
+    "if (Test-Path $crashFile) {",
+    "    $recent = @(Get-Content $crashFile |",
+    "        Where-Object { $_ -match '^\\d+$' } |",
+    "        ForEach-Object { [long]$_ } |",
+    "        Where-Object { ($now - $_) -lt $windowSec })",
+    "    if ($recent.Count -ge $maxCrashes) {",
+    '        $logFile = Join-Path $scriptDir "gateway.log"',
+    '        Add-Content $logFile "$(Get-Date -Format o) crash-loop detected ($($recent.Count) crashes in ${windowSec}s). Refusing to start."',
+    "        exit 1",
+    "    }",
+    "    $recent | Set-Content $crashFile",
+    "}",
+    "",
+    "# Run the gateway",
+    "& cmd /c $cmdScript",
+    "$exitCode = $LASTEXITCODE",
+    "",
+    "# Record non-zero exit as a crash",
+    "if ($exitCode -and $exitCode -ne 0) {",
+    "    Add-Content $crashFile ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())",
+    "}",
+    "exit $exitCode",
+  ].join("\r\n") + "\r\n";
+}
+
 async function assertSchtasksAvailable() {
   const res = await execSchtasks(["/Query"]);
   if (res.code === 0) {
@@ -199,8 +251,17 @@ export async function installScheduledTask({
   });
   await fs.writeFile(scriptPath, script, "utf8");
 
+  // Generate a PowerShell launcher that hides the console window and
+  // adds crash-loop protection.  The .cmd script is kept as the source of
+  // truth for readScheduledTaskCommand().
+  const launcherPath = resolveTaskLauncherPath(env);
+  const launcher = buildTaskLauncher(scriptPath);
+  await fs.writeFile(launcherPath, launcher, "utf8");
+
   const taskName = resolveTaskName(env);
-  const quotedScript = quoteCmdArg(scriptPath);
+  // Point the scheduled task at the PowerShell launcher so the gateway
+  // runs in a hidden window with crash-loop protection.
+  const trCommand = `powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -NoProfile -File ${quoteCmdArg(launcherPath)}`;
   const baseArgs = [
     "/Create",
     "/F",
@@ -211,7 +272,7 @@ export async function installScheduledTask({
     "/TN",
     taskName,
     "/TR",
-    quotedScript,
+    trCommand,
   ];
   const taskUser = resolveTaskUser(env);
   let create = await execSchtasks(
@@ -258,6 +319,17 @@ export async function uninstallScheduledTask({
     stdout.write(`${formatLine("Removed task script", scriptPath)}\n`);
   } catch {
     stdout.write(`Task script not found at ${scriptPath}\n`);
+  }
+
+  // Clean up the PowerShell launcher and crash-log created alongside the .cmd.
+  const launcherPath = resolveTaskLauncherPath(env);
+  const crashLogPath = path.join(path.dirname(scriptPath), "gateway.crashlog");
+  for (const extra of [launcherPath, crashLogPath]) {
+    try {
+      await fs.unlink(extra);
+    } catch {
+      // ignore – file may not exist
+    }
   }
 }
 

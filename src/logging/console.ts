@@ -5,7 +5,7 @@ import { isVerbose } from "../globals.js";
 import { stripAnsi } from "../terminal/ansi.js";
 import { readLoggingConfig } from "./config.js";
 import { type LogLevel, normalizeLogLevel } from "./levels.js";
-import { getLogger, type LoggerSettings } from "./logger.js";
+import { getLogger, type LoggerSettings } from "./file.js";
 import { loggingState } from "./state.js";
 import { formatLocalIsoWithOffset } from "./timestamps.js";
 

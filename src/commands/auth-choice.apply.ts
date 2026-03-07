@@ -12,6 +12,7 @@ import { applyAuthChoiceMiniMax } from "./auth-choice.apply.minimax.js";
 import { applyAuthChoiceOAuth } from "./auth-choice.apply.oauth.js";
 import { applyAuthChoiceOpenAI } from "./auth-choice.apply.openai.js";
 import { applyAuthChoiceQwenPortal } from "./auth-choice.apply.qwen-portal.js";
+import { applyAuthChoiceTransformers } from "./auth-choice.apply.transformers.js";
 import { applyAuthChoiceVllm } from "./auth-choice.apply.vllm.js";
 import { applyAuthChoiceXAI } from "./auth-choice.apply.xai.js";
 import type { AuthChoice } from "./onboard-types.js";
@@ -45,6 +46,7 @@ export async function applyAuthChoice(
   const handlers: Array<(p: ApplyAuthChoiceParams) => Promise<ApplyAuthChoiceResult | null>> = [
     applyAuthChoiceAnthropic,
     applyAuthChoiceLocal,
+    applyAuthChoiceTransformers,
     applyAuthChoiceVllm,
     applyAuthChoiceOpenAI,
     applyAuthChoiceOAuth,

@@ -1,6 +1,8 @@
 ---
 name: nano-banana-pro
 description: Generate or edit images via Gemini 3 Pro Image (Nano Banana Pro).
+author: Google
+author-url: https://ai.google.dev
 homepage: https://ai.google.dev/
 metadata:
   {

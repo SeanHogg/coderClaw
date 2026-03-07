@@ -37,6 +37,7 @@ import { resolveImageSanitizationLimits } from "../../image-sanitization.js";
 import { resolveModelAuthMode } from "../../model-auth.js";
 import { resolveDefaultModelForAgent } from "../../model-selection.js";
 import { createOllamaStreamFn, OLLAMA_NATIVE_BASE_URL } from "../../ollama-stream.js";
+import { createCoderClawLlmLocalStreamFn } from "../../coderclawllm-local-stream.js";
 import {
   isCloudCodeAssistFormatError,
   resolveBootstrapMaxChars,
@@ -626,6 +627,9 @@ export async function runEmbeddedAttempt(
       // Ollama native API: bypass SDK's streamSimple and use direct /api/chat calls
       // for reliable streaming + tool calling support (#11828).
       if (params.model.api === "ollama") {
+        log.info(
+          `[brain-routing] run=${params.runId} api=ollama model=${params.modelId} → Ollama native stream`,
+        );
         // Use the resolved model baseUrl first so custom provider aliases work.
         const providerConfig = params.config?.models?.providers?.[params.model.provider];
         const modelBaseUrl =
@@ -634,7 +638,58 @@ export async function runEmbeddedAttempt(
           typeof providerConfig?.baseUrl === "string" ? providerConfig.baseUrl.trim() : "";
         const ollamaBaseUrl = modelBaseUrl || providerBaseUrl || OLLAMA_NATIVE_BASE_URL;
         activeSession.agent.streamFn = createOllamaStreamFn(ollamaBaseUrl);
+      } else if (params.model.api === "transformers") {
+        // CoderClawLLM local brain: dual ONNX preprocessor layer.
+        // Amygdala (SmolLM2) routes requests; hippocampus (Phi-4) handles plans.
+        // Cortex (user's LLM) executes complex tasks on DELEGATE.
+        // Gated by config.localBrain.enabled and CODERCLAW_LOCAL_BRAIN env var.
+        const localBrainEnv = process.env.CODERCLAW_LOCAL_BRAIN?.trim();
+        const localBrainEnabled =
+          localBrainEnv !== undefined
+            ? localBrainEnv !== "0" && localBrainEnv.toLowerCase() !== "false"
+            : params.config?.localBrain?.enabled !== false;
+
+        if (!localBrainEnabled) {
+          // User opted out of the local brain — fall through to default SDK stream.
+          log.info(
+            `[brain-routing] run=${params.runId} api=transformers localBrain=disabled → cortex (SDK stream)`,
+          );
+          activeSession.agent.streamFn = streamSimple;
+        } else {
+          log.info(
+            `[brain-routing] run=${params.runId} api=transformers localBrain=enabled → amygdala/hippocampus pipeline`,
+          );
+          const providerConfig = params.config?.models?.providers?.[params.model.provider];
+          const cacheDir =
+            typeof providerConfig?.baseUrl === "string" && providerConfig.baseUrl.trim()
+              ? providerConfig.baseUrl.trim()
+              : undefined;
+          const dtype =
+            typeof params.model.headers?.["x-transformers-dtype"] === "string"
+              ? params.model.headers["x-transformers-dtype"]
+              : undefined;
+
+          // Resolve hippocampus model from config or provider model list.
+          const localBrainModels = params.config?.localBrain?.models;
+          const hippocampusModelId = localBrainModels?.hippocampus?.modelId;
+          const hippocampusDtype = localBrainModels?.hippocampus?.dtype;
+
+          activeSession.agent.streamFn = createCoderClawLlmLocalStreamFn({
+            config: params.config,
+            modelId: params.modelId,
+            dtype,
+            hippocampusModelId,
+            hippocampusDtype,
+            cacheDir,
+            workspaceDir: params.workspaceDir,
+            // Skip MEMORY.md in shared/channel contexts to avoid leaking personal data.
+            isSharedContext: !!(params.messageChannel ?? params.messageProvider),
+          });
+        }
       } else {
+        log.info(
+          `[brain-routing] run=${params.runId} api=${params.model.api} model=${params.modelId} → cortex (SDK stream)`,
+        );
         // Force a stable streamFn reference so vitest can reliably mock @mariozechner/pi-ai.
         activeSession.agent.streamFn = streamSimple;
       }

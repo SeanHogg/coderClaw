@@ -97,6 +97,27 @@ export type CoderClawConfig = {
   talk?: TalkConfig;
   gateway?: GatewayConfig;
   memory?: MemoryConfig;
+  /**
+   * Local brain — dual ONNX preprocessor layer.
+   *
+   * Anatomy:
+   *  - **Amygdala** (SmolLM2-1.7B) — fast intent routing / triage (<200 ms)
+   *  - **Hippocampus** (Phi-4-mini)  — memory consolidation, prompt compression
+   *  - **Cortex** = the user's registered LLM (the agent model)
+   *
+   * Env override: CODERCLAW_LOCAL_BRAIN=0 disables both preprocessors.
+   */
+  localBrain?: {
+    /** Set to false to disable the local brain entirely. */
+    enabled?: boolean;
+    /** Per-model overrides.  Defaults are used when omitted. */
+    models?: {
+      /** Amygdala: fast routing model (default: SmolLM2-1.7B-Instruct, q4). */
+      amygdala?: { modelId?: string; dtype?: string };
+      /** Hippocampus: memory / compression model (default: Phi-4-mini-instruct, q4). */
+      hippocampus?: { modelId?: string; dtype?: string };
+    };
+  };
 };
 
 export type ConfigValidationIssue = {

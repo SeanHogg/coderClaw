@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeToolParams } from "./pi-tools.read.js";
+import { fixMissingRootSeparator, normalizeToolParams } from "./pi-tools.read.js";
 
 describe("normalizeToolParams", () => {
   it("maps common edit aliases to oldText/newText", () => {
@@ -48,5 +48,46 @@ describe("normalizeToolParams", () => {
     expect(normalized?.path).toBe("src/file.ts");
     expect(normalized?.oldText).toBe("before");
     expect(normalized?.newText).toBe("after");
+  });
+});
+
+describe("fixMissingRootSeparator", () => {
+  it("inserts separator when root is directly followed by a dot-prefixed dir", () => {
+    const fixed = fixMissingRootSeparator(
+      "C:\\code\\project.coderclaw\\planning\\ROADMAP.md",
+      "C:\\code\\project",
+    );
+    expect(fixed).toBe("C:\\code\\project\\.coderclaw\\planning\\ROADMAP.md");
+  });
+
+  it("returns the path unchanged when separator is already present", () => {
+    const p = "C:\\code\\project\\.coderclaw\\planning\\ROADMAP.md";
+    expect(fixMissingRootSeparator(p, "C:\\code\\project")).toBe(p);
+  });
+
+  it("returns the path unchanged when it does not start with root", () => {
+    const p = "D:\\other\\.coderclaw\\file.md";
+    expect(fixMissingRootSeparator(p, "C:\\code\\project")).toBe(p);
+  });
+
+  it("handles forward-slash separator after root", () => {
+    const p = "C:\\code\\project/.coderclaw/file.md";
+    expect(fixMissingRootSeparator(p, "C:\\code\\project")).toBe(p);
+  });
+
+  it("strips trailing separator from root before comparing", () => {
+    const fixed = fixMissingRootSeparator(
+      "C:\\code\\project.hidden\\file.md",
+      "C:\\code\\project\\",
+    );
+    expect(fixed).toBe("C:\\code\\project\\.hidden\\file.md");
+  });
+
+  it("handles posix-style paths", () => {
+    const fixed = fixMissingRootSeparator(
+      "/home/user/project.coderclaw/file.md",
+      "/home/user/project",
+    );
+    expect(fixed).toMatch(/\/home\/user\/project[/\\]\.coderclaw\/file\.md/);
   });
 });

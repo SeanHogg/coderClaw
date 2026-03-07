@@ -495,8 +495,8 @@ describe("QmdMemoryManager", () => {
       .map((args) => args[args.indexOf("--name") + 1]);
 
     expect(updateCalls).toBe(2);
-    expect(removeCalls).toEqual(["memory-root-main", "memory-alt-main", "memory-dir-main"]);
-    expect(addCalls).toEqual(["memory-root-main", "memory-alt-main", "memory-dir-main"]);
+    expect(removeCalls).toEqual(["memory-root-main", "memory-alt-main", "memory-dir-main", "coderclaw-memory-dir-main"]);
+    expect(addCalls).toEqual(["memory-root-main", "memory-alt-main", "memory-dir-main", "coderclaw-memory-dir-main"]);
     expect(logWarnMock).toHaveBeenCalledWith(
       expect.stringContaining("suspected null-byte collection metadata"),
     );

@@ -389,6 +389,12 @@ export function normalizeProviders(params: {
         if (apiKey?.trim()) {
           mutated = true;
           normalizedProvider = { ...normalizedProvider, apiKey };
+        } else if (normalizedProvider.api === "transformers") {
+          // Local inference providers (e.g. coderclawllm-local) don't need
+          // remote auth, but pi-ai ModelRegistry requires a non-empty apiKey
+          // for custom providers.  Use a sentinel so validation passes.
+          mutated = true;
+          normalizedProvider = { ...normalizedProvider, apiKey: "local" };
         }
       }
     }

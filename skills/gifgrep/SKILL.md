@@ -1,6 +1,8 @@
 ---
 name: gifgrep
 description: Search GIF providers with CLI/TUI, download results, and extract stills/sheets.
+author: GifGrep
+author-url: https://gifgrep.com
 homepage: https://gifgrep.com
 metadata:
   {

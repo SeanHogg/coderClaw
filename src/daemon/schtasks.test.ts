@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { parseSchtasksQuery, readScheduledTaskCommand, resolveTaskScriptPath } from "./schtasks.js";
+import { parseSchtasksQuery, readScheduledTaskCommand, resolveTaskScriptPath, resolveTaskLauncherPath, buildTaskLauncher } from "./schtasks.js";
 
 describe("schtasks runtime parsing", () => {
   it("parses status and last run info", () => {
@@ -210,5 +210,39 @@ describe("readScheduledTaskCommand", () => {
         });
       },
     );
+  });
+});
+
+describe("resolveTaskLauncherPath", () => {
+  it("returns gateway-launcher.ps1 in the state directory", () => {
+    const env = { USERPROFILE: "C:\\Users\\test" };
+    expect(resolveTaskLauncherPath(env)).toBe(
+      path.join("C:\\Users\\test", ".coderclaw", "gateway-launcher.ps1"),
+    );
+  });
+});
+
+describe("buildTaskLauncher", () => {
+  it("embeds the cmd script path", () => {
+    const launcher = buildTaskLauncher("C:\\Users\\test\\.coderclaw\\gateway.cmd");
+    expect(launcher).toContain("$cmdScript = 'C:\\Users\\test\\.coderclaw\\gateway.cmd'");
+  });
+
+  it("includes crash-loop protection logic", () => {
+    const launcher = buildTaskLauncher("C:\\gateway.cmd");
+    expect(launcher).toContain("gateway.crashlog");
+    expect(launcher).toContain("$maxCrashes = 5");
+    expect(launcher).toContain("crash-loop detected");
+  });
+
+  it("runs the cmd script and records crashes", () => {
+    const launcher = buildTaskLauncher("C:\\gateway.cmd");
+    expect(launcher).toContain("& cmd /c $cmdScript");
+    expect(launcher).toContain("Add-Content $crashFile");
+  });
+
+  it("escapes single quotes in paths", () => {
+    const launcher = buildTaskLauncher("C:\\It's a test\\gateway.cmd");
+    expect(launcher).toContain("$cmdScript = 'C:\\It''s a test\\gateway.cmd'");
   });
 });

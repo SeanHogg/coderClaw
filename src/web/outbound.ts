@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { loadConfig } from "../config/config.js";
 import { resolveMarkdownTableMode } from "../config/markdown-tables.js";
-import { getChildLogger } from "../logging/logger.js";
+import { getChildLogger } from "../logging/file.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { convertMarkdownTables } from "../markdown/tables.js";
 import { markdownToWhatsApp } from "../markdown/whatsapp.js";

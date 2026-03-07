@@ -1,6 +1,8 @@
 ---
 name: sherpa-onnx-tts
 description: Local text-to-speech via sherpa-onnx (offline, no cloud)
+author: k2-fsa
+author-url: https://github.com/k2-fsa/sherpa-onnx
 metadata:
   {
     "coderclaw":

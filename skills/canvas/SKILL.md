@@ -1,3 +1,10 @@
+---
+name: canvas
+description: Display HTML content on connected CoderClaw nodes (Mac app, iOS, Android).
+author: coderClaw
+author-url: https://coderclaw.ai
+---
+
 # Canvas Skill
 
 Display HTML content on connected CoderClaw nodes (Mac app, iOS, Android).

@@ -43,6 +43,7 @@ describe("tui session actions", () => {
       activityStatus: "idle",
       statusTimeout: null,
       lastCtrlCAt: 0,
+      loggingEnabled: false,
     };
 
     const updateFooter = vi.fn();

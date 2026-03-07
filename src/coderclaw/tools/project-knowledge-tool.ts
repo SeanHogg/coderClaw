@@ -10,6 +10,7 @@ import { jsonResult } from "../../agents/tools/common.js";
 import {
   loadProjectContext,
   loadProjectRules,
+  loadProjectGovernance,
   loadProjectArchitecture,
   loadCustomAgentRoles,
   resolveCoderClawDir,
@@ -20,7 +21,7 @@ const ProjectKnowledgeSchema = Type.Object({
     description: "Root directory of the project",
   }),
   query: Type.String({
-    description: "What to query: 'context', 'rules', 'architecture', 'agents', 'memory', or 'all'",
+    description: "What to query: 'context', 'rules', 'governance', 'architecture', 'agents', 'memory', or 'all'",
   }),
 });
 
@@ -52,6 +53,13 @@ export const projectKnowledgeTool: AgentTool<typeof ProjectKnowledgeSchema, stri
         const rules = await loadProjectRules(projectRoot);
         if (rules) {
           result.rules = rules;
+        }
+      }
+
+      if (query === "governance" || query === "all") {
+        const gov = await loadProjectGovernance(projectRoot);
+        if (gov) {
+          result.governance = gov;
         }
       }
 

@@ -3,6 +3,14 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { createCommandHandlers } from "./tui-command-handlers.js";
+import * as selectors from "./components/selectors.js";
+import { loadConfig, writeConfigFile } from "../config/config.js";
+
+// spy on config helpers so tests can verify writes
+vi.hoisted(() => {
+  vi.spyOn({ loadConfig }, "loadConfig");
+  vi.spyOn({ writeConfigFile }, "writeConfigFile");
+});
 
 describe("tui command handlers", () => {
   it("forwards unknown slash commands to the gateway", async () => {
@@ -47,6 +55,64 @@ describe("tui command handlers", () => {
       }),
     );
     expect(requestRender).toHaveBeenCalled();
+  });
+
+  it("lets user toggle file logging via settings and persists config", async () => {
+    // prepare config mocks
+    (loadConfig as unknown as vi.Mock).mockReturnValue({ logging: { enabled: true } });
+    const openOverlay = vi.fn();
+    const closeOverlay = vi.fn();
+
+    let capturedItems: any[] = [];
+    let capturedChange: (id: string, value: string) => void = () => {};
+    const spy = vi.spyOn(selectors, "createSettingsList").mockImplementation(
+      (items, onChange, onCancel) => {
+        capturedItems = items;
+        capturedChange = onChange;
+        return {} as any;
+      },
+    );
+
+    const state = {
+      currentSessionKey: "agent:main:main",
+      activeChatRunId: null,
+      sessionInfo: {},
+      loggingEnabled: true,
+    } as unknown as TuiStateAccess;
+
+    const { openSettings } = createCommandHandlers({
+      client: {} as never,
+      chatLog: { addSystem: vi.fn() } as never,
+      tui: { requestRender: vi.fn() } as never,
+      opts: {},
+      state,
+      deliverDefault: false,
+      openOverlay,
+      closeOverlay,
+      refreshSessionInfo: vi.fn(),
+      loadHistory: vi.fn(),
+      setSession: vi.fn(),
+      refreshAgents: vi.fn(),
+      abortActive: vi.fn(),
+      setActivityStatus: vi.fn(),
+      formatSessionKey: vi.fn(),
+      applySessionInfoFromPatch: vi.fn(),
+      noteLocalRunId: vi.fn(),
+    });
+
+    openSettings();
+
+    expect(capturedItems.find((i) => i.id === "logging")).toBeTruthy();
+    expect(capturedItems.find((i) => i.id === "logging")?.currentValue).toBe("on");
+
+    // toggle off and ensure config write
+    capturedChange("logging", "off");
+    expect(state.loggingEnabled).toBe(false);
+    expect(writeConfigFile).toHaveBeenCalledWith(
+      expect.objectContaining({ logging: { enabled: false } }),
+    );
+
+    spy.mockRestore();
   });
 
   it("passes reset reason when handling /new and /reset", async () => {

@@ -1,6 +1,8 @@
 ---
 name: session-logs
 description: Search and analyze your own session logs (older/parent conversations) using jq.
+author: coderClaw
+author-url: https://coderclaw.ai
 metadata: { "coderclaw": { "emoji": "📜", "requires": { "bins": ["jq", "rg"] } } }
 ---
 

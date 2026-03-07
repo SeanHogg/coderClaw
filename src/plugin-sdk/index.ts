@@ -293,8 +293,8 @@ export type { HookEntry } from "../hooks/types.js";
 export { clamp, escapeRegExp, normalizeE164, safeParseJson, sleep } from "../utils.js";
 export { stripAnsi } from "../terminal/ansi.js";
 export { missingTargetError } from "../infra/outbound/target-errors.js";
-export { registerLogTransport } from "../logging/logger.js";
-export type { LogTransport, LogTransportRecord } from "../logging/logger.js";
+export { registerLogTransport } from "../logging/file.js";
+export type { LogTransport, LogTransportRecord } from "../logging/file.js";
 export {
   emitDiagnosticEvent,
   isDiagnosticsEnabled,

@@ -430,7 +430,12 @@ export async function runOnboardingWizard(
       nextConfig = authResult.config;
     }
 
-    if (authChoiceFromPrompt && authChoice !== "custom-api-key" && authChoice !== "local") {
+    if (
+      authChoiceFromPrompt &&
+      authChoice !== "custom-api-key" &&
+      authChoice !== "local" &&
+      authChoice !== "coderclawllm"
+    ) {
       const modelSelection = await promptDefaultModel({
         config: nextConfig,
         prompter,
@@ -495,6 +500,39 @@ export async function runOnboardingWizard(
     await warnIfModelConfigLooksOff(nextConfig, prompter);
   }
 
+  // ── Optional local brain (amygdala + hippocampus ONNX preprocessors) ────
+  if (!opts.skipProviders && nextConfig.models?.providers?.["coderclawllm-local"]?.api !== "transformers") {
+    const localBrainChoice = await prompter.select({
+      message: "Enable local brain (amygdala + hippocampus)?",
+      options: [
+        {
+          value: "smart",
+          label: "Enable dual local brain",
+          hint: "Downloads amygdala (fast router) + hippocampus (memory). ~4 GB.",
+        },
+        {
+          value: "skip",
+          label: "Skip — use my cortex (configured LLM) only",
+          hint: "No extra download. Uses whatever model you configured above.",
+        },
+      ],
+      initialValue: "skip",
+    });
+    if (localBrainChoice === "smart") {
+      nextConfig = { ...nextConfig, localBrain: { enabled: true } };
+      const { downloadAndWireLocalBrain } = await import(
+        "../commands/auth-choice.apply.transformers.js"
+      );
+      const result = await downloadAndWireLocalBrain({
+        config: nextConfig,
+        prompter,
+      });
+      nextConfig = { ...result.config };
+    } else {
+      nextConfig = { ...nextConfig, localBrain: { enabled: false } };
+    }
+  }
+
   let settings: GatewayWizardSettings;
   if (keepExistingValues && quickstartGateway.hasExisting) {
     settings = {
@@ -550,6 +588,15 @@ export async function runOnboardingWizard(
   await onboardHelpers.ensureWorkspaceAndSessions(workspaceDir, runtime, {
     skipBootstrap: Boolean(nextConfig.agents?.defaults?.skipBootstrap),
   });
+
+  // Ensure .coderclaw/ project directory exists in the workspace
+  const { isCoderClawProject, initializeCoderClawProject } = await import(
+    "../coderclaw/project-context.js"
+  );
+  if (!(await isCoderClawProject(workspaceDir))) {
+    await initializeCoderClawProject(workspaceDir);
+    runtime.log("Initialised .coderclaw/ project directory");
+  }
 
   if (opts.skipSkills) {
     await prompter.note("Skipping skills setup.", "Skills");

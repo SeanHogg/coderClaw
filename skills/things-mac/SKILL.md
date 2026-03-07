@@ -1,6 +1,8 @@
 ---
 name: things-mac
 description: Manage Things 3 via the `things` CLI on macOS (add/update projects+todos via URL scheme; read/search/list from the local Things database). Use when a user asks CoderClaw to add a task to Things, list inbox/today/upcoming, search tasks, or inspect projects/areas/tags.
+author: ossianhempel
+author-url: https://github.com/ossianhempel/things3-cli
 homepage: https://github.com/ossianhempel/things3-cli
 metadata:
   {

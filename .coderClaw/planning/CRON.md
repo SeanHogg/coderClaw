@@ -29,7 +29,7 @@ This section defines all automated background tasks. Each job is described as co
 
 **Configuration:**
 
-- Input: `.coderClaw/memory-index.json`
+- Input: `.coderclaw/memory-index.json`
 - Output: systemEvent → main session
 - Side effects: none (read-only)
 
@@ -41,4 +41,4 @@ This section defines all automated background tasks. Each job is described as co
 
 ---
 
-_Note: All cron jobs are defined here for auditability. The actual registration is performed by `initialize-memory.js` and `enable-memory-sharing.js` scripts._
+_Note: All cron jobs are defined here for auditability. The actual registration is performed by `initialize-memory.js` and `enable-memory-sharing.js` scripts located in `.coderclaw/tools/`._

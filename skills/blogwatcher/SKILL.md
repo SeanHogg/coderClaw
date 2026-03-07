@@ -1,6 +1,8 @@
 ---
 name: blogwatcher
 description: Monitor blogs and RSS/Atom feeds for updates using the blogwatcher CLI.
+author: Hyaxia
+author-url: https://github.com/Hyaxia/blogwatcher
 homepage: https://github.com/Hyaxia/blogwatcher
 metadata:
   {

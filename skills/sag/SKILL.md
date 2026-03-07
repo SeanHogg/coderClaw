@@ -1,6 +1,8 @@
 ---
 name: sag
 description: ElevenLabs text-to-speech with mac-style say UX.
+author: sag
+author-url: https://sag.sh
 homepage: https://sag.sh
 metadata:
   {

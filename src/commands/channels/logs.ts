@@ -84,7 +84,12 @@ export async function channelsLogsCommand(
       ? Math.floor(limitRaw)
       : DEFAULT_LIMIT;
 
-  const file = getResolvedLoggerSettings().file;
+  const settings = getResolvedLoggerSettings();
+  if (!settings.enabled) {
+    runtime.log(theme.muted("File logging is currently disabled."));
+    return;
+  }
+  const file = settings.file;
   const rawLines = await readTailLines(file, limit * 4);
   const parsed = rawLines
     .map(parseLogLine)

@@ -97,6 +97,34 @@ describe("ClawLinkTransportAdapter", () => {
     });
   });
 
+  describe("fetchNextQueuedTask", () => {
+    it("returns null when server reports no task", async () => {
+      fetchMock = mockFetchSequence([{ task: null }]);
+      vi.stubGlobal("fetch", fetchMock);
+
+      const adapter = new ClawLinkTransportAdapter(config);
+      const result = await adapter.fetchNextQueuedTask?.();
+      expect(result).toBeNull();
+      expect(fetchMock).toHaveBeenCalledWith(`${BASE_URL}/api/tasks/next`, {
+        method: "POST",
+        headers: expect.any(Object),
+        body: null,
+      });
+    });
+
+    it("maps a returned task into a TaskState-like object", async () => {
+      const fakeTask = { id: "123", status: "todo", projectId: "1", priority: "high" };
+      fetchMock = mockFetchSequence([{ task: fakeTask }]);
+      vi.stubGlobal("fetch", fetchMock);
+
+      const adapter = new ClawLinkTransportAdapter(config);
+      const state = await adapter.fetchNextQueuedTask?.();
+      expect(state).not.toBeNull();
+      expect(state?.id).toBe("123");
+      expect(state?.metadata?.projectId).toBe("1");
+    });
+  });
+
   // -------------------------------------------------------------------------
   describe("submitTask", () => {
     it("submits a task and maps the response to TaskState", async () => {

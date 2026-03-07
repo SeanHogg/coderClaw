@@ -5,7 +5,7 @@
 A daily autonomous nudge to reflect on improvements and growth. The reminder:
 
 - Generates a formatted Markdown note with system metrics and suggested focus areas
-- Saves to `.coderClaw/reminders/reminder-YYYY-MM-DD.md`
+- Saves to `.coderclaw/reminders/reminder-YYYY-MM-DD.md`
 - Optionally sends a brief notification to the main session
 - Runs once per day (default: 10:00 AM local time if using cron schedule)
 
@@ -13,15 +13,15 @@ A daily autonomous nudge to reflect on improvements and growth. The reminder:
 
 ```
 On each run:
-1. Load .coderClaw/memory-index.json (if exists) → get entry count
-2. Count daily logs in .coderClaw/memory/ → get dailyEntries
+1. Load .coderclaw/memory-index.json (if exists) → get entry count
+2. Count daily logs in .coderclaw/memory/ → get dailyEntries
 3. Check recent runs of memory-suggestion-scan → get lastRun timestamp
 4. Build note with:
    - Status metrics (indexed entries, logs, last scan)
    - Recent wins (static list of accomplishments)
    - Focus areas (current incomplete tasks)
    - Ideas to explore (inspiration)
-5. Write note to .coderClaw/reminders/reminder-<date>.md
+5. Write note to .coderclaw/reminders/reminder-<date>.md
 6. Send notification: "🗒️ Self-improvement reminder generated (<entryCount> indexed memories)"
 ```
 
@@ -33,9 +33,9 @@ On each run:
 
 ## Files
 
-- `.coderClaw/tools/self-improvement-reminder.js` - Generator script
-- `.coderClaw/reminders/` - Directory for daily notes
-- `.coderClaw/planning/REMINDERS.md` - This documentation
+- `.coderclaw/tools/self-improvement-reminder.js` - Generator script
+- `.coderclaw/reminders/` - Directory for daily notes
+- `.coderclaw/planning/REMINDERS.md` - This documentation
 
 ## Usage
 

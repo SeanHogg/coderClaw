@@ -183,6 +183,32 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
     }
   }
 
+  /**
+   * Request the next queued task from the link server. Returns null if none
+   * are currently ready. The returned object is intentionally minimal; the
+   * caller (e.g. an external worker loop) can decide how to act on it.
+   */
+  async fetchNextQueuedTask(): Promise<TaskState | null> {
+    try {
+      const res = await this.post<{ task: { id: string; status?: string; projectId?: string; priority?: string } | null }>(
+        `${this.baseUrl}/api/tasks/next`,
+        null,
+        "POST",
+      );
+      if (!res || !res.task) return null;
+      const t = res.task;
+      return {
+        id: t.id,
+        status: (t.status as TaskStatus) ?? "pending",
+        progress: 0,
+        metadata: { projectId: t.projectId, priority: t.priority },
+        sessionId: undefined,
+      };
+    } catch {
+      return null;
+    }
+  }
+
   async cancelTask(taskId: string): Promise<boolean> {
     try {
       const result = await this.post<ClawLinkExecutionResponse>(

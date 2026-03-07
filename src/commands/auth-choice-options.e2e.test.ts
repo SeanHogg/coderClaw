@@ -88,16 +88,16 @@ describe("buildAuthChoiceOptions", () => {
     expect(chutesGroup?.options.some((opt) => opt.value === "chutes")).toBe(true);
   });
 
-  it("shows CoderClaw in grouped provider selection", () => {
+  it("shows CoderClawLink in grouped provider selection", () => {
     const { groups } = buildAuthChoiceGroups({
       store: EMPTY_STORE,
       includeSkip: false,
     });
-    const coderClawGroup = groups.find((group) => group.value === "coderclaw");
+    const coderClawLinkGroup = groups.find((group) => group.value === "coderclawlink");
 
-    expect(coderClawGroup).toBeDefined();
-    expect(coderClawGroup?.label).toBe("CoderClaw");
-    expect(coderClawGroup?.options.some((opt) => opt.value === "custom-api-key")).toBe(true);
+    expect(coderClawLinkGroup).toBeDefined();
+    expect(coderClawLinkGroup?.label).toBe("CoderClawLink");
+    expect(coderClawLinkGroup?.options.some((opt) => opt.value === "custom-api-key")).toBe(true);
   });
 
   it("shows Local Models in grouped provider selection", () => {

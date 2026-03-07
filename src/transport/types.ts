@@ -120,6 +120,12 @@ export interface TransportAdapter {
   listSkills(): Promise<SkillInfo[]>;
 
   /**
+   * Optional helper: fetch the next queued task from a remote queue.
+   * Implementations may omit this if the remote system does not support it.
+   */
+  fetchNextQueuedTask?(): Promise<TaskState | null>;
+
+  /**
    * Close the transport connection
    */
   close(): Promise<void>;

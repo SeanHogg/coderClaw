@@ -1,6 +1,8 @@
 ---
 name: slack
 description: Use when you need to control Slack from CoderClaw via the slack tool, including reacting to messages or pinning/unpinning items in Slack channels or DMs.
+author: coderClaw
+author-url: https://coderclaw.ai
 metadata: { "coderclaw": { "emoji": "💬", "requires": { "config": ["channels.slack"] } } }
 ---
 

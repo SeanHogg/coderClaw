@@ -104,4 +104,6 @@ export type TuiStateAccess = {
   activityStatus: string;
   statusTimeout: ReturnType<typeof setTimeout> | null;
   lastCtrlCAt: number;
+  /** whether the gateway is currently configured to write a file log */
+  loggingEnabled: boolean;
 };

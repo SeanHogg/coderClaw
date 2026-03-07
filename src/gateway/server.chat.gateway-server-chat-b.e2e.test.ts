@@ -150,6 +150,7 @@ describe("gateway server chat", () => {
         let capturedOpts: GetReplyOptions | undefined;
         spy.mockImplementationOnce(async (_ctx: unknown, opts?: GetReplyOptions) => {
           capturedOpts = opts;
+          return undefined;
         });
 
         const sendRes = await rpcReq(ws, "chat.send", {
@@ -339,7 +340,7 @@ describe("gateway server chat", () => {
       await writeMainSessionStore();
 
       spy.mockReset();
-      spy.mockImplementationOnce(async (_ctx, opts) => {
+      spy.mockImplementationOnce(async (_ctx, opts): Promise<undefined> => {
         opts?.onAgentRunStart?.(opts.runId ?? "idem-abort-1");
         const signal = opts?.abortSignal;
         await new Promise<void>((resolve) => {

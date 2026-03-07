@@ -1,6 +1,8 @@
 ---
 name: obsidian
 description: Work with Obsidian vaults (plain Markdown notes) and automate via obsidian-cli.
+author: Obsidian
+author-url: https://help.obsidian.md
 homepage: https://help.obsidian.md
 metadata:
   {

@@ -23,6 +23,13 @@ import {
 import type { FailoverReason } from "./pi-embedded-helpers.js";
 import { isLikelyContextOverflowError } from "./pi-embedded-helpers.js";
 
+/**
+ * Providers that are local-brain preprocessors (hippocampus), not full agent
+ * models.  They must never appear in the agent model fallback chain because
+ * their context windows are far too small for agent tasks.
+ */
+const LOCAL_BRAIN_PROVIDERS = new Set(["coderclawllm-local"]);
+
 type ModelCandidate = {
   provider: string;
   model: string;
@@ -235,7 +242,11 @@ function resolveFallbackCandidates(params: {
     addCandidate({ provider: primary.provider, model: primary.model }, false);
   }
 
-  return candidates;
+  // Strip local-brain-only providers (e.g. coderclawllm-local / SmolLM2).
+  // They are preprocessing orchestrators, not agent models, and their context
+  // windows are far below the agent minimum.  Keeping them would just trigger
+  // a noisy FailoverError before the real LLM is tried.
+  return candidates.filter((c) => !LOCAL_BRAIN_PROVIDERS.has(c.provider));
 }
 
 const lastProbeAttempt = new Map<string, number>();

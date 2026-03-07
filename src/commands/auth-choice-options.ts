@@ -29,16 +29,16 @@ const AUTH_CHOICE_GROUP_DEFS: {
     choices: ["local"],
   },
   {
-    value: "coderclawllm",
-    label: "CoderClawLLM",
-    hint: "Recommended default (managed free model pool)",
-    choices: ["coderclawllm"],
+    value: "coderclawlink",
+    label: "CoderClawLink",
+    hint: "All cloud; no local — cloud based LLM",
+    choices: ["coderclawllm", "custom-api-key"],
   },
   {
-    value: "coderclaw",
-    label: "CoderClaw",
-    hint: "Managed endpoint or self-hosted gateway",
-    choices: ["custom-api-key"],
+    value: "coderclawllm",
+    label: "CoderClawLLM",
+    hint: "Local brain; no cloud — local LLM",
+    choices: ["coderclawllm-local"],
   },
   {
     value: "openai",
@@ -187,9 +187,14 @@ const BASE_AUTH_CHOICE_OPTIONS: ReadonlyArray<AuthChoiceOption> = [
     hint: "Guided local setup with auto model discovery",
   },
   {
+    value: "coderclawllm-local",
+    label: "CoderClawLLM (local brain)",
+    hint: "Runs locally, no cloud required",
+  },
+  {
     value: "coderclawllm",
     label: "CoderClawLLM (recommended)",
-    hint: "Uses api.coderclaw.ai/llm with automatic free-model failover (no local key)",
+    hint: "Uses api.coderclaw.ai/llm with automatic model failover (no local key needed)",
   },
   {
     value: "token",

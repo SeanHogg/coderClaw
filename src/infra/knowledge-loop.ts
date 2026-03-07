@@ -76,7 +76,7 @@ type RunAccumulator = {
 
 /**
  * Listens for agent run completions and writes a timestamped activity entry to
- * .coderClaw/memory/YYYY-MM-DD.md, then syncs .coderClaw/ to CoderClawLink if credentials
+ * .coderclaw/memory/YYYY-MM-DD.md, then syncs .coderclaw/ to CoderClawLink if credentials
  * are configured.
  */
 export class KnowledgeLoopService {

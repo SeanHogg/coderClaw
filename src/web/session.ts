@@ -7,7 +7,7 @@ import {
   makeWASocket,
   useMultiFileAuthState,
 } from "@whiskeysockets/baileys";
-import { generate } from "qrcode-terminal";
+import qrcode from "qrcode-terminal";
 import { formatCliCommand } from "../cli/command-format.js";
 import { danger, success } from "../globals.js";
 import { getChildLogger, toPinoLikeLogger } from "../logging.js";
@@ -128,9 +128,8 @@ export async function createWaSocket(
           opts.onQr?.(qr);
           if (printQr) {
             console.log("Scan this QR in WhatsApp (Linked Devices):");
-            // `generate` is imported above; earlier code referenced `qrcode` which
-            // doesn't exist, causing a build error. Use the imported function directly.
-            generate(qr, { small: true });
+            // `qrcode` is a CJS default import; call `.generate()` on it.
+            qrcode.generate(qr, { small: true });
           }
         }
         if (connection === "close") {

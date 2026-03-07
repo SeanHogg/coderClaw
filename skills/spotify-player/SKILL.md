@@ -1,6 +1,8 @@
 ---
 name: spotify-player
 description: Terminal Spotify playback/search via spogo (preferred) or spotify_player.
+author: Spotify
+author-url: https://www.spotify.com
 homepage: https://www.spotify.com
 metadata:
   {

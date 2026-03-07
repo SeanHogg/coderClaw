@@ -214,6 +214,43 @@ export class AgentOrchestrator {
   }
 
   /**
+   * Build a structured context block for a task, replacing naive text concatenation.
+   *
+   * Each prior agent's output is labelled with its role and prefixed so the
+   * receiving agent knows exactly who produced what.  The role's `outputFormat`
+   * prefix (e.g. "REVIEW:" / "ARCH:") is used when available so downstream
+   * agents can quickly scan for the section they care about.
+   */
+  private buildStructuredContext(task: Task, workflow: Workflow): string {
+    // Per-dependency result truncation: prevents runaway context when a prior agent
+    // produces an unexpectedly large output (e.g. a full codebase dump).
+    const MAX_RESULT_CHARS = 8_000;
+
+    const lines: string[] = [];
+
+    lines.push(`## Your Task\n\n${task.input}`);
+
+    if (task.dependencies.length > 0) {
+      lines.push(`\n## Context from Prior Agents\n`);
+      for (const depId of task.dependencies) {
+        const depTask = workflow.tasks.get(depId);
+        const result = this.taskResults.get(depId);
+        if (depTask && result) {
+          const roleConfig = findAgentRole(depTask.agentRole);
+          const prefix = roleConfig?.outputFormat?.outputPrefix ?? depTask.agentRole.toUpperCase();
+          const body =
+            result.length > MAX_RESULT_CHARS
+              ? `${result.slice(0, MAX_RESULT_CHARS)}\n…(truncated — ${result.length - MAX_RESULT_CHARS} chars omitted)`
+              : result;
+          lines.push(`### ${prefix} (${depTask.agentRole})\n\n${body}\n`);
+        }
+      }
+    }
+
+    return lines.join("\n");
+  }
+
+  /**
    * Execute a single task
    */
   private async executeTask(
@@ -225,18 +262,8 @@ export class AgentOrchestrator {
     task.startedAt = new Date();
     this.persistWorkflow(workflow);
 
-    // Build task input with dependency results
-    let taskInput = task.input;
-
-    if (task.dependencies.length > 0) {
-      taskInput += "\n\nPrevious Results:\n";
-      for (const depId of task.dependencies) {
-        const result = this.taskResults.get(depId);
-        if (result) {
-          taskInput += `\n${result}\n`;
-        }
-      }
-    }
+    // Build structured context block for this task
+    const taskInput = this.buildStructuredContext(task, workflow);
 
     // Remote dispatch: role "remote:<clawId>", "remote:auto", or "remote:auto[cap1,cap2]"
     // delegates the task to a peer claw via CoderClawLink.

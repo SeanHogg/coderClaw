@@ -41,6 +41,57 @@ export type ProjectContext = {
     /** CoderClawLink server URL */
     url?: string;
   };
+  /**
+   * Persona assignments for this claw.
+   * Managed by coderClawLink — do not edit manually.
+   */
+  personas?: {
+    assignments: PersonaAssignment[];
+  };
+};
+
+/**
+ * Persona definition for an agent role — shapes tone, perspective, and decision style.
+ * Injected into the system prompt prefix so every spawned sub-agent has a consistent identity.
+ */
+export type AgentPersona = {
+  /** How the agent communicates, e.g. "methodical and detail-oriented" */
+  voice: string;
+  /** The lens through which the agent evaluates all inputs, e.g. "views code through a security lens" */
+  perspective: string;
+  /** How the agent makes trade-off decisions, e.g. "conservative: prefer proven patterns" */
+  decisionStyle: string;
+};
+
+/**
+ * Output format contract for an agent role.
+ * Tells downstream agents and the orchestrator how to parse this role's output.
+ */
+export type AgentOutputFormat = {
+  /** Preferred output structure */
+  structure: "markdown" | "json" | "structured-text";
+  /** Section headings the agent should always include (in order) */
+  requiredSections?: string[];
+  /** Short label prepended to handoff summaries, e.g. "REVIEW:" */
+  outputPrefix?: string;
+};
+
+/**
+ * Structured handoff block passed from one agent to the next in a workflow.
+ * Replaces plain-text result concatenation with a typed context object.
+ */
+export type TaskHandoff = {
+  workflowId: string;
+  taskId: string;
+  fromRole: string;
+  /** One-paragraph summary of what was produced */
+  summary: string;
+  /** Specific findings, decisions, or recommendations for the next agent */
+  keyFindings: string[];
+  /** Files, functions, or other artifacts produced or modified */
+  artifacts: string[];
+  /** ISO timestamp when this handoff was created */
+  timestamp: string;
 };
 
 export type AgentRole = {
@@ -49,6 +100,10 @@ export type AgentRole = {
   capabilities: string[];
   tools: string[];
   systemPrompt?: string;
+  /** Optional persona definition injected into the system prompt */
+  persona?: AgentPersona;
+  /** Optional output contract so downstream agents know how to interpret results */
+  outputFormat?: AgentOutputFormat;
   model?: string;
   thinking?: string;
   constraints?: string[];
@@ -207,4 +262,77 @@ export type SessionHandoff = {
   artifacts: string[];
   /** Arbitrary extra context to carry forward */
   context?: Record<string, unknown>;
+};
+
+// ---------------------------------------------------------------------------
+// Persona Plugin System
+// ---------------------------------------------------------------------------
+
+/**
+ * Where a persona plugin originates.
+ * Used to determine loading precedence and trust level.
+ */
+export type PersonaSource =
+  | "builtin" // Shipped with coderClaw core
+  | "user-global" // ~/.coderclaw/personas/ (user-installed, all projects)
+  | "project-local" // .coderClaw/personas/ (project-scoped)
+  | "clawhub" // Installed from ClawHub marketplace
+  | "clawlink-assigned"; // Pushed to this claw from coderClawLink
+
+/**
+ * Marketplace and versioning metadata for a persona plugin.
+ * Present when a persona was installed from ClawHub or assigned via coderClawLink.
+ */
+export type PersonaPluginMetadata = {
+  /** ClawHub marketplace identifier, e.g. "acme/senior-security-reviewer" */
+  clawhubId?: string;
+  /** Semver version string, e.g. "1.2.0" */
+  version?: string;
+  /** Publisher name on ClawHub */
+  author?: string;
+  /** Author homepage or profile URL */
+  authorUrl?: string;
+  /** SPDX license identifier, e.g. "MIT" or "Commercial" */
+  license?: string;
+  /** Whether activating this persona requires a valid paid license */
+  requiresLicense?: boolean;
+  /** ClawHub marketplace listing URL */
+  marketplaceUrl?: string;
+  /** Minimum coderClaw version required (semver range) */
+  coderClawVersion?: string;
+  /** Discovery tags, e.g. ["security", "backend", "compliance"] */
+  tags?: string[];
+  /** SHA-256 hex digest of the PERSONA.yaml file for integrity verification */
+  checksum?: string;
+};
+
+/**
+ * A persona plugin — an `AgentRole` enriched with plugin lifecycle metadata.
+ * Installed from the ClawHub marketplace or assigned to a claw via coderClawLink.
+ */
+export type PersonaPlugin = AgentRole & {
+  /** Where this persona was loaded from */
+  source: PersonaSource;
+  /** Marketplace metadata (present for clawhub / clawlink-assigned personas) */
+  pluginMetadata?: PersonaPluginMetadata;
+  /** Absolute path to the PERSONA.yaml file on disk; undefined for built-ins */
+  filePath?: string;
+  /** Whether this persona is currently active on this claw */
+  active?: boolean;
+};
+
+/**
+ * A persona assignment record stored in `context.yaml` under `personas.assignments`.
+ * Created by coderClawLink when an operator assigns a persona to a specific claw,
+ * or locally when a user activates a persona with `coderclaw persona activate <name>`.
+ */
+export type PersonaAssignment = {
+  /** Name of the persona to activate (must match a loaded PersonaPlugin) */
+  name: string;
+  /** ClawHub ID — used for license verification on activation */
+  clawhubId?: string;
+  /** True when this assignment was pushed from coderClawLink (not manually set) */
+  assignedByClawLink?: boolean;
+  /** ISO 8601 timestamp of when the assignment was created */
+  assignedAt?: string;
 };

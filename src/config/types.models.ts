@@ -5,7 +5,8 @@ export type ModelApi =
   | "google-generative-ai"
   | "github-copilot"
   | "bedrock-converse-stream"
-  | "ollama";
+  | "ollama"
+  | "transformers";
 
 export type ModelCompatConfig = {
   supportsStore?: boolean;

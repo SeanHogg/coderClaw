@@ -1,5 +1,6 @@
 import type { AgentToolResult } from "@mariozechner/pi-agent-core";
 import { createEditTool, createReadTool, createWriteTool } from "@mariozechner/pi-coding-agent";
+import path from "node:path";
 import { detectMime } from "../media/mime.js";
 import { sniffMimeFromBase64 } from "../media/sniff-mime-from-base64.js";
 import type { ImageSanitizationLimits } from "./image-sanitization.js";
@@ -23,6 +24,7 @@ const MAX_ADAPTIVE_READ_PAGES = 8;
 type CoderClawReadToolOptions = {
   modelContextWindowTokens?: number;
   imageSanitization?: ImageSanitizationLimits;
+  root?: string;
 };
 
 type ReadTruncationDetails = {
@@ -602,9 +604,28 @@ export function assertRequiredParams(
 }
 
 // Generic wrapper to normalize parameters for any tool
+/**
+ * Fix paths where the LLM omitted the separator between the workspace root
+ * and a dot-prefixed directory (e.g. `C:\foo\bar.hidden\file` instead of
+ * `C:\foo\bar\.hidden\file`).
+ */
+export function fixMissingRootSeparator(filePath: string, root: string): string {
+  const rootNorm = root.replace(/[\\/]+$/, "");
+  if (
+    filePath.length > rootNorm.length &&
+    filePath.startsWith(rootNorm) &&
+    filePath[rootNorm.length] !== "\\" &&
+    filePath[rootNorm.length] !== "/"
+  ) {
+    return rootNorm + path.sep + filePath.slice(rootNorm.length);
+  }
+  return filePath;
+}
+
 export function wrapToolParamNormalization(
   tool: AnyAgentTool,
   requiredParamGroups?: readonly RequiredParamGroup[],
+  root?: string,
 ): AnyAgentTool {
   const patched = patchToolSchemaForClaudeCompatibility(tool);
   return {
@@ -616,6 +637,9 @@ export function wrapToolParamNormalization(
         (params && typeof params === "object" ? (params as Record<string, unknown>) : undefined);
       if (requiredParamGroups?.length) {
         assertRequiredParams(record, requiredParamGroups, tool.name);
+      }
+      if (root && record?.path && typeof record.path === "string") {
+        record.path = fixMissingRootSeparator(record.path, root);
       }
       return tool.execute(toolCallId, normalized ?? params, signal, onUpdate);
     },
@@ -630,6 +654,9 @@ export function wrapToolWorkspaceRootGuard(tool: AnyAgentTool, root: string): An
       const record =
         normalized ??
         (args && typeof args === "object" ? (args as Record<string, unknown>) : undefined);
+      if (record?.path && typeof record.path === "string") {
+        record.path = fixMissingRootSeparator(record.path, root);
+      }
       const filePath = record?.path;
       if (typeof filePath === "string" && filePath.trim()) {
         await assertSandboxPath({ filePath, cwd: root, root });
@@ -660,14 +687,14 @@ export function createSandboxedWriteTool(params: SandboxToolParams) {
   const base = createWriteTool(params.root, {
     operations: createSandboxWriteOperations(params),
   }) as unknown as AnyAgentTool;
-  return wrapToolParamNormalization(base, CLAUDE_PARAM_GROUPS.write);
+  return wrapToolParamNormalization(base, CLAUDE_PARAM_GROUPS.write, params.root);
 }
 
 export function createSandboxedEditTool(params: SandboxToolParams) {
   const base = createEditTool(params.root, {
     operations: createSandboxEditOperations(params),
   }) as unknown as AnyAgentTool;
-  return wrapToolParamNormalization(base, CLAUDE_PARAM_GROUPS.edit);
+  return wrapToolParamNormalization(base, CLAUDE_PARAM_GROUPS.edit, params.root);
 }
 
 export function createCoderClawReadTool(
@@ -683,6 +710,9 @@ export function createCoderClawReadTool(
         normalized ??
         (params && typeof params === "object" ? (params as Record<string, unknown>) : undefined);
       assertRequiredParams(record, CLAUDE_PARAM_GROUPS.read, base.name);
+      if (options?.root && record?.path && typeof record.path === "string") {
+        record.path = fixMissingRootSeparator(record.path, options.root);
+      }
       const result = await executeReadWithAdaptivePaging({
         base,
         toolCallId,

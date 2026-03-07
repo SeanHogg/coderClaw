@@ -36,4 +36,11 @@ describe("config schema regressions", () => {
 
     expect(res.ok).toBe(true);
   });
+
+  it('accepts logging.enabled and format keys', () => {
+    const res = validateConfigObject({
+      logging: { enabled: false, format: "text" },
+    });
+    expect(res.ok).toBe(true);
+  });
 });

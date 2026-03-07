@@ -102,7 +102,7 @@ WebSocket streaming is on its roadmap."_
 
 **Problem**  
 The `/spec <goal>` TUI command triggers a planning workflow that saves outputs to
-`.coderClaw/planning/` locally. These files are eventually synced to coderClawLink
+`.coderclaw/planning/` locally. These files are eventually synced to coderClawLink
 via the directory-sync endpoint, but they are stored as raw blobs with no structured
 schema. There is no way to:
 
@@ -151,7 +151,7 @@ three outputs (PRD, arch spec, task list) to `/api/specs`.
 ### P1-2: Workflow Execution Portal
 
 **Problem**  
-Workflows run locally and are only visible via `.coderClaw/sessions/workflow-*.yaml`
+Workflows run locally and are only visible via `.coderclaw/sessions/workflow-*.yaml`
 files and the TUI `/workflow` command. There is no web UI showing workflow history,
 task breakdown, timings, or outputs.
 
@@ -234,7 +234,7 @@ owners cannot interact with agent-generated specs without accessing raw YAML fil
 ### P2-1: Knowledge / Memory Query API
 
 **Problem**  
-`.coderClaw/memory/` files are synced to coderClawLink via directory-sync but are
+`.coderclaw/memory/` files are synced to coderClawLink via directory-sync but are
 stored as raw text blobs. There is no structured endpoint to search, filter, or render
 them. Agents currently query memory only locally via `project_knowledge memory`.
 
@@ -435,7 +435,7 @@ but does not expose CoderClaw as a provider.
    `POST /api/mcp/call` (tool invocation) authenticated by API key.
 
 2. **Tools exposed via MCP**:
-   - `project_knowledge` — query `.coderClaw/memory/` and project context
+   - `project_knowledge` — query `.coderclaw/memory/` and project context
    - `codebase_search` — semantic vector search over project source (requires lancedb)
    - `git_history` — git blame, commits, hotspot analysis
    - `workflow_status` — query running workflow state
@@ -536,7 +536,7 @@ Teams cannot share personas or enforce a standard persona set across all claws.
 
 **coderClaw side** (`src/coderclaw/personas.ts`):  
 On startup, fetch tenant personas from coderClawLink and write to
-`.coderClaw/personas/<name>.yaml`; `/persona` TUI command activates one.
+`.coderclaw/personas/<name>.yaml`; `/persona` TUI command activates one.
 
 ---
 
@@ -605,7 +605,7 @@ All endpoints currently implemented and called by coderClaw:
 | POST   | `/api/claws/:id/forward`             | API Key      | Remote task dispatch      |
 | POST   | `/api/projects/upsert`               | JWT (tenant) | Create/update project     |
 | PUT    | `/api/claws/:id/projects/:pid`       | JWT (tenant) | Link project to claw      |
-| PUT    | `/api/claws/:id/directories/sync`    | API Key      | Upload .coderClaw/ files  |
+| PUT    | `/api/claws/:id/directories/sync`    | API Key      | Upload .coderclaw/ files  |
 | POST   | `/api/runtime/executions`            | Bearer       | Submit execution          |
 | GET    | `/api/runtime/executions/:id`        | Bearer       | Poll execution status     |
 | POST   | `/api/runtime/executions/:id/cancel` | Bearer       | Cancel execution          |

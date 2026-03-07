@@ -13,12 +13,12 @@
 
 ### Bridge `agent-roles.ts` into runtime ✅
 
-- 7 built-in roles + custom roles from `.coderClaw/agents/*.yaml` loaded at gateway startup.
+- 7 built-in roles + custom roles from `.coderclaw/agents/*.yaml` loaded at gateway startup.
 - Role model / tools / system-prompt applied at subagent spawn via `roleConfig`.
 
 ### Session handoff save/load ✅
 
-- `save_session_handoff` tool writes `.coderClaw/sessions/<id>.yaml`.
+- `save_session_handoff` tool writes `.coderclaw/sessions/<id>.yaml`.
 - TUI auto-loads latest handoff on session start.
 - `/handoff` slash command triggers agent to produce and save a handoff.
 
@@ -30,7 +30,7 @@
 
 ### Post-task knowledge loop ✅
 
-- `KnowledgeLoopService` writes `.coderClaw/memory/YYYY-MM-DD.md` after every run.
+- `KnowledgeLoopService` writes `.coderclaw/memory/YYYY-MM-DD.md` after every run.
 - `project_knowledge memory` query surfaces recent entries to agents.
 - Auto-synced to CoderClawLink on write.
 
@@ -109,6 +109,44 @@
 
 ---
 
+## ✅ Sub-Agent Context Quality — Complete (2026-03-04)
+
+### Structured inter-agent context ✅
+
+- `buildStructuredContext(task, workflow)` produces labelled Markdown sections per prior agent.
+- Each section headed by `outputFormat.outputPrefix` (e.g. `### REVIEW: (code-reviewer)`).
+- Receiving agent instantly knows which role produced which output — no ambiguous text blobs.
+- File: `src/coderclaw/orchestrator.ts`
+
+### Persona → brain injection ✅
+
+- `buildPersonaSystemBlock(role)` encodes voice/perspective/decisionStyle/outputFormat into
+  a `--- Agent Persona ---` block appended to every sub-agent's system prompt.
+- `brainSystem` now prepends `context.systemPrompt` so the CoderClawLLM brain reads the
+  persona on **all** execution paths (direct + DELEGATE).
+- File: `src/coderclaw/personas.ts`, `src/agents/subagent-spawn.ts`,
+  `src/agents/coderclawllm-local-stream.ts`
+
+### Persona plugin architecture ✅
+
+- `PersonaRegistry` — load/activate/assign lifecycle for marketplace + local personas.
+- PERSONA.yaml format with `clawhubId`, `version`, `author`, `license`, `requiresLicense`.
+- Source precedence: builtin < user-global < project-local < clawhub < clawlink-assigned.
+- `context.yaml` `personas.assignments` for coderClawLink-assigned personas.
+- Gateway bootstraps registry on startup (built-ins → user → project → assignments).
+- File: `src/coderclaw/personas.ts`, `src/coderclaw/project-context.ts`,
+  `src/gateway/server.impl.ts`
+
+### CoderClawLLM syscheck + external fallback ✅
+
+- `checkLocalBrainRequirements()` checks RAM (≥ 2 GB) and disk (≥ 1.5 GB, download only).
+- Lazy: runs once per factory instance on first request; result cached.
+- When requirements not met: configured Ollama/OpenAI-compat LLM acts as the brain,
+  receiving the same memory + RAG + persona grounding.
+- File: `src/agents/coderclawllm-syscheck.ts`, `src/agents/coderclawllm-local-stream.ts`
+
+---
+
 ## 🔲 Open Items
 
 ### Remote task result streaming
@@ -120,13 +158,13 @@
 ### Architecture.md semantic auto-update
 
 - After runs with ≥ N structural file changes, trigger a `documentation-agent` subagent
-  to refresh `.coderClaw/architecture.md`.
+  to refresh `.coderclaw/architecture.md`.
 - Add `/knowledge update` TUI command.
 - See CAPABILITY_GAPS.md Gap K.
 
 ### coderClawLink feature gaps
 
-- See `.coderClaw/planning/CODERCLAW_LINK_GAPS.md` for full list.
+- See `.coderclaw/planning/CODERCLAW_LINK_GAPS.md` for full list.
 - Key items: workflow/spec portal UI, execution WS streaming, spec storage API,
   result-streaming relay frame, enhanced fleet management.
 
@@ -185,17 +223,21 @@ Files: `src/agents/tools/`, `src/tui/commands.ts`, `src/tui/tui-command-handlers
 
 Files: `src/tui/tui-command-handlers.ts`, `src/coderclaw/project-context.ts`
 
-### 2.5 Persona Profiles 🔲 (P1)
+### 2.5 Persona Profiles ✅ RESOLVED (2026-03-04)
 
-**Problem**: System prompt customization is per-role only; no named persona concept.  
-**Competitors with this**: Goose (persona config), Continue.dev (per-context model routing).
+**Resolved as a full plugin architecture**, not just profile files.
 
-- Persona file format: `.coderClaw/personas/<name>.yaml` with `{ name, model, systemPromptAddition, thinkingLevel, tools }`
-- TUI `/persona <name>` command to activate a persona for the current session
-- Workflow YAML: optional `model` field per step (overrides role default)
-- coderClawLink: team persona registry with shared persona sync
+- `PersonaRegistry` class in `src/coderclaw/personas.ts` — install/activate/assign lifecycle
+- PERSONA.yaml format — same as AgentRole YAML + marketplace fields (clawhubId, version, author, license, tags)
+- Loading precedence: builtin < user-global < project-local < clawhub < clawlink-assigned
+- `buildPersonaSystemBlock(role)` encodes persona into brain-readable `--- Agent Persona ---` section
+- Brain injection: `context.systemPrompt` now prepended to `brainSystem` — persona active on ALL paths
+- `project-context.ts`: `personasDir`, `loadProjectPersonaPlugins()`, `loadPersonaAssignments()`,
+  `savePersonaAssignment()`, `removePersonaAssignment()`
+- `context.yaml`: `personas.assignments` field for coderClawLink-assigned personas
+- Gateway bootstrap loads all persona layers on startup
 
-Files: `src/coderclaw/agent-roles.ts`, `src/tui/commands.ts`, new `src/coderclaw/personas.ts`
+**Remaining**: ClawHub install CLI + coderClawLink Persona Assignment API endpoint.
 
 ### 2.6 GitHub Issue → PR End-to-End Workflow 🔲 (P1)
 

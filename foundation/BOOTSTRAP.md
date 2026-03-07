@@ -26,6 +26,11 @@ Then figure out together:
 3. **Your vibe** — Formal? Casual? Snarky? Warm? What feels right?
 4. **Your emoji** — Everyone needs a signature.
 
+Governance is also important at this early stage: open or create
+`.coderClaw/governance.md` and start writing the high‑level rules you
+expect the agent to follow. A placeholder will already exist after
+initialization.
+
 Offer suggestions if they're stuck. Have fun with it.
 
 ## After You Know Who You Are

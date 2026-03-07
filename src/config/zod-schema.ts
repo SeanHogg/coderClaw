@@ -169,6 +169,8 @@ export const CoderClawSchema = z
       .optional(),
     logging: z
       .object({
+        enabled: z.boolean().optional(),
+        format: z.union([z.literal("json"), z.literal("text")]).optional(),
         level: z
           .union([
             z.literal("silent"),
@@ -651,6 +653,31 @@ export const CoderClawSchema = z
               })
               .strict(),
           )
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    localBrain: z
+      .object({
+        enabled: z.boolean().optional(),
+        models: z
+          .object({
+            amygdala: z
+              .object({
+                modelId: z.string().optional(),
+                dtype: z.string().optional(),
+              })
+              .strict()
+              .optional(),
+            hippocampus: z
+              .object({
+                modelId: z.string().optional(),
+                dtype: z.string().optional(),
+              })
+              .strict()
+              .optional(),
+          })
+          .strict()
           .optional(),
       })
       .strict()

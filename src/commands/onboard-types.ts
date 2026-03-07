@@ -10,6 +10,7 @@ export type AuthChoice =
   | "token"
   | "chutes"
   | "local"
+  | "coderclawllm-local"
   | "vllm"
   | "coderclawllm"
   | "openai-codex"
@@ -52,7 +53,7 @@ export type AuthChoice =
   | "skip";
 export type AuthChoiceGroupId =
   | "local"
-  | "coderclaw"
+  | "coderclawlink"
   | "coderclawllm"
   | "openai"
   | "anthropic"

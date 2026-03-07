@@ -342,13 +342,13 @@ export function createExecTool(
       if (elevatedRequested) {
         logInfo(`exec: elevated command ${truncateMiddle(params.command, 120)}`);
       }
-      const configuredHost = defaults?.host ?? "sandbox";
+      const configuredHost = defaults?.host ?? "gateway";
       const requestedHost = normalizeExecHost(params.host) ?? null;
       let host: ExecHost = requestedHost ?? configuredHost;
       if (!elevatedRequested && requestedHost && requestedHost !== configuredHost) {
         throw new Error(
           `exec host not allowed (requested ${renderExecHostLabel(requestedHost)}; ` +
-            `configure tools.exec.host=${renderExecHostLabel(configuredHost)} to allow).`,
+            `configure tools.exec.host=${renderExecHostLabel(requestedHost)} to allow).`,
         );
       }
       if (elevatedRequested) {

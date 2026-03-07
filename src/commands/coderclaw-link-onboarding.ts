@@ -1,6 +1,8 @@
 import { confirm, note, password, select, spinner, text } from "@clack/prompts";
 import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
 import { readSharedEnvVar, upsertSharedEnvVar } from "../infra/env-file.js";
+import { authenticateViaBrowser } from "./browser-auth-server.js";
+import { detectBrowserOpenSupport } from "./onboard-helpers.js";
 
 async function clawLinkFetch<T>(
   url: string,
@@ -109,69 +111,101 @@ export async function promptCoderClawLinkOnboarding(params: {
   }
   const serverUrl = urlInput.trim().replace(/\/+$/, "") || "https://api.coderclaw.ai";
 
-  const authMode = await select({
-    message: "Do you have a coderClawLink account?",
-    options: [
-      { value: "login", label: "Yes — log in" },
-      { value: "register", label: "No  — create a free account" },
-    ],
-  });
-  if (typeof authMode === "symbol") {
+  // ── Authentication ─────────────────────────────────────────────────────
+  // Prefer browser-based auth when a display is available.
+  const browserOk = (await detectBrowserOpenSupport()).ok;
+  const authMethod = browserOk
+    ? await select({
+        message: "How would you like to authenticate?",
+        options: [
+          { value: "browser", label: "Open browser  (recommended)", hint: "login or register in your browser" },
+          { value: "terminal", label: "Type here", hint: "enter email & password in this terminal" },
+        ],
+      })
+    : "terminal";
+  if (typeof authMethod === "symbol") {
     return null;
   }
-
-  const emailInput = await text({ message: "Email:" });
-  if (typeof emailInput === "symbol" || !emailInput.trim()) {
-    return null;
-  }
-  const email = emailInput.trim();
-
-  let usernameForReg = "";
-  if (authMode === "register") {
-    const usernameInput = await text({
-      message: "Username:",
-      initialValue: params.defaultInstanceName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-    });
-    if (typeof usernameInput === "symbol" || !usernameInput.trim()) {
-      return null;
-    }
-    usernameForReg = usernameInput.trim();
-  }
-
-  const passwordInput = await password({ message: "Password:" });
-  if (typeof passwordInput === "symbol" || !passwordInput.trim()) {
-    return null;
-  }
-  const rawPassword = passwordInput.trim();
 
   let webToken = "";
-  const authSpin = spinner();
-  try {
-    if (authMode === "register") {
-      authSpin.start("Creating account…");
-      const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/register`, {
-        method: "POST",
-        body: JSON.stringify({
-          email,
-          username: usernameForReg,
-          password: rawPassword,
-        }),
-      });
-      webToken = res.token;
-      authSpin.stop("Account created");
-    } else {
-      authSpin.start("Authenticating…");
-      const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/login`, {
-        method: "POST",
-        body: JSON.stringify({ email, password: rawPassword }),
-      });
-      webToken = res.token;
-      authSpin.stop("Authenticated");
+
+  if (authMethod === "browser") {
+    // Wrap the @clack/prompts API into the WizardPrompter shape the browser
+    // auth module expects (only note + text are used).
+    const prompter = {
+      note: async (msg: string, title?: string) => { note(msg, title); },
+      text: (opts: { message: string; validate?: (v: string) => string | undefined }) => text(opts),
+    } as Parameters<typeof authenticateViaBrowser>[0]["prompter"];
+
+    const result = await authenticateViaBrowser({ serverUrl, prompter });
+    if (!result) {
+      return null;
     }
-  } catch (err) {
-    authSpin.stop("Authentication failed");
-    note(String(err instanceof Error ? err.message : err), "Error");
-    return null;
+    webToken = result.webToken;
+  } else {
+    const authMode = await select({
+      message: "Do you have a coderClawLink account?",
+      options: [
+        { value: "login", label: "Yes — log in" },
+        { value: "register", label: "No  — create a free account" },
+      ],
+    });
+    if (typeof authMode === "symbol") {
+      return null;
+    }
+
+    const emailInput = await text({ message: "Email:" });
+    if (typeof emailInput === "symbol" || !emailInput.trim()) {
+      return null;
+    }
+    const email = emailInput.trim();
+
+    let usernameForReg = "";
+    if (authMode === "register") {
+      const usernameInput = await text({
+        message: "Username:",
+        initialValue: params.defaultInstanceName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      });
+      if (typeof usernameInput === "symbol" || !usernameInput.trim()) {
+        return null;
+      }
+      usernameForReg = usernameInput.trim();
+    }
+
+    const passwordInput = await password({ message: "Password:" });
+    if (typeof passwordInput === "symbol" || !passwordInput.trim()) {
+      return null;
+    }
+    const rawPassword = passwordInput.trim();
+
+    const authSpin = spinner();
+    try {
+      if (authMode === "register") {
+        authSpin.start("Creating account…");
+        const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/register`, {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+            username: usernameForReg,
+            password: rawPassword,
+          }),
+        });
+        webToken = res.token;
+        authSpin.stop("Account created");
+      } else {
+        authSpin.start("Authenticating…");
+        const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/login`, {
+          method: "POST",
+          body: JSON.stringify({ email, password: rawPassword }),
+        });
+        webToken = res.token;
+        authSpin.stop("Authenticated");
+      }
+    } catch (err) {
+      authSpin.stop("Authentication failed");
+      note(String(err instanceof Error ? err.message : err), "Error");
+      return null;
+    }
   }
 
   let tenantId = 0;

@@ -39,7 +39,7 @@ const DIRECT_USER_QUESTION_PATTERN =
   /\b(can you|could you|would you|do you want|which|what|where|when|should i|please provide|need your)\b/i;
 
 const COMPLETION_PATTERN =
-  /\b(all tasks? completed|all work (is|are) complete|everything (is|are) done|implementation complete|task complete|all steps? finished|fully implemented|all set and ready|final answer)\b/i;
+  /\b(all tasks? complete[d]?|all work (is|are) complete|everything (is|are) done|implementation complete|tasks? complete|all steps? finished|fully implemented|all set and ready|final answer)\b/i;
 
 const DEFERRAL_PATTERN =
   /\b(let me|i\s*'ll|i will|next step|going to|check .* first|understand .* first)\b/i;
@@ -119,13 +119,6 @@ export function shouldAutoContinueRun(input: ContinuationPolicyInput): Continuat
     return { shouldContinue: false, reason: "asked_user_question" };
   }
 
-  // If tools were called in the last turn, the agent likely needs to continue
-  // processing results, regardless of any completion-like phrasing.
-  if (input.toolNames.length > 0) {
-    logDebug(`[auto-continue] continue: tools were called (${input.toolNames.join(", ")})`);
-    return { shouldContinue: true, reason: "tools_called" };
-  }
-
   if (COMPLETION_PATTERN.test(lastAssistantText)) {
     logDebug(`[auto-continue] blocked: completion pattern matched`);
     return { shouldContinue: false, reason: "looks_complete" };
@@ -139,6 +132,11 @@ export function shouldAutoContinueRun(input: ContinuationPolicyInput): Continuat
   if (isInvestigationOnly(input.toolNames)) {
     logDebug(`[auto-continue] continue: investigation-only tools`);
     return { shouldContinue: true, reason: "investigation_only_tools" };
+  }
+
+  if (input.toolNames.length > 0) {
+    logDebug(`[auto-continue] continue: tools were called (${input.toolNames.join(", ")})`);
+    return { shouldContinue: true, reason: "tools_called" };
   }
 
   logDebug(

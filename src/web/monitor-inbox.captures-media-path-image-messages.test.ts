@@ -129,6 +129,65 @@ describe("web monitor inbox", () => {
     await listener.close();
   });
 
+  it("honors the text-format flag when writing a log", async () => {
+    const logPath = path.join(os.tmpdir(), `coderclaw-log-test-${crypto.randomUUID()}.log`);
+    setLoggerOverride({ level: "trace", file: logPath, format: "text" });
+
+    const onMessage = vi.fn();
+    const listener = await openMonitor(onMessage);
+    const sock = getSock();
+    const upsert = {
+      type: "notify",
+      messages: [
+        {
+          key: { id: "abc", fromMe: false, remoteJid: "999@s.whatsapp.net" },
+          message: { conversation: "ping" },
+          messageTimestamp: 1_700_000_000,
+          pushName: "Tester",
+        },
+      ],
+    };
+
+    sock.ev.emit("messages.upsert", upsert);
+    await new Promise((resolve) => setImmediate(resolve));
+
+    await vi.waitFor(
+      () => {
+        expect(fsSync.existsSync(logPath)).toBe(true);
+      },
+      { timeout: 2_000, interval: 5 },
+    );
+    const content = fsSync.readFileSync(logPath, "utf-8");
+    // should be plain text, not JSON object
+    expect(content.trim().split("\n")[0]).not.toMatch(/^{/);
+    await listener.close();
+  });
+
+  it("skips creating a file when logging is disabled", async () => {
+    const logPath = path.join(os.tmpdir(), `coderclaw-log-test-${crypto.randomUUID()}.log`);
+    setLoggerOverride({ level: "trace", file: logPath, enabled: false });
+
+    const onMessage = vi.fn();
+    const listener = await openMonitor(onMessage);
+    const sock = getSock();
+    const upsert = {
+      type: "notify",
+      messages: [
+        {
+          key: { id: "xyz", fromMe: false, remoteJid: "222@s.whatsapp.net" },
+          message: { conversation: "hello" },
+          messageTimestamp: 1_700_000_000,
+        },
+      ],
+    };
+
+    sock.ev.emit("messages.upsert", upsert);
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(fsSync.existsSync(logPath)).toBe(false);
+    await listener.close();
+  });
+
   it("includes participant when marking group messages read", async () => {
     const onMessage = vi.fn();
     const listener = await openMonitor(onMessage);

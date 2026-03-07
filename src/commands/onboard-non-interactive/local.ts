@@ -85,6 +85,15 @@ export async function runNonInteractiveOnboardingLocal(params: {
     skipBootstrap: Boolean(nextConfig.agents?.defaults?.skipBootstrap),
   });
 
+  // Ensure .coderclaw/ project directory exists in the workspace
+  const { isCoderClawProject, initializeCoderClawProject } = await import(
+    "../../coderclaw/project-context.js"
+  );
+  if (!(await isCoderClawProject(workspaceDir))) {
+    await initializeCoderClawProject(workspaceDir);
+    runtime.log("Initialised .coderclaw/ project directory");
+  }
+
   await installGatewayDaemonNonInteractive({
     nextConfig,
     opts,

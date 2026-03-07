@@ -12,6 +12,12 @@ export type CoderClawHookMetadata = {
   hookKey?: string;
   emoji?: string;
   homepage?: string;
+  /** Original author / publisher name */
+  author?: string;
+  /** Author homepage or profile URL */
+  authorUrl?: string;
+  /** SPDX license identifier */
+  license?: string;
   /** Events this hook handles (e.g., ["command:new", "session:start"]) */
   events: string[];
   /** Optional export name (default: "default") */

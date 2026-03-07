@@ -193,6 +193,22 @@ export function resetLogger() {
   loggingState.cachedSettings = null;
   loggingState.cachedConsoleSettings = null;
   loggingState.overrideSettings = null;
+  // Notify any registered hooks (e.g. subsystem logger cache clear).
+  for (const hook of resetHooks) {
+    hook();
+  }
+}
+
+// ── Reset hooks ───────────────────────────────────────────────────────────────
+// Allows modules to register cleanup callbacks invoked by `resetLogger()`,
+// without introducing circular imports.
+const resetHooks = new Set<() => void>();
+
+export function onLoggerReset(hook: () => void): () => void {
+  resetHooks.add(hook);
+  return () => {
+    resetHooks.delete(hook);
+  };
 }
 
 export function registerLogTransport(transport: LogTransport): () => void {

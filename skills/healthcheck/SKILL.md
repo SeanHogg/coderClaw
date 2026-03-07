@@ -1,6 +1,8 @@
 ---
 name: healthcheck
 description: Host security hardening and risk-tolerance configuration for CoderClaw deployments. Use when a user asks for security audits, firewall/SSH/update hardening, risk posture, exposure review, CoderClaw cron scheduling for periodic checks, or version status checks on a machine running CoderClaw (laptop, workstation, Pi, VPS).
+author: coderClaw
+author-url: https://coderclaw.ai
 ---
 
 # CoderClaw Host Hardening

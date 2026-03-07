@@ -4,9 +4,13 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { isVerbose, isYes, logVerbose, setVerbose, setYes } from "./globals.js";
-import { logDebug, logError, logInfo, logSuccess, logWarn } from "./logger.js";
 import {
   DEFAULT_LOG_DIR,
+  logDebug,
+  logError,
+  logInfo,
+  logSuccess,
+  logWarn,
   resetLogger,
   setLoggerOverride,
   stripRedundantSubsystemPrefixForConsole,
@@ -91,6 +95,24 @@ describe("logger helpers", () => {
     expect(fs.existsSync(oldPath)).toBe(false);
 
     cleanup(todayPath);
+  });
+
+  it("honors format=text when writing to file", () => {
+    const logPath = pathForTest();
+    cleanup(logPath);
+    setLoggerOverride({ level: "info", file: logPath, format: "text" });
+    logInfo("text-mode");
+    const content = fs.readFileSync(logPath, "utf-8");
+    expect(content.trim().split("\n")[0]).not.toMatch(/^{/);
+    cleanup(logPath);
+  });
+
+  it("does not write any file when logging is disabled", () => {
+    const logPath = pathForTest();
+    cleanup(logPath);
+    setLoggerOverride({ level: "info", file: logPath, enabled: false });
+    logInfo("should-not-appear");
+    expect(fs.existsSync(logPath)).toBe(false);
   });
 });
 

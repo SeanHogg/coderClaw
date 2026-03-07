@@ -81,6 +81,7 @@ export class ClawLinkRelayService {
     executionId?: number;
     taskId?: number;
     sourceType: "task.assign" | "task.broadcast";
+    artifacts?: { skills?: string[]; personas?: string[]; content?: string[] };
   }): void {
     const lines = [
       `[ClawLink ${payload.sourceType}] ${payload.title}`,
@@ -94,6 +95,19 @@ export class ClawLinkRelayService {
     const message = lines.join("\n").trim();
     if (!message) {
       return;
+    }
+
+    // Push assigned artifacts to the gateway for the claw to use
+    if (payload.artifacts) {
+      this.gatewayClient
+        ?.request("artifacts.sync", {
+          artifacts: payload.artifacts,
+          executionId: payload.executionId,
+          taskId: payload.taskId,
+        })
+        .catch((err: unknown) => {
+          logWarn(`[clawlink] artifacts.sync failed: ${String(err)}`);
+        });
     }
 
     this.gatewayClient
@@ -313,6 +327,19 @@ export class ClawLinkRelayService {
         const taskId =
           typeof msg.taskId === "number" && Number.isFinite(msg.taskId) ? msg.taskId : undefined;
 
+        // Extract artifact assignments from the dispatch payload
+        const rawArtifacts =
+          msg.artifacts && typeof msg.artifacts === "object"
+            ? (msg.artifacts as Record<string, unknown>)
+            : undefined;
+        const artifacts = rawArtifacts
+          ? {
+              skills:   Array.isArray(rawArtifacts.skills)   ? (rawArtifacts.skills as string[])   : undefined,
+              personas: Array.isArray(rawArtifacts.personas) ? (rawArtifacts.personas as string[]) : undefined,
+              content:  Array.isArray(rawArtifacts.content)  ? (rawArtifacts.content as string[])  : undefined,
+            }
+          : undefined;
+
         if (!title && !description) {
           logWarn(`[clawlink] received ${type} without task content`);
           break;
@@ -328,6 +355,7 @@ export class ClawLinkRelayService {
           description: description || undefined,
           executionId,
           taskId,
+          artifacts,
         });
         break;
       }

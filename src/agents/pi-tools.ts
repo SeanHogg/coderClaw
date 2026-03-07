@@ -38,6 +38,7 @@ import {
   createSandboxedEditTool,
   createSandboxedReadTool,
   createSandboxedWriteTool,
+  fixMissingRootSeparator,
   normalizeToolParams,
   patchToolSchemaForClaudeCompatibility,
   wrapToolWorkspaceRootGuard,
@@ -155,6 +156,7 @@ export function resolveToolLoopDetectionConfig(params: {
 
 export const __testing = {
   cleanToolSchemaForGemini,
+  fixMissingRootSeparator,
   normalizeToolParams,
   patchToolSchemaForClaudeCompatibility,
   wrapToolParamNormalization,
@@ -318,6 +320,7 @@ export function createCoderClawCodingTools(options?: {
       const wrapped = createCoderClawReadTool(freshReadTool, {
         modelContextWindowTokens: options?.modelContextWindowTokens,
         imageSanitization,
+        root: workspaceRoot,
       });
       return [workspaceOnly ? wrapToolWorkspaceRootGuard(wrapped, workspaceRoot) : wrapped];
     }
@@ -332,6 +335,7 @@ export function createCoderClawCodingTools(options?: {
       const wrapped = wrapToolParamNormalization(
         createWriteTool(workspaceRoot),
         CLAUDE_PARAM_GROUPS.write,
+        workspaceRoot,
       );
       return [workspaceOnly ? wrapToolWorkspaceRootGuard(wrapped, workspaceRoot) : wrapped];
     }
@@ -343,6 +347,7 @@ export function createCoderClawCodingTools(options?: {
       const wrapped = wrapToolParamNormalization(
         createEditTool(workspaceRoot),
         CLAUDE_PARAM_GROUPS.edit,
+        workspaceRoot,
       );
       return [workspaceOnly ? wrapToolWorkspaceRootGuard(wrapped, workspaceRoot) : wrapped];
     }

@@ -4,7 +4,7 @@ import { createInboundDebouncer } from "../../auto-reply/inbound-debounce.js";
 import { formatLocationText } from "../../channels/location.js";
 import { logVerbose, shouldLogVerbose } from "../../globals.js";
 import { recordChannelActivity } from "../../infra/channel-activity.js";
-import { getChildLogger } from "../../logging/logger.js";
+import { getChildLogger } from "../../logging/file.js";
 import { createSubsystemLogger } from "../../logging/subsystem.js";
 import { saveMediaBuffer } from "../../media/store.js";
 import { jidToE164, resolveJidToE164 } from "../../utils.js";

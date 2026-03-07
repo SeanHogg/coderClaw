@@ -1,6 +1,8 @@
 ---
 name: discord
 description: "Discord ops via the message tool (channel=discord)."
+author: coderClaw
+author-url: https://coderclaw.ai
 metadata: { "coderclaw": { "emoji": "🎮", "requires": { "config": ["channels.discord.token"] } } }
 allowed-tools: ["message"]
 ---

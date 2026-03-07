@@ -44,6 +44,8 @@ export function buildSystemdUnit({
     descriptionLine,
     "After=network-online.target",
     "Wants=network-online.target",
+    "StartLimitBurst=5",
+    "StartLimitIntervalSec=120",
     "",
     "[Service]",
     `ExecStart=${execStart}`,

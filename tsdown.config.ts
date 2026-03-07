@@ -7,7 +7,7 @@ const env = {
 // TypeScript is a devDependency used by ast-parser.ts at runtime.
 // Marking it external keeps it as a CJS module loaded by Node, which
 // avoids bundling TypeScript's CJS globals (__filename) into ESM output.
-const external = ["typescript"];
+const external = ["typescript", "tsx"];
 
 // Minify whitespace and syntax for a smaller dist footprint while
 // preserving identifier names so stack traces, plugin discovery, and

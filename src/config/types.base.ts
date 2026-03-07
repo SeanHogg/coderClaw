@@ -125,6 +125,11 @@ export type SessionMaintenanceConfig = {
 };
 
 export type LoggingConfig = {
+  /** Turn off file logging entirely.  Defaults to true when unspecified. */
+  enabled?: boolean;
+  /** Output format for the file log.  "json" keeps the existing JSON-lines
+   * structure; "text" writes a human‑readable line similar to console output. */
+  format?: "json" | "text";
   level?: "silent" | "fatal" | "error" | "warn" | "info" | "debug" | "trace";
   file?: string;
   consoleLevel?: "silent" | "fatal" | "error" | "warn" | "info" | "debug" | "trace";

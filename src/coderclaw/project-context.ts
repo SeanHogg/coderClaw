@@ -1,12 +1,21 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
-import type { ProjectContext, ProjectRules, AgentRole, SessionHandoff } from "./types.js";
+import type {
+  ProjectContext,
+  ProjectRules,
+  AgentRole,
+  SessionHandoff,
+  PersonaAssignment,
+  PersonaPlugin,
+} from "./types.js";
+import { loadPersonasFromDir, PERSONAS_SUBDIR } from "./personas.js";
 
-const CODERCLAW_DIR = ".coderClaw";
+const CODERCLAW_DIR = ".coderclaw";
 const CONTEXT_FILE = "context.yaml";
 const ARCHITECTURE_FILE = "architecture.md";
 const RULES_FILE = "rules.yaml";
+const GOVERNANCE_FILE = "governance.md";
 const WORKSPACE_STATE_FILE = "workspace-state.json";
 const AGENTS_DIR = "agents";
 const SKILLS_DIR = "skills";
@@ -18,10 +27,13 @@ export type CoderClawDirectory = {
   contextPath: string;
   architecturePath: string;
   rulesPath: string;
+  governancePath: string;
   agentsDir: string;
   skillsDir: string;
   memoryDir: string;
   sessionsDir: string;
+  /** Project-scoped persona plugins: .coderClaw/personas/ */
+  personasDir: string;
 };
 
 /**
@@ -34,10 +46,12 @@ export function resolveCoderClawDir(projectRoot: string): CoderClawDirectory {
     contextPath: path.join(root, CONTEXT_FILE),
     architecturePath: path.join(root, ARCHITECTURE_FILE),
     rulesPath: path.join(root, RULES_FILE),
+    governancePath: path.join(root, GOVERNANCE_FILE),
     agentsDir: path.join(root, AGENTS_DIR),
     skillsDir: path.join(root, SKILLS_DIR),
     memoryDir: path.join(root, MEMORY_DIR),
     sessionsDir: path.join(root, SESSIONS_DIR),
+    personasDir: path.join(root, PERSONAS_SUBDIR),
   };
 }
 
@@ -69,6 +83,7 @@ export async function initializeCoderClawProject(
   await fs.mkdir(dir.skillsDir, { recursive: true });
   await fs.mkdir(dir.memoryDir, { recursive: true });
   await fs.mkdir(dir.sessionsDir, { recursive: true });
+  await fs.mkdir(dir.personasDir, { recursive: true });
 
   // Create default context.yaml
   const defaultContext: ProjectContext = {
@@ -124,6 +139,14 @@ This document describes the architectural design and patterns used in this proje
 (To be documented)
 `;
   await fs.writeFile(dir.architecturePath, defaultArchitecture, "utf-8");
+
+  // Create placeholder governance.md for project-level policies
+  const defaultGovernance = `# Governance Rules
+
+Define project governance in Markdown. These rules will be read by agents and
+used to guide decision-making.
+`;
+  await fs.writeFile(dir.governancePath, defaultGovernance, "utf-8");
 
   // Create default rules.yaml
   const defaultRules: ProjectRules = {
@@ -213,6 +236,15 @@ export async function loadProjectRules(projectRoot: string): Promise<ProjectRule
   try {
     const content = await fs.readFile(dir.rulesPath, "utf-8");
     return parseYaml(content) as ProjectRules;
+  } catch {
+    return null;
+  }
+}
+
+export async function loadProjectGovernance(projectRoot: string): Promise<string | null> {
+  const dir = resolveCoderClawDir(projectRoot);
+  try {
+    return await fs.readFile(dir.governancePath, "utf-8");
   } catch {
     return null;
   }
@@ -478,7 +510,7 @@ export async function updateWorkspaceState(
 // ---------------------------------------------------------------------------
 
 /**
- * Append a knowledge entry to .coderClaw/memory/YYYY-MM-DD.md.
+ * Append a knowledge entry to .coderclaw/memory/YYYY-MM-DD.md.
  * Creates the file and directory if they do not exist.
  */
 export async function appendKnowledgeMemory(projectRoot: string, entry: string): Promise<void> {
@@ -487,4 +519,73 @@ export async function appendKnowledgeMemory(projectRoot: string, entry: string):
   const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
   const filePath = path.join(dir.memoryDir, `${date}.md`);
   await fs.appendFile(filePath, entry, "utf-8");
+}
+
+// ---------------------------------------------------------------------------
+// Persona plugin helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Load project-scoped persona plugins from `.coderClaw/personas/`.
+ * Returns an empty array when the directory does not exist.
+ */
+export async function loadProjectPersonaPlugins(projectRoot: string): Promise<PersonaPlugin[]> {
+  const dir = resolveCoderClawDir(projectRoot);
+  return loadPersonasFromDir(dir.personasDir, "project-local");
+}
+
+/**
+ * Read persona assignments from `context.yaml`.
+ * Returns an empty array when none are configured.
+ */
+export async function loadPersonaAssignments(projectRoot: string): Promise<PersonaAssignment[]> {
+  try {
+    const context = await loadProjectContext(projectRoot);
+    return context?.personas?.assignments ?? [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Persist a persona assignment to `context.yaml`.
+ * Merges with existing assignments; replaces any existing entry with the same name.
+ */
+export async function savePersonaAssignment(
+  projectRoot: string,
+  assignment: PersonaAssignment,
+): Promise<void> {
+  const context = await loadProjectContext(projectRoot);
+  if (!context) {
+    return;
+  }
+  const existing = context.personas?.assignments ?? [];
+  const filtered = existing.filter((a) => a.name !== assignment.name);
+  const updated: ProjectContext = {
+    ...context,
+    personas: {
+      assignments: [...filtered, assignment],
+    },
+  };
+  await saveProjectContext(projectRoot, updated);
+}
+
+/**
+ * Remove a persona assignment from `context.yaml`.
+ */
+export async function removePersonaAssignment(
+  projectRoot: string,
+  name: string,
+): Promise<void> {
+  const context = await loadProjectContext(projectRoot);
+  if (!context?.personas?.assignments?.length) {
+    return;
+  }
+  const updated: ProjectContext = {
+    ...context,
+    personas: {
+      assignments: context.personas.assignments.filter((a) => a.name !== name),
+    },
+  };
+  await saveProjectContext(projectRoot, updated);
 }

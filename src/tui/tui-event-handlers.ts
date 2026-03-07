@@ -628,7 +628,10 @@ export function createEventHandlers(context: EventHandlerContext) {
 
       if (role === "user") {
         const text = extractTextFromMessage(evt.message);
-        if (text) {
+        // Only render user messages that originate from OTHER clients (e.g.
+        // relay, history replay).  Messages sent by THIS TUI were already
+        // rendered in sendMessage(); rendering again would duplicate them.
+        if (text && !isLocalRunId?.(evt.runId)) {
           chatLog.addUser?.(text);
         }
         noteFinalizedRun(evt.runId);

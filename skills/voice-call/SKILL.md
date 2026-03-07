@@ -1,6 +1,8 @@
 ---
 name: voice-call
 description: Start voice calls via the CoderClaw voice-call plugin.
+author: coderClaw
+author-url: https://coderclaw.ai
 metadata:
   {
     "coderclaw":

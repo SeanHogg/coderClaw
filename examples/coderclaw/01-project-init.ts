@@ -57,6 +57,7 @@ async function main() {
   console.log("  - context.yaml (project metadata)");
   console.log("  - architecture.md (design documentation)");
   console.log("  - rules.yaml (coding standards)");
+  console.log("  - governance.md (project governance rules)");
   console.log("  - agents/ (custom agent roles)");
   console.log("  - skills/ (project-specific skills)");
   console.log("  - memory/ (knowledge base)");
