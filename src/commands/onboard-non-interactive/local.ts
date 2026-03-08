@@ -86,9 +86,8 @@ export async function runNonInteractiveOnboardingLocal(params: {
   });
 
   // Ensure .coderclaw/ project directory exists in the workspace
-  const { isCoderClawProject, initializeCoderClawProject } = await import(
-    "../../coderclaw/project-context.js"
-  );
+  const { isCoderClawProject, initializeCoderClawProject } =
+    await import("../../coderclaw/project-context.js");
   if (!(await isCoderClawProject(workspaceDir))) {
     await initializeCoderClawProject(workspaceDir);
     runtime.log("Initialised .coderclaw/ project directory");

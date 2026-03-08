@@ -1,3 +1,4 @@
+import { danger, info, logVerboseConsole, success, warn } from "./globals.js";
 import type { ConsoleLoggerSettings, ConsoleStyle } from "./logging/console.js";
 import {
   enableConsoleCapture,
@@ -9,9 +10,6 @@ import {
   setConsoleTimestampPrefix,
   shouldLogSubsystemToConsole,
 } from "./logging/console.js";
-import { danger, info, logVerboseConsole, success, warn } from "./globals.js";
-import type { LogLevel } from "./logging/levels.js";
-import { ALLOWED_LOG_LEVELS, levelToMinLevel, normalizeLogLevel } from "./logging/levels.js";
 import type { LoggerResolvedSettings, LoggerSettings, PinoLikeLogger } from "./logging/file.js";
 import {
   DEFAULT_LOG_DIR,
@@ -25,6 +23,8 @@ import {
   setLoggerOverride,
   toPinoLikeLogger,
 } from "./logging/file.js";
+import type { LogLevel } from "./logging/levels.js";
+import { ALLOWED_LOG_LEVELS, levelToMinLevel, normalizeLogLevel } from "./logging/levels.js";
 import type { SubsystemLogger } from "./logging/subsystem.js";
 import {
   createSubsystemLogger,

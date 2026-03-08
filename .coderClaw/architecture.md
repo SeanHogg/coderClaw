@@ -19,6 +19,7 @@ Cloudflare Worker is stateless and can be restarted/replaced at any time.
 ## System Overview
 
 CoderClaw is a self-hosted AI coding agent gateway. Core capabilities:
+
 - Multi-agent orchestration (dependency DAG, 6 workflow types)
 - 7 built-in roles with personas and output contracts
 - Persona plugin registry (marketplace + coderClawLink assignment)
@@ -57,6 +58,7 @@ skills/                      53 bundled SKILL.md definitions
 ### Core Type Definitions — `src/coderclaw/types.ts`
 
 All domain types. Key types added in this sprint:
+
 - `AgentPersona` — voice, perspective, decisionStyle
 - `AgentOutputFormat` — structure, requiredSections, outputPrefix
 - `TaskHandoff` — structured inter-agent context (workflowId, keyFindings, decisions)
@@ -70,17 +72,18 @@ All domain types. Key types added in this sprint:
 
 7 built-in roles, each with `persona` + `outputFormat`:
 
-| Role | outputPrefix | Voice |
-|------|-------------|-------|
-| code-creator | CODE: | pragmatic and quality-driven |
-| code-reviewer | REVIEW: | critical yet constructive |
-| test-generator | TESTS: | systematic and exhaustive |
-| bug-analyzer | BUG-FIX: | investigative and precise |
-| refactor-agent | REFACTOR: | disciplined and incremental |
-| documentation-agent | DOCS: | clear, concise, audience-aware |
-| architecture-advisor | ARCH: | strategic and pragmatic |
+| Role                 | outputPrefix | Voice                          |
+| -------------------- | ------------ | ------------------------------ |
+| code-creator         | CODE:        | pragmatic and quality-driven   |
+| code-reviewer        | REVIEW:      | critical yet constructive      |
+| test-generator       | TESTS:       | systematic and exhaustive      |
+| bug-analyzer         | BUG-FIX:     | investigative and precise      |
+| refactor-agent       | REFACTOR:    | disciplined and incremental    |
+| documentation-agent  | DOCS:        | clear, concise, audience-aware |
+| architecture-advisor | ARCH:        | strategic and pragmatic        |
 
 `findAgentRole(name)` resolution order:
+
 1. Built-ins (always available, cannot be overridden)
 2. `globalCustomRoles` — `.coderClaw/agents/*.yaml`, registered via `registerCustomRoles()`
 3. `globalPersonaRegistry.resolve(name)` — marketplace / coderClawLink personas
@@ -98,6 +101,7 @@ All domain types. Key types added in this sprint:
 - `PERSONAS_SUBDIR` = `"personas"` (relative to `.coderClaw/`)
 
 Loading precedence (highest wins):
+
 ```
 clawlink-assigned (5) > clawhub (4) > project-local (3) > user-global (2) > builtin (1)
 ```
@@ -122,6 +126,7 @@ clawlink-assigned (5) > clawhub (4) > project-local (3) > user-global (2) > buil
 ### Sub-Agent Spawn — `src/agents/subagent-spawn.ts`
 
 `spawnSubagentDirect(params)` — executes a sub-agent in a new session:
+
 1. Validates depth against `maxSpawnDepth`
 2. Resolves model + thinking from `roleConfig`
 3. Calls `buildPersonaSystemBlock(roleConfig)` — encodes persona into child system prompt
@@ -147,6 +152,7 @@ clawlink-assigned (5) > clawhub (4) > project-local (3) > user-global (2) > buil
 `createCoderClawLlmLocalStreamFn(opts)` — returns a `StreamFn`:
 
 **Step 0 — Syscheck (once per factory instance, lazy):**
+
 ```
 checkLocalBrainRequirements({ cacheDir, modelId })
   → os.freemem() < 2 GB  → external fallback
@@ -154,13 +160,14 @@ checkLocalBrainRequirements({ cacheDir, modelId })
   → eligible: true → proceed with SmolLM2
 ```
 
-**Step 1 — Load memory:**  `loadCoderClawMemory(workspaceDir)` — SOUL.md, USER.md,
-  MEMORY.md (omitted in shared contexts), AGENTS.md, + today's + yesterday's daily notes.
+**Step 1 — Load memory:** `loadCoderClawMemory(workspaceDir)` — SOUL.md, USER.md,
+MEMORY.md (omitted in shared contexts), AGENTS.md, + today's + yesterday's daily notes.
 
 **Step 2 — RAG:** `retrieveRelevantContext({ query, workspaceDir })` — TF-IDF score
-  over source files, returns top-3 excerpts.
+over source files, returns top-3 excerpts.
 
 **External brain path (when syscheck fails):**
+
 ```
 brainSystem = [context.systemPrompt, memoryBlock, ragContext, BRAIN_SYSTEM_PROMPT]
 callExecutionLlm({ config, messages, maxTokens, temperature })
@@ -168,6 +175,7 @@ callExecutionLlm({ config, messages, maxTokens, temperature })
 ```
 
 **Local brain path:**
+
 ```
 brainSystem = [context.systemPrompt, memoryBlock, ragContext, BRAIN_SYSTEM_PROMPT]
              ↑ context.systemPrompt contains "--- Agent Persona ---" block
@@ -194,6 +202,7 @@ knows its role identity — on both the direct path and the DELEGATE path.
 `CoderClawDirectory` now includes `personasDir: .coderClaw/personas/`
 
 New functions:
+
 - `loadProjectPersonaPlugins(projectRoot)` — loads `.coderClaw/personas/*.yaml`
 - `loadPersonaAssignments(projectRoot)` — reads `context.yaml` → `personas.assignments`
 - `savePersonaAssignment(projectRoot, assignment)` — merges into `context.yaml`
@@ -203,6 +212,7 @@ New functions:
 ### Gateway Bootstrap — `src/gateway/server.impl.ts`
 
 PersonaRegistry bootstrap (runs at startup, after custom role loading):
+
 ```
 globalPersonaRegistry.registerBuiltins(getBuiltInAgentRoles())
 globalPersonaRegistry.loadFromDir(USER_PERSONAS_DIR, "user-global")
@@ -245,61 +255,63 @@ first request arrives:
   eligible=false → localBrainEligible=false → external LLM for all subsequent requests
                    logInfo("[coderclawllm] <reason>")
 ```
+
 Human Developer (TUI / IDE / messaging channel)
-        │
-        ▼
+│
+▼
 ┌─────────────────────────────────────────┐
-│            CoderClaw Gateway             │
-│         ws://127.0.0.1:18789            │
-│                                          │
-│  ┌──────────┐  ┌────────────────────┐   │
-│  │ Sessions  │  │ Agent Dispatcher   │   │
-│  │ (in-mem)  │  │ spawnSubagentDirect│   │
-│  └──────────┘  └────────────────────┘   │
-│  ┌──────────────────────────────────┐   │
-│  │ Tool Registry                    │   │
-│  │ create|edit|view|bash|grep|glob  │   │
-│  │ + coderclaw tools (orchestrate,  │   │
-│  │   workflow_status, code_analysis, │   │
-│  │   project_knowledge, git_history) │   │
-│  └──────────────────────────────────┘   │
-│  ┌──────────────────────────────────┐   │
-│  │ Extension System                 │   │
-│  │ diagnostics-otel, memory-core,   │   │
-│  │ memory-lancedb, channels, etc.   │   │
-│  └──────────────────────────────────┘   │
-│  ┌──────────────────────────────────┐   │
-│  │ Model Providers                  │   │
-│  │ Anthropic, OpenAI, Google,       │   │
-│  │ Ollama, node-llama-cpp,          │   │
-│  │ coderclawLLM (planned)           │   │
-│  └──────────────────────────────────┘   │
+│ CoderClaw Gateway │
+│ ws://127.0.0.1:18789 │
+│ │
+│ ┌──────────┐ ┌────────────────────┐ │
+│ │ Sessions │ │ Agent Dispatcher │ │
+│ │ (in-mem) │ │ spawnSubagentDirect│ │
+│ └──────────┘ └────────────────────┘ │
+│ ┌──────────────────────────────────┐ │
+│ │ Tool Registry │ │
+│ │ create|edit|view|bash|grep|glob │ │
+│ │ + coderclaw tools (orchestrate, │ │
+│ │ workflow_status, code_analysis, │ │
+│ │ project_knowledge, git_history) │ │
+│ └──────────────────────────────────┘ │
+│ ┌──────────────────────────────────┐ │
+│ │ Extension System │ │
+│ │ diagnostics-otel, memory-core, │ │
+│ │ memory-lancedb, channels, etc. │ │
+│ └──────────────────────────────────┘ │
+│ ┌──────────────────────────────────┐ │
+│ │ Model Providers │ │
+│ │ Anthropic, OpenAI, Google, │ │
+│ │ Ollama, node-llama-cpp, │ │
+│ │ coderclawLLM (planned) │ │
+│ └──────────────────────────────────┘ │
 └─────────────┬───────────────────────────┘
-              │
-              ▼
+│
+▼
 ┌─────────────────────────────────────────┐
-│  ClawLinkTransportAdapter (HTTP)        │
-│  → POST /api/runtime/executions         │
-│  → GET  /api/runtime/executions/:id     │
-│                                          │
-│  ClawLinkRelayService (WS)              │
-│  → wss://.../api/claws/:id/upstream     │
-│  → bridges local gateway ↔ ClawRelayDO  │
-│  → PATCH .../heartbeat every 5 min      │
-│                                          │
-│  ClawLinkDirectorySync (HTTP)           │
-│  → PUT /api/claws/:id/directories/sync  │
-│  → one-way upload of .coderClaw/ files  │
+│ ClawLinkTransportAdapter (HTTP) │
+│ → POST /api/runtime/executions │
+│ → GET /api/runtime/executions/:id │
+│ │
+│ ClawLinkRelayService (WS) │
+│ → wss://.../api/claws/:id/upstream │
+│ → bridges local gateway ↔ ClawRelayDO │
+│ → PATCH .../heartbeat every 5 min │
+│ │
+│ ClawLinkDirectorySync (HTTP) │
+│ → PUT /api/claws/:id/directories/sync │
+│ → one-way upload of .coderClaw/ files │
 └─────────────┬───────────────────────────┘
-              │
-              ▼
+│
+▼
 ┌─────────────────────────────────────────┐
-│        coderClawLink (Cloud)            │
-│  Hono on Cloudflare Workers             │
-│  Drizzle ORM → Postgres (Hyperdrive)    │
-│  ClawRelayDO (Durable Object, WS relay) │
-│  SPA (React) for management             │
+│ coderClawLink (Cloud) │
+│ Hono on Cloudflare Workers │
+│ Drizzle ORM → Postgres (Hyperdrive) │
+│ ClawRelayDO (Durable Object, WS relay) │
+│ SPA (React) for management │
 └─────────────────────────────────────────┘
+
 ```
 
 ---
@@ -446,6 +458,7 @@ Human Developer (TUI / IDE / messaging channel)
 ## Data Flow: Agent Task Execution
 
 ```
+
 1. User sends message via TUI / WS / channel
 2. Gateway routes to active session
 3. Session dispatches to agent (via spawnSubagentDirect)
@@ -454,17 +467,20 @@ Human Developer (TUI / IDE / messaging channel)
 6. Tool results streamed back to session
 7. Agent produces response
 8. Response rendered in TUI / forwarded to channel
+
 ```
 
 ### coderClawLink Persona Assignment
 
 ```
+
 operator assigns persona in portal
-  → PUT/PATCH .coderClaw/context.yaml (via directory sync or direct API)
-  → personas.assignments updated
-  → on next gateway startup: applyAssignments() activates matching plugins
-  → plugin.active = true for assigned names
-  → findAgentRole("assigned-name") → globalPersonaRegistry.resolve() → plugin
+→ PUT/PATCH .coderClaw/context.yaml (via directory sync or direct API)
+→ personas.assignments updated
+→ on next gateway startup: applyAssignments() activates matching plugins
+→ plugin.active = true for assigned names
+→ findAgentRole("assigned-name") → globalPersonaRegistry.resolve() → plugin
+
 ```
 
 ---
@@ -503,3 +519,4 @@ operator assigns persona in portal
 | VS Code extension | Sidebar + inline diff decoration |
 | Tab autocomplete / FIM proxy | `/fim` endpoint |
 | Session auto-checkpoint on exit | Write handoff on SIGTERM/exit |
+```

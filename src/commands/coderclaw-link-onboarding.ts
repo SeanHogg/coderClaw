@@ -118,8 +118,16 @@ export async function promptCoderClawLinkOnboarding(params: {
     ? await select({
         message: "How would you like to authenticate?",
         options: [
-          { value: "browser", label: "Open browser  (recommended)", hint: "login or register in your browser" },
-          { value: "terminal", label: "Type here", hint: "enter email & password in this terminal" },
+          {
+            value: "browser",
+            label: "Open browser  (recommended)",
+            hint: "login or register in your browser",
+          },
+          {
+            value: "terminal",
+            label: "Type here",
+            hint: "enter email & password in this terminal",
+          },
         ],
       })
     : "terminal";
@@ -133,8 +141,16 @@ export async function promptCoderClawLinkOnboarding(params: {
     // Wrap the @clack/prompts API into the WizardPrompter shape the browser
     // auth module expects (only note + text are used).
     const prompter = {
-      note: async (msg: string, title?: string) => { note(msg, title); },
-      text: (opts: { message: string; validate?: (v: string) => string | undefined }) => text(opts),
+      note: async (msg: string, title?: string) => {
+        note(msg, title);
+      },
+      text: (opts: { message: string; validate?: (v: string) => string | undefined }) =>
+        text({
+          ...opts,
+          validate: opts.validate
+            ? (value: string | undefined) => opts.validate!(value ?? "")
+            : undefined,
+        }),
     } as Parameters<typeof authenticateViaBrowser>[0]["prompter"];
 
     const result = await authenticateViaBrowser({ serverUrl, prompter });

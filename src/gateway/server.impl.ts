@@ -12,6 +12,7 @@ import { type ChannelId, listChannelPlugins } from "../channels/plugins/index.js
 import { formatCliCommand } from "../cli/command-format.js";
 import { createDefaultDeps } from "../cli/deps.js";
 import { registerCustomRoles, getBuiltInAgentRoles } from "../coderclaw/agent-roles.js";
+import { globalPersonaRegistry, USER_PERSONAS_DIR } from "../coderclaw/personas.js";
 import {
   initializeCoderClawProject,
   isCoderClawProject,
@@ -19,7 +20,6 @@ import {
   loadPersonaAssignments,
   resolveCoderClawDir,
 } from "../coderclaw/project-context.js";
-import { globalPersonaRegistry, USER_PERSONAS_DIR } from "../coderclaw/personas.js";
 import {
   CONFIG_PATH,
   isNixMode,
@@ -599,7 +599,7 @@ export async function startGatewayServer(
   // build context object early so we can later populate configReloader without
   // referencing it before it exists.  the handlers may access this object after
   // we assign the real reloader.
-  const gatewayContext: any = {
+  const gatewayContext: Record<string, unknown> = {
     deps,
     cron,
     cronStorePath,

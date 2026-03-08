@@ -2,8 +2,8 @@
  * Developer-centric agent role definitions for coderClaw
  */
 
-import type { AgentRole } from "./types.js";
 import { globalPersonaRegistry } from "./personas.js";
+import type { AgentRole } from "./types.js";
 
 // Registry for custom agent roles loaded from .coderClaw/agents/
 let globalCustomRoles: AgentRole[] = [];
@@ -92,7 +92,8 @@ Provide specific, actionable feedback with examples when possible.`,
   persona: {
     voice: "critical yet constructive",
     perspective: "views all code as a future maintenance burden — is this defensible at 2 AM?",
-    decisionStyle: "thorough: surface all issues, ranked by severity (BLOCKER / IMPORTANT / SUGGESTION)",
+    decisionStyle:
+      "thorough: surface all issues, ranked by severity (BLOCKER / IMPORTANT / SUGGESTION)",
   },
   outputFormat: {
     structure: "markdown",
@@ -264,7 +265,8 @@ Documentation Principles:
 Follow the project's documentation format and style guide.`,
   persona: {
     voice: "clear, concise, and audience-aware",
-    perspective: "good docs are the first line of support — they must answer the question before it's asked",
+    perspective:
+      "good docs are the first line of support — they must answer the question before it's asked",
     decisionStyle: "reader-first: if a newcomer can't understand it, rewrite it",
   },
   outputFormat: {
@@ -305,8 +307,10 @@ Focus Areas:
 Provide actionable recommendations with trade-off analysis.`,
   persona: {
     voice: "strategic and pragmatic",
-    perspective: "architecture is the set of decisions that are hardest to reverse — choose deliberately",
-    decisionStyle: "trade-off oriented: always show the cost of each option, recommend with rationale",
+    perspective:
+      "architecture is the set of decisions that are hardest to reverse — choose deliberately",
+    decisionStyle:
+      "trade-off oriented: always show the cost of each option, recommend with rationale",
   },
   outputFormat: {
     structure: "markdown",
@@ -349,11 +353,11 @@ export function findAgentRole(
 ): AgentRole | null {
   // 1. Check built-ins first (they take precedence)
   const builtin = getBuiltInAgentRoles().find((role) => role.name === name);
-  if (builtin) return builtin;
+  if (builtin) {return builtin;}
 
   // 2. Check manually registered custom roles (.coderClaw/agents/)
   const custom = customRoles.find((role) => role.name === name);
-  if (custom) return custom;
+  if (custom) {return custom;}
 
   // 3. Delegate to PersonaRegistry (marketplace / coderClawLink / personas dirs)
   return globalPersonaRegistry.resolve(name);

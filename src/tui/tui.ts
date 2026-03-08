@@ -904,7 +904,9 @@ export async function runTui(opts: TuiOptions) {
     setConnectionStatus(`gateway disconnected: ${reasonLabel}`, 5000);
     setActivityStatus("idle");
     if (isFirstFailure) {
-      chatLog.addSystem("Gateway not reachable. Type /setup or /onboard to run the setup wizard, or /gateway restart to restart the gateway.");
+      chatLog.addSystem(
+        "Gateway not reachable. Type /setup or /onboard to run the setup wizard, or /gateway restart to restart the gateway.",
+      );
     }
     updateFooter();
     tui.requestRender();

@@ -1,13 +1,13 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import type { Component, TUI } from "@mariozechner/pi-tui";
+import { isModelCached } from "../agents/coderclawllm-syscheck.js";
+import { downloadCoderClawLlmModel } from "../agents/transformers-stream.js";
 import {
   formatThinkingLevels,
   normalizeUsageDisplay,
   resolveResponseUsageMode,
 } from "../auto-reply/thinking.js";
-import type { CoderClawConfig } from "../config/types.js";
-import { loadConfig, writeConfigFile } from "../config/config.js";
 import {
   initializeCoderClawProject,
   loadProjectContext,
@@ -24,12 +24,6 @@ import {
   getStagedEdits,
   hasStagedEdits,
 } from "../coderclaw/staged-edits.js";
-import type { SessionsPatchResult } from "../gateway/protocol/index.js";
-import { syncCoderClawDirectoryWithMetaUpdate } from "../infra/clawlink-directory-sync.js";
-import { readSharedEnvVar } from "../infra/env-file.js";
-import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
-import { isModelCached } from "../agents/coderclawllm-syscheck.js";
-import { downloadCoderClawLlmModel } from "../agents/transformers-stream.js";
 import {
   AMYGDALA_MODEL_ID,
   AMYGDALA_DTYPE,
@@ -39,6 +33,12 @@ import {
   defaultCacheDir,
   applyTransformersProviderConfig,
 } from "../commands/auth-choice.apply.transformers.js";
+import { loadConfig, writeConfigFile } from "../config/config.js";
+import type { CoderClawConfig } from "../config/types.js";
+import type { SessionsPatchResult } from "../gateway/protocol/index.js";
+import { syncCoderClawDirectoryWithMetaUpdate } from "../infra/clawlink-directory-sync.js";
+import { readSharedEnvVar } from "../infra/env-file.js";
+import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
 import { logDebug, logWarn } from "../logger.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import { helpText, parseCommand } from "./commands.js";
@@ -468,16 +468,16 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           const enabled = value === "on";
           state.loggingEnabled = enabled;
           // persist change asynchronously
-          (async () => {
+          void (async () => {
             try {
               const cfg = loadConfig();
               const updated: CoderClawConfig = {
                 ...cfg,
-                logging: { ...(cfg.logging ?? {}), enabled },
+                logging: { ...cfg.logging, enabled },
               };
               await writeConfigFile(updated);
               if (context.config) {
-                context.config.logging = { ...(context.config.logging ?? {}), enabled };
+                context.config.logging = { ...context.config.logging, enabled };
               }
             } catch (err) {
               chatLog.addSystem(
@@ -980,13 +980,13 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           const { accepted, failed } = await acceptAllEdits();
           const lines: string[] = [];
           if (accepted.length > 0)
-            lines.push(
+            {lines.push(
               `✅ Applied ${accepted.length} change(s):\n${accepted.map((f) => `  ${f}`).join("\n")}`,
-            );
+            );}
           if (failed.length > 0)
-            lines.push(
+            {lines.push(
               `❌ Failed:\n${failed.map((f) => `  ${f.filePath}: ${f.error}`).join("\n")}`,
-            );
+            );}
           chatLog.addSystem(lines.join("\n\n") || "Done.");
         } else {
           const result = await acceptEdit(target);
@@ -1028,7 +1028,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         // Status (no args)
         if (!action) {
           const cfg = loadConfig();
-          const enabled = cfg.localBrain?.enabled !== false && Boolean(cfg.models?.providers?.["coderclawllm-local"]);
+          const enabled =
+            cfg.localBrain?.enabled !== false &&
+            Boolean(cfg.models?.providers?.["coderclawllm-local"]);
           const amygdala = cfg.localBrain?.models?.amygdala?.modelId ?? "(not configured)";
           const hippocampus = cfg.localBrain?.models?.hippocampus?.modelId ?? "(not configured)";
           chatLog.addSystem(
@@ -1055,16 +1057,19 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             let modelPatch: Record<string, unknown> = {};
             if (currentPrimary?.startsWith(localPrefix)) {
               const newPrimary = fallbacks.find((f) => !f.startsWith(localPrefix));
-              const newFallbacks = fallbacks.filter((f) => f !== newPrimary && !f.startsWith(localPrefix));
+              const newFallbacks = fallbacks.filter(
+                (f) => f !== newPrimary && !f.startsWith(localPrefix),
+              );
               if (newPrimary) {
                 modelPatch = {
                   agents: {
                     ...cfg.agents,
                     defaults: {
                       ...cfg.agents?.defaults,
-                      model: newFallbacks.length > 0
-                        ? { primary: newPrimary, fallbacks: newFallbacks }
-                        : { primary: newPrimary },
+                      model:
+                        newFallbacks.length > 0
+                          ? { primary: newPrimary, fallbacks: newFallbacks }
+                          : { primary: newPrimary },
                     },
                   },
                 };
@@ -1083,7 +1088,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             chatLog.addSystem("The cortex (your configured LLM) will handle all requests.");
             updateFooter?.();
           } catch (err) {
-            chatLog.addSystem(`Failed to update config: ${err instanceof Error ? err.message : String(err)}`);
+            chatLog.addSystem(
+              `Failed to update config: ${err instanceof Error ? err.message : String(err)}`,
+            );
           }
           break;
         }
@@ -1125,12 +1132,16 @@ export function createCommandHandlers(context: CommandHandlerContext) {
                 chatLog.addSystem("Amygdala downloaded.");
               } catch (err) {
                 setActivityStatus("");
-                chatLog.addSystem(`Amygdala download failed: ${err instanceof Error ? err.message : String(err)}`);
+                chatLog.addSystem(
+                  `Amygdala download failed: ${err instanceof Error ? err.message : String(err)}`,
+                );
               }
             }
 
             if (!hippocampusCached) {
-              chatLog.addSystem(`Downloading hippocampus (${hippocampusModelId}, ${hippocampusDtype})…`);
+              chatLog.addSystem(
+                `Downloading hippocampus (${hippocampusModelId}, ${hippocampusDtype})…`,
+              );
               tui.requestRender();
               try {
                 await downloadCoderClawLlmModel({
@@ -1146,7 +1157,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
                 chatLog.addSystem("Hippocampus downloaded.");
               } catch (err) {
                 setActivityStatus("");
-                chatLog.addSystem(`Hippocampus download failed: ${err instanceof Error ? err.message : String(err)}`);
+                chatLog.addSystem(
+                  `Hippocampus download failed: ${err instanceof Error ? err.message : String(err)}`,
+                );
               }
             }
 
@@ -1154,8 +1167,12 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             const hasProvider = Boolean(cfg.models?.providers?.["coderclawllm-local"]);
             if (!hasProvider || !amygdalaCached || !hippocampusCached) {
               cfg = applyTransformersProviderConfig(
-                cfg, amygdalaModelId, amygdalaDtype,
-                hippocampusModelId, hippocampusDtype, cacheDir,
+                cfg,
+                amygdalaModelId,
+                amygdalaDtype,
+                hippocampusModelId,
+                hippocampusDtype,
+                cacheDir,
               );
             }
 
@@ -1175,7 +1192,10 @@ export function createCommandHandlers(context: CommandHandlerContext) {
                     ...cfg.agents?.defaults,
                     model: {
                       primary: localModelKey,
-                      fallbacks: [existingPrimary, ...existingFallbacks.filter((f) => f !== localModelKey)],
+                      fallbacks: [
+                        existingPrimary,
+                        ...existingFallbacks.filter((f) => f !== localModelKey),
+                      ],
                     },
                   },
                 },
@@ -1214,7 +1234,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             chatLog.addSystem("Local brain enabled.");
             updateFooter?.();
           } catch (err) {
-            chatLog.addSystem(`Failed to enable local brain: ${err instanceof Error ? err.message : String(err)}`);
+            chatLog.addSystem(
+              `Failed to enable local brain: ${err instanceof Error ? err.message : String(err)}`,
+            );
           }
           break;
         }
@@ -1254,7 +1276,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             chatLog.addSystem("Run /localbrain on to re-initialize with current defaults.");
             updateFooter?.();
           } catch (err) {
-            chatLog.addSystem(`Failed to reset local brain config: ${err instanceof Error ? err.message : String(err)}`);
+            chatLog.addSystem(
+              `Failed to reset local brain config: ${err instanceof Error ? err.message : String(err)}`,
+            );
           }
           break;
         }

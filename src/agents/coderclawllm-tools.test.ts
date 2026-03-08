@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   extractCodeBlocks,
   formatToolResults,
@@ -141,19 +141,13 @@ describe("executeToolCall — path traversal protection", () => {
 
   it("greps source files inside the workspace", async () => {
     // grep_files only scans source file extensions (.ts, .tsx, .js, .jsx, .md, .json)
-    const result = await executeToolCall(
-      { tool: "grep_files", pattern: "hello" },
-      tmpDir,
-    );
+    const result = await executeToolCall({ tool: "grep_files", pattern: "hello" }, tmpDir);
     expect(result.output).toContain("hello.ts");
   });
 
   it("does not grep non-source files (.txt)", async () => {
     // hello.txt has content "hello world" but .txt is not a scanned extension
-    const result = await executeToolCall(
-      { tool: "grep_files", pattern: "hello world" },
-      tmpDir,
-    );
+    const result = await executeToolCall({ tool: "grep_files", pattern: "hello world" }, tmpDir);
     // The .ts file contains "// hello world" so it will match; the .txt will not appear as path
     expect(result.output).not.toMatch(/hello\.txt/);
   });

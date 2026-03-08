@@ -156,7 +156,7 @@ export class PersonaRegistry {
 
   /** All registered personas, sorted by name. */
   listAll(): PersonaPlugin[] {
-    return Array.from(this.byName.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return Array.from(this.byName.values()).toSorted((a, b) => a.name.localeCompare(b.name));
   }
 
   /** Only active (assigned) personas. */
@@ -181,7 +181,7 @@ function metaStr(
   field: keyof NonNullable<PersonaPlugin["pluginMetadata"]>,
 ): string | undefined {
   const fromMeta = pluginMeta?.[field];
-  if (typeof fromMeta === "string") return fromMeta;
+  if (typeof fromMeta === "string") {return fromMeta;}
   const fromRaw = raw[field];
   return typeof fromRaw === "string" ? fromRaw : undefined;
 }
@@ -227,7 +227,7 @@ export async function loadPersonaFromFile(
     ) as PersonaPlugin["pluginMetadata"];
 
     const plugin: PersonaPlugin = {
-      name: raw.name as string,
+      name: raw.name,
       description: typeof raw.description === "string" ? raw.description : "",
       capabilities: Array.isArray(raw.capabilities) ? (raw.capabilities as string[]) : [],
       tools: Array.isArray(raw.tools) ? (raw.tools as string[]) : [],
@@ -299,7 +299,9 @@ export function buildPersonaSystemBlock(role: AgentRole): string {
   const lines: string[] = [];
 
   const hasPersona = Boolean(role.persona);
-  const hasFormat = Boolean(role.outputFormat?.requiredSections?.length || role.outputFormat?.outputPrefix);
+  const hasFormat = Boolean(
+    role.outputFormat?.requiredSections?.length || role.outputFormat?.outputPrefix,
+  );
   const hasConstraints = Boolean(role.constraints?.length);
 
   if (!hasPersona && !hasFormat && !hasConstraints) {

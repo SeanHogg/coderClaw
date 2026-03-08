@@ -136,7 +136,7 @@ export const systemHandlers: GatewayRequestHandlers = {
   },
   "config.reload": async ({ respond, context }) => {
     // This will be available after we add configReloader to context
-    const configReloader = (context as any).configReloader;
+    const configReloader = (context as { configReloader?: { trigger: () => Promise<void> } }).configReloader;
     if (!configReloader?.trigger) {
       respond(
         false,
@@ -152,7 +152,7 @@ export const systemHandlers: GatewayRequestHandlers = {
       respond(false, undefined, errorShape(ErrorCodes.INTERNAL_ERROR, String(err)));
     }
   },
-  "skills.reload": async ({ respond, context }) => {
+  "skills.reload": async ({ respond }) => {
     // We need to export bumpSkillsSnapshotVersion and call it
     const { bumpSkillsSnapshotVersion } = await import("../../agents/skills/refresh.js");
     bumpSkillsSnapshotVersion({ reason: "manual" });

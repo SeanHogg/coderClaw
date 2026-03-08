@@ -1,9 +1,9 @@
 /**
  * ClawLink transport adapter
  *
-* Connects CoderClaw's orchestration engine to Builderforce (api.builderforce.ai)
-* over its HTTP runtime API. Both sides share the same transport abstraction
-* contract, so CoderClaw can delegate task execution to Builderforce.
+ * Connects CoderClaw's orchestration engine to Builderforce (api.builderforce.ai)
+ * over its HTTP runtime API. Both sides share the same transport abstraction
+ * contract, so CoderClaw can delegate task execution to Builderforce.
  * seamlessly — local agents and remote ClawLink agents are interchangeable.
  *
  * Builderforce API surface used here:
@@ -190,17 +190,17 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
    */
   async fetchNextQueuedTask(): Promise<TaskState | null> {
     try {
-      const res = await this.post<{ task: { id: string; status?: string; projectId?: string; priority?: string } | null }>(
-        `${this.baseUrl}/api/tasks/next`,
-        null,
-        "POST",
-      );
-      if (!res || !res.task) return null;
+      const res = await this.post<{
+        task: { id: string; status?: string; projectId?: string; priority?: string } | null;
+      }>(`${this.baseUrl}/api/tasks/next`, null, "POST");
+      if (!res || !res.task) {return null;}
       const t = res.task;
       return {
         id: t.id,
         status: (t.status as TaskStatus) ?? "pending",
         progress: 0,
+        description: `Task ${t.id}`,
+        createdAt: new Date(),
         metadata: { projectId: t.projectId, priority: t.priority },
         sessionId: undefined,
       };

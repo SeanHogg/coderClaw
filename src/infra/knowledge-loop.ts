@@ -47,15 +47,15 @@ export function deriveActivitySummary(params: {
 
   const isOrchestration = toolSet.has("orchestrate") || toolSet.has("workflow_status");
 
-  if (isOrchestration) return "Multi-agent workflow execution";
-  if (isReview) return "Code review / analysis";
-  if (isTest && hasCreate) return "Test suite created";
-  if (isTest && hasEdit) return "Tests updated";
-  if (isAnalysis) return "Codebase exploration / read-only analysis";
-  if (hasCreate && hasEdit) return "Feature implementation: new files + edits";
-  if (hasCreate) return `New file(s) created: ${created.length}`;
-  if (hasEdit) return `Code modifications: ${edited.length} file(s) changed`;
-  if (tools.length > 0) return "Agent activity (no file changes)";
+  if (isOrchestration) {return "Multi-agent workflow execution";}
+  if (isReview) {return "Code review / analysis";}
+  if (isTest && hasCreate) {return "Test suite created";}
+  if (isTest && hasEdit) {return "Tests updated";}
+  if (isAnalysis) {return "Codebase exploration / read-only analysis";}
+  if (hasCreate && hasEdit) {return "Feature implementation: new files + edits";}
+  if (hasCreate) {return `New file(s) created: ${created.length}`;}
+  if (hasEdit) {return `Code modifications: ${edited.length} file(s) changed`;}
+  if (tools.length > 0) {return "Agent activity (no file changes)";}
   return "";
 }
 

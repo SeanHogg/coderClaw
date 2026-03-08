@@ -30,6 +30,7 @@ import {
   listChannelSupportedActions,
   resolveChannelMessageToolHints,
 } from "../../channel-tools.js";
+import { createCoderClawLlmLocalStreamFn } from "../../coderclawllm-local-stream.js";
 import { DEFAULT_CONTEXT_TOKENS } from "../../defaults.js";
 import { resolveCoderClawDocsPath } from "../../docs-path.js";
 import { isTimeoutError } from "../../failover-error.js";
@@ -37,7 +38,6 @@ import { resolveImageSanitizationLimits } from "../../image-sanitization.js";
 import { resolveModelAuthMode } from "../../model-auth.js";
 import { resolveDefaultModelForAgent } from "../../model-selection.js";
 import { createOllamaStreamFn, OLLAMA_NATIVE_BASE_URL } from "../../ollama-stream.js";
-import { createCoderClawLlmLocalStreamFn } from "../../coderclawllm-local-stream.js";
 import {
   isCloudCodeAssistFormatError,
   resolveBootstrapMaxChars,

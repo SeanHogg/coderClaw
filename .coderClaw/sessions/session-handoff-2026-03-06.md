@@ -8,7 +8,7 @@
 
 ## Summary
 
-This session completed multiple phases of the SmolLM2 local brain integration and surrounding infrastructure. Key accomplishments: (1) diagnosed and fixed local brain not routing requests — `/localbrain on` now sets `agents.defaults.model.primary` to `coderclawllm-local/{amygdalaModelId}` so `resolveModel()` yields `api:"transformers"` and the brain pipeline activates; (2) fixed the exec host error message to show the *requested* host rather than the configured one; (3) changed `tools.exec.host` default from `sandbox` to `gateway` across code (bash-tools.exec.ts, directive-handling.impl.ts, onboard-config.ts) and documentation (5 doc files in coderclaw.ai, EN + ZH); (4) added `[brain-routing]` logging in attempt.ts and coderclawllm-local-stream.ts; (5) fixed TUI message duplication by noting `user-${clientRunId}` variant in dedup guard; (6) fixed execution hang from missing path separator bug (`fixMissingRootSeparator()` in pi-tools.read.ts); (7) renamed `.coderClaw/` → `.coderclaw/` directory constant and all doc references. On the coderClawLink side: added unified artifact likes system (`artifact_likes` table, `marketplaceStatsRoutes.ts`), wired likes/installs into marketplace, personas, skills, and content views with real API stats.
+This session completed multiple phases of the SmolLM2 local brain integration and surrounding infrastructure. Key accomplishments: (1) diagnosed and fixed local brain not routing requests — `/localbrain on` now sets `agents.defaults.model.primary` to `coderclawllm-local/{amygdalaModelId}` so `resolveModel()` yields `api:"transformers"` and the brain pipeline activates; (2) fixed the exec host error message to show the _requested_ host rather than the configured one; (3) changed `tools.exec.host` default from `sandbox` to `gateway` across code (bash-tools.exec.ts, directive-handling.impl.ts, onboard-config.ts) and documentation (5 doc files in coderclaw.ai, EN + ZH); (4) added `[brain-routing]` logging in attempt.ts and coderclawllm-local-stream.ts; (5) fixed TUI message duplication by noting `user-${clientRunId}` variant in dedup guard; (6) fixed execution hang from missing path separator bug (`fixMissingRootSeparator()` in pi-tools.read.ts); (7) renamed `.coderClaw/` → `.coderclaw/` directory constant and all doc references. On the coderClawLink side: added unified artifact likes system (`artifact_likes` table, `marketplaceStatsRoutes.ts`), wired likes/installs into marketplace, personas, skills, and content views with real API stats.
 
 ---
 
@@ -61,6 +61,7 @@ This session completed multiple phases of the SmolLM2 local brain integration an
 ### coderClaw (branch: `copilot/integrate-smollm2-1-7b`)
 
 **Modified:**
+
 - `src/agents/bash-tools.exec.ts` — exec host default `sandbox` → `gateway`, error message fix
 - `src/agents/coderclawllm-local-stream.ts` — `[brain-routing]` logging at cortex fallback and amygdala HANDLE/DELEGATE
 - `src/agents/pi-embedded-runner/run/attempt.ts` — `[brain-routing]` logging at stream selection
@@ -79,6 +80,7 @@ This session completed multiple phases of the SmolLM2 local brain integration an
 - `.coderClaw/planning/REMINDERS.md` — path references updated
 
 **Created:**
+
 - `.coderClaw/sessions/92fd1b7d-cc32-4825-acb7-787899c3171a.yaml` — session handoff from brain trace
 - `.coderClaw/memory/2026-03-06-0059.md` — memory entry
 - `.coderClaw/memory/2026-03-06-provider-error-heartbeat.md` — memory entry
@@ -86,6 +88,7 @@ This session completed multiple phases of the SmolLM2 local brain integration an
 ### coderclaw.ai (branch: `main`)
 
 **Modified:**
+
 - `docs-site/src/content/docs/tools/exec.md` — default `sandbox` → `gateway`, updated Important note
 - `docs-site/src/content/docs/zh-cn/tools/exec.md` — same (Chinese)
 - `docs-site/src/content/docs/gateway/security/index.md` — sandboxing note rewritten for gateway default
@@ -95,6 +98,7 @@ This session completed multiple phases of the SmolLM2 local brain integration an
 ### coderClawLink (branch: `main`)
 
 **Modified:**
+
 - `api/src/index.ts` — added `marketplaceStatsRoutes`
 - `api/src/infrastructure/database/schema.ts` — added `artifactLikes` table
 - `api/src/presentation/routes/marketplaceStatsRoutes.ts` — **created** — batch stats + toggle like

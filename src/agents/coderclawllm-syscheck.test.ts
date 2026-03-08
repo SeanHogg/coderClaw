@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   formatBytes,
   isModelCached,
@@ -79,7 +79,16 @@ describe("isModelCached", () => {
 
 /** Helper to create a minimal StatFs-shaped mock return value. */
 function createMockStatFs(bavail: number) {
-  return { bsize: 4096, bavail, type: 0, bfree: 0, blocks: 0, ffree: 0, files: 0, bavailNonRoot: 0 };
+  return {
+    bsize: 4096,
+    bavail,
+    type: 0,
+    bfree: 0,
+    blocks: 0,
+    ffree: 0,
+    files: 0,
+    bavailNonRoot: 0,
+  };
 }
 
 describe("checkLocalBrainRequirements", () => {

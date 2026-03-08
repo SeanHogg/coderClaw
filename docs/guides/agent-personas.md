@@ -181,13 +181,13 @@ locally installed version of the same name (but cannot override built-in roles).
 When multiple sources define a persona with the same name, the highest-precedence
 source wins:
 
-| Priority | Source | Location |
-|----------|--------|----------|
-| 5 (highest) | `clawlink-assigned` | pushed from coderClawLink portal |
-| 4 | `clawhub` | `~/.coderclaw/personas/` (marketplace install) |
-| 3 | `project-local` | `.coderClaw/personas/*.yaml` |
-| 2 | `user-global` | `~/.coderclaw/personas/*.yaml` |
-| 1 (lowest) | `builtin` | shipped in coderClaw core |
+| Priority    | Source              | Location                                       |
+| ----------- | ------------------- | ---------------------------------------------- |
+| 5 (highest) | `clawlink-assigned` | pushed from coderClawLink portal               |
+| 4           | `clawhub`           | `~/.coderclaw/personas/` (marketplace install) |
+| 3           | `project-local`     | `.coderClaw/personas/*.yaml`                   |
+| 2           | `user-global`       | `~/.coderclaw/personas/*.yaml`                 |
+| 1 (lowest)  | `builtin`           | shipped in coderClaw core                      |
 
 Built-in roles (`code-creator`, `code-reviewer`, etc.) cannot be overridden —
 marketplace personas can only add new names.
@@ -196,12 +196,12 @@ marketplace personas can only add new names.
 
 ## Built-in Roles Reference
 
-| Role | Voice | Decision Style | Output Prefix |
-|------|-------|----------------|---------------|
-| `code-creator` | pragmatic and quality-driven | ship it, but ship it right | `CODE:` |
-| `code-reviewer` | critical yet constructive | thorough: all issues, ranked by severity | `REVIEW:` |
-| `test-generator` | systematic and exhaustive | coverage-first: edge cases before happy paths | `TESTS:` |
-| `bug-analyzer` | investigative and precise | evidence-driven: hypothesis → test → verify | `BUG-FIX:` |
-| `refactor-agent` | disciplined and incremental | safe: one refactor at a time, tests green first | `REFACTOR:` |
-| `documentation-agent` | clear, concise, audience-aware | reader-first: if a newcomer can't understand it, rewrite it | `DOCS:` |
-| `architecture-advisor` | strategic and pragmatic | trade-off oriented: always show the cost of each option | `ARCH:` |
+| Role                   | Voice                          | Decision Style                                              | Output Prefix |
+| ---------------------- | ------------------------------ | ----------------------------------------------------------- | ------------- |
+| `code-creator`         | pragmatic and quality-driven   | ship it, but ship it right                                  | `CODE:`       |
+| `code-reviewer`        | critical yet constructive      | thorough: all issues, ranked by severity                    | `REVIEW:`     |
+| `test-generator`       | systematic and exhaustive      | coverage-first: edge cases before happy paths               | `TESTS:`      |
+| `bug-analyzer`         | investigative and precise      | evidence-driven: hypothesis → test → verify                 | `BUG-FIX:`    |
+| `refactor-agent`       | disciplined and incremental    | safe: one refactor at a time, tests green first             | `REFACTOR:`   |
+| `documentation-agent`  | clear, concise, audience-aware | reader-first: if a newcomer can't understand it, rewrite it | `DOCS:`       |
+| `architecture-advisor` | strategic and pragmatic        | trade-off oriented: always show the cost of each option     | `ARCH:`       |

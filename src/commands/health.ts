@@ -682,7 +682,9 @@ export async function healthCommand(
     const heartbeatParts = displayAgents
       .map((agent) => {
         const everyMs = agent.heartbeat?.everyMs;
-        const label = everyMs ? (formatDurationCompact(everyMs, { spaced: true }) ?? "unknown") : "disabled";
+        const label = everyMs
+          ? (formatDurationCompact(everyMs, { spaced: true }) ?? "unknown")
+          : "disabled";
         return `${label} (${agent.agentId})`;
       })
       .filter(Boolean);

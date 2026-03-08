@@ -7,6 +7,7 @@
 ## Conversation Summary
 
 user: Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "82271990-d666-4328-885d-f919b102b84c",
@@ -18,6 +19,7 @@ user: Conversation info (untrusted metadata):
 assistant: I'll trace through the CoderClaw codebase to understand how an incoming message is processed, particularly focusing on the "localBrain" concept and the LLM models used.
 assistant: I'll trace through the CoderClaw codebase to understand how an incoming message is processed, particularly focusing on the "localBrain" concept and the LLM models used.
 user: Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "4f56ae55-c574-47d4-b981-00b1a6d97899",

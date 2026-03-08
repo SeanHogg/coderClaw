@@ -47,7 +47,7 @@ function makeExecutionResponse(status: string, overrides?: Record<string, unknow
     completedAt: status === "completed" ? new Date().toISOString() : null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    ...(overrides ?? {}),
+    ...overrides,
   };
 }
 

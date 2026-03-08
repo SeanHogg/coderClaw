@@ -1,8 +1,7 @@
-import { describe, it, expect } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-
+import { describe, it, expect } from "vitest";
 import {
   initializeCoderClawProject,
   isCoderClawProject,
@@ -23,12 +22,7 @@ describe("project-context initialisation", () => {
       expect(await isCoderClawProject(root)).toBe(true);
 
       const dir = resolveCoderClawDir(root);
-      const expected = [
-        dir.contextPath,
-        dir.architecturePath,
-        dir.rulesPath,
-        dir.governancePath,
-      ];
+      const expected = [dir.contextPath, dir.architecturePath, dir.rulesPath, dir.governancePath];
 
       for (const file of expected) {
         const stat = await fs.stat(file);

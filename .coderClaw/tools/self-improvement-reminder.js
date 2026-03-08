@@ -17,11 +17,11 @@ const memoryDir = path.join(rootDir, "memory");
 const cronJobName = "self-improvement-reminder";
 
 function ensureDir(dir) {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(dir)) {fs.mkdirSync(dir, { recursive: true });}
 }
 
 function loadMemoryIndex() {
-  if (!fs.existsSync(memoryIndex)) return null;
+  if (!fs.existsSync(memoryIndex)) {return null;}
   const content = fs.readFileSync(memoryIndex, "utf8");
   return JSON.parse(content);
 }

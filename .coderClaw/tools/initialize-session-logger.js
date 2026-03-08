@@ -13,7 +13,7 @@ const logsDir = path.join(__dirname, "..", "logs");
 ensureDir(logsDir);
 
 function ensureDir(dir) {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(dir)) {fs.mkdirSync(dir, { recursive: true });}
 }
 
 function getLogPath(sessionId) {

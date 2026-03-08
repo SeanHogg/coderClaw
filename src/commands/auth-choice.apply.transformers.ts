@@ -1,10 +1,10 @@
 import path from "node:path";
-import type { CoderClawConfig } from "../config/config.js";
-import { resolveStateDir } from "../config/paths.js";
 import { ensureAuthProfileStore } from "../agents/auth-profiles.js";
 import { downloadCoderClawLlmModel } from "../agents/transformers-stream.js";
-import type { ApplyAuthChoiceParams, ApplyAuthChoiceResult } from "./auth-choice.apply.js";
+import type { CoderClawConfig } from "../config/config.js";
+import { resolveStateDir } from "../config/paths.js";
 import { promptAuthChoiceGrouped } from "./auth-choice-prompt.js";
+import type { ApplyAuthChoiceParams, ApplyAuthChoiceResult } from "./auth-choice.apply.js";
 import { applyPrimaryModel } from "./model-picker.js";
 
 /** Provider ID written into the config for the local-brain entry. */
@@ -27,7 +27,6 @@ export const TRANSFORMERS_DEFAULT_MODEL_ID = AMYGDALA_MODEL_ID;
 export const TRANSFORMERS_DEFAULT_DTYPE = AMYGDALA_DTYPE;
 
 const DTYPE_OPTIONS = ["q4", "q5", "q8", "fp16", "fp32"] as const;
-type TransformersDtype = (typeof DTYPE_OPTIONS)[number];
 
 export function defaultCacheDir(): string {
   return path.join(resolveStateDir(), "models");
@@ -99,8 +98,8 @@ export function applyTransformersProviderConfig(
 
 function extractPrimaryModel(cfg: CoderClawConfig): string | undefined {
   const model = cfg.agents?.defaults?.model;
-  if (typeof model === "string") return model;
-  if (model && typeof model === "object") return model.primary;
+  if (typeof model === "string") {return model;}
+  if (model && typeof model === "object") {return model.primary;}
   return undefined;
 }
 
@@ -143,14 +142,19 @@ export async function downloadAndWireLocalBrain(opts: {
 
   const amygdalaModelId = nextConfig.localBrain?.models?.amygdala?.modelId ?? AMYGDALA_MODEL_ID;
   const amygdalaDtype = nextConfig.localBrain?.models?.amygdala?.dtype ?? AMYGDALA_DTYPE;
-  const hippocampusModelId = nextConfig.localBrain?.models?.hippocampus?.modelId ?? HIPPOCAMPUS_MODEL_ID;
+  const hippocampusModelId =
+    nextConfig.localBrain?.models?.hippocampus?.modelId ?? HIPPOCAMPUS_MODEL_ID;
   const hippocampusDtype = nextConfig.localBrain?.models?.hippocampus?.dtype ?? HIPPOCAMPUS_DTYPE;
   const cacheDir = defaultCacheDir();
 
   // Register both models in the provider config.
   nextConfig = applyTransformersProviderConfig(
-    nextConfig, amygdalaModelId, amygdalaDtype,
-    hippocampusModelId, hippocampusDtype, cacheDir,
+    nextConfig,
+    amygdalaModelId,
+    amygdalaDtype,
+    hippocampusModelId,
+    hippocampusDtype,
+    cacheDir,
   );
 
   // ── Download amygdala (SmolLM2 — fast router) ──────────────────────────
@@ -164,7 +168,7 @@ export async function downloadAndWireLocalBrain(opts: {
       dtype: amygdalaDtype,
       cacheDir,
       onProgress: (file, pct) => {
-        if (file !== lastFile) lastFile = file;
+        if (file !== lastFile) {lastFile = file;}
         amygdalaSpinner.update(`Amygdala: ${path.basename(file)} — ${pct}%`);
       },
     });
@@ -188,7 +192,7 @@ export async function downloadAndWireLocalBrain(opts: {
       dtype: hippocampusDtype,
       cacheDir,
       onProgress: (file, pct) => {
-        if (file !== lastFile) lastFile = file;
+        if (file !== lastFile) {lastFile = file;}
         hippoSpinner.update(`Hippocampus: ${path.basename(file)} — ${pct}%`);
       },
     });
@@ -263,4 +267,3 @@ export async function applyAuthChoiceTransformers(
 
   return { config: result.config };
 }
-

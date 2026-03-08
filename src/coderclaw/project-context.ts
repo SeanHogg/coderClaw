@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
+import { loadPersonasFromDir, PERSONAS_SUBDIR } from "./personas.js";
 import type {
   ProjectContext,
   ProjectRules,
@@ -9,7 +10,6 @@ import type {
   PersonaAssignment,
   PersonaPlugin,
 } from "./types.js";
-import { loadPersonasFromDir, PERSONAS_SUBDIR } from "./personas.js";
 
 const CODERCLAW_DIR = ".coderclaw";
 const CONTEXT_FILE = "context.yaml";
@@ -573,10 +573,7 @@ export async function savePersonaAssignment(
 /**
  * Remove a persona assignment from `context.yaml`.
  */
-export async function removePersonaAssignment(
-  projectRoot: string,
-  name: string,
-): Promise<void> {
+export async function removePersonaAssignment(projectRoot: string, name: string): Promise<void> {
   const context = await loadProjectContext(projectRoot);
   if (!context?.personas?.assignments?.length) {
     return;

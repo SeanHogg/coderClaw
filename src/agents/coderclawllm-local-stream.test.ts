@@ -7,13 +7,11 @@
  * tests that require `@huggingface/transformers` to be installed.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // ── loadCoderClawMemory ───────────────────────────────────────────────────────
-
 import { loadCoderClawMemory } from "./transformers-stream.js";
 
 describe("loadCoderClawMemory", () => {
@@ -115,8 +113,9 @@ describe("DELEGATE detection logic", () => {
   });
 
   it("detects DELEGATE followed by a colon and plan", () => {
-    expect(isDelegating("DELEGATE: Refactor the entire authentication module across 12 files."))
-      .toBe(true);
+    expect(
+      isDelegating("DELEGATE: Refactor the entire authentication module across 12 files."),
+    ).toBe(true);
   });
 
   it("detects DELEGATE followed by newline and multi-line plan", () => {
@@ -148,8 +147,9 @@ describe("DELEGATE detection logic", () => {
   });
 
   it("does not delegate a memory-recall answer", () => {
-    expect(isDelegating("Based on your preferences from SOUL.md, you prefer TypeScript."))
-      .toBe(false);
+    expect(isDelegating("Based on your preferences from SOUL.md, you prefer TypeScript.")).toBe(
+      false,
+    );
   });
 
   it("does not delegate a short code snippet response", () => {
@@ -184,7 +184,9 @@ describe("DELEGATE detection logic", () => {
   });
 
   it("strips 'DELEGATE\\n' prefix correctly", () => {
-    const plan = extractBrainPlan("DELEGATE\n1. Add authentication middleware\n2. Protect all routes");
+    const plan = extractBrainPlan(
+      "DELEGATE\n1. Add authentication middleware\n2. Protect all routes",
+    );
     expect(plan).toContain("1. Add authentication middleware");
     expect(plan).not.toContain("DELEGATE");
   });

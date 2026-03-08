@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/diagnostics-otel",
-  "version": "2026.3.5",
+  "version": "2026.3.8",
   "description": "CoderClaw diagnostics OpenTelemetry exporter",
   "type": "module",
   "dependencies": {

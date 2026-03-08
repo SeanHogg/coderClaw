@@ -173,7 +173,7 @@ The AI developer tools market is growing rapidly. Key segments:
 | ----------------------------- | ------------------------------- | -------------- |
 | 🔲 Inline diff / pair mode    | Accept/reject diff workflow     | Acquisition    |
 | 🔲 GitHub issue → PR workflow | End-to-end issue resolution     | Acquisition    |
-| 🔲 Builderforce Pro launch   | Subscription billing            | $19–149/mo     |
+| 🔲 Builderforce Pro launch    | Subscription billing            | $19–149/mo     |
 | 🔲 Persona profiles           | Per-session model+system prompt | Retention      |
 | 🔲 Session auto-checkpoint    | Auto-save on exit               | Retention      |
 

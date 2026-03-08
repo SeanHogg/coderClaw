@@ -143,7 +143,7 @@ describe("getSessionLogTerminalTags", () => {
         errorMessage: "Tool failed: run_in_terminal",
       },
     ];
-    expect(getSessionLogTerminalTags(logs[0]!)).toEqual([
+    expect(getSessionLogTerminalTags(logs[0])).toEqual([
       "error: Tool failed: run_in_terminal",
       "stop: tool_error",
     ]);

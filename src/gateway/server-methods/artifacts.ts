@@ -5,11 +5,7 @@
  * and applies them to the local claw (persona assignments, skill activation,
  * content references).
  */
-import { resolveDefaultAgentId } from "../../agents/agent-scope.js";
-import {
-  loadPersonaAssignments,
-  savePersonaAssignment,
-} from "../../coderclaw/project-context.js";
+import { savePersonaAssignment } from "../../coderclaw/project-context.js";
 import type { PersonaAssignment } from "../../coderclaw/types.js";
 import { logWarn } from "../../logger.js";
 import { ErrorCodes, errorShape } from "../protocol/index.js";
@@ -26,10 +22,8 @@ export const artifactsHandlers: GatewayRequestHandlers = {
       return;
     }
 
-    const executionId =
-      typeof params?.executionId === "number" ? params.executionId : undefined;
-    const taskId =
-      typeof params?.taskId === "number" ? params.taskId : undefined;
+    const executionId = typeof params?.executionId === "number" ? params.executionId : undefined;
+    const taskId = typeof params?.taskId === "number" ? params.taskId : undefined;
 
     const projectRoot = process.cwd();
     const results: { personas: number; skills: number; content: number } = {
@@ -49,9 +43,7 @@ export const artifactsHandlers: GatewayRequestHandlers = {
         await savePersonaAssignment(projectRoot, assignment);
         results.personas++;
       }
-      logWarn(
-        `[artifacts.sync] applied ${results.personas} persona assignment(s)`,
-      );
+      logWarn(`[artifacts.sync] applied ${results.personas} persona assignment(s)`);
     }
 
     // ── Skill references ──────────────────────────────────────────────────
@@ -76,11 +68,7 @@ export const artifactsHandlers: GatewayRequestHandlers = {
 
     // Persist all assigned artifact slugs to a sidecar file for other
     // subsystems to read at execution time.
-    if (
-      artifacts.skills?.length ||
-      artifacts.personas?.length ||
-      artifacts.content?.length
-    ) {
+    if (artifacts.skills?.length || artifacts.personas?.length || artifacts.content?.length) {
       try {
         const fs = await import("node:fs");
         const path = await import("node:path");

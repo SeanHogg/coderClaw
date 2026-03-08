@@ -1,9 +1,9 @@
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { describe, it, expect, beforeEach } from "vitest";
 import { PersonaRegistry, loadPersonaFromFile } from "./personas.js";
 import type { PersonaPlugin } from "./types.js";
-import fs from "node:fs/promises";
-import path from "node:path";
-import os from "node:os";
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { formatThinkingLevels, normalizeThinkLevel } from "../auto-reply/thinking.js";
-import type { AgentRole } from "../coderclaw/types.js";
 import { buildPersonaSystemBlock } from "../coderclaw/personas.js";
+import type { AgentRole } from "../coderclaw/types.js";
 import { loadConfig } from "../config/config.js";
 import { callGateway } from "../gateway/call.js";
 import { normalizeAgentId, parseAgentSessionKey } from "../routing/session-key.js";

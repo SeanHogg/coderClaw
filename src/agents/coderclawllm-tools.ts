@@ -55,7 +55,7 @@ export function parseToolCalls(text: string): ToolCall[] {
   for (const raw of text.match(TOOL_JSON_RE) ?? []) {
     try {
       const obj = JSON.parse(raw) as Record<string, unknown>;
-      if (typeof obj.tool !== "string") continue;
+      if (typeof obj.tool !== "string") {continue;}
       calls.push(obj as unknown as ToolCall);
     } catch {
       // malformed JSON — skip
@@ -92,7 +92,7 @@ async function toolListFiles(workspaceDir: string, call: { dir?: string }): Prom
   const lines = entries
     .slice(0, MAX_LIST_ENTRIES)
     .map((e) => (e.isDirectory() ? `${e.name}/` : e.name));
-  if (entries.length > MAX_LIST_ENTRIES) lines.push(`…(${entries.length - MAX_LIST_ENTRIES} more)`);
+  if (entries.length > MAX_LIST_ENTRIES) {lines.push(`…(${entries.length - MAX_LIST_ENTRIES} more)`);}
   return lines.join("\n") || "(empty)";
 }
 
@@ -106,7 +106,7 @@ async function toolGrepFiles(
   const matches: string[] = [];
 
   async function walk(dir: string) {
-    if (matches.length >= 20) return;
+    if (matches.length >= 20) {return;}
     let entries: import("node:fs").Dirent<string>[];
     try {
       entries = await fs.readdir(dir, { withFileTypes: true, encoding: "utf-8" });
@@ -114,7 +114,7 @@ async function toolGrepFiles(
       return;
     }
     for (const entry of entries) {
-      if (matches.length >= 20) break;
+      if (matches.length >= 20) {break;}
       const full = path.join(dir, entry.name);
       if (entry.isDirectory() && !entry.name.startsWith(".") && entry.name !== "node_modules") {
         await walk(full);
@@ -167,9 +167,7 @@ async function toolRunCode(
   try {
     await fs.writeFile(tmpFile, call.code, "utf-8");
 
-    const [cmd, ...args] = isTs
-      ? ["node", "--import", "tsx/esm", tmpFile]
-      : ["node", tmpFile];
+    const [cmd, ...args] = isTs ? ["node", "--import", "tsx/esm", tmpFile] : ["node", tmpFile];
 
     const output = await new Promise<string>((resolve) => {
       const chunks: Buffer[] = [];
@@ -181,7 +179,9 @@ async function toolRunCode(
       proc.stdout.on("data", (d: Buffer) => chunks.push(d));
       proc.stderr.on("data", (d: Buffer) => chunks.push(d));
       proc.on("close", () =>
-        resolve(Buffer.concat(chunks).toString("utf-8").slice(0, MAX_OUTPUT_CHARS) || "(no output)"),
+        resolve(
+          Buffer.concat(chunks).toString("utf-8").slice(0, MAX_OUTPUT_CHARS) || "(no output)",
+        ),
       );
       proc.on("error", (err) => resolve(`Error: ${err.message.slice(0, MAX_OUTPUT_CHARS)}`));
     });
@@ -243,16 +243,17 @@ export async function executeToolCall(
     }
     return { tool: call.tool, output };
   } catch (err) {
-    return { tool: call.tool, output: `Error: ${err instanceof Error ? err.message : String(err)}` };
+    return {
+      tool: call.tool,
+      output: `Error: ${err instanceof Error ? err.message : String(err)}`,
+    };
   }
 }
 
 // ── Format tool results as a context block ────────────────────────────────────
 
 export function formatToolResults(results: ToolResult[]): string {
-  return results
-    .map((r) => `[Tool: ${r.tool}]\n${r.output}`)
-    .join("\n\n");
+  return results.map((r) => `[Tool: ${r.tool}]\n${r.output}`).join("\n\n");
 }
 
 // ── Code block extraction (for execution feedback) ───────────────────────────

@@ -568,20 +568,25 @@ labels, the receiving agent could not tell which role produced which output.
 
 - `buildStructuredContext(task, workflow)` in `src/coderclaw/orchestrator.ts` now
   produces a structured Markdown block per prior agent:
+
   ```markdown
   ## Your Task
+
   <task.input>
 
   ## Context from Prior Agents
 
   ### REVIEW: (code-reviewer)
+
   <result>
 
   ---
 
   ### ARCH: (architecture-advisor)
+
   <result>
   ```
+
 - The label uses `outputFormat.outputPrefix` from each role's definition, so e.g.
   the code-reviewer prefixes its section "REVIEW:" and the arch-advisor prefixes "ARCH:".
 - All 7 built-in roles have `outputFormat.outputPrefix` defined.
@@ -603,6 +608,7 @@ it was playing.
 
 1. `buildPersonaSystemBlock(role)` in `src/coderclaw/personas.ts`:
    Encodes `role.persona` + `outputFormat` + `constraints` into:
+
    ```
    --- Agent Persona ---
    Role: code-reviewer
@@ -620,7 +626,7 @@ it was playing.
 3. `createCoderClawLlmLocalStreamFn()` in `src/agents/coderclawllm-local-stream.ts`:
    `brainSystem` now prepends `context.systemPrompt` (which carries the persona block):
    ```typescript
-   const brainSystem = [context.systemPrompt, memoryBlock, ragContext, BRAIN_SYSTEM_PROMPT]
+   const brainSystem = [context.systemPrompt, memoryBlock, ragContext, BRAIN_SYSTEM_PROMPT];
    ```
    **Both** the direct path and the DELEGATE path now see the persona.
 
@@ -678,6 +684,7 @@ late with cryptic errors; there was no fallback.
 - `logInfo("[coderclawllm] <reason>")` explains why local brain is not in use
 
 **Acceptance criteria — met**:
+
 - Machine with < 2 GB free RAM → uses configured Ollama/OpenAI provider as brain
 - Machine with ≥ 2 GB RAM + model cached → uses SmolLM2 as brain
 - Machine with ≥ 2 GB RAM + model not cached + < 1.5 GB disk → uses external LLM
@@ -686,25 +693,25 @@ late with cryptic errors; there was no fallback.
 
 ## Updated Priority Order
 
-| Priority | Gap  | Item                              | Status   |
-| -------- | ---- | --------------------------------- | -------- |
-| ✅       | -1.1 | Wire executeWorkflow              | RESOLVED |
-| ✅       | -1.2 | Wire agent roles                  | RESOLVED |
-| ✅       | -1.3 | Session handoff save/load         | RESOLVED |
-| ✅       | -1.4 | Workflow persistence              | RESOLVED |
-| ✅       | -1.5 | Knowledge loop                    | RESOLVED |
-| ✅       | -1.6 | Claw-to-claw mesh                 | RESOLVED |
-| ✅       | 7    | `/spec` TUI command               | RESOLVED |
-| ✅       | 8    | `/workflow` TUI command           | RESOLVED |
-| ✅       | 9    | `/compact` in help                | RESOLVED |
-| ✅       | 10   | Handoff hint on /new              | RESOLVED |
-| ✅       | 11   | Semantic knowledge summaries      | RESOLVED |
-| 🔲       | I    | Remote task result streaming      | OPEN     |
-| ✅       | J    | Capability-based claw routing     | RESOLVED |
-| 🔲       | K    | Architecture.md auto-update       | OPEN     |
-| ✅       | L    | Structured inter-agent context    | RESOLVED |
-| ✅       | M    | Persona → brain injection         | RESOLVED |
-| ✅       | N    | Persona plugin architecture       | RESOLVED |
-| ✅       | O    | CoderClawLLM syscheck + fallback  | RESOLVED |
-| 🔲       | P    | ClawHub persona marketplace       | OPEN     |
-| 🔲       | Q    | coderClawLink Persona Assignment API | OPEN  |
+| Priority | Gap  | Item                                 | Status   |
+| -------- | ---- | ------------------------------------ | -------- |
+| ✅       | -1.1 | Wire executeWorkflow                 | RESOLVED |
+| ✅       | -1.2 | Wire agent roles                     | RESOLVED |
+| ✅       | -1.3 | Session handoff save/load            | RESOLVED |
+| ✅       | -1.4 | Workflow persistence                 | RESOLVED |
+| ✅       | -1.5 | Knowledge loop                       | RESOLVED |
+| ✅       | -1.6 | Claw-to-claw mesh                    | RESOLVED |
+| ✅       | 7    | `/spec` TUI command                  | RESOLVED |
+| ✅       | 8    | `/workflow` TUI command              | RESOLVED |
+| ✅       | 9    | `/compact` in help                   | RESOLVED |
+| ✅       | 10   | Handoff hint on /new                 | RESOLVED |
+| ✅       | 11   | Semantic knowledge summaries         | RESOLVED |
+| 🔲       | I    | Remote task result streaming         | OPEN     |
+| ✅       | J    | Capability-based claw routing        | RESOLVED |
+| 🔲       | K    | Architecture.md auto-update          | OPEN     |
+| ✅       | L    | Structured inter-agent context       | RESOLVED |
+| ✅       | M    | Persona → brain injection            | RESOLVED |
+| ✅       | N    | Persona plugin architecture          | RESOLVED |
+| ✅       | O    | CoderClawLLM syscheck + fallback     | RESOLVED |
+| 🔲       | P    | ClawHub persona marketplace          | OPEN     |
+| 🔲       | Q    | coderClawLink Persona Assignment API | OPEN     |

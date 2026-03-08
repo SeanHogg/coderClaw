@@ -16,6 +16,7 @@ assistant: ## localBrain Validation Summary
 Based on my analysis of the CoderClaw system:
 
 ### ✅ Gateway & Configuration
+
 - **Gateway**: Running on port 18789 (status confirmed)
 - **Mode**: Local (not cloud-only)
 - **Local Brain**: Enabled and configured
@@ -24,6 +25,7 @@ Based on my analysis of the CoderClaw system:
   - **Hippocampus**: `microsoft/Phi-4-mini-instruct` (q4, 128K ctx)
 
 ### ✅ System Architecture
+
 I traced through the complete local brain implementation:
 
 1. **`src/agents/coderclawllm-syscheck.ts`** (syscheck)
@@ -33,7 +35,7 @@ I traced through the complete local brain implementation:
    - Caches eligibility result after first check
 
 2. **`src/agents/coderclawllm-local-stream.ts`** (brain router)
-   - **Amygdala** (fast router, ~200ms): 
+   - **Amygdala** (fast router, ~200ms):
      - Loads memory + RAG context
      - Runs tool loop (up to 3 rounds)
      - Decides: `HANDLE` (respond directly) or `DELEGATE` (pass to cortex)
@@ -50,13 +52,16 @@ I traced through the complete local brain implementation:
    - Both paths logged with `logInfo()`
 
 ### ⚠️ Exec Permission Constraints
+
 File system reads are being blocked by the gateway's security policy (`denyCommands` includes filesystem operations). This prevents me from:
+
 - Checking if model files exist on disk (`~/.coderclaw/models/`)
 - Accessing model cache directory
 - Reading gateway logs from disk
 - Viewing recent memory files
 
 ### 📊 Evidence of Execution
+
 - **Wizard run**: `wizard.lastRunMode = "local"` indicates local brain setup was completed
 - **Config persisted**: Both models defined with proper paths and quantization
 - **System check code**: Comprehensive eligibility logic is in place and would run on first request
@@ -73,6 +78,7 @@ To observe the brain activating in logs, you would need to:
    - `[brain-routing] amygdala decision: HANDLE` or `DELEGATE`
 
 The architecture is fully implemented and configured. Whether the models have been downloaded and are currently executing depends on:
+
 - Available RAM (~2 GB free for amygdala, ~4.5 GB for both)
 - Available disk space (~4 GB free)
 - Whether you've actually sent a request yet (triggers first-time syscheck + model download if needed)
@@ -86,17 +92,19 @@ Current time: Thursday, March 5th, 2026 — 9:25 PM (America/New_York)
 assistant: I've completed tracing through the localBrain code architecture and validated the configuration. Here's my status:
 
 **✅ Code Trace Complete**
+
 - Verified syscheck logic (RAM/disk requirements)
 - Confirmed amygdala router + tool loop implementation
 - Verified hippocampus planner and cortex fallback paths
 - Validated configuration: both models (amygdala & hippocampus) are enabled
 
 **⚠️ Log Validation Blocked**
+
 - Exec permissions restrict filesystem access
 - Cannot verify actual model loading or runtime activity
 - Cannot check gateway logs or model cache
 
-**System Health**: The local brain is fully implemented and configured. Whether it's actively executing depends on whether requests have been sent since startup (triggers syscheck and model loading). 
+**System Health**: The local brain is fully implemented and configured. Whether it's actively executing depends on whether requests have been sent since startup (triggers syscheck and model loading).
 
 If you want to see runtime activity, send a message through the gateway and check the gateway logs at stderr or your configured log location for lines containing `[amygdala]`, `[hippocampus]`, and `[brain-routing]`.
 
@@ -119,7 +127,7 @@ Whether it’s improving how you prioritize tasks, tightening up your communicat
 
 You’ve already built a powerful system (CoderClaw) to help you work smarter — now let’s use that same intentionality to grow personally.
 
-✨ *The best tools don’t just do work — they help us become better versions of ourselves.*
+✨ _The best tools don’t just do work — they help us become better versions of ourselves._
 
 Would
 user: System: [2026-03-05 21:26:45 EST] Exec denied (gateway id=0a3b3cd1-0c45-493a-83f2-8946e5ab0e86, approval-timeout): powershell -Command "Get-ChildItem -Path 'C:\Users\seanh\.coderclaw'
@@ -133,6 +141,7 @@ Here's your scheduled nudge to reflect and grow:
 **What's one thing you'd like to improve or focus on this week?**
 
 It could be:
+
 - A skill you want to develop
 - A habit you want to build or break
 - A relationship or communication pattern
@@ -141,10 +150,11 @@ It could be:
 
 Take 2 minutes now to write it down somewhere you'll see it again. Small, specific goals create real progress.
 
-✨ *Growth isn't about perfection — it's about intentional, incremental improvement.*
+✨ _Growth isn't about perfection — it's about intentional, incremental improvement._
 
 You've got this!
 user: Conversation info (untrusted metadata):
+
 ```json
 {
   "message_id": "5ed4ec70-08d7-4dc4-a50b-50e1fb10b9ea",

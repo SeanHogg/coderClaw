@@ -501,7 +501,10 @@ export async function runOnboardingWizard(
   }
 
   // ── Optional local brain (amygdala + hippocampus ONNX preprocessors) ────
-  if (!opts.skipProviders && nextConfig.models?.providers?.["coderclawllm-local"]?.api !== "transformers") {
+  if (
+    !opts.skipProviders &&
+    nextConfig.models?.providers?.["coderclawllm-local"]?.api !== "transformers"
+  ) {
     const localBrainChoice = await prompter.select({
       message: "Enable local brain (amygdala + hippocampus)?",
       options: [
@@ -520,9 +523,8 @@ export async function runOnboardingWizard(
     });
     if (localBrainChoice === "smart") {
       nextConfig = { ...nextConfig, localBrain: { enabled: true } };
-      const { downloadAndWireLocalBrain } = await import(
-        "../commands/auth-choice.apply.transformers.js"
-      );
+      const { downloadAndWireLocalBrain } =
+        await import("../commands/auth-choice.apply.transformers.js");
       const result = await downloadAndWireLocalBrain({
         config: nextConfig,
         prompter,
@@ -590,9 +592,8 @@ export async function runOnboardingWizard(
   });
 
   // Ensure .coderclaw/ project directory exists in the workspace
-  const { isCoderClawProject, initializeCoderClawProject } = await import(
-    "../coderclaw/project-context.js"
-  );
+  const { isCoderClawProject, initializeCoderClawProject } =
+    await import("../coderclaw/project-context.js");
   if (!(await isCoderClawProject(workspaceDir))) {
     await initializeCoderClawProject(workspaceDir);
     runtime.log("Initialised .coderclaw/ project directory");

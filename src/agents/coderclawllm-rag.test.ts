@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { retrieveRelevantContext } from "./coderclawllm-rag.js";
 
 describe("retrieveRelevantContext", () => {
@@ -28,7 +28,10 @@ describe("retrieveRelevantContext", () => {
 
   it("returns empty string when no files match the query tokens", async () => {
     await fs.writeFile(path.join(tmpDir, "foo.ts"), "export const y = 2;", "utf-8");
-    const result = await retrieveRelevantContext({ query: "neverMatchesXYZ123", workspaceDir: tmpDir });
+    const result = await retrieveRelevantContext({
+      query: "neverMatchesXYZ123",
+      workspaceDir: tmpDir,
+    });
     expect(result).toBe("");
   });
 
@@ -38,7 +41,10 @@ describe("retrieveRelevantContext", () => {
       "export function authenticate(token: string) { return token; }",
       "utf-8",
     );
-    const result = await retrieveRelevantContext({ query: "authenticate token", workspaceDir: tmpDir });
+    const result = await retrieveRelevantContext({
+      query: "authenticate token",
+      workspaceDir: tmpDir,
+    });
     expect(result).toContain("## Relevant codebase context");
     expect(result).toContain("auth.ts");
     expect(result).toContain("authenticate");
@@ -105,7 +111,11 @@ describe("retrieveRelevantContext", () => {
   it("skips node_modules and build directories", async () => {
     const nodeModDir = path.join(tmpDir, "node_modules");
     await fs.mkdir(nodeModDir, { recursive: true });
-    await fs.writeFile(path.join(nodeModDir, "dep.ts"), "export const dep = 'dependency';", "utf-8");
+    await fs.writeFile(
+      path.join(nodeModDir, "dep.ts"),
+      "export const dep = 'dependency';",
+      "utf-8",
+    );
 
     const buildDir = path.join(tmpDir, "build");
     await fs.mkdir(buildDir, { recursive: true });
@@ -121,7 +131,10 @@ describe("retrieveRelevantContext", () => {
     await fs.writeFile(path.join(tmpDir, "util.js"), "function planningDoc() {}", "utf-8");
     await fs.writeFile(path.join(tmpDir, "types.ts"), "type PlanningDoc = string;", "utf-8");
 
-    const result = await retrieveRelevantContext({ query: "planningDoc plan", workspaceDir: tmpDir });
+    const result = await retrieveRelevantContext({
+      query: "planningDoc plan",
+      workspaceDir: tmpDir,
+    });
     expect(result).toContain("## Relevant codebase context");
     // All three files should be scored (we asked for topK=3 by default)
     const matchedCount = ["notes.md", "util.js", "types.ts"].filter((f) =>

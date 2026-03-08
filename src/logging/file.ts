@@ -77,9 +77,7 @@ function resolveSettings(): ResolvedSettings {
       ? "silent"
       : "info";
   const enabled = cfg?.enabled !== false; // default true
-  const level = enabled
-    ? normalizeLogLevel(cfg?.level, defaultLevel)
-    : "silent" as LogLevel;
+  const level = enabled ? normalizeLogLevel(cfg?.level, defaultLevel) : ("silent" as LogLevel);
   const file = cfg?.file ?? defaultRollingPathForToday();
   const format = cfg?.format === "text" ? "text" : "json";
   return { enabled, level, file, format };
@@ -90,10 +88,7 @@ function settingsChanged(a: ResolvedSettings | null, b: ResolvedSettings) {
     return true;
   }
   return (
-    a.enabled !== b.enabled ||
-    a.level !== b.level ||
-    a.file !== b.file ||
-    a.format !== b.format
+    a.enabled !== b.enabled || a.level !== b.level || a.file !== b.file || a.format !== b.format
   );
 }
 

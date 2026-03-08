@@ -58,7 +58,11 @@ export function logGatewayStartup(params: {
   log: { info: (msg: string, meta?: Record<string, unknown>) => void };
   isNixMode: boolean;
 }) {
-  const { provider: agentProvider, model: agentModel, localBrain } = resolveDisplayModelRef(params.cfg);
+  const {
+    provider: agentProvider,
+    model: agentModel,
+    localBrain,
+  } = resolveDisplayModelRef(params.cfg);
   const modelRef = `${agentProvider}/${agentModel}`;
   params.log.info(`cortex: ${modelRef}`, {
     consoleMessage: `cortex: ${chalk.whiteBright(modelRef)}`,

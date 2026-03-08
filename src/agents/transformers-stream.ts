@@ -56,10 +56,10 @@ export async function loadCoderClawMemory(
 
   // Long-term memory
   for (const filename of longTermFiles) {
-    if (remaining <= 0) break;
+    if (remaining <= 0) {break;}
     try {
       const raw = (await fs.readFile(path.join(workspaceDir, filename), "utf-8")).trim();
-      if (!raw) continue;
+      if (!raw) {continue;}
       const entry = `### ${filename}\n${raw}`;
       if (entry.length <= remaining) {
         sections.push(entry);
@@ -76,10 +76,10 @@ export async function loadCoderClawMemory(
   // Short-term memory: today's and yesterday's daily notes
   const memoryDir = path.join(workspaceDir, "memory");
   for (const filename of dailyNoteFilenames()) {
-    if (remaining <= 0) break;
+    if (remaining <= 0) {break;}
     try {
       const raw = (await fs.readFile(path.join(memoryDir, filename), "utf-8")).trim();
-      if (!raw) continue;
+      if (!raw) {continue;}
       const label = filename.replace(".md", "");
       const entry = `### Daily note (${label})\n${raw}`;
       if (entry.length <= remaining) {
@@ -94,7 +94,7 @@ export async function loadCoderClawMemory(
     }
   }
 
-  if (sections.length === 0) return "";
+  if (sections.length === 0) {return "";}
   return `## CoderClaw Memory\n\n${sections.join("\n\n")}`;
 }
 
@@ -119,16 +119,7 @@ async function importTransformers() {
 type TextGenerationPipeline = any;
 
 // Known quantization dtypes accepted by @huggingface/transformers pipeline().
-type PipelineDtype =
-  | "auto"
-  | "int8"
-  | "uint8"
-  | "q4"
-  | "q8"
-  | "fp16"
-  | "fp32"
-  | "bnb4"
-  | "q4f16";
+type PipelineDtype = "auto" | "int8" | "uint8" | "q4" | "q8" | "fp16" | "fp32" | "bnb4" | "q4f16";
 
 const pipelineCache = new Map<string, TextGenerationPipeline>();
 
@@ -152,7 +143,8 @@ export async function getOrCreatePipeline(
   // Suppress noisy upstream warning about missing Content-Length headers.
   const origWarn = console.warn;
   console.warn = (...args: unknown[]) => {
-    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length")) return;
+    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length"))
+      {return;}
     origWarn.apply(console, args);
   };
 
@@ -200,7 +192,8 @@ export async function downloadCoderClawLlmModel(opts: {
   // that would alarm users during normal model downloads.
   const origWarn = console.warn;
   console.warn = (...args: unknown[]) => {
-    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length")) return;
+    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length"))
+      {return;}
     origWarn.apply(console, args);
   };
 
@@ -305,15 +298,15 @@ export function createTransformersStreamFn(opts: TransformersStreamOptions = {})
           effectiveSystem || undefined,
         );
 
-        const maxNewTokens =
-          typeof options?.maxTokens === "number" ? options.maxTokens : 512;
-        const temperature =
-          typeof options?.temperature === "number" ? options.temperature : 0.6;
+        const maxNewTokens = typeof options?.maxTokens === "number" ? options.maxTokens : 512;
+        const temperature = typeof options?.temperature === "number" ? options.temperature : 0.6;
 
         // Transformers.js pipeline call with chat template support.
         // apply_chat_template is handled automatically when passing an array of
         // {role, content} messages to a text-generation pipeline.
-        type PipeOutput = Array<{ generated_text: string | Array<{ role: string; content: string }> }>;
+        type PipeOutput = Array<{
+          generated_text: string | Array<{ role: string; content: string }>;
+        }>;
         const rawOutput = (await (pipe as (input: unknown, params: unknown) => Promise<unknown>)(
           chatMessages,
           {

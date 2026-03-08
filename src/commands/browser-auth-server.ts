@@ -12,10 +12,10 @@
  * URL to open manually and pastes the callback URL back into the terminal.
  */
 
-import http from "node:http";
 import { randomBytes } from "node:crypto";
-import { openUrl, detectBrowserOpenSupport } from "./onboard-helpers.js";
+import http from "node:http";
 import type { WizardPrompter } from "../wizard/prompts.js";
+import { openUrl, detectBrowserOpenSupport } from "./onboard-helpers.js";
 
 const CALLBACK_PORT = 51_122;
 const TIMEOUT_MS = 5 * 60 * 1_000; // 5 minutes
@@ -107,10 +107,7 @@ async function authenticateWithCallbackServer(opts: {
   try {
     return await tokenPromise;
   } catch {
-    await opts.prompter.note(
-      "Authentication timed out or was cancelled.",
-      "Auth Error",
-    );
+    await opts.prompter.note("Authentication timed out or was cancelled.", "Auth Error");
     return null;
   }
 }
@@ -134,7 +131,7 @@ async function authenticateManually(opts: {
   const pastedUrl = await opts.prompter.text({
     message: "Paste the callback URL:",
     validate: (val: string) => {
-      if (!val.includes("token=")) return "Invalid callback URL — must contain a token parameter";
+      if (!val.includes("token=")) {return "Invalid callback URL — must contain a token parameter";}
       return undefined;
     },
   });

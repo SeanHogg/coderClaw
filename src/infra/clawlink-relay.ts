@@ -334,9 +334,15 @@ export class ClawLinkRelayService {
             : undefined;
         const artifacts = rawArtifacts
           ? {
-              skills:   Array.isArray(rawArtifacts.skills)   ? (rawArtifacts.skills as string[])   : undefined,
-              personas: Array.isArray(rawArtifacts.personas) ? (rawArtifacts.personas as string[]) : undefined,
-              content:  Array.isArray(rawArtifacts.content)  ? (rawArtifacts.content as string[])  : undefined,
+              skills: Array.isArray(rawArtifacts.skills)
+                ? (rawArtifacts.skills as string[])
+                : undefined,
+              personas: Array.isArray(rawArtifacts.personas)
+                ? (rawArtifacts.personas as string[])
+                : undefined,
+              content: Array.isArray(rawArtifacts.content)
+                ? (rawArtifacts.content as string[])
+                : undefined,
             }
           : undefined;
 
@@ -413,7 +419,7 @@ export class ClawLinkRelayService {
         cursor: this.logsCursor,
         limit: 500,
         maxBytes: 250_000,
-      })) as { cursor?: number; lines?: unknown[]; reset?: boolean };
+      }));
 
       if (typeof res.cursor === "number" && Number.isFinite(res.cursor)) {
         this.logsCursor = res.cursor;

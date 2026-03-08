@@ -11,14 +11,17 @@ assistant: Based on my analysis, here's the situation with "local brain" (the lo
 ## Current State
 
 **Local brain is NOT enabled by default**, but it can be auto-selected when:
+
 - `memorySearch.provider` is set to `"auto"` (the default)
 - A local GGUF model file exists at the configured `local.modelPath` (or the default path)
 
 The configuration lives in:
+
 - Global defaults: `agents.defaults.memorySearch`
 - Per-agent overrides: `agents.list[].memorySearch`
 
 Relevant fields in `memorySearch`:
+
 - `provider`: `"auto" | "openai" | "gemini" | "local" | "voyage"` (default: `"auto"`)
 - `local.modelPath`: path to a GGUF file (if unset, local is not used)
 - `enabled`: boolean (default: `true`) - disables memory search entirely when `false`
@@ -26,6 +29,7 @@ Relevant fields in `memorySearch`:
 ## The "No Switch" Problem
 
 When `provider: auto`, the system attempts to use local embeddings first if a model file exists. There is **no explicit configuration to exclude local from the auto fallback order**. The user must either:
+
 1. Set `provider` to a specific remote provider (`openai`, `gemini`, `voyage`)
 2. Disable memory search entirely (`enabled: false`)
 3. Remove/rename the local model file (outside CoderClaw's control)
@@ -41,7 +45,7 @@ agents:
   defaults:
     memorySearch:
       provider: auto
-      allowedProviders: ["openai", "gemini", "voyage"]  # exclude "local"
+      allowedProviders: ["openai", "gemini", "voyage"] # exclude "local"
 ```
 
 Or add a simple boolean:
@@ -51,12 +55,13 @@ agents:
   defaults:
     memorySearch:
       provider: auto
-      localEnabled: false  # explicitly disable local
+      localEnabled: false # explicitly disable local
 ```
 
 ## Implementation
 
 Would you like me to implement such a switch? I can:
+
 - Add `allowedProviders` or `localEnabled` to `MemorySearchConfig`
 - Update `src/memory/embeddings.ts` to respect it in the auto selection logic
 - Update type definitions and documentation
@@ -71,14 +76,17 @@ Based on my analysis, here's the situation with "local brain" (the local embeddi
 ## Current State
 
 **Local brain is NOT enabled by default**, but it can be auto-selected when:
+
 - `memorySearch.provider` is set to `"auto"` (the default)
 - A local GGUF model file exists at the configured `local.modelPath` (or the default path)
 
 The configuration lives in:
+
 - Global defaults: `agents.defaults.memorySearch`
 - Per-agent overrides: `agents.list[].memorySearch`
 
 Relevant fields in `memorySearch`:
+
 - `provider`: `"auto" | "openai" | "gemini" | "local" | "voyage"` (default: `"auto"`)
 - `local.modelPath`: path to a GGUF file (if unset, local is not used)
 - `enabled`: boolean (default: `true`) - disables memory search entirely when `false`
@@ -86,6 +94,7 @@ Relevant fields in `memorySearch`:
 ## The "No Switch" Problem
 
 When `provider: auto`, the system attempts to use local embeddings first if a model file exists. There is **no explicit configuration to exclude local from the auto fallback order**. The user must either:
+
 1. Set `provider` to a specific remote provider (`openai`, `gemini`, `voyage`)
 2. Disable memory search entirely (`enabled: false`)
 3. Remove/rename the local model file (outside CoderClaw's control)
@@ -101,7 +110,7 @@ agents:
   defaults:
     memorySearch:
       provider: auto
-      allowedProviders: ["openai", "gemini", "voyage"]  # exclude "local"
+      allowedProviders: ["openai", "gemini", "voyage"] # exclude "local"
 ```
 
 Or add a simple boolean:
@@ -111,12 +120,13 @@ agents:
   defaults:
     memorySearch:
       provider: auto
-      localEnabled: false  # explicitly disable local
+      localEnabled: false # explicitly disable local
 ```
 
 ## Implementation
 
 Would you like me to implement such a switch? I can:
+
 - Add `allowedProviders` or `localEnabled` to `MemorySearchConfig`
 - Update `src/memory/embeddings.ts` to respect it in the auto selection logic
 - Update type definitions and documentation
@@ -132,6 +142,7 @@ assistant: **2. Context Window Management** - checking memory file sizes
 assistant: **3. Preference Inference** - reviewing interaction count
 
 Based on the checks:
+
 - ✅ No merge conflict markers found
 - ✅ All memory files under 50KB threshold (SOUL.md: ~7KB, USER.md: ~0.5KB)
 - ❓ Preference inference: Cannot determine interaction count from current context; but USER.md shows no existing "Learned Preferences" section, suggesting either no inferences made yet or the count hasn't reached 10
@@ -145,7 +156,7 @@ assistant: I'll perform the checks outlined in HEARTBEAT.md to determine if anyt
 assistant: Now I'll check for merge conflict markers in the core files:
 assistant: Based on the required checks from HEARTBEAT.md:
 
-**Conflict Detection**: ✅ No merge conflict markers found in SOUL.md, USER.md, or .coderclaw/*.yaml files
+**Conflict Detection**: ✅ No merge conflict markers found in SOUL.md, USER.md, or .coderclaw/\*.yaml files
 
 **Context Window Management**: ✅ All memory files are well under 50KB threshold (largest: 2026-02-27.md at ~34KB). No pruning needed.
 

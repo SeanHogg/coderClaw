@@ -35,6 +35,16 @@ import type { AssistantMessage, StopReason, TextContent, Usage } from "@mariozec
 import { createAssistantMessageEventStream } from "@mariozechner/pi-ai";
 import type { CoderClawConfig } from "../config/config.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
+import { retrieveRelevantContext } from "./coderclawllm-rag.js";
+import { checkLocalBrainRequirements } from "./coderclawllm-syscheck.js";
+import {
+  TOOL_USAGE_HINT,
+  executeToolCall,
+  extractCodeBlocks,
+  formatToolResults,
+  parseToolCalls,
+  type ToolResult,
+} from "./coderclawllm-tools.js";
 import {
   TRANSFORMERS_DEFAULT_CACHE_DIR,
   TRANSFORMERS_DEFAULT_DTYPE,
@@ -45,16 +55,6 @@ import {
   getOrCreatePipeline,
   loadCoderClawMemory,
 } from "./transformers-stream.js";
-import {
-  TOOL_USAGE_HINT,
-  executeToolCall,
-  extractCodeBlocks,
-  formatToolResults,
-  parseToolCalls,
-  type ToolResult,
-} from "./coderclawllm-tools.js";
-import { retrieveRelevantContext } from "./coderclawllm-rag.js";
-import { checkLocalBrainRequirements } from "./coderclawllm-syscheck.js";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -95,7 +95,7 @@ type PipeOutput = Array<{ generated_text: string | Array<{ role: string; content
 
 function extractPipeText(output: PipeOutput): string {
   const first = output[0]?.generated_text;
-  if (typeof first === "string") return first.trim();
+  if (typeof first === "string") {return first.trim();}
   if (Array.isArray(first)) {
     const last = first.findLast((m: { role: string; content: string }) => m.role === "assistant");
     return (last?.content ?? "").trim();
@@ -109,17 +109,14 @@ async function runPipeline(
   maxNewTokens: number,
   temperature: number,
 ): Promise<string> {
-  const output = (await (pipe as (input: unknown, params: unknown) => Promise<unknown>)(
-    messages,
-    {
-      max_new_tokens: maxNewTokens,
-      temperature,
-      do_sample: temperature > 0,
-      top_p: 0.95,
-      repetition_penalty: 1.1,
-      return_full_text: false,
-    },
-  )) as PipeOutput;
+  const output = (await (pipe as (input: unknown, params: unknown) => Promise<unknown>)(messages, {
+    max_new_tokens: maxNewTokens,
+    temperature,
+    do_sample: temperature > 0,
+    top_p: 0.95,
+    repetition_penalty: 1.1,
+    return_full_text: false,
+  })) as PipeOutput;
   return extractPipeText(output);
 }
 
@@ -127,9 +124,9 @@ async function runPipeline(
 
 function resolveApiKey(configured: string): string | undefined {
   const t = configured.trim();
-  if (!t) return undefined;
+  if (!t) {return undefined;}
   // UPPER_SNAKE_CASE → env var name
-  if (/^[A-Z][A-Z0-9_]{2,}$/.test(t)) return process.env[t]?.trim() || undefined;
+  if (/^[A-Z][A-Z0-9_]{2,}$/.test(t)) {return process.env[t]?.trim() || undefined;}
   return t;
 }
 
@@ -161,7 +158,7 @@ async function callOllama(opts: {
       }),
       signal: opts.signal ?? AbortSignal.timeout(60_000),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {return null;}
     const data = (await res.json()) as { message?: { content?: string } };
     return data.message?.content?.trim() ?? null;
   } catch {
@@ -193,7 +190,7 @@ async function callOpenAiCompletions(opts: {
       }),
       signal: opts.signal ?? AbortSignal.timeout(60_000),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {return null;}
     const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
     return data.choices?.[0]?.message?.content?.trim() ?? null;
   } catch {
@@ -234,12 +231,12 @@ async function callOpenAiResponses(opts: {
       }),
       signal: opts.signal ?? AbortSignal.timeout(60_000),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {return null;}
     const data = (await res.json()) as ResponsesOutput;
     for (const block of data.output ?? []) {
       if (block.type === "message") {
         for (const part of block.content ?? []) {
-          if (part.type === "output_text" && part.text) return part.text.trim();
+          if (part.type === "output_text" && part.text) {return part.text.trim();}
         }
       }
     }
@@ -261,12 +258,14 @@ async function callExecutionLlm(opts: {
   const { config, messages, maxTokens, temperature, signal } = opts;
 
   for (const [id, cfg] of Object.entries(config?.models?.providers ?? {})) {
-    if (SKIP_PROVIDERS.has(id.toLowerCase()) || !cfg?.baseUrl) continue;
+    if (SKIP_PROVIDERS.has(id.toLowerCase()) || !cfg?.baseUrl) {continue;}
     const modelId = cfg.models?.[0]?.id;
-    if (!modelId) continue;
+    if (!modelId) {continue;}
 
     const callArgs = { modelId, messages, maxTokens, temperature, signal };
-    log.info(`cortex: calling execution LLM provider=${id} model=${modelId} api=${cfg.api ?? "unknown"}`);
+    log.info(
+      `cortex: calling execution LLM provider=${id} model=${modelId} api=${cfg.api ?? "unknown"}`,
+    );
     const t0 = Date.now();
 
     if (cfg.api === "ollama") {
@@ -277,7 +276,7 @@ async function callExecutionLlm(opts: {
       }
     } else if (cfg.api === "openai-completions") {
       const apiKey = resolveApiKey(cfg.apiKey ?? "");
-      if (!apiKey) continue;
+      if (!apiKey) {continue;}
       const r = await callOpenAiCompletions({ baseUrl: cfg.baseUrl, apiKey, ...callArgs });
       if (r !== null) {
         log.info(`cortex: completed in ${Date.now() - t0}ms (${r.length} chars)`);
@@ -285,7 +284,7 @@ async function callExecutionLlm(opts: {
       }
     } else if (cfg.api === "openai-responses") {
       const apiKey = resolveApiKey(cfg.apiKey ?? "");
-      if (!apiKey) continue;
+      if (!apiKey) {continue;}
       const r = await callOpenAiResponses({ baseUrl: cfg.baseUrl, apiKey, ...callArgs });
       if (r !== null) {
         log.info(`cortex: completed in ${Date.now() - t0}ms (${r.length} chars)`);
@@ -317,7 +316,15 @@ async function runMultiStepChain(opts: {
   allowRunCode: boolean;
   signal?: AbortSignal;
 }): Promise<string> {
-  const { amygdalaPipe, hippocampusPipe, brainPlan, memoryBlock, ragContext, maxTokens, temperature } = opts;
+  const {
+    amygdalaPipe,
+    hippocampusPipe,
+    brainPlan,
+    memoryBlock,
+    ragContext,
+    maxTokens,
+    temperature,
+  } = opts;
 
   // Use hippocampus for the plan pass when available (128K ctx → better plans).
   // Fallback to amygdala if hippocampus couldn't be loaded.
@@ -391,7 +398,7 @@ async function runMultiStepChain(opts: {
           temperature,
           signal: opts.signal,
         });
-        if (fixed !== null) codeResult = fixed;
+        if (fixed !== null) {codeResult = fixed;}
       }
     }
   }
@@ -495,12 +502,11 @@ export function createCoderClawLlmLocalStreamFn(
         }
 
         // ── 2. RAG — retrieve relevant workspace context ───────────────────────
-        const lastUserMsg = [...(context.messages ?? [])].reverse()
-          .find((m) => m.role === "user");
+        const lastUserMsg = [...(context.messages ?? [])].toReversed().find((m) => m.role === "user");
         const queryText =
           typeof lastUserMsg?.content === "string"
             ? lastUserMsg.content
-            : (lastUserMsg?.content as Array<{ text?: string }>)?.[0]?.text ?? "";
+            : ((lastUserMsg?.content as Array<{ text?: string }>)?.[0]?.text ?? "");
 
         const ragContext =
           opts.workspaceDir && queryText
@@ -557,7 +563,11 @@ export function createCoderClawLlmLocalStreamFn(
               provider: model.provider,
               model: model.id,
               usage: {
-                input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0,
+                input: 0,
+                output: 0,
+                cacheRead: 0,
+                cacheWrite: 0,
+                totalTokens: 0,
                 cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
               },
               timestamp: Date.now(),
@@ -581,7 +591,11 @@ export function createCoderClawLlmLocalStreamFn(
         let hippocampusPipe: Awaited<ReturnType<typeof getOrCreatePipeline>> | null = null;
         if (hippocampusEligible) {
           try {
-            hippocampusPipe = await getOrCreatePipeline(hippocampusModelId, hippocampusDtype, cacheDir);
+            hippocampusPipe = await getOrCreatePipeline(
+              hippocampusModelId,
+              hippocampusDtype,
+              cacheDir,
+            );
           } catch {
             log.info("hippocampus: failed to load pipeline — plan pass will use amygdala");
             hippocampusEligible = false;
@@ -601,10 +615,12 @@ export function createCoderClawLlmLocalStreamFn(
         let toolRounds = 0;
         while (toolRounds < MAX_TOOL_ROUNDS && wsDir) {
           const calls = parseToolCalls(amygdalaText);
-          if (calls.length === 0) break;
+          if (calls.length === 0) {break;}
 
           toolRounds++;
-          log.info(`amygdala: tool round ${toolRounds}/${MAX_TOOL_ROUNDS} — ${calls.length} call(s): ${calls.map((c) => c.tool).join(", ")}`);
+          log.info(
+            `amygdala: tool round ${toolRounds}/${MAX_TOOL_ROUNDS} — ${calls.length} call(s): ${calls.map((c) => c.tool).join(", ")}`,
+          );
           const results: ToolResult[] = [];
           for (const call of calls) {
             results.push(await executeToolCall(call, wsDir, { allowRunCode: opts.allowRunCode }));
@@ -620,11 +636,15 @@ export function createCoderClawLlmLocalStreamFn(
         const isDelegating = amygdalaText.toUpperCase().trimStart().startsWith("DELEGATE");
         const brainPlan = amygdalaText.replace(/^DELEGATE[:\s]*/i, "").trim();
 
-        log.info(`routing: amygdala decision=${isDelegating ? "DELEGATE → hippocampus/cortex" : "HANDLE (responding directly)"}`);
+        log.info(
+          `routing: amygdala decision=${isDelegating ? "DELEGATE → hippocampus/cortex" : "HANDLE (responding directly)"}`,
+        );
 
         // ── 5. DELEGATE → hippocampus plans, cortex executes ──────────────────
         if (isDelegating) {
-          log.info(`routing: entering multi-step chain hippocampus=${hippocampusPipe ? "loaded" : "unavailable (amygdala fallback)"} cortex=configured`);
+          log.info(
+            `routing: entering multi-step chain hippocampus=${hippocampusPipe ? "loaded" : "unavailable (amygdala fallback)"} cortex=configured`,
+          );
         }
         const finalText = isDelegating
           ? await runMultiStepChain({
@@ -650,7 +670,11 @@ export function createCoderClawLlmLocalStreamFn(
           : [];
 
         const usage: Usage = {
-          input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0,
+          input: 0,
+          output: 0,
+          cacheRead: 0,
+          cacheWrite: 0,
+          totalTokens: 0,
           cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
         };
 
@@ -682,7 +706,11 @@ export function createCoderClawLlmLocalStreamFn(
             provider: model.provider,
             model: model.id,
             usage: {
-              input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0,
+              input: 0,
+              output: 0,
+              cacheRead: 0,
+              cacheWrite: 0,
+              totalTokens: 0,
               cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
             },
             timestamp: Date.now(),

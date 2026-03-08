@@ -523,13 +523,13 @@ RBAC roles (ascending authority): `viewer` -> `developer` -> `manager` -> `owner
 
 coderClawLLM is the **pay-per-use API layer** for AI agent compute, built into Builderforce:
 
-| Feature               | Detail                                                                    |
-| --------------------- | ------------------------------------------------------------------------- |
-| Free model pool       | Shared, rate-limited pool for development and low-volume workloads        |
-| Pro model pool        | Dedicated, higher-capacity models for production agent pipelines          |
+| Feature               | Detail                                                                      |
+| --------------------- | --------------------------------------------------------------------------- |
+| Free model pool       | Shared, rate-limited pool for development and low-volume workloads          |
+| Pro model pool        | Dedicated, higher-capacity models for production agent pipelines            |
 | OpenAI-compatible API | Use `https://api.builderforce.ai/llm/v1` as the `baseURL` in any OpenAI SDK |
-| Tenant-aware billing  | Usage tracked per tenant and per user (`GET /llm/v1/usage`)               |
-| Automatic failover    | Model routing handles provider outages transparently                      |
+| Tenant-aware billing  | Usage tracked per tenant and per user (`GET /llm/v1/usage`)                 |
+| Automatic failover    | Model routing handles provider outages transparently                        |
 
 Agents authenticate with the same JWT issued by `POST /api/auth/token` — no separate credential management needed. The default model is `coderclawllm/auto` for a managed free-model pool with automatic failover.
 

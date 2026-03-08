@@ -1,10 +1,11 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it, vi } from "vitest";
-import { createCommandHandlers } from "./tui-command-handlers.js";
-import * as selectors from "./components/selectors.js";
+import { describe, expect, it, vi, type Mock } from "vitest";
 import { loadConfig, writeConfigFile } from "../config/config.js";
+import * as selectors from "./components/selectors.js";
+import { createCommandHandlers } from "./tui-command-handlers.js";
+import type { TuiStateAccess } from "./tui-types.js";
 
 // spy on config helpers so tests can verify writes
 vi.hoisted(() => {
@@ -59,19 +60,19 @@ describe("tui command handlers", () => {
 
   it("lets user toggle file logging via settings and persists config", async () => {
     // prepare config mocks
-    (loadConfig as unknown as vi.Mock).mockReturnValue({ logging: { enabled: true } });
+    (loadConfig as unknown as Mock).mockReturnValue({ logging: { enabled: true } });
     const openOverlay = vi.fn();
     const closeOverlay = vi.fn();
 
-    let capturedItems: any[] = [];
+    let capturedItems: unknown[] = [];
     let capturedChange: (id: string, value: string) => void = () => {};
-    const spy = vi.spyOn(selectors, "createSettingsList").mockImplementation(
-      (items, onChange, onCancel) => {
+    const spy = vi
+      .spyOn(selectors, "createSettingsList")
+      .mockImplementation((items, onChange, _onCancel) => {
         capturedItems = items;
         capturedChange = onChange;
-        return {} as any;
-      },
-    );
+        return {} as unknown;
+      });
 
     const state = {
       currentSessionKey: "agent:main:main",

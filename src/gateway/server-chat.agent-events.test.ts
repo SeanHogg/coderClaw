@@ -192,7 +192,7 @@ describe("agent event handler", () => {
       state?: string;
       stopReason?: string;
       errorMessage?: string;
-      message?: any;
+      message?: unknown;
     };
     expect(payload.state).toBe("error");
     expect(payload.stopReason).toBe("error");

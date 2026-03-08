@@ -130,7 +130,7 @@ export async function handleMcpHttpRequest(
   // POST /mcp  →  JSON-RPC 2.0 dispatch (MCP standard transport)
   if (url.pathname === "/mcp" && req.method === "POST") {
     const bodyUnknown = await readJsonBodyOrError(req, res, 512 * 1024);
-    if (bodyUnknown === undefined) return true;
+    if (bodyUnknown === undefined) {return true;}
 
     const body = bodyUnknown as Record<string, unknown>;
     const id = body.id ?? null;
@@ -220,7 +220,7 @@ export async function handleMcpHttpRequest(
   // Legacy REST: POST /mcp/call  (convenience endpoint for non-MCP clients)
   if (url.pathname === "/mcp/call" && req.method === "POST") {
     const bodyUnknown = await readJsonBodyOrError(req, res, 512 * 1024);
-    if (bodyUnknown === undefined) return true;
+    if (bodyUnknown === undefined) {return true;}
 
     const body = bodyUnknown as Record<string, unknown>;
     const toolName = typeof body.tool === "string" ? body.tool : "";

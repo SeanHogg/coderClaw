@@ -21,7 +21,8 @@ const ProjectKnowledgeSchema = Type.Object({
     description: "Root directory of the project",
   }),
   query: Type.String({
-    description: "What to query: 'context', 'rules', 'governance', 'architecture', 'agents', 'memory', or 'all'",
+    description:
+      "What to query: 'context', 'rules', 'governance', 'architecture', 'agents', 'memory', or 'all'",
   }),
 });
 
