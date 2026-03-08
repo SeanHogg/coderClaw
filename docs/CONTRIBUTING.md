@@ -5,6 +5,8 @@ Welcome to the lobster tank! 🦞
 ## Quick Links
 
 - **GitHub:** https://github.com/seanhogg/coderclaw
+- **Docs:** [docs.coderclaw.ai](https://docs.coderclaw.ai) — all documentation lives here and is maintained in the [coderclaw.ai](https://github.com/SeanHogg/coderclaw.ai) repo (`docs-site/`).
+- **Orchestration (Builderforce):** CoderClaw leverages [Builderforce.ai](https://builderforce.ai) — API at **api.builderforce.ai**. Guides: [docs.coderclaw.ai/link/](https://docs.coderclaw.ai/link/) (getting started, API reference, marketplace, multi-agent).
 - **Vision:** [`VISION.md`](VISION.md)
 - **Discord:** https://discord.gg/qkhbAGHRBT
 - **X/Twitter:** [@steipete](https://x.com/steipete) / [@coderclaw](https://x.com/coderclaw)

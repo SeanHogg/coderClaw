@@ -211,14 +211,14 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
       if (!registrationKey) {
         chatLog.addSystem(
-          "coderclawllm requires CoderClawLink registration. Launching setup wizard...",
+          "coderclawllm requires Builderforce registration. Launching setup wizard...",
         );
         if (onSetup) {
           tui.requestRender();
           await onSetup();
           return "onboarding";
         }
-        throw new Error("coderclawllm requires CoderClawLink registration. Run: coderclaw onboard");
+        throw new Error("coderclawllm requires Builderforce registration. Run: coderclaw onboard");
       }
     }
 
@@ -847,7 +847,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         ];
         if (ctx.clawLink) {
           lines.push(
-            `CoderClawLink: instance ${ctx.clawLink.instanceId ?? "?"} (${ctx.clawLink.instanceSlug ?? "?"}) · tenant ${ctx.clawLink.tenantId ?? "?"}`,
+            `Builderforce: instance ${ctx.clawLink.instanceId ?? "?"} (${ctx.clawLink.instanceSlug ?? "?"}) · tenant ${ctx.clawLink.tenantId ?? "?"}`,
           );
         }
         if (ws?.lastSyncedAt) {
@@ -864,11 +864,11 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         const projectRoot = process.cwd();
         const apiKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
         const baseUrl = (
-          readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai"
+          readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai"
         ).replace(/\/+$/, "");
         if (!apiKey) {
           chatLog.addSystem(
-            "Not linked to CoderClawLink (CODERCLAW_LINK_API_KEY not set). Run /setup to configure.",
+            "Not linked to Builderforce (CODERCLAW_LINK_API_KEY not set). Run /setup to configure.",
           );
           break;
         }
@@ -876,11 +876,11 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         const clawId = ctx?.clawLink?.instanceId?.trim();
         if (!clawId) {
           chatLog.addSystem(
-            "No clawLink.instanceId in .coderClaw/context.yaml. Run /init or configure CoderClawLink first.",
+            "No clawLink.instanceId in .coderClaw/context.yaml. Run /init or configure Builderforce first.",
           );
           break;
         }
-        chatLog.addSystem("Syncing .coderClaw directory to CoderClawLink…");
+        chatLog.addSystem("Syncing .coderClaw directory to Builderforce…");
         tui.requestRender();
         try {
           const projectId = ctx?.clawLink?.projectId ? Number(ctx.clawLink.projectId) : undefined;
@@ -893,7 +893,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             triggeredBy: "manual",
           });
           chatLog.addSystem(
-            `Synced ${fileCount} file${fileCount === 1 ? "" : "s"} to CoderClawLink.`,
+            `Synced ${fileCount} file${fileCount === 1 ? "" : "s"} to Builderforce.`,
           );
         } catch (err) {
           chatLog.addSystem(`Sync failed: ${err instanceof Error ? err.message : String(err)}`);

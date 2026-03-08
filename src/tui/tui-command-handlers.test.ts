@@ -318,7 +318,7 @@ describe("tui command handlers", () => {
       expect(onSetup).toHaveBeenCalledTimes(1);
       expect(runLocalCliCommand).not.toHaveBeenCalled();
       expect(addSystem).toHaveBeenCalledWith(
-        "coderclawllm requires CoderClawLink registration. Launching setup wizard...",
+        "coderclawllm requires Builderforce registration. Launching setup wizard...",
       );
       expect(addSystem).not.toHaveBeenCalledWith("model set to coderclawllm/auto");
     } finally {

@@ -195,10 +195,10 @@ export type TransportConfig = {
 
 /**
  * Configuration for the ClawLink transport adapter.
- * Points CoderClaw at a running CoderClawLink instance.
+ * Points CoderClaw at the Builderforce orchestration API (api.builderforce.ai).
  */
 export type ClawLinkConfig = {
-  /** Base URL of the CoderClawLink server, e.g. "http://localhost:8000" */
+  /** Base URL of the Builderforce API, e.g. "https://api.builderforce.ai" */
   baseUrl: string;
   /** Optional tenant JWT used for authenticated API routes */
   authToken?: string;

@@ -88,7 +88,7 @@ describe("buildAuthChoiceOptions", () => {
     expect(chutesGroup?.options.some((opt) => opt.value === "chutes")).toBe(true);
   });
 
-  it("shows CoderClawLink in grouped provider selection", () => {
+  it("shows Builderforce in grouped provider selection", () => {
     const { groups } = buildAuthChoiceGroups({
       store: EMPTY_STORE,
       includeSkip: false,
@@ -96,7 +96,7 @@ describe("buildAuthChoiceOptions", () => {
     const coderClawLinkGroup = groups.find((group) => group.value === "coderclawlink");
 
     expect(coderClawLinkGroup).toBeDefined();
-    expect(coderClawLinkGroup?.label).toBe("CoderClawLink");
+    expect(coderClawLinkGroup?.label).toBe("Builderforce");
     expect(coderClawLinkGroup?.options.some((opt) => opt.value === "custom-api-key")).toBe(true);
   });
 

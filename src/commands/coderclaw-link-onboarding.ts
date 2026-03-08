@@ -64,7 +64,7 @@ export async function promptCoderClawLinkOnboarding(params: {
 }): Promise<string | null> {
   const existingKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
   if (existingKey) {
-    const existingUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai";
+    const existingUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai";
     const existingTenantId = readSharedEnvVar("CODERCLAW_LINK_TENANT_ID");
     const existingCtx = await loadProjectContext(params.projectRoot).catch(() => null);
     const clawLabel =
@@ -80,9 +80,9 @@ export async function promptCoderClawLinkOnboarding(params: {
         "",
         "Run 'coderclaw init --reconnect' to link a different account.",
       ].join("\n"),
-      "Already connected to coderClawLink",
+      "Already connected to Builderforce",
     );
-    return `coderClawLink: already connected (${existingUrl})`;
+    return `Builderforce: already connected (${existingUrl})`;
   }
 
   if (!params.forcePrompt) {
@@ -94,7 +94,7 @@ export async function promptCoderClawLinkOnboarding(params: {
 
   const connect = await confirm({
     message:
-      "Connect to coderClawLink? (optional — manage projects, tasks & agents across your mesh)",
+      "Connect to Builderforce? (optional — manage projects, tasks & agents across your mesh)",
     initialValue: true,
   });
   if (typeof connect === "symbol" || !connect) {
@@ -103,13 +103,13 @@ export async function promptCoderClawLinkOnboarding(params: {
   }
 
   const urlInput = await text({
-    message: "coderClawLink server URL:",
-    initialValue: "https://api.coderclaw.ai",
+    message: "Orchestration API URL (Builderforce):",
+    initialValue: "https://api.builderforce.ai",
   });
   if (typeof urlInput === "symbol") {
     return null;
   }
-  const serverUrl = urlInput.trim().replace(/\/+$/, "") || "https://api.coderclaw.ai";
+  const serverUrl = urlInput.trim().replace(/\/+$/, "") || "https://api.builderforce.ai";
 
   // ── Authentication ─────────────────────────────────────────────────────
   // Prefer browser-based auth when a display is available.
@@ -144,7 +144,7 @@ export async function promptCoderClawLinkOnboarding(params: {
     webToken = result.webToken;
   } else {
     const authMode = await select({
-      message: "Do you have a coderClawLink account?",
+      message: "Do you have a Builderforce account?",
       options: [
         { value: "login", label: "Yes — log in" },
         { value: "register", label: "No  — create a free account" },
@@ -357,8 +357,8 @@ export async function promptCoderClawLinkOnboarding(params: {
       `Instance slug: ${clawSlug}  ·  tenant: ${tenantId}`,
       projectId ? `Project ${projectAction}: ${projectId}` : "Project mapping: not available",
     ].join("\n"),
-    "coderClawLink connected",
+    "Builderforce connected",
   );
 
-  return `coderClawLink: ${clawName} (${clawSlug}) on tenant ${tenantId}`;
+  return `Builderforce: ${clawName} (${clawSlug}) on tenant ${tenantId}`;
 }

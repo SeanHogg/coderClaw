@@ -47,7 +47,7 @@ export async function runCoderClawSession(
   if (context?.clawLink) {
     const label =
       context.clawLink.instanceSlug ?? context.clawLink.instanceName ?? context.clawLink.instanceId;
-    lines.push(theme.muted(`  \u{1F517} coderClawLink \u00b7 ${label}`));
+    lines.push(theme.muted(`  \u{1F517} Builderforce \u00b7 ${label}`));
   }
   lines.push(theme.muted(`  ${cwd}`));
   if (context?.projectName && context.projectName !== path.basename(projectRoot)) {
@@ -529,7 +529,7 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
     chosen === "gemini"
   ) {
     if (chosen === "coderclawllm") {
-      // CoderClawLLM routes through CoderClawLink's managed proxy, so it
+      // CoderClawLLM routes through Builderforce's managed proxy, so it
       // requires a Link API key. If the user doesn't have one yet, offer
       // inline registration (mirrors the gateway onboarding wizard flow).
       const existingKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
@@ -550,7 +550,7 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
         if (!keyAfter) {
           note(
             [
-              "CoderClawLLM requires a CoderClawLink account to work.",
+              "CoderClawLLM requires a Builderforce account to work.",
               "You can connect later with: coderclaw init --reconnect",
               "Or switch to a different provider with: coderclaw init",
             ].join("\n"),
@@ -711,7 +711,7 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
 }
 
 // ---------------------------------------------------------------------------
-// CoderClawLink connection wizard
+// Builderforce connection wizard
 // ---------------------------------------------------------------------------
 
 /** Thin fetch wrapper — throws a descriptive error on non-2xx. */
@@ -773,7 +773,7 @@ async function ensureProjectMappingFromStoredCreds(params: {
   projectName: string;
   description?: string;
 }): Promise<void> {
-  const serverUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai";
+  const serverUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai";
   const webToken = readSharedEnvVar("CODERCLAW_LINK_WEB_TOKEN");
   const tenantIdRaw = readSharedEnvVar("CODERCLAW_LINK_TENANT_ID");
   if (!webToken || !tenantIdRaw) {
@@ -824,7 +824,7 @@ async function ensureProjectMappingFromStoredCreds(params: {
 }
 
 /**
- * Full API-driven coderClawLink onboarding wizard.
+ * Full API-driven Builderforce onboarding wizard.
  *
  * Flow:
  *   1. Offer to skip
@@ -841,7 +841,7 @@ async function promptClawLink(
   // ── Already connected? Check global ~/.coderclaw/.env first ──────────────
   const existingKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
   if (existingKey) {
-    const existingUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai";
+    const existingUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai";
     const existingTenantId = readSharedEnvVar("CODERCLAW_LINK_TENANT_ID");
     // Also check project context for the claw slug
     const existingCtx = await loadProjectContext(projectRoot).catch(() => null);
@@ -858,9 +858,9 @@ async function promptClawLink(
         ``,
         `Run 'coderclaw init --reconnect' to link a different account.`,
       ].join("\n"),
-      "Already connected to coderClawLink",
+      "Already connected to Builderforce",
     );
-    return `coderClawLink: already connected (${existingUrl})`;
+    return `Builderforce: already connected (${existingUrl})`;
   }
 
   // ── Previously declined? Skip silently ───────────────────────────────────
@@ -871,7 +871,7 @@ async function promptClawLink(
 
   const connect = await confirm({
     message:
-      "Connect to coderClawLink? (optional — manage projects, tasks & agents across your mesh)",
+      "Connect to Builderforce? (optional — manage projects, tasks & agents across your mesh)",
     initialValue: true,
   });
   if (typeof connect === "symbol" || !connect) {
@@ -879,7 +879,7 @@ async function promptClawLink(
     // The user can connect later: coderclaw init --reconnect
     upsertSharedEnvVar({ key: "CODERCLAW_LINK_SKIPPED", value: "1" });
     note(
-      "You can connect to coderClawLink anytime with: coderclaw init --reconnect",
+      "You can connect to Builderforce anytime with: coderclaw init --reconnect",
       "Skipped",
     );
     return null;
@@ -887,17 +887,17 @@ async function promptClawLink(
 
   // ── 1. Server URL ─────────────────────────────────────────────────────────
   const urlInput = await text({
-    message: "coderClawLink server URL:",
-    initialValue: "https://api.coderclaw.ai",
+    message: "Orchestration API URL (Builderforce):",
+    initialValue: "https://api.builderforce.ai",
   });
   if (typeof urlInput === "symbol") {
     return null;
   }
-  const serverUrl = urlInput.trim().replace(/\/+$/, "") || "https://api.coderclaw.ai";
+  const serverUrl = urlInput.trim().replace(/\/+$/, "") || "https://api.builderforce.ai";
 
   // ── 2. Login or register ──────────────────────────────────────────────────
   const authMode = await select({
-    message: "Do you have a coderClawLink account?",
+    message: "Do you have a Builderforce account?",
     options: [
       { value: "login", label: "Yes — log in" },
       { value: "register", label: "No  — create a free account" },
@@ -1105,10 +1105,10 @@ async function promptClawLink(
       `Instance slug: ${clawSlug}  ·  tenant: ${tenantId}`,
       projectId ? `Project ${projectAction}: ${projectId}` : `Project mapping: not available`,
     ].join("\n"),
-    "coderClawLink connected",
+    "Builderforce connected",
   );
 
-  return `coderClawLink: ${clawName} (${clawSlug}) on tenant ${tenantId}`;
+  return `Builderforce: ${clawName} (${clawSlug}) on tenant ${tenantId}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -1242,7 +1242,7 @@ export function createInitCommand(): Command {
         // LLM provider setup
         await promptLlmProvider(projectRoot);
 
-        // CoderClawLink connection
+        // Builderforce connection
         await promptClawLink(projectRoot, projectNameInput || detected.projectName);
         await ensureProjectMappingFromStoredCreds({
           projectRoot,

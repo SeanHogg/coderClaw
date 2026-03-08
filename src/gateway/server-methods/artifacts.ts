@@ -1,7 +1,7 @@
 /**
  * Gateway method handler: artifacts.sync
  *
- * Receives artifact assignments pushed from coderClawLink via the relay
+ * Receives artifact assignments pushed from Builderforce via the relay
  * and applies them to the local claw (persona assignments, skill activation,
  * content references).
  */
@@ -55,7 +55,7 @@ export const artifactsHandlers: GatewayRequestHandlers = {
     }
 
     // ── Skill references ──────────────────────────────────────────────────
-    // Skills assigned via coderClawLink are marketplace slugs. We store them
+    // Skills assigned via Builderforce are marketplace slugs. We store them
     // in a lightweight side-file (.coderClaw/assigned-artifacts.json) so the
     // agent system prompt builder can inject them as context. Actual skill
     // files are expected to already be present on the claw (synced or bundled).

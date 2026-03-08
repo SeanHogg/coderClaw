@@ -465,7 +465,7 @@ export async function runOnboardingWizard(
       if (!sharedKey) {
         await prompter.note(
           [
-            "CoderClawLLM requires CoderClawLink registration.",
+            "CoderClawLLM requires Builderforce registration.",
             "Complete login/registration now so /model coderclawllm/auto works immediately.",
             "You can skip this and connect later — use /setup or: coderclaw init --reconnect",
           ].join("\n"),
@@ -488,7 +488,7 @@ export async function runOnboardingWizard(
         if (!keyAfterWizard) {
           await prompter.note(
             [
-              "CoderClawLLM won't work until you connect to CoderClawLink.",
+              "CoderClawLLM won't work until you connect to Builderforce.",
               "You can still use CoderClaw — switch models with /model or connect later.",
             ].join("\n"),
             "Skipped",

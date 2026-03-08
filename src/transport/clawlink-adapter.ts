@@ -1,12 +1,12 @@
 /**
  * ClawLink transport adapter
  *
- * Connects CoderClaw's orchestration engine to a running CoderClawLink
- * instance (https://github.com/SeanHogg/coderClawLink) over its HTTP runtime API.  Both sides share the same transport abstraction
- * contract, so CoderClaw can delegate task execution to CoderClawLink
+* Connects CoderClaw's orchestration engine to Builderforce (api.builderforce.ai)
+* over its HTTP runtime API. Both sides share the same transport abstraction
+* contract, so CoderClaw can delegate task execution to Builderforce.
  * seamlessly — local agents and remote ClawLink agents are interchangeable.
  *
- * CoderClawLink API surface used here:
+ * Builderforce API surface used here:
  *   POST   /api/runtime/executions
  *   GET    /api/runtime/executions/{id}
  *   POST   /api/runtime/executions/{id}/cancel
@@ -26,7 +26,7 @@ import type {
 } from "./types.js";
 
 // ---------------------------------------------------------------------------
-// ClawLink API response shapes (as documented in coderClawLink/app/api/runtime.py)
+// Builderforce API response shapes (runtime executions)
 // ---------------------------------------------------------------------------
 
 type ClawLinkExecutionStatus =
@@ -138,7 +138,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
   }
 
   async *streamTaskUpdates(taskId: string): AsyncIterableIterator<TaskUpdateEvent> {
-    // CoderClawLink currently exposes polling; WebSocket streaming is on its roadmap.
+    // Builderforce exposes polling; WebSocket streaming may be added later.
     // We poll until the task reaches a terminal state.
     const terminal = new Set<TaskStatus>(["completed", "failed", "cancelled"]);
     let last: TaskStatus = "pending";

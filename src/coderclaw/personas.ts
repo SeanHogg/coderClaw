@@ -4,7 +4,7 @@
  * Personas are agent roles that can be:
  *  - Shipped as built-ins in coderClaw core
  *  - Installed from the ClawHub marketplace (`clawhub install <persona>`)
- *  - Assigned to a specific claw instance via coderClawLink
+ *  - Assigned to a specific claw instance via Builderforce
  *  - Defined locally in `.coderClaw/personas/*.yaml` (project-scoped)
  *  - Defined globally in `~/.coderclaw/personas/*.yaml` (user-global)
  *
@@ -105,7 +105,7 @@ export class PersonaRegistry {
   }
 
   /**
-   * Apply persona assignments (e.g. from context.yaml or coderClawLink).
+   * Apply persona assignments (e.g. from context.yaml or Builderforce).
    * Marks matching personas as active; unknown names are stored and will
    * activate if the persona is registered later.
    */
@@ -136,7 +136,7 @@ export class PersonaRegistry {
   }
 
   /**
-   * Deactivate a persona.  The assignment record is retained so coderClawLink
+   * Deactivate a persona.  The assignment record is retained so Builderforce
    * can see it was intentionally deactivated vs. never assigned.
    */
   deactivate(name: string): void {

@@ -1,9 +1,9 @@
 /**
- * Localhost callback server for browser-based CoderClawLink authentication.
+ * Localhost callback server for browser-based Builderforce authentication.
  *
  * Flow:
  *   1. CLI starts an HTTP server on 127.0.0.1:<CALLBACK_PORT>
- *   2. CLI opens the user's browser to the CoderClawLink CLI auth page
+ *   2. CLI opens the user's browser to the Builderforce CLI auth page
  *   3. User logs in / registers in the browser
  *   4. Browser redirects to localhost callback with token + state
  *   5. CLI validates state, extracts webToken, and shuts down the server
@@ -47,7 +47,7 @@ export interface BrowserAuthResult {
 }
 
 /**
- * Authenticate with CoderClawLink via the user's browser.
+ * Authenticate with Builderforce via the user's browser.
  *
  * @returns The `webToken` (WebJWT) on success, or `null` if the user cancels.
  */
@@ -58,8 +58,10 @@ export async function authenticateViaBrowser(opts: {
   const state = randomBytes(16).toString("hex");
   const callbackUrl = `http://localhost:${CALLBACK_PORT}/callback`;
 
-  // Derive the app URL from the API URL.
-  const appUrl = opts.serverUrl.replace("api.coderclaw.ai", "app.coderclaw.ai");
+  // Derive the app URL from the API URL (Builderforce.ai).
+  const appUrl = opts.serverUrl
+    .replace("api.builderforce.ai", "builderforce.ai")
+    .replace("api.coderclaw.ai", "builderforce.ai");
   const authUrl =
     `${appUrl}/auth/cli` +
     `?callback=${encodeURIComponent(callbackUrl)}` +
@@ -88,7 +90,7 @@ async function authenticateWithCallbackServer(opts: {
 
   await opts.prompter.note(
     `Opening browser for authentication…\n${opts.authUrl}`,
-    "CoderClawLink Auth",
+    "Builderforce Auth",
   );
 
   const opened = await openUrl(opts.authUrl);
@@ -126,7 +128,7 @@ async function authenticateManually(opts: {
       "",
       "After authenticating, paste the full callback URL shown in the browser.",
     ].join("\n"),
-    "CoderClawLink Auth (manual)",
+    "Builderforce Auth (manual)",
   );
 
   const pastedUrl = await opts.prompter.text({

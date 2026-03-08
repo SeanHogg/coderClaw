@@ -219,7 +219,7 @@ export async function resolveApiKeyForProvider(params: {
       };
     }
     throw new Error(
-      `No CoderClawLink registration found for provider "coderclawllm". Run ${formatCliCommand("coderclaw onboard")} (or /setup in TUI) to register your claw, then retry.`,
+      `No Builderforce registration found for provider "coderclawllm". Run ${formatCliCommand("coderclaw onboard")} (or /setup in TUI) to register your claw, then retry.`,
     );
   }
 

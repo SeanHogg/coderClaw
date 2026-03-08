@@ -323,7 +323,7 @@ describe("getApiKeyForModel", () => {
       }
 
       expect(String(error)).toContain(
-        'No CoderClawLink registration found for provider "coderclawllm".',
+        'No Builderforce registration found for provider "coderclawllm".',
       );
       expect(String(error)).toContain("coderclaw onboard");
     } finally {

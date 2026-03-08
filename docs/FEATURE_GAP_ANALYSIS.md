@@ -171,7 +171,7 @@ dangerous for production codebases.
    - `/reject` — discard all staged changes
    - `/reject <file>` — discard one file
 
-4. **coderClawLink integration**: staged diffs can be posted to the portal for remote
+4. **Builderforce integration**: staged diffs can be posted to the portal for remote
    review (P1-4 in CODERCLAW_LINK_GAPS.md).
 
 **Estimate**: M (4–5 days)  

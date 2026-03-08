@@ -76,7 +76,7 @@ type RunAccumulator = {
 
 /**
  * Listens for agent run completions and writes a timestamped activity entry to
- * .coderclaw/memory/YYYY-MM-DD.md, then syncs .coderclaw/ to CoderClawLink if credentials
+ * .coderclaw/memory/YYYY-MM-DD.md, then syncs .coderclaw/ to Builderforce if credentials
  * are configured.
  */
 export class KnowledgeLoopService {
@@ -192,13 +192,13 @@ export class KnowledgeLoopService {
     const syncParams: SyncCoderClawDirParams = {
       workspaceDir,
       apiKey,
-      baseUrl: baseUrl ?? "https://api.coderclaw.ai",
+      baseUrl: baseUrl ?? "https://api.builderforce.ai",
       clawId,
       projectId,
     };
     try {
       await syncCoderClawDirectory(syncParams);
-      logDebug("[knowledge-loop] .coderClaw/ synced to CoderClawLink");
+      logDebug("[knowledge-loop] .coderClaw/ synced to Builderforce");
     } catch (err) {
       logDebug(`[knowledge-loop] sync failed: ${String(err)}`);
     }

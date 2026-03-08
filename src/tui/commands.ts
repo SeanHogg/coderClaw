@@ -140,7 +140,7 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
           .map((value) => ({ value, label: value })),
     },
     { name: "project", description: "Show project context from .coderClaw directory" },
-    { name: "sync", description: "Force sync .coderClaw directory to CoderClawLink" },
+    { name: "sync", description: "Force sync .coderClaw directory to Builderforce" },
     {
       name: "spec",
       description: "Run a spec-driven planning workflow (PRD → architecture → tasks)",

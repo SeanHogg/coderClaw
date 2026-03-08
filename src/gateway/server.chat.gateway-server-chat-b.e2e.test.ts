@@ -186,7 +186,7 @@ describe("gateway server chat", () => {
       spy.mockImplementationOnce(async (_ctx: unknown, opts?: GetReplyOptions) => {
         opts?.onAgentRunStart?.(opts.runId ?? "idem-pre-reply-fail");
         return {
-          text: "⚠️ Agent failed before reply: No CoderClawLink registration found.",
+          text: "⚠️ Agent failed before reply: No Builderforce registration found.",
         };
       });
 

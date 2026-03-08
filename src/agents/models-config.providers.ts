@@ -623,10 +623,10 @@ export function buildQianfanProvider(): ProviderConfig {
 }
 
 // ---------------------------------------------------------------------------
-// coderClawLLM — first-party free-model proxy (api.coderclaw.ai/llm)
+// coderClawLLM — first-party free-model proxy (api.builderforce.ai/llm)
 // ---------------------------------------------------------------------------
 
-const CODERCLAWLLM_BASE_URL = "https://api.coderclaw.ai/llm/v1";
+const CODERCLAWLLM_BASE_URL = "https://api.builderforce.ai/llm/v1";
 const CODERCLAWLLM_FREE_COST = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
 
 export function buildCoderclawllmProvider(): ProviderConfig {
@@ -862,7 +862,7 @@ export async function resolveImplicitProviders(params: {
   }
 
   // coderClawLLM — first-party free-model proxy.
-  // This provider is always available; the server-side OpenRouter key lives in CoderClawLink.
+  // This provider is always available; the server-side OpenRouter key lives in Builderforce.
   providers.coderclawllm = {
     ...buildCoderclawllmProvider(),
     apiKey: "coderclawllm-proxy",

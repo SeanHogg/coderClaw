@@ -34,7 +34,7 @@ export type ProjectContext = {
     instanceSlug?: string;
     /** Human-readable name for this project's claw instance */
     instanceName?: string;
-    /** Linked project id in coderClawLink */
+    /** Linked project id in Builderforce */
     projectId?: string;
     /** Tenant this claw belongs to */
     tenantId?: number;
@@ -43,7 +43,7 @@ export type ProjectContext = {
   };
   /**
    * Persona assignments for this claw.
-   * Managed by coderClawLink — do not edit manually.
+   * Managed by Builderforce — do not edit manually.
    */
   personas?: {
     assignments: PersonaAssignment[];
@@ -277,11 +277,11 @@ export type PersonaSource =
   | "user-global" // ~/.coderclaw/personas/ (user-installed, all projects)
   | "project-local" // .coderClaw/personas/ (project-scoped)
   | "clawhub" // Installed from ClawHub marketplace
-  | "clawlink-assigned"; // Pushed to this claw from coderClawLink
+  | "clawlink-assigned"; // Pushed to this claw from Builderforce
 
 /**
  * Marketplace and versioning metadata for a persona plugin.
- * Present when a persona was installed from ClawHub or assigned via coderClawLink.
+ * Present when a persona was installed from ClawHub or assigned via Builderforce.
  */
 export type PersonaPluginMetadata = {
   /** ClawHub marketplace identifier, e.g. "acme/senior-security-reviewer" */
@@ -323,7 +323,7 @@ export type PersonaPlugin = AgentRole & {
 
 /**
  * A persona assignment record stored in `context.yaml` under `personas.assignments`.
- * Created by coderClawLink when an operator assigns a persona to a specific claw,
+ * Created by Builderforce when an operator assigns a persona to a specific claw,
  * or locally when a user activates a persona with `coderclaw persona activate <name>`.
  */
 export type PersonaAssignment = {
@@ -331,7 +331,7 @@ export type PersonaAssignment = {
   name: string;
   /** ClawHub ID — used for license verification on activation */
   clawhubId?: string;
-  /** True when this assignment was pushed from coderClawLink (not manually set) */
+  /** True when this assignment was pushed from Builderforce (not manually set) */
   assignedByClawLink?: boolean;
   /** ISO 8601 timestamp of when the assignment was created */
   assignedAt?: string;

@@ -27,12 +27,12 @@ The AI developer tools market is growing rapidly. Key segments:
 - **Product**: Self-hosted CoderClaw gateway (MIT licensed, always free)
 - **Target**: Individual developers, open-source projects
 - **Includes**: All 7 agent roles, local workflows, basic memory, 53 skills, all channels
-- **Limits**: Local execution only, no coderClawLink portal, community support only
+- **Limits**: Local execution only, no Builderforce portal, community support only
 - **Goal**: Maximum adoption, community contributions, brand recognition
 
-### 2.2 coderClawLink Pro (SaaS Subscription)
+### 2.2 Builderforce Pro (SaaS Subscription)
 
-- **Product**: coderClawLink cloud portal (`app.coderclaw.ai`)
+- **Product**: Builderforce cloud portal (builderforce.ai)
 - **Target**: Individual developers and small teams (2–20 developers)
 - **Pricing model**: Per-seat/month subscription
 
@@ -54,7 +54,7 @@ The AI developer tools market is growing rapidly. Key segments:
 
 ### 2.3 coderClawLLM (AI Compute API)
 
-- **Product**: OpenAI-compatible API at `api.coderclaw.ai/llm/v1`
+- **Product**: OpenAI-compatible API at `api.builderforce.ai/llm/v1`
 - **Target**: Developers who want managed model access without vendor accounts
 - **Model**: Pay-per-token (usage-based)
 
@@ -69,11 +69,11 @@ The AI developer tools market is growing rapidly. Key segments:
 
 ### 2.4 Enterprise License
 
-- **Product**: Self-hosted coderClawLink (Docker/Kubernetes)
+- **Product**: Self-hosted Builderforce (Docker/Kubernetes)
 - **Target**: Enterprises with data residency requirements (HIPAA, SOC 2, FedRAMP-adjacent)
 - **Pricing**: Annual contract, starts at $50K/year
 - **Includes**:
-  - On-premises coderClawLink deployment
+  - On-premises Builderforce deployment
   - Dedicated Postgres/Cloudflare Workers deployment kit
   - SLA with 99.9% uptime guarantee
   - Dedicated support channel (Slack)
@@ -120,7 +120,7 @@ The AI developer tools market is growing rapidly. Key segments:
 
 **Actions**:
 
-1. Launch coderClawLink Pro with live workflow DAG (P0 feature gap)
+1. Launch Builderforce Pro with live workflow DAG (P0 feature gap)
 2. Ship inline diff / pair programming mode (P1 gap — targets Aider switchers)
 3. MCP semantic codebase search (targets Cursor/Continue.dev switchers)
 4. GitHub issue → PR end-to-end workflow (killer demo feature)
@@ -162,7 +162,7 @@ The AI developer tools market is growing rapidly. Key segments:
 | Item                         | Description                   | Revenue impact |
 | ---------------------------- | ----------------------------- | -------------- |
 | ✅ Multi-agent orchestration | 7 roles, DAG workflows        | Foundation     |
-| ✅ coderClawLink relay       | Cloud portal integration      | Foundation     |
+| ✅ Builderforce relay        | Cloud portal integration      | Foundation     |
 | ✅ Knowledge loop            | Memory, semantic summaries    | Foundation     |
 | 🔲 Live workflow UI (P0)     | DAG + task progress in portal | Pro unlock     |
 | 🔲 MCP semantic search (P0)  | Vector codebase search        | Retention      |
@@ -173,7 +173,7 @@ The AI developer tools market is growing rapidly. Key segments:
 | ----------------------------- | ------------------------------- | -------------- |
 | 🔲 Inline diff / pair mode    | Accept/reject diff workflow     | Acquisition    |
 | 🔲 GitHub issue → PR workflow | End-to-end issue resolution     | Acquisition    |
-| 🔲 coderClawLink Pro launch   | Subscription billing            | $19–149/mo     |
+| 🔲 Builderforce Pro launch   | Subscription billing            | $19–149/mo     |
 | 🔲 Persona profiles           | Per-session model+system prompt | Retention      |
 | 🔲 Session auto-checkpoint    | Auto-save on exit               | Retention      |
 
@@ -215,7 +215,7 @@ The AI developer tools market is growing rapidly. Key segments:
 ### Retention
 
 - DAU/MAU ratio (target: 30%+)
-- Weekly active claws connected to coderClawLink
+- Weekly active claws connected to Builderforce
 - Average sessions per user per week
 
 ### Revenue

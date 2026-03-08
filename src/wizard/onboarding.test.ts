@@ -486,7 +486,7 @@ describe("runOnboardingWizard", () => {
     expect(setupChannels).not.toHaveBeenCalled();
   });
 
-  it("runs CoderClawLink registration wizard when coderclawllm is selected without key", async () => {
+  it("runs Builderforce registration wizard when coderclawllm is selected without key", async () => {
     promptCoderClawLinkOnboarding.mockClear();
     const prevStateDir = process.env.CODERCLAW_STATE_DIR;
     const prevLinkKey = process.env.CODERCLAW_LINK_API_KEY;

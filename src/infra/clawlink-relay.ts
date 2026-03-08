@@ -1,7 +1,7 @@
 /**
  * ClawLinkRelayService
  *
- * Persistent upstream WebSocket connection from coderClaw → coderClawLink relay.
+ * Persistent upstream WebSocket connection from coderClaw → Builderforce relay.
  * Bridges bidirectional chat:
  *   - Browser → ClawRelayDO → upstream WS → this service → local gateway → agent
  *   - Agent → local gateway events → this service → upstream WS → ClawRelayDO → browsers
@@ -51,7 +51,7 @@ function extractChatRole(message: unknown): "user" | "assistant" {
 }
 
 export type ClawLinkRelayOptions = {
-  /** Base HTTP(S) URL of coderClawLink, e.g. "https://api.coderclaw.ai" */
+  /** Base HTTP(S) URL of Builderforce, e.g. "https://api.builderforce.ai" */
   baseUrl: string;
   /** Numeric claw instance id (as string), from context.clawLink.instanceId */
   clawId: string;
