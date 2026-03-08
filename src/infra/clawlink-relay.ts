@@ -415,11 +415,11 @@ export class ClawLinkRelayService {
       return;
     }
     try {
-      const res = (await this.gatewayClient.request("logs.tail", {
+      const res = await this.gatewayClient.request("logs.tail", {
         cursor: this.logsCursor,
         limit: 500,
         maxBytes: 250_000,
-      }));
+      });
 
       if (typeof res.cursor === "number" && Number.isFinite(res.cursor)) {
         this.logsCursor = res.cursor;

@@ -136,7 +136,8 @@ export const systemHandlers: GatewayRequestHandlers = {
   },
   "config.reload": async ({ respond, context }) => {
     // This will be available after we add configReloader to context
-    const configReloader = (context as { configReloader?: { trigger: () => Promise<void> } }).configReloader;
+    const configReloader = (context as { configReloader?: { trigger: () => Promise<void> } })
+      .configReloader;
     if (!configReloader?.trigger) {
       respond(
         false,

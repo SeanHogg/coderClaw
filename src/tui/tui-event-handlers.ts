@@ -775,7 +775,11 @@ export function createEventHandlers(context: EventHandlerContext) {
     // final event, so accept finalized runs for tool updates.
     // Ensure we always have a stats object for the run as soon as it starts so we can
     // emit an activity summary even if no tools are invoked.
-    if (evt.stream === "lifecycle" && evt.data && (evt.data as any).phase === "start") {
+    if (
+      evt.stream === "lifecycle" &&
+      evt.data &&
+      (evt.data as { phase?: string }).phase === "start"
+    ) {
       getRunActivity(evt.runId);
     }
     const isActiveRun = evt.runId === state.activeChatRunId;

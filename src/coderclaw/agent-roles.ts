@@ -353,11 +353,15 @@ export function findAgentRole(
 ): AgentRole | null {
   // 1. Check built-ins first (they take precedence)
   const builtin = getBuiltInAgentRoles().find((role) => role.name === name);
-  if (builtin) {return builtin;}
+  if (builtin) {
+    return builtin;
+  }
 
   // 2. Check manually registered custom roles (.coderClaw/agents/)
   const custom = customRoles.find((role) => role.name === name);
-  if (custom) {return custom;}
+  if (custom) {
+    return custom;
+  }
 
   // 3. Delegate to PersonaRegistry (marketplace / coderClawLink / personas dirs)
   return globalPersonaRegistry.resolve(name);

@@ -5,7 +5,7 @@ const { execSync } = require("child_process");
 
 const rootDir = path.join(__dirname, "..", "..");
 const memoryDir = path.join(rootDir, ".coderClaw", "memory");
-const memIndexPath = path.join(rootDir, ".coderClaw", "memory-index.json");
+const _memIndexPath = path.join(rootDir, ".coderClaw", "memory-index.json");
 const memFilePath = path.join(rootDir, "MEMORY.md");
 
 function ensureDir(dir) {

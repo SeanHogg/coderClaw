@@ -131,7 +131,9 @@ async function authenticateManually(opts: {
   const pastedUrl = await opts.prompter.text({
     message: "Paste the callback URL:",
     validate: (val: string) => {
-      if (!val.includes("token=")) {return "Invalid callback URL — must contain a token parameter";}
+      if (!val.includes("token=")) {
+        return "Invalid callback URL — must contain a token parameter";
+      }
       return undefined;
     },
   });

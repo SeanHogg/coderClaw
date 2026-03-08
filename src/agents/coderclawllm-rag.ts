@@ -30,7 +30,9 @@ const DEFAULT_TOP_K = 3;
 // ── File walker ───────────────────────────────────────────────────────────────
 
 async function walkSourceFiles(dir: string, files: string[] = []): Promise<string[]> {
-  if (files.length >= MAX_SCAN_FILES) {return files;}
+  if (files.length >= MAX_SCAN_FILES) {
+    return files;
+  }
   let entries: import("node:fs").Dirent<string>[];
   try {
     entries = await fs.readdir(dir, { withFileTypes: true, encoding: "utf-8" });
@@ -38,7 +40,9 @@ async function walkSourceFiles(dir: string, files: string[] = []): Promise<strin
     return files;
   }
   for (const entry of entries) {
-    if (files.length >= MAX_SCAN_FILES) {break;}
+    if (files.length >= MAX_SCAN_FILES) {
+      break;
+    }
     if (entry.isDirectory()) {
       if (!SKIP_DIRS.has(entry.name) && !entry.name.startsWith(".")) {
         await walkSourceFiles(path.join(dir, entry.name), files);
@@ -67,7 +71,9 @@ function score(queryTokens: Set<string>, fileContent: string): number {
   const fileTokens = tokenise(fileContent);
   let hits = 0;
   for (const t of queryTokens) {
-    if (fileTokens.has(t)) {hits++;}
+    if (fileTokens.has(t)) {
+      hits++;
+    }
   }
   return hits;
 }
@@ -89,10 +95,14 @@ export async function retrieveRelevantContext(opts: {
   const topK = opts.topK ?? DEFAULT_TOP_K;
   const maxChars = opts.maxExcerptChars ?? MAX_EXCERPT_CHARS;
   const queryTokens = tokenise(opts.query);
-  if (queryTokens.size === 0) {return "";}
+  if (queryTokens.size === 0) {
+    return "";
+  }
 
   const files = await walkSourceFiles(opts.workspaceDir);
-  if (files.length === 0) {return "";}
+  if (files.length === 0) {
+    return "";
+  }
 
   // FIX #4: process in bounded batches to avoid memory pressure on large repos.
   const scored: Array<{ file: string; score: number; excerpt: string }> = [];
@@ -118,7 +128,9 @@ export async function retrieveRelevantContext(opts: {
     );
   }
 
-  if (scored.length === 0) {return "";}
+  if (scored.length === 0) {
+    return "";
+  }
 
   scored.sort((a, b) => b.score - a.score);
   const top = scored.slice(0, topK);

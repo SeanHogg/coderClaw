@@ -95,7 +95,9 @@ type PipeOutput = Array<{ generated_text: string | Array<{ role: string; content
 
 function extractPipeText(output: PipeOutput): string {
   const first = output[0]?.generated_text;
-  if (typeof first === "string") {return first.trim();}
+  if (typeof first === "string") {
+    return first.trim();
+  }
   if (Array.isArray(first)) {
     const last = first.findLast((m: { role: string; content: string }) => m.role === "assistant");
     return (last?.content ?? "").trim();
@@ -124,9 +126,13 @@ async function runPipeline(
 
 function resolveApiKey(configured: string): string | undefined {
   const t = configured.trim();
-  if (!t) {return undefined;}
+  if (!t) {
+    return undefined;
+  }
   // UPPER_SNAKE_CASE → env var name
-  if (/^[A-Z][A-Z0-9_]{2,}$/.test(t)) {return process.env[t]?.trim() || undefined;}
+  if (/^[A-Z][A-Z0-9_]{2,}$/.test(t)) {
+    return process.env[t]?.trim() || undefined;
+  }
   return t;
 }
 
@@ -158,7 +164,9 @@ async function callOllama(opts: {
       }),
       signal: opts.signal ?? AbortSignal.timeout(60_000),
     });
-    if (!res.ok) {return null;}
+    if (!res.ok) {
+      return null;
+    }
     const data = (await res.json()) as { message?: { content?: string } };
     return data.message?.content?.trim() ?? null;
   } catch {
@@ -190,7 +198,9 @@ async function callOpenAiCompletions(opts: {
       }),
       signal: opts.signal ?? AbortSignal.timeout(60_000),
     });
-    if (!res.ok) {return null;}
+    if (!res.ok) {
+      return null;
+    }
     const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
     return data.choices?.[0]?.message?.content?.trim() ?? null;
   } catch {
@@ -231,12 +241,16 @@ async function callOpenAiResponses(opts: {
       }),
       signal: opts.signal ?? AbortSignal.timeout(60_000),
     });
-    if (!res.ok) {return null;}
+    if (!res.ok) {
+      return null;
+    }
     const data = (await res.json()) as ResponsesOutput;
     for (const block of data.output ?? []) {
       if (block.type === "message") {
         for (const part of block.content ?? []) {
-          if (part.type === "output_text" && part.text) {return part.text.trim();}
+          if (part.type === "output_text" && part.text) {
+            return part.text.trim();
+          }
         }
       }
     }
@@ -258,9 +272,13 @@ async function callExecutionLlm(opts: {
   const { config, messages, maxTokens, temperature, signal } = opts;
 
   for (const [id, cfg] of Object.entries(config?.models?.providers ?? {})) {
-    if (SKIP_PROVIDERS.has(id.toLowerCase()) || !cfg?.baseUrl) {continue;}
+    if (SKIP_PROVIDERS.has(id.toLowerCase()) || !cfg?.baseUrl) {
+      continue;
+    }
     const modelId = cfg.models?.[0]?.id;
-    if (!modelId) {continue;}
+    if (!modelId) {
+      continue;
+    }
 
     const callArgs = { modelId, messages, maxTokens, temperature, signal };
     log.info(
@@ -276,7 +294,9 @@ async function callExecutionLlm(opts: {
       }
     } else if (cfg.api === "openai-completions") {
       const apiKey = resolveApiKey(cfg.apiKey ?? "");
-      if (!apiKey) {continue;}
+      if (!apiKey) {
+        continue;
+      }
       const r = await callOpenAiCompletions({ baseUrl: cfg.baseUrl, apiKey, ...callArgs });
       if (r !== null) {
         log.info(`cortex: completed in ${Date.now() - t0}ms (${r.length} chars)`);
@@ -284,7 +304,9 @@ async function callExecutionLlm(opts: {
       }
     } else if (cfg.api === "openai-responses") {
       const apiKey = resolveApiKey(cfg.apiKey ?? "");
-      if (!apiKey) {continue;}
+      if (!apiKey) {
+        continue;
+      }
       const r = await callOpenAiResponses({ baseUrl: cfg.baseUrl, apiKey, ...callArgs });
       if (r !== null) {
         log.info(`cortex: completed in ${Date.now() - t0}ms (${r.length} chars)`);
@@ -301,6 +323,7 @@ async function callExecutionLlm(opts: {
 
 async function runMultiStepChain(opts: {
   amygdalaPipe: Awaited<ReturnType<typeof getOrCreatePipeline>>;
+  /* oxlint-disable-next-line typescript-eslint/no-redundant-type-constituents -- pipeline type from upstream */
   hippocampusPipe: Awaited<ReturnType<typeof getOrCreatePipeline>> | null;
   config: CoderClawConfig | undefined;
   // Raw context messages (content: unknown) — converted internally as needed.
@@ -398,7 +421,9 @@ async function runMultiStepChain(opts: {
           temperature,
           signal: opts.signal,
         });
-        if (fixed !== null) {codeResult = fixed;}
+        if (fixed !== null) {
+          codeResult = fixed;
+        }
       }
     }
   }
@@ -502,7 +527,9 @@ export function createCoderClawLlmLocalStreamFn(
         }
 
         // ── 2. RAG — retrieve relevant workspace context ───────────────────────
-        const lastUserMsg = [...(context.messages ?? [])].toReversed().find((m) => m.role === "user");
+        const lastUserMsg = [...(context.messages ?? [])]
+          .toReversed()
+          .find((m) => m.role === "user");
         const queryText =
           typeof lastUserMsg?.content === "string"
             ? lastUserMsg.content
@@ -588,6 +615,7 @@ export function createCoderClawLlmLocalStreamFn(
         const amygdalaPipe = await getOrCreatePipeline(modelId, dtype, cacheDir);
 
         // Lazily load hippocampus pipeline only when eligible.
+        /* oxlint-disable-next-line typescript-eslint/no-redundant-type-constituents -- pipeline type from upstream */
         let hippocampusPipe: Awaited<ReturnType<typeof getOrCreatePipeline>> | null = null;
         if (hippocampusEligible) {
           try {
@@ -615,7 +643,9 @@ export function createCoderClawLlmLocalStreamFn(
         let toolRounds = 0;
         while (toolRounds < MAX_TOOL_ROUNDS && wsDir) {
           const calls = parseToolCalls(amygdalaText);
-          if (calls.length === 0) {break;}
+          if (calls.length === 0) {
+            break;
+          }
 
           toolRounds++;
           log.info(

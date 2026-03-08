@@ -689,7 +689,7 @@ describe("tui-event-handlers: handleAgentEvent", () => {
   });
 
   it("auto-continues when run contains only reads", async () => {
-    const { state, chatLog, sendMessage, handleAgentEvent } = createHandlersHarness({
+    const { sendMessage, handleAgentEvent } = createHandlersHarness({
       state: { activeChatRunId: "r1" },
     });
 

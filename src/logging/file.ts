@@ -132,10 +132,14 @@ function buildLogger(settings: ResolvedSettings): TsLogger<LogObj> {
         // TsLogger hands us positional args under numeric keys and an `_meta`
         // object with level/name info.  We'll string them together into a
         // simple line.
-        const meta = (logObj as any)._meta as Record<string, unknown> | undefined;
-        const lvl = meta?.logLevelName ? String(meta.logLevelName) : "";
-        const part0 = logObj[0] !== undefined ? String((logObj as any)[0]) : "";
-        const part1 = logObj[1] !== undefined ? JSON.stringify((logObj as any)[1]) : "";
+        const meta = (logObj as Record<string, unknown>)._meta as
+          | Record<string, unknown>
+          | undefined;
+        const lvlVal = meta?.logLevelName;
+        const lvl = typeof lvlVal === "string" ? lvlVal : "";
+        const part0 = logObj[0] !== undefined ? String((logObj as Record<string, unknown>)[0]) : "";
+        const part1 =
+          logObj[1] !== undefined ? JSON.stringify((logObj as Record<string, unknown>)[1]) : "";
         const suffix = part1 && part1 !== "{}" ? ` ${part1}` : "";
         const plain = `${time} ${lvl.toUpperCase()} ${part0}${suffix}`.trim();
         fs.appendFileSync(settings.file, `${plain}\n`, { encoding: "utf8" });

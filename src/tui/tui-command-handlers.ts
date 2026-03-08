@@ -979,14 +979,16 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         if (!target || target === "all") {
           const { accepted, failed } = await acceptAllEdits();
           const lines: string[] = [];
-          if (accepted.length > 0)
-            {lines.push(
+          if (accepted.length > 0) {
+            lines.push(
               `✅ Applied ${accepted.length} change(s):\n${accepted.map((f) => `  ${f}`).join("\n")}`,
-            );}
-          if (failed.length > 0)
-            {lines.push(
+            );
+          }
+          if (failed.length > 0) {
+            lines.push(
               `❌ Failed:\n${failed.map((f) => `  ${f.filePath}: ${f.error}`).join("\n")}`,
-            );}
+            );
+          }
           chatLog.addSystem(lines.join("\n\n") || "Done.");
         } else {
           const result = await acceptEdit(target);

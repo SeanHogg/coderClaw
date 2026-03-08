@@ -8,7 +8,6 @@
  * This is the same UX as Cursor Composer's accept/reject panel and Aider's diff mode.
  */
 
-import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 

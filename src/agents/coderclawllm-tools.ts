@@ -55,7 +55,9 @@ export function parseToolCalls(text: string): ToolCall[] {
   for (const raw of text.match(TOOL_JSON_RE) ?? []) {
     try {
       const obj = JSON.parse(raw) as Record<string, unknown>;
-      if (typeof obj.tool !== "string") {continue;}
+      if (typeof obj.tool !== "string") {
+        continue;
+      }
       calls.push(obj as unknown as ToolCall);
     } catch {
       // malformed JSON — skip
@@ -92,7 +94,9 @@ async function toolListFiles(workspaceDir: string, call: { dir?: string }): Prom
   const lines = entries
     .slice(0, MAX_LIST_ENTRIES)
     .map((e) => (e.isDirectory() ? `${e.name}/` : e.name));
-  if (entries.length > MAX_LIST_ENTRIES) {lines.push(`…(${entries.length - MAX_LIST_ENTRIES} more)`);}
+  if (entries.length > MAX_LIST_ENTRIES) {
+    lines.push(`…(${entries.length - MAX_LIST_ENTRIES} more)`);
+  }
   return lines.join("\n") || "(empty)";
 }
 
@@ -106,7 +110,9 @@ async function toolGrepFiles(
   const matches: string[] = [];
 
   async function walk(dir: string) {
-    if (matches.length >= 20) {return;}
+    if (matches.length >= 20) {
+      return;
+    }
     let entries: import("node:fs").Dirent<string>[];
     try {
       entries = await fs.readdir(dir, { withFileTypes: true, encoding: "utf-8" });
@@ -114,7 +120,9 @@ async function toolGrepFiles(
       return;
     }
     for (const entry of entries) {
-      if (matches.length >= 20) {break;}
+      if (matches.length >= 20) {
+        break;
+      }
       const full = path.join(dir, entry.name);
       if (entry.isDirectory() && !entry.name.startsWith(".") && entry.name !== "node_modules") {
         await walk(full);

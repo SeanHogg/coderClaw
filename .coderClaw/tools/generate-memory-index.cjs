@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const memoryDir = path.join(__dirname, "..", "..", "memory");
+const _memoryDir = path.join(__dirname, "..", "..", "memory");
 const indexPath = path.join(__dirname, "..", "memory-index.json");
 
 function parseMemoryFile(filePath, fileName) {
@@ -13,7 +13,9 @@ function parseMemoryFile(filePath, fileName) {
   for (let line of lines) {
     const timestampMatch = line.match(/^## \[([^\]]+)\](.*)$/);
     if (timestampMatch) {
-      if (currentEntry) {entries.push(currentEntry);}
+      if (currentEntry) {
+        entries.push(currentEntry);
+      }
       const timestamp = timestampMatch[1];
       const remainder = timestampMatch[2].trim();
       currentEntry = {
@@ -28,7 +30,9 @@ function parseMemoryFile(filePath, fileName) {
       currentEntry.content += (currentEntry.content ? "\n" : "") + line;
     }
   }
-  if (currentEntry) {entries.push(currentEntry);}
+  if (currentEntry) {
+    entries.push(currentEntry);
+  }
 
   return entries.map((entry) => {
     const cont = entry.content || "";

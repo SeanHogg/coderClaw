@@ -193,7 +193,9 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
       const res = await this.post<{
         task: { id: string; status?: string; projectId?: string; priority?: string } | null;
       }>(`${this.baseUrl}/api/tasks/next`, null, "POST");
-      if (!res || !res.task) {return null;}
+      if (!res || !res.task) {
+        return null;
+      }
       const t = res.task;
       return {
         id: t.id,

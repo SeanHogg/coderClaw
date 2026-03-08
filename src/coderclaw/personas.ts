@@ -181,7 +181,9 @@ function metaStr(
   field: keyof NonNullable<PersonaPlugin["pluginMetadata"]>,
 ): string | undefined {
   const fromMeta = pluginMeta?.[field];
-  if (typeof fromMeta === "string") {return fromMeta;}
+  if (typeof fromMeta === "string") {
+    return fromMeta;
+  }
   const fromRaw = raw[field];
   return typeof fromRaw === "string" ? fromRaw : undefined;
 }

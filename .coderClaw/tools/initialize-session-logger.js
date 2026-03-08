@@ -13,10 +13,12 @@ const logsDir = path.join(__dirname, "..", "logs");
 ensureDir(logsDir);
 
 function ensureDir(dir) {
-  if (!fs.existsSync(dir)) {fs.mkdirSync(dir, { recursive: true });}
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 }
 
-function getLogPath(sessionId) {
+function getLogPath(_sessionId) {
   const date = new Date().toISOString().slice(0, 10);
   return path.join(logsDir, `session-${date}.jsonl`);
 }

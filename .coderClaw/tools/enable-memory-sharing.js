@@ -7,7 +7,9 @@ const syncDir = path.join(rootDir, ".coderClaw", "memory-sync");
 const configPath = path.join(syncDir, "config.yaml");
 
 function ensureDir(dir) {
-  if (!fs.existsSync(dir)) {fs.mkdirSync(dir, { recursive: true });}
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 }
 
 function enableSharing() {

@@ -75,6 +75,7 @@ import { GATEWAY_EVENTS, listGatewayMethods } from "./server-methods-list.js";
 import { coreGatewayHandlers } from "./server-methods.js";
 import { createExecApprovalHandlers } from "./server-methods/exec-approval.js";
 import { safeParseJson } from "./server-methods/nodes.helpers.js";
+import type { GatewayRequestContext } from "./server-methods/types.js";
 import { hasConnectedMobileNode } from "./server-mobile-nodes.js";
 import { loadGatewayModelCatalog } from "./server-model-catalog.js";
 import { createNodeSubscriptionManager } from "./server-node-subscriptions.js";
@@ -599,7 +600,7 @@ export async function startGatewayServer(
   // build context object early so we can later populate configReloader without
   // referencing it before it exists.  the handlers may access this object after
   // we assign the real reloader.
-  const gatewayContext: Record<string, unknown> = {
+  const gatewayContext: GatewayRequestContext = {
     deps,
     cron,
     cronStorePath,
@@ -638,8 +639,6 @@ export async function startGatewayServer(
     markChannelLoggedOut,
     wizardRunner,
     broadcastVoiceWakeChanged,
-    // configReloader will be assigned after we create it below
-    configReloader: null,
     skillsChangeBump: () => bumpSkillsSnapshotVersion({ reason: "manual" }),
   };
 
@@ -754,7 +753,7 @@ export async function startGatewayServer(
         });
       })();
   // populate gatewayContext so handlers see a valid reloader
-  gatewayContext.configReloader = configReloader;
+  gatewayContext.configReloader = configReloader as GatewayRequestContext["configReloader"];
 
   const close = createGatewayCloseHandler({
     bonjourStop,

@@ -26,7 +26,7 @@ export const TRANSFORMERS_DEFAULT_MODEL_ID = AMYGDALA_MODEL_ID;
 /** @deprecated Use AMYGDALA_DTYPE */
 export const TRANSFORMERS_DEFAULT_DTYPE = AMYGDALA_DTYPE;
 
-const DTYPE_OPTIONS = ["q4", "q5", "q8", "fp16", "fp32"] as const;
+const _DTYPE_OPTIONS = ["q4", "q5", "q8", "fp16", "fp32"] as const;
 
 export function defaultCacheDir(): string {
   return path.join(resolveStateDir(), "models");
@@ -98,8 +98,12 @@ export function applyTransformersProviderConfig(
 
 function extractPrimaryModel(cfg: CoderClawConfig): string | undefined {
   const model = cfg.agents?.defaults?.model;
-  if (typeof model === "string") {return model;}
-  if (model && typeof model === "object") {return model.primary;}
+  if (typeof model === "string") {
+    return model;
+  }
+  if (model && typeof model === "object") {
+    return model.primary;
+  }
   return undefined;
 }
 
@@ -168,7 +172,9 @@ export async function downloadAndWireLocalBrain(opts: {
       dtype: amygdalaDtype,
       cacheDir,
       onProgress: (file, pct) => {
-        if (file !== lastFile) {lastFile = file;}
+        if (file !== lastFile) {
+          lastFile = file;
+        }
         amygdalaSpinner.update(`Amygdala: ${path.basename(file)} — ${pct}%`);
       },
     });
@@ -192,7 +198,9 @@ export async function downloadAndWireLocalBrain(opts: {
       dtype: hippocampusDtype,
       cacheDir,
       onProgress: (file, pct) => {
-        if (file !== lastFile) {lastFile = file;}
+        if (file !== lastFile) {
+          lastFile = file;
+        }
         hippoSpinner.update(`Hippocampus: ${path.basename(file)} — ${pct}%`);
       },
     });

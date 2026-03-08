@@ -56,10 +56,14 @@ export async function loadCoderClawMemory(
 
   // Long-term memory
   for (const filename of longTermFiles) {
-    if (remaining <= 0) {break;}
+    if (remaining <= 0) {
+      break;
+    }
     try {
       const raw = (await fs.readFile(path.join(workspaceDir, filename), "utf-8")).trim();
-      if (!raw) {continue;}
+      if (!raw) {
+        continue;
+      }
       const entry = `### ${filename}\n${raw}`;
       if (entry.length <= remaining) {
         sections.push(entry);
@@ -76,10 +80,14 @@ export async function loadCoderClawMemory(
   // Short-term memory: today's and yesterday's daily notes
   const memoryDir = path.join(workspaceDir, "memory");
   for (const filename of dailyNoteFilenames()) {
-    if (remaining <= 0) {break;}
+    if (remaining <= 0) {
+      break;
+    }
     try {
       const raw = (await fs.readFile(path.join(memoryDir, filename), "utf-8")).trim();
-      if (!raw) {continue;}
+      if (!raw) {
+        continue;
+      }
       const label = filename.replace(".md", "");
       const entry = `### Daily note (${label})\n${raw}`;
       if (entry.length <= remaining) {
@@ -94,7 +102,9 @@ export async function loadCoderClawMemory(
     }
   }
 
-  if (sections.length === 0) {return "";}
+  if (sections.length === 0) {
+    return "";
+  }
   return `## CoderClaw Memory\n\n${sections.join("\n\n")}`;
 }
 
@@ -143,8 +153,9 @@ export async function getOrCreatePipeline(
   // Suppress noisy upstream warning about missing Content-Length headers.
   const origWarn = console.warn;
   console.warn = (...args: unknown[]) => {
-    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length"))
-      {return;}
+    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length")) {
+      return;
+    }
     origWarn.apply(console, args);
   };
 
@@ -192,8 +203,9 @@ export async function downloadCoderClawLlmModel(opts: {
   // that would alarm users during normal model downloads.
   const origWarn = console.warn;
   console.warn = (...args: unknown[]) => {
-    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length"))
-      {return;}
+    if (typeof args[0] === "string" && args[0].includes("Unable to determine content-length")) {
+      return;
+    }
     origWarn.apply(console, args);
   };
 

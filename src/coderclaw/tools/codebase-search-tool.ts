@@ -225,7 +225,9 @@ function searchKeyword(
  * For a file that matched, retrieve a representative snippet around the first match.
  */
 function getSnippet(filePath: string, keywords: string[], tool: "rg" | "grep"): string {
-  if (keywords.length === 0) {return "";}
+  if (keywords.length === 0) {
+    return "";
+  }
   // Use the first keyword for the snippet (most specific term)
   const keyword = keywords[0];
 
@@ -319,7 +321,9 @@ export const codebaseSearchTool: AgentTool<typeof CodebaseSearchSchema, string> 
       const files = searchKeyword(projectRoot, kw, exts, tool);
       for (const f of files) {
         const abs = path.isAbsolute(f) ? f : path.join(projectRoot, f);
-        if (!fileHits.has(abs)) {fileHits.set(abs, new Set());}
+        if (!fileHits.has(abs)) {
+          fileHits.set(abs, new Set());
+        }
         fileHits.get(abs)!.add(kw);
       }
     }

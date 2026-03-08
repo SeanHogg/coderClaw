@@ -14,14 +14,18 @@ const rootDir = path.join(__dirname, "..");
 const remindersDir = path.join(rootDir, "reminders");
 const memoryIndex = path.join(rootDir, "memory-index.json");
 const memoryDir = path.join(rootDir, "memory");
-const cronJobName = "self-improvement-reminder";
+const _cronJobName = "self-improvement-reminder";
 
 function ensureDir(dir) {
-  if (!fs.existsSync(dir)) {fs.mkdirSync(dir, { recursive: true });}
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 }
 
 function loadMemoryIndex() {
-  if (!fs.existsSync(memoryIndex)) {return null;}
+  if (!fs.existsSync(memoryIndex)) {
+    return null;
+  }
   const content = fs.readFileSync(memoryIndex, "utf8");
   return JSON.parse(content);
 }
@@ -38,7 +42,7 @@ function getRecentCronRuns() {
     const runs = JSON.parse(result);
     const today = new Date().toISOString().split("T")[0];
     return runs.filter((run) => run.startedAt && run.startedAt.startsWith(today));
-  } catch (e) {
+  } catch {
     return [];
   }
 }
@@ -94,7 +98,7 @@ function main() {
     execSync(
       `coderclaw sessions_send --sessionKey main --message "🗒️ Self-improvement reminder generated (${entryCount} indexed memories)"`,
     );
-  } catch (e) {
+  } catch {
     // Execution may fail if CLI not available, but we don't want to stop the script
   }
 }

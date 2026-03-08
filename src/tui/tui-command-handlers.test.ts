@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import type { SettingItem } from "@mariozechner/pi-tui";
 import { describe, expect, it, vi, type Mock } from "vitest";
 import { loadConfig, writeConfigFile } from "../config/config.js";
 import * as selectors from "./components/selectors.js";
@@ -64,14 +65,14 @@ describe("tui command handlers", () => {
     const openOverlay = vi.fn();
     const closeOverlay = vi.fn();
 
-    let capturedItems: unknown[] = [];
+    let capturedItems: SettingItem[] = [];
     let capturedChange: (id: string, value: string) => void = () => {};
     const spy = vi
       .spyOn(selectors, "createSettingsList")
       .mockImplementation((items, onChange, _onCancel) => {
         capturedItems = items;
         capturedChange = onChange;
-        return {} as unknown;
+        return {} as ReturnType<typeof selectors.createSettingsList>;
       });
 
     const state = {

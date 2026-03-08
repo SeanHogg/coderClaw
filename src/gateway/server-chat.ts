@@ -287,7 +287,7 @@ export function createAgentEventHandler({
       // leaves users confused when a tool succeeds but produces no text, or when
       // a model terminates unexpectedly.  To improve continuity we always provide
       // something in `message` when a stopReason or errorMessage exists.
-      let finalMessage: unknown | undefined;
+      let finalMessage: unknown;
       if (text && !shouldSuppressSilent) {
         finalMessage = {
           role: "assistant",
