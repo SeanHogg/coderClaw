@@ -76,7 +76,7 @@ jobs:
 
       - name: Download dist artifact (if available)
         id: download-dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           name: dist-build
