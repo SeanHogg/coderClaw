@@ -48,7 +48,7 @@ export const artifactsHandlers: GatewayRequestHandlers = {
 
     // ── Skill references ──────────────────────────────────────────────────
     // Skills assigned via Builderforce are marketplace slugs. We store them
-    // in a lightweight side-file (.coderClaw/assigned-artifacts.json) so the
+    // in a lightweight side-file (.coderclaw/assigned-artifacts.json) so the
     // agent system prompt builder can inject them as context. Actual skill
     // files are expected to already be present on the claw (synced or bundled).
     if (artifacts.skills?.length) {
@@ -72,7 +72,7 @@ export const artifactsHandlers: GatewayRequestHandlers = {
       try {
         const fs = await import("node:fs");
         const path = await import("node:path");
-        const dir = path.join(projectRoot, ".coderClaw");
+        const dir = path.join(projectRoot, ".coderclaw");
         const filePath = path.join(dir, "assigned-artifacts.json");
         await fs.promises.mkdir(dir, { recursive: true });
         await fs.promises.writeFile(

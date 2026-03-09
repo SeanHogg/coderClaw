@@ -107,6 +107,56 @@ CODERCLAW_STAGED=true coderclaw gateway
 
 CoderClaw is not a plugin or an IDE extension. It is a **full orchestration runtime** that understands your codebase, coordinates specialized agents, and works wherever you do — in your terminal, your chat apps, or your CI pipeline.
 
+## 📁 Repository structure
+
+This repository is organized so that the **CoderClaw product** (CLI, gateway, agents, docs) lives in one place; **apps** and **assets** are separate and shared, and can be built or used independently.
+
+| Directory    | Purpose |
+| ------------ | ------- |
+| **`product/`** | All CoderClaw product code: CLI, gateway, agents, extensions, skills, tests. This is the main package you run and extend. |
+| **`apps/`**    | Companion apps (e.g. Android, iOS, macOS) — shared, built separately from the product. |
+| **`assets/`**  | Shared assets (images, branding). Used by product and apps. |
+| **`docs-site/`** | Documentation site (now inside this repo). Source for [docs.coderclaw.ai](https://docs.coderclaw.ai). |
+
+When you run CoderClaw (e.g. `coderclaw gateway` or `coderclaw agent`), it **only creates or updates files** in:
+
+- **Project-local:** `<cwd>/.coderclaw/` — context, memory, sessions, personas, agents, skills for the project you’re in.
+- **Global:** `~/.coderclaw/` (or `CODERCLAW_STATE_DIR`) — config, logs, models cache, credentials, daemon scripts, workspace data.
+
+No other directories are written to by the product.
+
+## 🔀 Running multiple CoderClaw instances (side-by-side versions)
+
+You can run and install **two or more CoderClaw instances** on the same machine (e.g. one default, one for “work”, one for experiments). Each instance has its own config, port, state, and (when installed as a daemon) its own service name.
+
+**How it works**
+
+- **Install-path isolation** — State dir is derived from where CoderClaw is installed. Different installs (e.g. different npm/pnpm global roots) get different state dirs: `~/.coderclaw/<install-id>`. Run the v1 binary in terminal A and the v2 binary in terminal B; each gets its own `~/.coderclaw/<id>` and gateway. No env vars needed.
+- **Legacy** — If you already have `~/.coderclaw` with `coderclaw.json`, that keeps working; new installs use the subdir.
+- **Config** — Config is loaded from that state dir: `<state-dir>/coderclaw.json`. Override with `CODERCLAW_CONFIG_PATH` if needed.
+- **Port** — Each instance must listen on a different port. Set `gateway.port` in that instance’s config (or `CODERCLAW_GATEWAY_PORT` when starting). Default is `18789`; use e.g. `18790` for a second instance.
+- **Daemon (launchd / systemd / schtasks)** — When you install the gateway as a service, the **profile** (or state dir) is baked into the service: different profile → different state dir, script path, and service name (e.g. “CoderClaw Gateway (work)” on Windows, `coderclaw-gateway-work` on Linux, `ai.coderclaw.work` on macOS).
+- **Gateway lock** — The lock file is keyed by config path, so multiple instances do not block each other.
+
+**Ways to run a second instance**
+
+1. **Different version in another terminal (automatic)** — Install another version (e.g. `pnpm add -g coderclaw@next`). In that terminal run `coderclaw gateway`. It uses `~/.coderclaw/<other-id>` and its own config/port. Set a different `gateway.port` in that config so it doesn't clash.
+
+2. **Profile (same binary, different instance)** — `coderclaw --profile work gateway` → state dir `~/.coderclaw-work`; set port in `~/.coderclaw-work/coderclaw.json`. Or `CODERCLAW_PROFILE=work` in the env.
+
+3. **Explicit state dir** — `CODERCLAW_STATE_DIR=~/.coderclaw-v2 coderclaw gateway` and a different port.
+
+**Summary**
+
+| What        | Default (single instance) | Second instance (e.g. profile `work`)      |
+| ----------- | ------------------------- | ------------------------------------------ |
+| State dir   | `~/.coderclaw`            | `~/.coderclaw-work`                        |
+| Config      | `~/.coderclaw/coderclaw.json` | `~/.coderclaw-work/coderclaw.json`     |
+| Port        | `18789` (or config)       | Set in that instance’s config (e.g. 18790) |
+| Daemon name | “CoderClaw Gateway”       | “CoderClaw Gateway (work)” / `coderclaw-gateway-work` |
+
+So: **two terminals, two versions** — run the right `coderclaw` in each and give each gateway a different port. They can't share one gateway; each gets its own state and port by install path (or by profile / `CODERCLAW_STATE_DIR` if you set them).
+
 ## 🎯 Core Mission
 
 The complete software development lifecycle — planning, coding, reviewing, testing, debugging, refactoring, documenting — orchestrated by specialized agents that deeply understand your codebase. No IDE required. No cloud lock-in. Runs on your infra.

@@ -447,10 +447,12 @@ src/
   logging/        Subsystem logger
 extensions/       Channel and memory plugins
 skills/           53 bundled skill definitions (SKILL.md + tool mappings)
-.coderClaw/
-  agents/         Custom role YAML files (.coderClaw/agents/*.yaml)
-  personas/       Project-scoped persona plugins (.coderClaw/personas/*.yaml)
+.coderclaw/
+  agents/         Custom role YAML files (.coderclaw/agents/*.yaml)
+  personas/       Project-scoped persona plugins (.coderclaw/personas/*.yaml)
   planning/       Agent context: roadmap, capability gaps, architecture ref
   memory/         Daily knowledge log (YYYY-MM-DD.md)
   sessions/       Workflow checkpoints + session handoffs
 ```
+
+**File-location policy:** The product only creates or updates files under (1) **project-local** `<cwd>/.coderclaw/` or (2) **global** `~/.coderclaw/` (or `CODERCLAW_STATE_DIR`). Logs, model cache, config, and daemon scripts use the global directory; project context, memory, and sessions use the project directory.

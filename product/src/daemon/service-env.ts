@@ -13,6 +13,8 @@ import {
   resolveNodeSystemdServiceName,
   resolveNodeWindowsTaskName,
 } from "./constants.js";
+import { resolveStateDir as resolveConfigStateDir } from "../config/paths.js";
+import { resolveGatewayStateDir } from "./paths.js";
 
 export type MinimalServicePathOptions = {
   platform?: NodeJS.Platform;
@@ -211,8 +213,10 @@ export function buildServiceEnvironment(params: {
     launchdLabel ||
     (process.platform === "darwin" ? resolveGatewayLaunchAgentLabel(profile) : undefined);
   const systemdUnit = `${resolveGatewaySystemdServiceName(profile)}.service`;
-  const stateDir = env.CODERCLAW_STATE_DIR;
-  const configPath = env.CODERCLAW_CONFIG_PATH;
+  // Use same state dir as CLI/config (includes install-path and profile) so daemon uses correct instance
+  const stateDir =
+    env.CODERCLAW_STATE_DIR?.trim() || resolveConfigStateDir(env as NodeJS.ProcessEnv);
+  const configPath = env.CODERCLAW_CONFIG_PATH?.trim() || (stateDir ? path.join(stateDir, "coderclaw.json") : undefined);
   // Keep a usable temp directory for supervised services even when the host env omits TMPDIR.
   const tmpDir = env.TMPDIR?.trim() || os.tmpdir();
   return {

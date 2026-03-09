@@ -2,14 +2,15 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { Logger as TsLogger } from "tslog";
+import { resolveStateDir } from "../config/paths.js";
 import type { CoderClawConfig } from "../config/types.js";
-import { resolvePreferredCoderClawTmpDir } from "../infra/tmp-coderclaw-dir.js";
 import { readLoggingConfig } from "./config.js";
 import type { ConsoleStyle } from "./console.js";
 import { type LogLevel, levelToMinLevel, normalizeLogLevel } from "./levels.js";
 import { loggingState } from "./state.js";
 
-export const DEFAULT_LOG_DIR = resolvePreferredCoderClawTmpDir();
+/** Default log directory: ~/.coderclaw/logs (global .coderclaw only). */
+export const DEFAULT_LOG_DIR = path.join(resolveStateDir(), "logs");
 export const DEFAULT_LOG_FILE = path.join(DEFAULT_LOG_DIR, "coderclaw.log"); // legacy single-file path
 
 const LOG_PREFIX = "coderclaw";

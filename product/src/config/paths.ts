@@ -2,6 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { expandHomePrefix, resolveRequiredHomeDir } from "../infra/home-dir.js";
+import { getInstallId } from "./install-id.js";
 import type { CoderClawConfig } from "./types.js";
 
 /**
@@ -54,7 +55,11 @@ export function resolveNewStateDir(homedir: () => string = resolveDefaultHomeDir
 /**
  * State directory for mutable data (sessions, logs, caches).
  * Can be overridden via CODERCLAW_STATE_DIR.
- * Default: ~/.coderclaw
+ * When CODERCLAW_PROFILE is set (and not "default"), uses ~/.coderclaw-<profile>.
+ * Otherwise uses install-path-based dir ~/.coderclaw/<install-id> so different
+ * versions/installs (e.g. two terminals running different coderclaw binaries)
+ * get separate state and gateways. Legacy: if ~/.coderclaw/coderclaw.json exists
+ * and the install-id subdir does not, use ~/.coderclaw for backward compatibility.
  */
 export function resolveStateDir(
   env: NodeJS.ProcessEnv = process.env,
@@ -65,11 +70,43 @@ export function resolveStateDir(
   if (override) {
     return resolveUserPath(override, env, effectiveHomedir);
   }
-  const newDir = newStateDir(effectiveHomedir);
+  // Profile-based state dir: ~/.coderclaw-<profile> (same convention as daemon)
+  const profileRaw = env.CODERCLAW_PROFILE?.trim();
+  const profileSuffix =
+    profileRaw && profileRaw.toLowerCase() !== "default" ? `-${profileRaw}` : "";
+  if (profileSuffix) {
+    const profileDir = path.join(effectiveHomedir(), `${NEW_STATE_DIRNAME}${profileSuffix}`);
+    const legacyDirs = legacyStateDirs(effectiveHomedir);
+    if (fs.existsSync(profileDir)) {
+      return profileDir;
+    }
+    const existingLegacy = legacyDirs.find((dir) => {
+      try {
+        return fs.existsSync(dir);
+      } catch {
+        return false;
+      }
+    });
+    return existingLegacy ?? profileDir;
+  }
+  // Install-path-based state dir: ~/.coderclaw/<install-id> so different versions
+  // (different npm/pnpm install paths) get separate state dirs and gateways.
+  const installId = getInstallId(import.meta.url);
+  const baseDir = path.join(effectiveHomedir(), NEW_STATE_DIRNAME);
+  const legacyFlat = baseDir; // ~/.coderclaw (no subdir)
+  const legacyConfigPath = path.join(legacyFlat, CONFIG_FILENAME);
+  if (installId) {
+    const installDir = path.join(baseDir, installId);
+    // Backward compat: existing user has ~/.coderclaw/coderclaw.json; keep using it.
+    if (fs.existsSync(legacyConfigPath) && !fs.existsSync(installDir)) {
+      return legacyFlat;
+    }
+    return installDir;
+  }
+  // No install id (e.g. bundled): use legacy flat dir
   const legacyDirs = legacyStateDirs(effectiveHomedir);
-  const hasNew = fs.existsSync(newDir);
-  if (hasNew) {
-    return newDir;
+  if (fs.existsSync(legacyFlat)) {
+    return legacyFlat;
   }
   const existingLegacy = legacyDirs.find((dir) => {
     try {
@@ -78,10 +115,7 @@ export function resolveStateDir(
       return false;
     }
   });
-  if (existingLegacy) {
-    return existingLegacy;
-  }
-  return newDir;
+  return existingLegacy ?? legacyFlat;
 }
 
 function resolveUserPath(

@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { StreamFn } from "@mariozechner/pi-agent-core";
+import { resolveStateDir } from "../config/paths.js";
 import type { AssistantMessage, StopReason, TextContent, Usage } from "@mariozechner/pi-ai";
 import { createAssistantMessageEventStream } from "@mariozechner/pi-ai";
 
@@ -8,7 +9,8 @@ import { createAssistantMessageEventStream } from "@mariozechner/pi-ai";
 // with pre-quantized q4 weights — optimised for Transformers.js / Node.js inference.
 export const TRANSFORMERS_DEFAULT_MODEL_ID = "HuggingFaceTB/SmolLM2-1.7B-Instruct";
 export const TRANSFORMERS_DEFAULT_DTYPE = "q4";
-export const TRANSFORMERS_DEFAULT_CACHE_DIR = "./models";
+/** Default model cache: ~/.coderclaw/models (global .coderclaw only). */
+export const TRANSFORMERS_DEFAULT_CACHE_DIR = path.join(resolveStateDir(), "models");
 
 // ── Anatomical model defaults ────────────────────────────────────────────────
 // Amygdala  = SmolLM2 (fast routing / triage, <200 ms, 8K ctx)
