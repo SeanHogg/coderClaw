@@ -754,6 +754,8 @@ export async function runTui(opts: TuiOptions) {
       const { runInteractiveOnboarding } = await import("../commands/onboard-interactive.js");
       const { startGatewayBackground } = await import("./tui-setup-check.js");
       restoreTerminalState("pre-setup-wizard", { resumeStdinIfPaused: true });
+      // Brief delay so terminal settles before clack prompts (helps arrow keys on Windows)
+      await new Promise<void>((r) => setTimeout(r, 150));
       try {
         await runInteractiveOnboarding({ flow: "quickstart" });
       } catch (err) {

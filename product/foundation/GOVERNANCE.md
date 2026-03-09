@@ -20,7 +20,7 @@ commands) the following files are created under `.coderClaw/`:
 - `architecture.md` – architecture notes
 - `rules.yaml` – coding standards and lint/test requirements
 - **`governance.md` – project governance rules (this file)**
-- `agents/`, `skills/`, `memory/`, `sessions/` directories
+- `personas/`, `skills/`, `memory/`, `sessions/` directories
 
 The default governance template explains its purpose and can be
 edited immediately by any contributor.

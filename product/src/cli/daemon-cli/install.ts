@@ -143,6 +143,40 @@ export async function runDaemonInstall(opts: DaemonInstallOptions) {
     }
   }
 
+  // Persist cron.enabled: false when --no-cron is passed
+  if (opts.noCron) {
+    try {
+      const snapshot = await readConfigFileSnapshot();
+      if (snapshot.exists && !snapshot.valid) {
+        const msg = "Warning: config file exists but is invalid; skipping cron.enabled persistence.";
+        if (json) {
+          warnings.push(msg);
+        } else {
+          defaultRuntime.log(msg);
+        }
+      } else {
+        const baseConfig = snapshot.exists ? snapshot.config : {};
+        const currentCron = baseConfig.cron;
+        if (currentCron?.enabled !== false) {
+          await writeConfigFile({
+            ...baseConfig,
+            cron: { ...currentCron, enabled: false },
+          });
+          if (!json) {
+            defaultRuntime.log("Set cron.enabled: false in config (scheduled jobs disabled).");
+          }
+        }
+      }
+    } catch (err) {
+      const msg = `Warning: could not persist cron.enabled: ${String(err)}`;
+      if (json) {
+        warnings.push(msg);
+      } else {
+        defaultRuntime.log(msg);
+      }
+    }
+  }
+
   const { programArguments, workingDirectory, environment } = await buildGatewayInstallPlan({
     env: process.env,
     port,

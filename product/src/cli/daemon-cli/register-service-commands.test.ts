@@ -54,6 +54,17 @@ describe("addGatewayServiceCommands", () => {
     );
   });
 
+  it("forwards --no-cron to runDaemonInstall", async () => {
+    const gateway = createGatewayParentLikeCommand();
+    await gateway.parseAsync(["install", "--no-cron"], { from: "user" });
+
+    expect(runDaemonInstall).toHaveBeenCalledWith(
+      expect.objectContaining({
+        noCron: true,
+      }),
+    );
+  });
+
   it("forwards status auth collisions from parent gateway command", async () => {
     const gateway = createGatewayParentLikeCommand();
     await gateway.parseAsync(["status", "--token", "tok_status", "--password", "pw_status"], {

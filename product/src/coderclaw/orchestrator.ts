@@ -329,7 +329,7 @@ export class AgentOrchestrator {
     const roleConfig = findAgentRole(task.agentRole);
     if (!roleConfig) {
       throw new Error(
-        `Unknown agent role: ${task.agentRole}. Define it in .coderClaw/agents/ or use a built-in role.`,
+        `Unknown agent role: ${task.agentRole}. Define it in .coderclaw/personas/ or use a built-in role.`,
       );
     }
     const result = await spawnSubagentDirect(

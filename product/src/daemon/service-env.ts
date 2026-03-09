@@ -14,7 +14,6 @@ import {
   resolveNodeWindowsTaskName,
 } from "./constants.js";
 import { resolveStateDir as resolveConfigStateDir } from "../config/paths.js";
-import { resolveGatewayStateDir } from "./paths.js";
 
 export type MinimalServicePathOptions = {
   platform?: NodeJS.Platform;

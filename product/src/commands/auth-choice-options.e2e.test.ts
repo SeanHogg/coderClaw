@@ -96,7 +96,7 @@ describe("buildAuthChoiceOptions", () => {
     const coderClawLinkGroup = groups.find((group) => group.value === "coderclawlink");
 
     expect(coderClawLinkGroup).toBeDefined();
-    expect(coderClawLinkGroup?.label).toBe("Builderforce");
+    expect(coderClawLinkGroup?.label).toBe("BuilderForce.AI (formerly coderClawLink)");
     expect(coderClawLinkGroup?.options.some((opt) => opt.value === "custom-api-key")).toBe(true);
   });
 

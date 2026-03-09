@@ -8,7 +8,7 @@
  *     — decides HANDLE or DELEGATE
  *     — runs tool loop (read_file, list_files, grep_files, run_code)
  *
- *   **Hippocampus** (Phi-4-mini, 128K ctx)
+ *   **Hippocampus** (Qwen3-0.6B-ONNX, ~40K ctx)
  *     — memory consolidation & synthesis
  *     — prompt compression for the cortex
  *     — plan pass in the DELEGATE multi-step chain
@@ -136,9 +136,9 @@ function resolveApiKey(configured: string): string | undefined {
   return t;
 }
 
-// ── Provider IDs to skip (avoids recursion / cloud-proxy confusion) ───────────
-
-const SKIP_PROVIDERS = new Set(["coderclawllm", "coderclawllm-local", "transformers"]);
+// ── Provider IDs to skip (avoids recursion into local brain) ───────────────────
+// coderclawllm (proxy) is NOT skipped — it is the cortex when user's primary.
+const SKIP_PROVIDERS = new Set(["coderclawllm-local", "transformers"]);
 
 // ── Non-streaming Ollama call ─────────────────────────────────────────────────
 
@@ -262,6 +262,14 @@ async function callOpenAiResponses(opts: {
 
 // ── Execution LLM router ──────────────────────────────────────────────────────
 
+function parseModelKey(key: string): { provider: string; modelId: string } | null {
+  const idx = key.indexOf("/");
+  if (idx <= 0 || idx >= key.length - 1) {
+    return null;
+  }
+  return { provider: key.slice(0, idx).trim(), modelId: key.slice(idx + 1).trim() };
+}
+
 async function callExecutionLlm(opts: {
   config: CoderClawConfig | undefined;
   messages: Array<{ role: string; content: string }>;
@@ -270,12 +278,45 @@ async function callExecutionLlm(opts: {
   signal?: AbortSignal;
 }): Promise<string | null> {
   const { config, messages, maxTokens, temperature, signal } = opts;
+  const providers = config?.models?.providers ?? {};
 
-  for (const [id, cfg] of Object.entries(config?.models?.providers ?? {})) {
-    if (SKIP_PROVIDERS.has(id.toLowerCase()) || !cfg?.baseUrl) {
+  // Build ordered list: primary first, then fallbacks, then remaining providers.
+  const primary = config?.agents?.defaults?.model?.primary?.trim();
+  const fallbacks = config?.agents?.defaults?.model?.fallbacks ?? [];
+  const preferredKeys = [
+    ...(primary ? [primary] : []),
+    ...fallbacks.filter((f): f is string => typeof f === "string" && f.trim().length > 0),
+  ];
+  const seen = new Set<string>();
+  const orderedEntries: Array<[string, (typeof providers)[string]]> = [];
+  for (const key of preferredKeys) {
+    const parsed = parseModelKey(key);
+    if (!parsed || seen.has(parsed.provider)) {
       continue;
     }
-    const modelId = cfg.models?.[0]?.id;
+    const cfg = providers[parsed.provider];
+    if (cfg && !SKIP_PROVIDERS.has(parsed.provider.toLowerCase())) {
+      seen.add(parsed.provider);
+      orderedEntries.push([parsed.provider, cfg]);
+    }
+  }
+  for (const [id, cfg] of Object.entries(providers)) {
+    if (!seen.has(id) && !SKIP_PROVIDERS.has(id.toLowerCase())) {
+      orderedEntries.push([id, cfg]);
+    }
+  }
+
+  for (const [id, cfg] of orderedEntries) {
+    if (!cfg?.baseUrl) {
+      continue;
+    }
+    const parsed = parseModelKey(
+      preferredKeys.find((k) => k.startsWith(`${id}/`)) ?? "",
+    );
+    const modelId =
+      parsed?.provider === id
+        ? parsed.modelId
+        : cfg.models?.[0]?.id;
     if (!modelId) {
       continue;
     }

@@ -17,11 +17,13 @@ function resolveInstallOptions(
   const parentForce = inheritOptionFromParent<boolean>(command, "force");
   const parentPort = inheritOptionFromParent<string>(command, "port");
   const parentToken = inheritOptionFromParent<string>(command, "token");
+  const parentCron = inheritOptionFromParent<boolean>(command, "cron");
   return {
     ...cmdOpts,
     force: Boolean(cmdOpts.force || parentForce),
     port: cmdOpts.port ?? parentPort,
     token: cmdOpts.token ?? parentToken,
+    noCron: cmdOpts.cron === false || parentCron === false,
   };
 }
 
@@ -61,6 +63,7 @@ export function addGatewayServiceCommands(parent: Command, opts?: { statusDescri
     .option("--port <port>", "Gateway port")
     .option("--runtime <runtime>", "Daemon runtime (node|bun). Default: node")
     .option("--token <token>", "Gateway token (token auth)")
+    .option("--no-cron", "Disable cron scheduler (cron.enabled: false) to reduce gateway activity", true)
     .option("--force", "Reinstall/overwrite if already installed", false)
     .option("--json", "Output JSON", false)
     .action(async (cmdOpts, command) => {

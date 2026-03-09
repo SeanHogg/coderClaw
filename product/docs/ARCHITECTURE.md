@@ -62,8 +62,8 @@ Human Developer
 │                                                               │
 │  ┌─────────────────────────────────────────────────────┐     │
 │  │ CoderClawLLM Brain (local or external fallback)      │     │
-│  │  SmolLM2-1.7B-Instruct (ONNX q4, ~900 MB)           │     │
-│  │  Syscheck: RAM ≥ 2 GB free + disk ≥ 1.5 GB free    │     │
+│  │  Amygdala: SmolLM2 (q4, ~0.9 GB) · Hippocampus: Qwen3-0.6B (q4f16, ~2.3 GB) │     │
+│  │  Syscheck: RAM ≥ 2 GB free + disk ≥ 4 GB free (~3.5 GB total download)    │     │
 │  │  Fallback: external LLM (Ollama / OpenAI-compat)    │     │
 │  │  Memory + RAG + persona block injected into brain   │     │
 │  └─────────────────────────────────────────────────────┘     │
@@ -157,10 +157,11 @@ Human Developer
 
 Two-tier reasoning engine:
 
-1. **Syscheck** — on first request checks free RAM (≥ 2 GB) and disk space (≥ 1.5 GB
-   when model not yet cached). If requirements are not met, the factory transparently
-   routes all requests to the configured external LLM instead (`callExecutionLlm`).
-2. **Brain tier** — SmolLM2-1.7B-Instruct (ONNX q4) reads `.coderclaw` memory,
+1. **Syscheck** — on first request checks free RAM (≥ 2 GB) and disk space (≥ 4 GB
+   when models not yet cached; ~3.5 GB total download for amygdala + hippocampus).
+   If requirements are not met, the factory transparently routes all requests to the
+   configured external LLM instead (`callExecutionLlm`).
+2. **Brain tier** — Amygdala: SmolLM2-1.7B (ONNX q4, ~0.9 GB). Hippocampus: Qwen3-0.6B-ONNX (q4f16, ~2.3 GB). Reads `.coderclaw` memory,
    RAG-retrieved workspace context, and the sub-agent's **persona block** (injected via
    `context.systemPrompt`). Calls tools up to 3 rounds. Decides: HANDLE or DELEGATE.
 3. **Execution tier** — configured Ollama / OpenAI-compatible LLM handles complex
@@ -174,7 +175,7 @@ re-loaded per spawn so sub-agents have isolated, role-specific identities.
 ### CoderClaw Layer (`src/coderclaw/`)
 
 - `agent-roles.ts` — 7 built-in roles with `persona` + `outputFormat` definitions.
-  `findAgentRole()` resolves in order: built-ins → `.coderClaw/agents/` custom roles →
+  `findAgentRole()` resolves in order: built-ins → `.coderclaw/personas/` (project-local) →
   `PersonaRegistry` (marketplace / coderClawLink). `registerCustomRoles()` /
   `clearCustomRoles()` for runtime management.
 - `personas.ts` — **`PersonaRegistry`**: plugin install/activate/assign lifecycle;
@@ -448,7 +449,7 @@ src/
 extensions/       Channel and memory plugins
 skills/           53 bundled skill definitions (SKILL.md + tool mappings)
 .coderclaw/
-  agents/         Custom role YAML files (.coderclaw/agents/*.yaml)
+  personas/       Custom role YAML files (.coderclaw/personas/*.yaml)
   personas/       Project-scoped persona plugins (.coderclaw/personas/*.yaml)
   planning/       Agent context: roadmap, capability gaps, architecture ref
   memory/         Daily knowledge log (YYYY-MM-DD.md)

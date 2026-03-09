@@ -92,7 +92,7 @@ jobs:
               # should not force the full native macOS lane.
               apps/macos/Sources/CoderClawProtocol/*|apps/shared/CoderClawKit/Sources/CoderClawProtocol/*)
                 ;;
-              apps/macos/*|apps/ios/*|apps/shared/*|Swabble/*)
+              apps/macos/*|apps/ios/*|apps/shared/*|product/Swabble/*)
                 run_macos=true
                 ;;
             esac
@@ -104,19 +104,19 @@ jobs:
             esac
 
             case "$path" in
-              src/*|test/*|extensions/*|packages/*|scripts/*|ui/*|.github/*|coderclaw.mjs|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|tsconfig*.json|vitest*.ts|tsdown.config.ts|.oxlintrc.json|.oxfmtrc.jsonc)
+              product/src/*|product/test/*|product/extensions/*|product/packages/*|product/scripts/*|product/ui/*|.github/*|product/coderclaw.mjs|product/package.json|product/pnpm-lock.yaml|product/pnpm-workspace.yaml|product/tsconfig*.json|product/vitest*.ts|product/tsdown.config.ts|product/.oxlintrc.json|product/.oxfmtrc.jsonc)
                 run_node=true
                 ;;
             esac
 
             case "$path" in
-              Dockerfile.sandbox|Dockerfile.sandbox-common|scripts/sandbox-common-setup.sh)
+              product/Dockerfile.sandbox|product/Dockerfile.sandbox-common|product/scripts/sandbox-common-setup.sh)
                 run_sandbox_smoke=true
                 ;;
             esac
 
             case "$path" in
-              apps/android/*|apps/ios/*|apps/macos/*|apps/shared/*|Swabble/*|appcast.xml)
+              apps/android/*|apps/ios/*|apps/macos/*|apps/shared/*|product/Swabble/*|appcast.xml)
                 ;;
               *)
                 has_non_native_non_docs=true
@@ -170,6 +170,9 @@ jobs:
     needs: [docs-scope, changed-scope, check]
     if: needs.docs-scope.outputs.docs_only != 'true' && (github.event_name == 'push' || needs.changed-scope.outputs.run_node == 'true')
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: product
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -180,6 +183,7 @@ jobs:
         uses: ./.github/actions/setup-node-env
         with:
           install-bun: "false"
+          working-directory: product
 
       - name: Build dist
         run: pnpm build
@@ -190,7 +194,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist-build
-          path: dist/
+          path: product/dist/
           retention-days: 1
 
   # Validate npm pack contents after build (only on push to main, not PRs).
@@ -198,6 +202,9 @@ jobs:
     needs: [docs-scope, build-artifacts]
     if: github.event_name == 'push' && needs.docs-scope.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: product
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -208,12 +215,13 @@ jobs:
         uses: ./.github/actions/setup-node-env
         with:
           install-bun: "false"
+          working-directory: product
 
       - name: Download dist artifact
         uses: actions/download-artifact@v4
         with:
           name: dist-build
-          path: dist/
+          path: product/dist/
 
       - name: Check release contents
         run: pnpm release:check
@@ -222,6 +230,9 @@ jobs:
     needs: [docs-scope, changed-scope, check]
     if: needs.docs-scope.outputs.docs_only != 'true' && (github.event_name == 'push' || needs.changed-scope.outputs.run_node == 'true')
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: product
     strategy:
       fail-fast: false
       matrix:
@@ -243,6 +254,8 @@ jobs:
 
       - name: Setup Node environment
         uses: ./.github/actions/setup-node-env
+        with:
+          working-directory: product
 
       - name: Configure vitest JSON reports
         if: matrix.task == 'test' && matrix.runtime == 'node'
@@ -282,6 +295,9 @@ jobs:
     needs: [docs-scope]
     if: needs.docs-scope.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: product
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -290,6 +306,8 @@ jobs:
 
       - name: Setup Node environment
         uses: ./.github/actions/setup-node-env
+        with:
+          working-directory: product
 
       - name: Check types and lint and oxfmt
         run: pnpm check
@@ -299,6 +317,9 @@ jobs:
     needs: [docs-scope]
     if: needs.docs-scope.outputs.docs_changed == 'true'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: product
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -307,6 +328,8 @@ jobs:
 
       - name: Setup Node environment
         uses: ./.github/actions/setup-node-env
+        with:
+          working-directory: product
 
       - name: Check docs
         run: pnpm check:docs
@@ -315,6 +338,9 @@ jobs:
     needs: [docs-scope]
     if: needs.docs-scope.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: product
     steps:
       - name: Checkout CLI
         uses: actions/checkout@v4
@@ -330,6 +356,7 @@ jobs:
         with:
           pnpm-version: "10.23.0"
           cache-key-suffix: "node22"
+          lockfile-path: product/pnpm-lock.yaml
 
       - name: Install pnpm deps (minimal)
         run: pnpm install --ignore-scripts --frozen-lockfile
@@ -348,6 +375,9 @@ jobs:
     needs: [docs-scope, changed-scope]
     if: needs.docs-scope.outputs.docs_only != 'true' && needs.changed-scope.outputs.run_sandbox_smoke == 'true'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: product
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -412,14 +442,15 @@ jobs:
     needs: [docs-scope, changed-scope, build-artifacts, check]
     if: needs.docs-scope.outputs.docs_only != 'true' && (github.event_name == 'push' || needs.changed-scope.outputs.run_node == 'true')
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: product
     env:
       NODE_OPTIONS: --max-old-space-size=4096
       # Keep total concurrency predictable on the 4 vCPU runner:
       # `scripts/test-parallel.mjs` runs some vitest suites in parallel processes.
       CODERCLAW_TEST_WORKERS: 2
-    defaults:
-      run:
-        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -463,7 +494,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist-build
-          path: dist/
+          path: product/dist/
 
       - name: Verify dist artifact (lint lane)
         if: matrix.task == 'lint'

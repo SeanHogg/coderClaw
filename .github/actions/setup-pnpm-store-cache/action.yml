@@ -9,6 +9,10 @@ inputs:
     description: Suffix appended to the cache key.
     required: false
     default: "node22"
+  lockfile-path:
+    description: Path to pnpm-lock.yaml (relative to repo root) for cache key.
+    required: false
+    default: "pnpm-lock.yaml"
 runs:
   using: composite
   steps:
@@ -36,6 +40,6 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ steps.pnpm-store.outputs.path }}
-        key: ${{ runner.os }}-pnpm-store-${{ inputs.cache-key-suffix }}-${{ hashFiles('pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-pnpm-store-${{ inputs.cache-key-suffix }}-${{ hashFiles(inputs.lockfile-path) }}
         restore-keys: |
           ${{ runner.os }}-pnpm-store-${{ inputs.cache-key-suffix }}-

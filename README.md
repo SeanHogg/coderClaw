@@ -192,7 +192,7 @@ The complete software development lifecycle — planning, coding, reviewing, tes
 
 **🔌 Extensible & Pluggable**
 
-- Define custom agent roles via `.coderClaw/agents/`
+- Define custom agent roles via `.coderclaw/personas/`
 - Community-extensible agent libraries
 - Project-specific skills in `.coderClaw/skills/`
 - Long-lived memory in `.coderClaw/memory/`
@@ -218,6 +218,8 @@ If you want to stop paying for Copilot subscriptions, escape the IDE tether, and
 
 Runtime: **Node ≥22**.
 
+**Optional — local brain:** If you enable the dual local brain (amygdala + hippocampus) during onboarding, CoderClaw downloads two ONNX models (SmolLM2 for routing, Qwen3-0.6B for planning). Total disk needed: **~3.5 GB** (~0.9 GB + ~2.3 GB). Ensure at least **4 GB free disk** before enabling.
+
 ```bash
 npm install -g coderclaw@latest
 # or: pnpm add -g coderclaw@latest
@@ -240,7 +242,7 @@ coderclaw init
 #   - context.yaml     project metadata, languages, frameworks, dependencies
 #   - architecture.md  design docs and patterns
 #   - rules.yaml       coding standards and testing requirements
-#   - agents/          custom agent role definitions (YAML, community-extensible)
+#   - personas/        custom agent roles/personas (YAML, community-extensible)
 #   - skills/          project-specific skills
 #   - memory/          persistent knowledge base and semantic indices
 #   - sessions/        session handoff docs (resume any session instantly)
@@ -303,7 +305,7 @@ When you initialize a coderClaw project, it creates a `.coderClaw/` directory:
 ├── context.yaml          # Project metadata, languages, frameworks, dependencies
 ├── architecture.md       # Architectural documentation and design patterns
 ├── rules.yaml           # Coding standards, testing requirements, git conventions
-├── agents/              # Custom agent role definitions (community-extensible)
+├── personas/            # Custom agent roles/personas (community-extensible)
 │   └── custom-agent.yaml
 ├── skills/              # Project-specific skills
 │   └── project-skill.ts

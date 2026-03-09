@@ -1,15 +1,15 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import {
-  findAgentRole,
-  registerCustomRoles,
-  clearCustomRoles,
-  CODE_CREATOR_ROLE,
-} from "./agent-roles.js";
+import { findAgentRole, CODE_CREATOR_ROLE } from "./agent-roles.js";
+import { globalPersonaRegistry } from "./personas.js";
 import type { AgentRole } from "./types.js";
 
 describe("agent-roles", () => {
   beforeEach(() => {
-    clearCustomRoles();
+    // Clear any custom personas registered by previous tests
+    globalPersonaRegistry.unregisterForTest("my-custom-agent");
+    globalPersonaRegistry.unregisterForTest("security-specialist");
+    globalPersonaRegistry.unregisterForTest("temp-role");
+    globalPersonaRegistry.unregisterForTest("code-creator");
   });
 
   it("returns built-in roles by name", () => {
@@ -22,7 +22,7 @@ describe("agent-roles", () => {
     expect(role).toBeNull();
   });
 
-  it("registers and finds custom roles", () => {
+  it("registers and finds custom roles via PersonaRegistry", () => {
     const customRole: AgentRole = {
       name: "my-custom-agent",
       description: "A custom test agent",
@@ -32,7 +32,11 @@ describe("agent-roles", () => {
       model: "test/model",
     };
 
-    registerCustomRoles([customRole]);
+    globalPersonaRegistry.register({
+      ...customRole,
+      source: "project-local",
+      active: false,
+    });
 
     const found = findAgentRole("my-custom-agent");
     expect(found).not.toBeNull();
@@ -53,7 +57,11 @@ describe("agent-roles", () => {
       model: "override/model",
     };
 
-    registerCustomRoles([conflictingRole]);
+    globalPersonaRegistry.register({
+      ...conflictingRole,
+      source: "project-local",
+      active: false,
+    });
 
     // Should still get the built-in role
     const role = findAgentRole("code-creator");
@@ -71,7 +79,11 @@ describe("agent-roles", () => {
       model: "claude-sonnet",
     };
 
-    registerCustomRoles([customRole]);
+    globalPersonaRegistry.register({
+      ...customRole,
+      source: "project-local",
+      active: false,
+    });
 
     // Built-in still works
     expect(findAgentRole("code-reviewer")?.name).toBe("code-reviewer");
@@ -79,7 +91,7 @@ describe("agent-roles", () => {
     expect(findAgentRole("security-specialist")?.description).toBe("Focuses on security audits");
   });
 
-  it("clearCustomRoles removes all custom roles", () => {
+  it("unregisterForTest removes custom roles", () => {
     const customRole: AgentRole = {
       name: "temp-role",
       description: "Temporary",
@@ -89,10 +101,14 @@ describe("agent-roles", () => {
       model: "test",
     };
 
-    registerCustomRoles([customRole]);
+    globalPersonaRegistry.register({
+      ...customRole,
+      source: "project-local",
+      active: false,
+    });
     expect(findAgentRole("temp-role")).not.toBeNull();
 
-    clearCustomRoles();
+    globalPersonaRegistry.unregisterForTest("temp-role");
 
     expect(findAgentRole("temp-role")).toBeNull();
     // Built-in still works

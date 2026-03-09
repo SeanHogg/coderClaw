@@ -119,6 +119,10 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
     { name: "new", description: "Reset the session" },
     { name: "reset", description: "Reset the session" },
     { name: "settings", description: "Open settings" },
+    {
+      name: "restart",
+      description: "Restart gateway (when disconnected: runs gateway restart locally)",
+    },
     { name: "gateway", description: "Gateway service control (status/start/stop/restart)" },
     { name: "daemon", description: "Alias for /gateway" },
     { name: "logs", description: "Show recent gateway log lines" },
@@ -201,6 +205,7 @@ export function helpText(options: SlashCommandOptions = {}): string {
     "/abort",
     "/compact [instructions]",
     "/settings",
+    "/restart (restart gateway; works when disconnected)",
     "/gateway <status|start|stop|restart>",
     "/daemon <status|start|stop|restart>",
     "/logs [count]",

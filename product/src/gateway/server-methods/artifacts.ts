@@ -5,7 +5,11 @@
  * and applies them to the local claw (persona assignments, skill activation,
  * content references).
  */
-import { savePersonaAssignment } from "../../coderclaw/project-context.js";
+import {
+  loadPersonaAssignments,
+  savePersonaAssignment,
+} from "../../coderclaw/project-context.js";
+import { globalPersonaRegistry } from "../../coderclaw/personas.js";
 import type { PersonaAssignment } from "../../coderclaw/types.js";
 import { logWarn } from "../../logger.js";
 import { ErrorCodes, errorShape } from "../protocol/index.js";
@@ -42,6 +46,11 @@ export const artifactsHandlers: GatewayRequestHandlers = {
         };
         await savePersonaAssignment(projectRoot, assignment);
         results.personas++;
+      }
+      // Apply to PersonaRegistry immediately so the gateway uses them without restart
+      const assignments = await loadPersonaAssignments(projectRoot);
+      if (assignments.length > 0) {
+        globalPersonaRegistry.applyAssignments(assignments);
       }
       logWarn(`[artifacts.sync] applied ${results.personas} persona assignment(s)`);
     }

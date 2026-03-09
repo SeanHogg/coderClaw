@@ -6,7 +6,7 @@ import process from "node:process";
 import { pathToFileURL } from "node:url";
 
 const compiler = "tsdown";
-const compilerArgs = ["exec", compiler, "--no-clean"];
+const compilerArgs = ["exec", compiler];
 
 export const runNodeWatchedPaths = ["src", "tsconfig.json", "package.json"];
 

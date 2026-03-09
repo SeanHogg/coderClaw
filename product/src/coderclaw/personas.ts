@@ -168,6 +168,14 @@ export class PersonaRegistry {
   getAssignments(): PersonaAssignment[] {
     return this.assignments.slice();
   }
+
+  /** Test-only: unregister a persona by name (does not remove builtins). */
+  unregisterForTest(name: string): void {
+    const existing = this.byName.get(name);
+    if (existing && existing.source !== "builtin") {
+      this.byName.delete(name);
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------

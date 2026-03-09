@@ -69,7 +69,7 @@ export function logGatewayStartup(params: {
   });
   if (localBrain) {
     const amygdala = params.cfg.localBrain?.models?.amygdala?.modelId ?? "SmolLM2-1.7B";
-    const hippocampus = params.cfg.localBrain?.models?.hippocampus?.modelId ?? "Phi-4-mini";
+    const hippocampus = params.cfg.localBrain?.models?.hippocampus?.modelId ?? "Qwen3-0.6B-ONNX";
     params.log.info(`amygdala: ${amygdala} (fast router)`, {
       consoleMessage: `amygdala: ${chalk.greenBright(amygdala)} (fast router)`,
     });
