@@ -428,7 +428,7 @@ interface ProviderMeta {
 const PROVIDERS: ProviderMeta[] = [
   {
     id: "coderclawllm",
-    label: "CoderClawLLM (recommended)",
+    label: "CoderClawLLM (recommended) — BuilderForce.AI (formerly coderClawLink)",
     defaultModel: "coderclawllm/auto",
   },
   {

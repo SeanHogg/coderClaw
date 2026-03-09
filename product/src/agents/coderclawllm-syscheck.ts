@@ -9,8 +9,9 @@
  * the result is cached so it does not add latency to subsequent requests.
  *
  * Dual-model anatomy:
- *   Amygdala    — SmolLM2-1.7B-Instruct (q4):  ~900 MB disk, ~1.5 GB RAM
- *   Hippocampus — Phi-4-mini-instruct    (q4):  ~2.3 GB disk, ~2.8 GB RAM
+ *   Amygdala    — SmolLM2-1.7B-Instruct (q4):  ~0.9 GB disk, ~1.5 GB RAM
+ *   Hippocampus — Qwen3-0.6B-ONNX (q4f16):    ~2.3 GB disk, ~0.6B params
+ *   Total: ~3.2 GB download; 4 GB free disk recommended.
  */
 
 import fs from "node:fs/promises";
@@ -23,6 +24,9 @@ import path from "node:path";
 
 /** Free disk space needed to safely download both models (bytes). */
 export const MIN_DISK_BYTES = 4 * 1024 ** 3; // 4 GB
+
+/** Human-readable total disk needed for local brain (amygdala + hippocampus). Shown in README, wizard, and TUI loading panel. */
+export const LOCAL_BRAIN_DISK_TOTAL_HINT = "~3.5 GB";
 
 /** Free RAM needed to load the amygdala in-process (bytes).
  *  Hippocampus is loaded on demand; its RAM is checked separately. */

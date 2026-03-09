@@ -184,7 +184,7 @@ export function resolveOllamaApiBase(configuredBaseUrl?: string): string {
   return trimmed.replace(/\/v1$/i, "");
 }
 
-async function discoverOllamaModels(baseUrl?: string): Promise<ModelDefinitionConfig[]> {
+export async function discoverOllamaModels(baseUrl?: string): Promise<ModelDefinitionConfig[]> {
   // Skip Ollama discovery in test environments
   if (process.env.VITEST || process.env.NODE_ENV === "test") {
     return [];
@@ -547,12 +547,15 @@ async function buildVeniceProvider(): Promise<ProviderConfig> {
   };
 }
 
-async function buildOllamaProvider(configuredBaseUrl?: string): Promise<ProviderConfig> {
-  const models = await discoverOllamaModels(configuredBaseUrl);
+/**
+ * Build Ollama provider with empty models. Discovery runs in background and
+ * updates models.json when complete, so TUI startup is not blocked.
+ */
+function buildOllamaProviderSync(configuredBaseUrl?: string): ProviderConfig {
   return {
     baseUrl: resolveOllamaApiBase(configuredBaseUrl),
     api: "ollama",
-    models,
+    models: [],
   };
 }
 
@@ -806,7 +809,7 @@ export async function resolveImplicitProviders(params: {
     resolveApiKeyFromProfiles({ provider: "ollama", store: authStore });
   if (ollamaKey) {
     const ollamaBaseUrl = params.explicitProviders?.ollama?.baseUrl;
-    providers.ollama = { ...(await buildOllamaProvider(ollamaBaseUrl)), apiKey: ollamaKey };
+    providers.ollama = { ...buildOllamaProviderSync(ollamaBaseUrl), apiKey: ollamaKey };
   }
 
   // vLLM provider - OpenAI-compatible local server (opt-in via env/profile).

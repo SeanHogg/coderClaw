@@ -11,6 +11,7 @@ import {
   GATEWAY_DAEMON_RUNTIME_OPTIONS,
 } from "../commands/daemon-runtime.js";
 import { formatHealthCheckFailure } from "../commands/health-format.js";
+import { getResolvedLoggerSettings, logWarn } from "../logging.js";
 import { healthCommand } from "../commands/health.js";
 import {
   detectBrowserOpenSupport,
@@ -211,9 +212,16 @@ export async function finalizeOnboardingWizard(
     try {
       await healthCommand({ json: false, timeoutMs: 10_000 }, runtime);
     } catch (err) {
-      runtime.error(formatHealthCheckFailure(err));
+      const msg = formatHealthCheckFailure(err);
+      runtime.error(msg);
+      logWarn(`[onboarding] health check failed: ${String(err)}`);
+      const logFile = getResolvedLoggerSettings().file;
       await prompter.note(
         [
+          "Logs:",
+          logFile,
+          `View: ${formatCliCommand("coderclaw logs --follow")}`,
+          "",
           "Docs:",
           "https://docs.coderclaw.ai/gateway/health",
           "https://docs.coderclaw.ai/gateway/troubleshooting",

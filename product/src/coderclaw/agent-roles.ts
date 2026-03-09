@@ -5,23 +5,6 @@
 import { globalPersonaRegistry } from "./personas.js";
 import type { AgentRole } from "./types.js";
 
-// Registry for custom agent roles loaded from .coderClaw/agents/
-let globalCustomRoles: AgentRole[] = [];
-
-/**
- * Register custom agent roles (e.g., loaded from .coderClaw/agents/*.yaml)
- */
-export function registerCustomRoles(roles: AgentRole[]): void {
-  globalCustomRoles = roles;
-}
-
-/**
- * Clear custom agent roles (mainly for testing)
- */
-export function clearCustomRoles(): void {
-  globalCustomRoles = [];
-}
-
 /**
  * Code Creator Agent - Generates new code, features, and implementations
  */
@@ -341,28 +324,18 @@ export function getBuiltInAgentRoles(): AgentRole[] {
  *
  * Resolution order (first match wins):
  *  1. Built-in roles (always available)
- *  2. Custom roles registered via `registerCustomRoles()` (.coderClaw/agents/)
- *  3. Persona plugins from the `globalPersonaRegistry` (marketplace / coderClawLink)
+ *  2. Persona plugins from the `globalPersonaRegistry` (project .coderclaw/personas/,
+ *     user ~/.coderclaw/personas/, marketplace, ClawLink)
  *
- * This means built-ins cannot be accidentally overridden by marketplace personas,
- * while marketplace personas can extend the set with new names.
+ * Built-ins cannot be overridden; personas extend the set with new names.
  */
-export function findAgentRole(
-  name: string,
-  customRoles: AgentRole[] = globalCustomRoles,
-): AgentRole | null {
+export function findAgentRole(name: string): AgentRole | null {
   // 1. Check built-ins first (they take precedence)
   const builtin = getBuiltInAgentRoles().find((role) => role.name === name);
   if (builtin) {
     return builtin;
   }
 
-  // 2. Check manually registered custom roles (.coderClaw/agents/)
-  const custom = customRoles.find((role) => role.name === name);
-  if (custom) {
-    return custom;
-  }
-
-  // 3. Delegate to PersonaRegistry (marketplace / coderClawLink / personas dirs)
+  // 2. Delegate to PersonaRegistry (project-local, user-global, marketplace, ClawLink)
   return globalPersonaRegistry.resolve(name);
 }

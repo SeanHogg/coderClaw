@@ -459,7 +459,7 @@ describe("runOnboardingWizard", () => {
     });
 
     const select = vi.fn(async (params: WizardSelectParams<unknown>) => {
-      if (params.message === "Config handling") {
+      if (params.message.startsWith("Config handling")) {
         return "keep";
       }
       return "quickstart";

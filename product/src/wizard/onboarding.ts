@@ -181,12 +181,13 @@ export async function runOnboardingWizard(
     );
 
     const action = await prompter.select<"keep" | "modify" | "reset">({
-      message: "Config handling",
+      message: "Config handling\n(↑/↓ to select, Enter to confirm)",
       options: [
         { value: "keep", label: "Use existing values" },
         { value: "modify", label: "Update values" },
         { value: "reset", label: "Reset" },
       ],
+      initialValue: "keep",
     });
     configHandlingAction = action;
 
@@ -501,17 +502,20 @@ export async function runOnboardingWizard(
   }
 
   // ── Optional local brain (amygdala + hippocampus ONNX preprocessors) ────
-  if (
+  // Show when not skipping providers and: we're updating/resetting config, or we're keeping but don't already have local brain.
+  const alreadyHasLocalBrain =
+    nextConfig.models?.providers?.["coderclawllm-local"]?.api === "transformers";
+  const showLocalBrainPrompt =
     !opts.skipProviders &&
-    nextConfig.models?.providers?.["coderclawllm-local"]?.api !== "transformers"
-  ) {
+    (configHandlingAction !== "keep" || !alreadyHasLocalBrain);
+  if (showLocalBrainPrompt) {
     const localBrainChoice = await prompter.select({
       message: "Enable local brain (amygdala + hippocampus)?",
       options: [
         {
           value: "smart",
           label: "Enable dual local brain",
-          hint: "Downloads amygdala (fast router) + hippocampus (memory). ~4 GB.",
+          hint: "Downloads amygdala (SmolLM2) + hippocampus (Qwen3-0.6B). ~3.5 GB disk.",
         },
         {
           value: "skip",

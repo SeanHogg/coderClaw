@@ -712,6 +712,27 @@ export function createCommandHandlers(context: CommandHandlerContext) {
       case "settings":
         openSettings();
         break;
+      case "restart": {
+        // When gateway is down, /restart runs the gateway restart locally so the user can recover.
+        if (!state.isConnected) {
+          chatLog.addSystem("Gateway not connected. Running: coderclaw gateway restart");
+          tui.requestRender();
+          const result = await runServiceCommand("restart");
+          if (result.lines.length > 0) {
+            for (const line of result.lines) {
+              chatLog.addSystem(line);
+            }
+          }
+          if (!result.ok) {
+            chatLog.addSystem("gateway restart failed");
+          } else {
+            chatLog.addSystem("Gateway restart started. Reconnecting when it is up…");
+          }
+          break;
+        }
+        await sendMessage(raw);
+        break;
+      }
       case "gateway":
       case "daemon": {
         const actionRaw = args.trim().toLowerCase();
@@ -1113,7 +1134,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
             const hippocampusCached = await isModelCached(cacheDir, hippocampusModelId);
 
             if (!amygdalaCached || !hippocampusCached) {
-              chatLog.addSystem("Some local brain models are missing — downloading…");
+              chatLog.addSystem(
+                "Some local brain models are missing — downloading… (~3.5 GB total: amygdala + hippocampus)",
+              );
               tui.requestRender();
             }
 

@@ -276,11 +276,11 @@ This project follows a layered architecture with clear separation of concerns.
 
 ## Custom Agents
 
-Create project-specific agent roles in `.coderClaw/agents/`:
+Create project-specific agent roles in `.coderclaw/personas/`:
 
 ```yaml
 
-# .coderClaw/agents/database-expert.yaml
+# .coderclaw/personas/database-expert.yaml
 
 name: database-expert
 description: Specialist in database design and optimization
@@ -397,7 +397,7 @@ orchestrate workflow:feature description:"Add OAuth2 authentication with Google 
 
 ```yaml
 
-# .coderClaw/agents/frontend-specialist.yaml
+# .coderclaw/personas/frontend-specialist.yaml
 
 name: frontend-specialist
 description: Expert in React and modern frontend development

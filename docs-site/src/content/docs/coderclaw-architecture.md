@@ -90,7 +90,7 @@ The middle layer responsible for agent role definitions and capabilities.
 
 **Custom Agent Loading**
 
-- Loads YAML definitions from `.coderClaw/agents/`
+- Loads YAML definitions from `.coderclaw/personas/`
 - Merges with built-in roles
 - Supports project-specific agent definitions
 - Enables community-driven agent libraries
@@ -270,7 +270,7 @@ customRules:
   - Use async/await instead of promises
 ```
 
-### Custom Agent Role (.coderClaw/agents/custom.yaml)
+### Custom Agent Role (.coderclaw/personas/custom.yaml)
 
 ```yaml
 name: custom-agent
@@ -349,7 +349,7 @@ type TaskState = {
 4. Generate default context.yaml
 5. Generate default architecture.md
 6. Generate default rules.yaml
-7. Create agents/, skills/, memory/ subdirectories
+7. Create personas/, skills/, memory/ subdirectories
 8. Write README.md explaining structure
 ```
 
@@ -476,7 +476,7 @@ export async function parsePythonFile(filePath: string): Promise<FileInfo>;
 
 ### 2. Custom Agents
 
-Define YAML in `.coderClaw/agents/`:
+Define YAML in `.coderclaw/personas/`:
 
 ```yaml
 name: my-agent

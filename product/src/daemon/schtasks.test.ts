@@ -241,9 +241,10 @@ describe("buildTaskLauncher", () => {
     expect(launcher).toContain("crash-loop detected");
   });
 
-  it("runs the cmd script and records crashes", () => {
+  it("runs the cmd script hidden and records crashes", () => {
     const launcher = buildTaskLauncher("C:\\gateway.cmd");
-    expect(launcher).toContain("& cmd /c $cmdScript");
+    expect(launcher).toContain("Start-Process");
+    expect(launcher).toContain("-WindowStyle Hidden");
     expect(launcher).toContain("Add-Content $crashFile");
   });
 

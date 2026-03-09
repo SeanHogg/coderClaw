@@ -14,22 +14,15 @@ async function withTempDir<T>(run: (dir: string) => Promise<T>): Promise<T> {
 
 describe("run-node script", () => {
   it.runIf(process.platform !== "win32")(
-    "preserves control-ui assets by building with tsdown --no-clean",
+    "builds with tsdown (clean) so chunk references stay consistent",
     async () => {
       await withTempDir(async (tmp) => {
         const argsPath = path.join(tmp, ".pnpm-args.txt");
-        const indexPath = path.join(tmp, "dist", "control-ui", "index.html");
-
-        await fs.mkdir(path.dirname(indexPath), { recursive: true });
-        await fs.writeFile(indexPath, "<html>sentinel</html>\n", "utf-8");
 
         const nodeCalls: string[][] = [];
         const spawn = (cmd: string, args: string[]) => {
           if (cmd === "pnpm") {
             void fs.writeFile(argsPath, args.join(" "), "utf-8");
-            if (!args.includes("--no-clean")) {
-              void fs.rm(path.join(tmp, "dist", "control-ui"), { recursive: true, force: true });
-            }
           }
           if (cmd === process.execPath) {
             nodeCalls.push([cmd, ...args]);
@@ -59,8 +52,7 @@ describe("run-node script", () => {
         });
 
         expect(exitCode).toBe(0);
-        await expect(fs.readFile(argsPath, "utf-8")).resolves.toContain("exec tsdown --no-clean");
-        await expect(fs.readFile(indexPath, "utf-8")).resolves.toContain("sentinel");
+        await expect(fs.readFile(argsPath, "utf-8")).resolves.toContain("exec tsdown");
         expect(nodeCalls).toEqual([[process.execPath, "coderclaw.mjs", "--version"]]);
       });
     },

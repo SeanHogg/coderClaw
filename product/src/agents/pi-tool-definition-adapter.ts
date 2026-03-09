@@ -51,15 +51,33 @@ function isLegacyToolExecuteArgs(args: ToolExecuteArgsAny): args is ToolExecuteA
   return isAbortSignal(fifth);
 }
 
-function describeToolExecutionError(err: unknown): {
+function describeToolExecutionError(err: unknown, toolName?: string): {
   message: string;
   stack?: string;
 } {
-  if (err instanceof Error) {
-    const message = err.message?.trim() ? err.message : String(err);
-    return { message, stack: err.stack };
+  const rawMessage =
+    err instanceof Error ? (err.message?.trim() ? err.message : String(err)) : String(err);
+  const code =
+    err && typeof err === "object" && "code" in err
+      ? String((err as { code?: unknown }).code)
+      : "";
+  const isEisdir =
+    code === "EISDIR" || code === "ERR_FS_EISDIR" || /EISDIR/i.test(rawMessage);
+  const norm = toolName ? normalizeToolName(toolName) : "";
+  const isReadTool = norm === "read" || norm === "read_file";
+
+  if (isEisdir && isReadTool) {
+    return {
+      message:
+        "Path is a directory; use grep or find to explore contents instead of read.",
+      stack: err instanceof Error ? err.stack : undefined,
+    };
   }
-  return { message: String(err) };
+
+  if (err instanceof Error) {
+    return { message: rawMessage, stack: err.stack };
+  }
+  return { message: rawMessage };
 }
 
 function splitToolExecuteArgs(args: ToolExecuteArgsAny): {
@@ -150,7 +168,7 @@ export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
           if (beforeHookWrapped) {
             consumeAdjustedParamsForToolCall(toolCallId);
           }
-          const described = describeToolExecutionError(err);
+          const described = describeToolExecutionError(err, normalizedName);
           if (described.stack && described.stack !== described.message) {
             logDebug(`tools: ${normalizedName} failed stack:\n${described.stack}`);
           }

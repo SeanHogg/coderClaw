@@ -4,6 +4,7 @@ import { type CoderClawConfig, loadConfig } from "../config/config.js";
 import { isRecord } from "../utils.js";
 import { resolveCoderClawAgentDir } from "./agent-paths.js";
 import {
+  discoverOllamaModels,
   normalizeProviders,
   type ProviderConfig,
   resolveImplicitBedrockProvider,
@@ -140,5 +141,46 @@ export async function ensureCoderClawModelsJson(
 
   await fs.mkdir(agentDir, { recursive: true, mode: 0o700 });
   await fs.writeFile(targetPath, next, { mode: 0o600 });
+
+  // Background Ollama discovery: if ollama has empty models, discover and patch
+  // models.json when done so TUI startup is not blocked.
+  const ollamaProvider = mergedProviders?.ollama;
+  if (
+    ollamaProvider &&
+    Array.isArray(ollamaProvider.models) &&
+    ollamaProvider.models.length === 0
+  ) {
+    const baseUrl = ollamaProvider.baseUrl;
+    const runBackgroundDiscovery = async () => {
+      try {
+        const models = await discoverOllamaModels(baseUrl);
+        if (models.length === 0) {
+          return;
+        }
+        const existing = await readJson(targetPath);
+        if (!isRecord(existing) || !isRecord(existing.providers)) {
+          return;
+        }
+        const providers = existing.providers as Record<string, ProviderConfig>;
+        const ollama = providers.ollama;
+        if (!ollama) {
+          return;
+        }
+        providers.ollama = { ...ollama, models };
+        const normalized = normalizeProviders({ providers, agentDir });
+        await fs.writeFile(
+          targetPath,
+          `${JSON.stringify({ providers: normalized }, null, 2)}\n`,
+          { mode: 0o600 },
+        );
+        const { invalidateModelCatalogCache } = await import("./model-catalog.js");
+        invalidateModelCatalogCache();
+      } catch {
+        // ignore; discovery failures are already logged in discoverOllamaModels
+      }
+    };
+    void runBackgroundDiscovery();
+  }
+
   return { agentDir, wrote: true };
 }

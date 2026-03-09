@@ -11,12 +11,11 @@ import type { CanvasHostServer } from "../canvas-host/server.js";
 import { type ChannelId, listChannelPlugins } from "../channels/plugins/index.js";
 import { formatCliCommand } from "../cli/command-format.js";
 import { createDefaultDeps } from "../cli/deps.js";
-import { registerCustomRoles, getBuiltInAgentRoles } from "../coderclaw/agent-roles.js";
+import { getBuiltInAgentRoles } from "../coderclaw/agent-roles.js";
 import { globalPersonaRegistry, USER_PERSONAS_DIR } from "../coderclaw/personas.js";
 import {
   initializeCoderClawProject,
   isCoderClawProject,
-  loadCustomAgentRoles,
   loadPersonaAssignments,
   resolveCoderClawDir,
 } from "../coderclaw/project-context.js";
@@ -256,17 +255,6 @@ export async function startGatewayServer(
   if (!(await isCoderClawProject(projectRoot))) {
     log.info("gateway: initialising .coderclaw/ project directory");
     await initializeCoderClawProject(projectRoot);
-  }
-
-  // Load custom agent roles from .coderclaw/agents if present
-  try {
-    const customRoles = await loadCustomAgentRoles(projectRoot);
-    registerCustomRoles(customRoles);
-    if (customRoles.length > 0) {
-      log.info(`Loaded ${customRoles.length} custom agent role(s) from .coderclaw/agents`);
-    }
-  } catch (err) {
-    log.warn(`Failed to load custom agent roles from ${projectRoot}: ${String(err)}`);
   }
 
   // Bootstrap PersonaRegistry: built-ins → user-global → project-local → assignments

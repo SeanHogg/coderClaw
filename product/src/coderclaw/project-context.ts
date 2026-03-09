@@ -17,7 +17,6 @@ const ARCHITECTURE_FILE = "architecture.md";
 const RULES_FILE = "rules.yaml";
 const GOVERNANCE_FILE = "governance.md";
 const WORKSPACE_STATE_FILE = "workspace-state.json";
-const AGENTS_DIR = "agents";
 const SKILLS_DIR = "skills";
 const MEMORY_DIR = "memory";
 const SESSIONS_DIR = "sessions";
@@ -28,11 +27,10 @@ export type CoderClawDirectory = {
   architecturePath: string;
   rulesPath: string;
   governancePath: string;
-  agentsDir: string;
   skillsDir: string;
   memoryDir: string;
   sessionsDir: string;
-  /** Project-scoped persona plugins: .coderClaw/personas/ */
+  /** Project-scoped persona/role plugins: .coderClaw/personas/ */
   personasDir: string;
 };
 
@@ -47,7 +45,6 @@ export function resolveCoderClawDir(projectRoot: string): CoderClawDirectory {
     architecturePath: path.join(root, ARCHITECTURE_FILE),
     rulesPath: path.join(root, RULES_FILE),
     governancePath: path.join(root, GOVERNANCE_FILE),
-    agentsDir: path.join(root, AGENTS_DIR),
     skillsDir: path.join(root, SKILLS_DIR),
     memoryDir: path.join(root, MEMORY_DIR),
     sessionsDir: path.join(root, SESSIONS_DIR),
@@ -79,7 +76,6 @@ export async function initializeCoderClawProject(
 
   // Create directory structure
   await fs.mkdir(dir.root, { recursive: true });
-  await fs.mkdir(dir.agentsDir, { recursive: true });
   await fs.mkdir(dir.skillsDir, { recursive: true });
   await fs.mkdir(dir.memoryDir, { recursive: true });
   await fs.mkdir(dir.sessionsDir, { recursive: true });
@@ -188,7 +184,7 @@ This directory contains project-specific context and configuration for coderClaw
 - \`context.yaml\` - Project metadata, languages, frameworks, dependencies
 - \`architecture.md\` - Architectural documentation and design patterns
 - \`rules.yaml\` - Coding standards, testing requirements, git conventions
-- \`agents/\` - Custom agent role definitions
+- \`personas/\` - Custom agent roles/personas (YAML)
 - \`skills/\` - Project-specific skills
 - \`memory/\` - Project knowledge base and semantic indices
 - \`sessions/\` - Session handoff documents (resume any session instantly)
@@ -262,27 +258,43 @@ export async function loadProjectArchitecture(projectRoot: string): Promise<stri
   }
 }
 
+const LEGACY_AGENTS_DIR = "agents";
+
 /**
- * Load custom agent roles from .coderClaw/agents/
+ * Load project-local personas/roles from .coderClaw/personas/.
+ * Aligned with the persona system; returns AgentRole-compatible entries.
+ * Migrates legacy .coderclaw/agents/*.yaml to personas/ on first load.
  */
 export async function loadCustomAgentRoles(projectRoot: string): Promise<AgentRole[]> {
   const dir = resolveCoderClawDir(projectRoot);
-  const roles: AgentRole[] = [];
+  const plugins = await loadPersonasFromDir(dir.personasDir, "project-local");
 
+  // Backward compat: migrate legacy .coderclaw/agents/ to personas/ if present
+  const legacyAgentsDir = path.join(dir.root, LEGACY_AGENTS_DIR);
   try {
-    const files = await fs.readdir(dir.agentsDir);
-    for (const file of files) {
-      if (file.endsWith(".yaml") || file.endsWith(".yml")) {
-        const content = await fs.readFile(path.join(dir.agentsDir, file), "utf-8");
+    const legacyFiles = (await fs.readdir(legacyAgentsDir)).filter(
+      (f) => f.endsWith(".yaml") || f.endsWith(".yml"),
+    );
+    if (legacyFiles.length > 0 && plugins.length === 0) {
+      const migrated: AgentRole[] = [];
+      await fs.mkdir(dir.personasDir, { recursive: true });
+      for (const file of legacyFiles) {
+        const src = path.join(legacyAgentsDir, file);
+        const content = await fs.readFile(src, "utf-8");
         const role = parseYaml(content) as AgentRole;
-        roles.push(role);
+        if (role?.name) {
+          migrated.push(role);
+          const dest = path.join(dir.personasDir, file);
+          await fs.writeFile(dest, content, "utf-8");
+        }
       }
+      return migrated;
     }
   } catch {
-    // Directory doesn't exist or is empty
+    // Legacy dir missing or inaccessible
   }
 
-  return roles;
+  return plugins as AgentRole[];
 }
 
 /**
@@ -307,13 +319,13 @@ export async function saveProjectRules(projectRoot: string, rules: ProjectRules)
 }
 
 /**
- * Save custom agent role definition
+ * Save custom agent role/persona definition to .coderClaw/personas/
  */
 export async function saveAgentRole(projectRoot: string, role: AgentRole): Promise<void> {
   const dir = resolveCoderClawDir(projectRoot);
-  await fs.mkdir(dir.agentsDir, { recursive: true });
+  await fs.mkdir(dir.personasDir, { recursive: true });
   const filename = `${role.name.toLowerCase().replace(/\s+/g, "-")}.yaml`;
-  await fs.writeFile(path.join(dir.agentsDir, filename), stringifyYaml(role), "utf-8");
+  await fs.writeFile(path.join(dir.personasDir, filename), stringifyYaml(role), "utf-8");
 }
 
 /**

@@ -14,12 +14,12 @@ export const TRANSFORMERS_PROVIDER_ID = CODERCLAWLLM_LOCAL_PROVIDER_ID;
 
 // ── Anatomical model defaults ────────────────────────────────────────────────
 // Amygdala  = SmolLM2 (fast routing / triage, <200 ms)
-// Hippocampus = Phi-4-mini (memory consolidation, prompt compression)
+// Hippocampus = Qwen3-0.6B-ONNX (plan pass; built for Transformers.js + ONNX)
 // Cortex    = user's registered LLM (the actual agent model)
 export const AMYGDALA_MODEL_ID = "HuggingFaceTB/SmolLM2-1.7B-Instruct";
 export const AMYGDALA_DTYPE = "q4";
-export const HIPPOCAMPUS_MODEL_ID = "microsoft/Phi-4-mini-instruct";
-export const HIPPOCAMPUS_DTYPE = "q4";
+export const HIPPOCAMPUS_MODEL_ID = "onnx-community/Qwen3-0.6B-ONNX";
+export const HIPPOCAMPUS_DTYPE = "q4f16";
 
 /** @deprecated Use AMYGDALA_MODEL_ID */
 export const TRANSFORMERS_DEFAULT_MODEL_ID = AMYGDALA_MODEL_ID;
@@ -75,7 +75,7 @@ export function applyTransformersProviderConfig(
               reasoning: false,
               input: ["text"],
               cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-              contextWindow: 131072,
+              contextWindow: 40960,
               maxTokens: 4096,
               headers: { "x-transformers-dtype": hippocampusDtype, "x-brain-role": "hippocampus" },
             },
@@ -164,7 +164,7 @@ export async function downloadAndWireLocalBrain(opts: {
   // ── Download amygdala (SmolLM2 — fast router) ──────────────────────────
   let lastFile = "";
   const amygdalaSpinner = opts.prompter.progress(
-    `Downloading amygdala (${amygdalaModelId}, ${amygdalaDtype})…`,
+    `Downloading amygdala (${amygdalaModelId}, ${amygdalaDtype})… (~0.9 GB)`,
   );
   try {
     await downloadCoderClawLlmModel({
@@ -187,10 +187,10 @@ export async function downloadAndWireLocalBrain(opts: {
     return { config: nextConfig };
   }
 
-  // ── Download hippocampus (Phi-4-mini — memory / compression) ─────────
+  // ── Download hippocampus (Qwen3-0.6B-ONNX — plan / memory) ─────────
   lastFile = "";
   const hippoSpinner = opts.prompter.progress(
-    `Downloading hippocampus (${hippocampusModelId}, ${hippocampusDtype})…`,
+    `Downloading hippocampus (${hippocampusModelId}, ${hippocampusDtype})… (~2.3 GB)`,
   );
   try {
     await downloadCoderClawLlmModel({
