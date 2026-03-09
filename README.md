@@ -1,4 +1,4 @@
-# 🦞 CoderClaw — Developer-First Multi-Agent AI System
+# CoderClaw — Developer-First Multi-Agent AI System
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/SeanHogg/coderClaw/main/assets/coderclaw.png" alt="CoderClaw" width="300">
