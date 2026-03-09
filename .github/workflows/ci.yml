@@ -191,7 +191,7 @@ jobs:
           CODERCLAW_A2UI_SKIP_MISSING: "1"
 
       - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-build
           path: product/dist/
@@ -282,7 +282,7 @@ jobs:
 
       - name: Upload vitest reports
         if: matrix.task == 'test' && matrix.runtime == 'node'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vitest-reports-${{ runner.os }}-${{ matrix.runtime }}
           path: |
@@ -557,7 +557,7 @@ jobs:
 
       - name: Upload vitest reports
         if: matrix.task == 'test'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vitest-reports-${{ runner.os }}-${{ matrix.runtime }}
           path: |
