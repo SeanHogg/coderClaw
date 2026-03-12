@@ -1,11 +1,12 @@
 import { loadConfig } from "../../config/config.js";
 import { resolveIsNixMode } from "../../config/paths.js";
+import { readRecentGatewayLogErrors } from "../../daemon/diagnostics.js";
 import { checkTokenDrift } from "../../daemon/service-audit.js";
-import { appendGatewayLifecycleAudit } from "../../logging.js";
 import type { GatewayService } from "../../daemon/service.js";
 import { renderSystemdUnavailableHints } from "../../daemon/systemd-hints.js";
 import { isSystemdUserServiceAvailable } from "../../daemon/systemd.js";
 import { isWSL } from "../../infra/wsl.js";
+import { appendGatewayLifecycleAudit } from "../../logging.js";
 import { defaultRuntime } from "../../runtime.js";
 import {
   buildDaemonServiceSnapshot,
@@ -17,6 +18,33 @@ import {
 type DaemonLifecycleOptions = {
   json?: boolean;
 };
+
+const POST_START_SETTLE_MS = 2000;
+
+/**
+ * Wait briefly after a service start/restart, then check if the process is
+ * still running.  Background services (especially on Windows with hidden
+ * windows) swallow stderr, so a quick crash is invisible to the caller.
+ *
+ * Returns `null` when the service appears healthy, or an object with recent
+ * ERROR log lines when it looks like the process exited.
+ */
+async function detectServiceCrash(
+  service: GatewayService,
+  since: Date,
+): Promise<{ errors: string[] } | null> {
+  await new Promise((resolve) => setTimeout(resolve, POST_START_SETTLE_MS));
+  try {
+    const runtime = await service.readRuntime(process.env as Record<string, string | undefined>);
+    if (runtime.status === "running") {
+      return null;
+    }
+    const errors = await readRecentGatewayLogErrors(since);
+    return { errors };
+  } catch {
+    return null;
+  }
+}
 
 async function maybeAugmentSystemdHints(hints: string[]): Promise<string[]> {
   if (process.platform !== "linux") {
@@ -178,12 +206,35 @@ export async function runServiceStart(params: {
     });
     return;
   }
+  const restartTime = new Date();
   appendGatewayLifecycleAudit({ action: "start", source: "coderclaw gateway start" });
   try {
     await params.service.restart({ env: process.env, stdout });
   } catch (err) {
     const hints = params.renderStartHints();
     fail(`${params.serviceNoun} start failed: ${String(err)}`, hints);
+    return;
+  }
+
+  const crashed = await detectServiceCrash(params.service, restartTime);
+  if (crashed) {
+    if (json) {
+      emit({
+        ok: false,
+        error: `${params.serviceNoun} started but exited immediately`,
+        hints: crashed.errors.length > 0 ? crashed.errors : undefined,
+        service: buildDaemonServiceSnapshot(params.service, false),
+      });
+    } else {
+      defaultRuntime.error(`${params.serviceNoun} started but exited immediately.`);
+      for (const line of crashed.errors) {
+        defaultRuntime.error(`  ${line}`);
+      }
+      if (crashed.errors.length === 0) {
+        defaultRuntime.error("  Check gateway logs for details.");
+      }
+    }
+    defaultRuntime.exit(1);
     return;
   }
 
@@ -308,25 +359,50 @@ export async function runServiceRestart(params: {
     }
   }
 
+  const restartTime = new Date();
   appendGatewayLifecycleAudit({ action: "restart", source: "coderclaw gateway restart" });
   try {
     await params.service.restart({ env: process.env, stdout });
-    let restarted = true;
-    try {
-      restarted = await params.service.isLoaded({ env: process.env });
-    } catch {
-      restarted = true;
-    }
-    emit({
-      ok: true,
-      result: "restarted",
-      service: buildDaemonServiceSnapshot(params.service, restarted),
-      warnings: warnings.length ? warnings : undefined,
-    });
-    return true;
   } catch (err) {
     const hints = params.renderStartHints();
     fail(`${params.serviceNoun} restart failed: ${String(err)}`, hints);
     return false;
   }
+
+  const crashed = await detectServiceCrash(params.service, restartTime);
+  if (crashed) {
+    if (json) {
+      emit({
+        ok: false,
+        error: `${params.serviceNoun} restarted but exited immediately`,
+        hints: crashed.errors.length > 0 ? crashed.errors : undefined,
+        service: buildDaemonServiceSnapshot(params.service, false),
+        warnings: warnings.length ? warnings : undefined,
+      });
+    } else {
+      defaultRuntime.error(`${params.serviceNoun} restarted but exited immediately.`);
+      for (const line of crashed.errors) {
+        defaultRuntime.error(`  ${line}`);
+      }
+      if (crashed.errors.length === 0) {
+        defaultRuntime.error("  Check gateway logs for details.");
+      }
+    }
+    defaultRuntime.exit(1);
+    return false;
+  }
+
+  let restarted = true;
+  try {
+    restarted = await params.service.isLoaded({ env: process.env });
+  } catch {
+    restarted = true;
+  }
+  emit({
+    ok: true,
+    result: "restarted",
+    service: buildDaemonServiceSnapshot(params.service, restarted),
+    warnings: warnings.length ? warnings : undefined,
+  });
+  return true;
 }

@@ -637,8 +637,7 @@ export async function runEmbeddedAttempt(
         log.info(
           `[brain-routing] run=${params.runId} localBrain=on → amygdala/hippocampus pipeline (cortex=${params.provider}/${params.modelId})`,
         );
-        const providerConfig =
-          params.config?.models?.providers?.["coderclawllm-local"];
+        const providerConfig = params.config?.models?.providers?.["coderclawllm-local"];
         const cacheDir =
           typeof providerConfig?.baseUrl === "string" && providerConfig.baseUrl.trim()
             ? providerConfig.baseUrl.trim()

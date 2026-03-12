@@ -63,7 +63,11 @@ export function addGatewayServiceCommands(parent: Command, opts?: { statusDescri
     .option("--port <port>", "Gateway port")
     .option("--runtime <runtime>", "Daemon runtime (node|bun). Default: node")
     .option("--token <token>", "Gateway token (token auth)")
-    .option("--no-cron", "Disable cron scheduler (cron.enabled: false) to reduce gateway activity", true)
+    .option(
+      "--no-cron",
+      "Disable cron scheduler (cron.enabled: false) to reduce gateway activity",
+      true,
+    )
     .option("--force", "Reinstall/overwrite if already installed", false)
     .option("--json", "Output JSON", false)
     .action(async (cmdOpts, command) => {

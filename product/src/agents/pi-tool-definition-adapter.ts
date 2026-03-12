@@ -51,25 +51,24 @@ function isLegacyToolExecuteArgs(args: ToolExecuteArgsAny): args is ToolExecuteA
   return isAbortSignal(fifth);
 }
 
-function describeToolExecutionError(err: unknown, toolName?: string): {
+function describeToolExecutionError(
+  err: unknown,
+  toolName?: string,
+): {
   message: string;
   stack?: string;
 } {
   const rawMessage =
     err instanceof Error ? (err.message?.trim() ? err.message : String(err)) : String(err);
   const code =
-    err && typeof err === "object" && "code" in err
-      ? String((err as { code?: unknown }).code)
-      : "";
-  const isEisdir =
-    code === "EISDIR" || code === "ERR_FS_EISDIR" || /EISDIR/i.test(rawMessage);
+    err && typeof err === "object" && "code" in err ? String((err as { code?: unknown }).code) : "";
+  const isEisdir = code === "EISDIR" || code === "ERR_FS_EISDIR" || /EISDIR/i.test(rawMessage);
   const norm = toolName ? normalizeToolName(toolName) : "";
   const isReadTool = norm === "read" || norm === "read_file";
 
   if (isEisdir && isReadTool) {
     return {
-      message:
-        "Path is a directory; use grep or find to explore contents instead of read.",
+      message: "Path is a directory; use grep or find to explore contents instead of read.",
       stack: err instanceof Error ? err.stack : undefined,
     };
   }

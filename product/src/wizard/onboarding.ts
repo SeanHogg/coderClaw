@@ -506,8 +506,7 @@ export async function runOnboardingWizard(
   const alreadyHasLocalBrain =
     nextConfig.models?.providers?.["coderclawllm-local"]?.api === "transformers";
   const showLocalBrainPrompt =
-    !opts.skipProviders &&
-    (configHandlingAction !== "keep" || !alreadyHasLocalBrain);
+    !opts.skipProviders && (configHandlingAction !== "keep" || !alreadyHasLocalBrain);
   if (showLocalBrainPrompt) {
     const localBrainChoice = await prompter.select({
       message: "Enable local brain (amygdala + hippocampus)?",

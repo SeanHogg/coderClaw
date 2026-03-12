@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { getInstallId, resetInstallIdCache } from "./install-id.js";
 
 describe("getInstallId", () => {

@@ -298,14 +298,15 @@ export function appendGatewayLifecycleAudit(params: {
     fs.mkdirSync(logDir, { recursive: true });
     const logPath = defaultRollingPathForToday();
     const time = new Date().toISOString();
-    const line = JSON.stringify({
-      time,
-      level: "info",
-      loggerName: "daemon-cli",
-      message: `gateway ${params.action} requested${params.source ? ` (${params.source})` : ""}`,
-      action: params.action,
-      source: params.source ?? "coderclaw gateway",
-    }) + "\n";
+    const line =
+      JSON.stringify({
+        time,
+        level: "info",
+        loggerName: "daemon-cli",
+        message: `gateway ${params.action} requested${params.source ? ` (${params.source})` : ""}`,
+        action: params.action,
+        source: params.source ?? "coderclaw gateway",
+      }) + "\n";
     fs.appendFileSync(logPath, line, { encoding: "utf8" });
   } catch {
     // never block on logging failures

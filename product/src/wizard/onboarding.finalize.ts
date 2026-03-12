@@ -11,7 +11,6 @@ import {
   GATEWAY_DAEMON_RUNTIME_OPTIONS,
 } from "../commands/daemon-runtime.js";
 import { formatHealthCheckFailure } from "../commands/health-format.js";
-import { getResolvedLoggerSettings, logWarn } from "../logging.js";
 import { healthCommand } from "../commands/health.js";
 import {
   detectBrowserOpenSupport,
@@ -26,6 +25,7 @@ import type { CoderClawConfig } from "../config/config.js";
 import { resolveGatewayService } from "../daemon/service.js";
 import { isSystemdUserServiceAvailable } from "../daemon/systemd.js";
 import { ensureControlUiAssetsBuilt } from "../infra/control-ui-assets.js";
+import { getResolvedLoggerSettings, logWarn } from "../logging.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { restoreTerminalState } from "../terminal/restore.js";
 import { runTui } from "../tui/tui.js";

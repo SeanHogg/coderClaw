@@ -148,7 +148,8 @@ export async function runDaemonInstall(opts: DaemonInstallOptions) {
     try {
       const snapshot = await readConfigFileSnapshot();
       if (snapshot.exists && !snapshot.valid) {
-        const msg = "Warning: config file exists but is invalid; skipping cron.enabled persistence.";
+        const msg =
+          "Warning: config file exists but is invalid; skipping cron.enabled persistence.";
         if (json) {
           warnings.push(msg);
         } else {

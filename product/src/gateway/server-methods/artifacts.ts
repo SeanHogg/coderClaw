@@ -1,3 +1,4 @@
+import { globalPersonaRegistry } from "../../coderclaw/personas.js";
 /**
  * Gateway method handler: artifacts.sync
  *
@@ -5,11 +6,7 @@
  * and applies them to the local claw (persona assignments, skill activation,
  * content references).
  */
-import {
-  loadPersonaAssignments,
-  savePersonaAssignment,
-} from "../../coderclaw/project-context.js";
-import { globalPersonaRegistry } from "../../coderclaw/personas.js";
+import { loadPersonaAssignments, savePersonaAssignment } from "../../coderclaw/project-context.js";
 import type { PersonaAssignment } from "../../coderclaw/types.js";
 import { logWarn } from "../../logger.js";
 import { ErrorCodes, errorShape } from "../protocol/index.js";

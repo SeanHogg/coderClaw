@@ -19,6 +19,8 @@ export type DaemonInstallOptions = {
   runtime?: string;
   token?: string;
   force?: boolean;
+  /** Commander populates this from --no-cron (negated boolean). */
+  cron?: boolean;
   /** When true, set cron.enabled: false in config to disable scheduled jobs. */
   noCron?: boolean;
   json?: boolean;

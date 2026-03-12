@@ -51,7 +51,9 @@ describe("state + config path candidates", () => {
 
   it("uses profile-based state dir when CODERCLAW_PROFILE is set (multi-instance)", () => {
     const env = { CODERCLAW_PROFILE: "work" } as NodeJS.ProcessEnv;
-    expect(resolveStateDir(env, () => "/home/test")).toBe(path.join("/home/test", ".coderclaw-work"));
+    expect(resolveStateDir(env, () => "/home/test")).toBe(
+      path.join("/home/test", ".coderclaw-work"),
+    );
   });
 
   it("treats CODERCLAW_PROFILE=default as no profile", () => {

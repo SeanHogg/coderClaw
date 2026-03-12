@@ -310,13 +310,8 @@ async function callExecutionLlm(opts: {
     if (!cfg?.baseUrl) {
       continue;
     }
-    const parsed = parseModelKey(
-      preferredKeys.find((k) => k.startsWith(`${id}/`)) ?? "",
-    );
-    const modelId =
-      parsed?.provider === id
-        ? parsed.modelId
-        : cfg.models?.[0]?.id;
+    const parsed = parseModelKey(preferredKeys.find((k) => k.startsWith(`${id}/`)) ?? "");
+    const modelId = parsed?.provider === id ? parsed.modelId : cfg.models?.[0]?.id;
     if (!modelId) {
       continue;
     }

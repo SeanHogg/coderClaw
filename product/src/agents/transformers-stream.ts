@@ -1,9 +1,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { StreamFn } from "@mariozechner/pi-agent-core";
-import { resolveStateDir } from "../config/paths.js";
 import type { AssistantMessage, StopReason, TextContent, Usage } from "@mariozechner/pi-ai";
 import { createAssistantMessageEventStream } from "@mariozechner/pi-ai";
+import { resolveStateDir } from "../config/paths.js";
 
 // HuggingFaceTB/SmolLM2-1.7B-Instruct is the official HuggingFace ONNX build
 // with pre-quantized q4 weights — optimised for Transformers.js / Node.js inference.

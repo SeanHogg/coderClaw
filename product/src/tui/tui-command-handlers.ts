@@ -744,7 +744,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         if (actionRaw === "token") {
           const tokenValue = parts.slice(1).join(" ").trim();
           if (!tokenValue) {
-            chatLog.addSystem("usage: /gateway token <value> — set gateway.auth.token and sync to service");
+            chatLog.addSystem(
+              "usage: /gateway token <value> — set gateway.auth.token and sync to service",
+            );
             chatLog.addSystem(
               "Use when you see 'Config token differs from service token'. Run /gateway restart after.",
             );
@@ -784,10 +786,14 @@ export function createCommandHandlers(context: CommandHandlerContext) {
                   "To sync: run PowerShell as Administrator, then: coderclaw gateway install --force",
                 );
               }
-              chatLog.addSystem("Run /gateway restart after syncing (or if gateway runs in foreground).");
+              chatLog.addSystem(
+                "Run /gateway restart after syncing (or if gateway runs in foreground).",
+              );
             }
           } catch (err) {
-            chatLog.addSystem(`gateway token failed: ${err instanceof Error ? err.message : String(err)}`);
+            chatLog.addSystem(
+              `gateway token failed: ${err instanceof Error ? err.message : String(err)}`,
+            );
           }
           break;
         }

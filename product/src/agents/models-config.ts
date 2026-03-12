@@ -168,11 +168,9 @@ export async function ensureCoderClawModelsJson(
         }
         providers.ollama = { ...ollama, models };
         const normalized = normalizeProviders({ providers, agentDir });
-        await fs.writeFile(
-          targetPath,
-          `${JSON.stringify({ providers: normalized }, null, 2)}\n`,
-          { mode: 0o600 },
-        );
+        await fs.writeFile(targetPath, `${JSON.stringify({ providers: normalized }, null, 2)}\n`, {
+          mode: 0o600,
+        });
         const { invalidateModelCatalogCache } = await import("./model-catalog.js");
         invalidateModelCatalogCache();
       } catch {

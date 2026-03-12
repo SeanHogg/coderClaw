@@ -1,12 +1,12 @@
 import os from "node:os";
 import { formatCliCommand } from "../cli/command-format.js";
 import { collectConfigEnvVars } from "../config/env-vars.js";
-import { resolveRequiredHomeDir } from "../infra/home-dir.js";
 import type { CoderClawConfig } from "../config/types.js";
 import { resolveGatewayLaunchAgentLabel } from "../daemon/constants.js";
 import { resolveGatewayProgramArguments } from "../daemon/program-args.js";
 import { resolvePreferredNodePath } from "../daemon/runtime-paths.js";
 import { buildServiceEnvironment } from "../daemon/service-env.js";
+import { resolveRequiredHomeDir } from "../infra/home-dir.js";
 import {
   emitNodeRuntimeWarning,
   type DaemonInstallWarnFn,
