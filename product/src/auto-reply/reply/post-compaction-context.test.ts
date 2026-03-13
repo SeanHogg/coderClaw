@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { resolveWorkspaceFilePath } from "../../agents/workspace.js";
 import { readPostCompactionContext } from "./post-compaction-context.js";
 
 describe("readPostCompactionContext", () => {
@@ -8,6 +9,7 @@ describe("readPostCompactionContext", () => {
 
   beforeEach(() => {
     fs.mkdirSync(tmpDir, { recursive: true });
+    fs.mkdirSync(path.join(tmpDir, ".coderclaw"), { recursive: true });
   });
 
   afterEach(() => {
@@ -20,7 +22,7 @@ describe("readPostCompactionContext", () => {
   });
 
   it("returns null when AGENTS.md has no relevant sections", async () => {
-    fs.writeFileSync(path.join(tmpDir, "AGENTS.md"), "# My Agent\n\nSome content.\n");
+    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), "# My Agent\n\nSome content.\n");
     const result = await readPostCompactionContext(tmpDir);
     expect(result).toBeNull();
   });
@@ -38,7 +40,7 @@ Read these files:
 
 Not relevant.
 `;
-    fs.writeFileSync(path.join(tmpDir, "AGENTS.md"), content);
+    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), content);
     const result = await readPostCompactionContext(tmpDir);
     expect(result).not.toBeNull();
     expect(result).toContain("Session Startup");
@@ -59,7 +61,7 @@ Never do Y.
 
 Stuff.
 `;
-    fs.writeFileSync(path.join(tmpDir, "AGENTS.md"), content);
+    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), content);
     const result = await readPostCompactionContext(tmpDir);
     expect(result).not.toBeNull();
     expect(result).toContain("Red Lines");
@@ -81,7 +83,7 @@ Never break things.
 
 Ignore this.
 `;
-    fs.writeFileSync(path.join(tmpDir, "AGENTS.md"), content);
+    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), content);
     const result = await readPostCompactionContext(tmpDir);
     expect(result).not.toBeNull();
     expect(result).toContain("Session Startup");
@@ -91,7 +93,7 @@ Ignore this.
 
   it("truncates when content exceeds limit", async () => {
     const longContent = "## Session Startup\n\n" + "A".repeat(4000) + "\n\n## Other\n\nStuff.";
-    fs.writeFileSync(path.join(tmpDir, "AGENTS.md"), longContent);
+    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), longContent);
     const result = await readPostCompactionContext(tmpDir);
     expect(result).not.toBeNull();
     expect(result).toContain("[truncated]");
@@ -106,7 +108,7 @@ Read WORKFLOW_AUTO.md
 
 ## Other
 `;
-    fs.writeFileSync(path.join(tmpDir, "AGENTS.md"), content);
+    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), content);
     const result = await readPostCompactionContext(tmpDir);
     expect(result).not.toBeNull();
     expect(result).toContain("WORKFLOW_AUTO.md");
@@ -121,7 +123,7 @@ Read these files.
 
 ### Other
 `;
-    fs.writeFileSync(path.join(tmpDir, "AGENTS.md"), content);
+    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), content);
     const result = await readPostCompactionContext(tmpDir);
     expect(result).not.toBeNull();
     expect(result).toContain("Read these files");
@@ -141,7 +143,7 @@ Real red lines here.
 
 ## Other
 `;
-    fs.writeFileSync(path.join(tmpDir, "AGENTS.md"), content);
+    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), content);
     const result = await readPostCompactionContext(tmpDir);
     expect(result).not.toBeNull();
     expect(result).toContain("Real red lines here");
@@ -159,7 +161,7 @@ Never do Y.
 
 ## Other Section
 `;
-    fs.writeFileSync(path.join(tmpDir, "AGENTS.md"), content);
+    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), content);
     const result = await readPostCompactionContext(tmpDir);
     expect(result).not.toBeNull();
     expect(result).toContain("Rule 1");

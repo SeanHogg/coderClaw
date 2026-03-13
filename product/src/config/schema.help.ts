@@ -173,7 +173,7 @@ export const FIELD_HELP: Record<string, string> = {
   "agents.defaults.envelopeElapsed": 'Include elapsed time in message envelopes ("on" or "off").',
   "agents.defaults.models": "Configured model catalog (keys are full provider/model IDs).",
   "agents.defaults.memorySearch":
-    "Vector search over MEMORY.md and memory/*.md (per-agent overrides supported).",
+    "Vector search over .coderclaw/MEMORY.md and .coderclaw/memory/*.md (per-agent overrides supported).",
   "agents.defaults.memorySearch.sources":
     'Sources to index for memory search (default: ["memory"]; add "sessions" to include session transcripts).',
   "agents.defaults.memorySearch.extraPaths":
@@ -222,7 +222,7 @@ export const FIELD_HELP: Record<string, string> = {
   "memory.citations": 'Default citation behavior ("auto", "on", or "off").',
   "memory.qmd.command": "Path to the qmd binary (default: resolves from PATH).",
   "memory.qmd.includeDefaultMemory":
-    "Whether to automatically index MEMORY.md + memory/**/*.md (default: true).",
+    "Whether to automatically index .coderclaw/MEMORY.md + .coderclaw/memory/**/*.md (default: true).",
   "memory.qmd.paths":
     "Additional directories/files to index with QMD (path + optional glob pattern).",
   "memory.qmd.paths.path": "Absolute or ~-relative path to index via QMD.",

@@ -13,6 +13,7 @@ const { resolveAgentIdFromSessionKey, resolveMainSessionKey } =
   await import("../config/sessions/main-session.js");
 const { resolveStorePath } = await import("../config/sessions/paths.js");
 const { loadSessionStore, saveSessionStore } = await import("../config/sessions/store.js");
+const { resolveWorkspaceFilePath } = await import("../agents/workspace.js");
 
 describe("runBootOnce", () => {
   const resolveMainStore = (
@@ -65,7 +66,10 @@ describe("runBootOnce", () => {
 
   it("skips when BOOT.md is empty", async () => {
     const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-boot-"));
-    await fs.writeFile(path.join(workspaceDir, "BOOT.md"), "   \n", "utf-8");
+    await fs.mkdir(path.dirname(resolveWorkspaceFilePath(workspaceDir, "BOOT.md")), {
+      recursive: true,
+    });
+    await fs.writeFile(resolveWorkspaceFilePath(workspaceDir, "BOOT.md"), "   \n", "utf-8");
     await expect(runBootOnce({ cfg: {}, deps: makeDeps(), workspaceDir })).resolves.toEqual({
       status: "skipped",
       reason: "empty",
@@ -77,7 +81,10 @@ describe("runBootOnce", () => {
   it("runs agent command when BOOT.md exists", async () => {
     const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-boot-"));
     const content = "Say hello when you wake up.";
-    await fs.writeFile(path.join(workspaceDir, "BOOT.md"), content, "utf-8");
+    await fs.mkdir(path.dirname(resolveWorkspaceFilePath(workspaceDir, "BOOT.md")), {
+      recursive: true,
+    });
+    await fs.writeFile(resolveWorkspaceFilePath(workspaceDir, "BOOT.md"), content, "utf-8");
 
     agentCommand.mockResolvedValue(undefined);
     await expect(runBootOnce({ cfg: {}, deps: makeDeps(), workspaceDir })).resolves.toEqual({
@@ -102,7 +109,10 @@ describe("runBootOnce", () => {
   it("generates new session ID when no existing session exists", async () => {
     const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-boot-"));
     const content = "Say hello when you wake up.";
-    await fs.writeFile(path.join(workspaceDir, "BOOT.md"), content, "utf-8");
+    await fs.mkdir(path.dirname(resolveWorkspaceFilePath(workspaceDir, "BOOT.md")), {
+      recursive: true,
+    });
+    await fs.writeFile(resolveWorkspaceFilePath(workspaceDir, "BOOT.md"), content, "utf-8");
 
     agentCommand.mockResolvedValue(undefined);
     const cfg = {};
@@ -122,7 +132,10 @@ describe("runBootOnce", () => {
   it("uses a fresh boot session ID even when main session mapping already exists", async () => {
     const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-boot-"));
     const content = "Say hello when you wake up.";
-    await fs.writeFile(path.join(workspaceDir, "BOOT.md"), content, "utf-8");
+    await fs.mkdir(path.dirname(resolveWorkspaceFilePath(workspaceDir, "BOOT.md")), {
+      recursive: true,
+    });
+    await fs.writeFile(resolveWorkspaceFilePath(workspaceDir, "BOOT.md"), content, "utf-8");
 
     const cfg = {};
     const { sessionKey, storePath } = resolveMainStore(cfg);
@@ -153,7 +166,10 @@ describe("runBootOnce", () => {
   it("restores the original main session mapping after the boot run", async () => {
     const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-boot-"));
     const content = "Check if the system is healthy.";
-    await fs.writeFile(path.join(workspaceDir, "BOOT.md"), content, "utf-8");
+    await fs.mkdir(path.dirname(resolveWorkspaceFilePath(workspaceDir, "BOOT.md")), {
+      recursive: true,
+    });
+    await fs.writeFile(resolveWorkspaceFilePath(workspaceDir, "BOOT.md"), content, "utf-8");
 
     const cfg = {};
     const { sessionKey, storePath } = resolveMainStore(cfg);
@@ -179,7 +195,10 @@ describe("runBootOnce", () => {
 
   it("removes a boot-created main-session mapping when none existed before", async () => {
     const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-boot-"));
-    await fs.writeFile(path.join(workspaceDir, "BOOT.md"), "health check", "utf-8");
+    await fs.mkdir(path.dirname(resolveWorkspaceFilePath(workspaceDir, "BOOT.md")), {
+      recursive: true,
+    });
+    await fs.writeFile(resolveWorkspaceFilePath(workspaceDir, "BOOT.md"), "health check", "utf-8");
 
     const cfg = {};
     const { sessionKey, storePath } = resolveMainStore(cfg);

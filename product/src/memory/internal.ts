@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { resolveAgentRuntimeDir, resolveWorkspaceFilePath } from "../agents/workspace.js";
 import { runTasksWithConcurrency } from "../utils/run-with-concurrency.js";
 
 export type MemoryFileEntry = {
@@ -59,7 +60,7 @@ export function getLegacyMemoryDir(workspaceDir: string): string {
  * Canonical memory directory under `.coderclaw` (`workspace/.coderclaw/memory`).
  */
 export function getCanonicalMemoryDir(workspaceDir: string): string {
-  return path.join(workspaceDir, ".coderclaw", "memory");
+  return path.join(resolveAgentRuntimeDir(workspaceDir), "memory");
 }
 
 /**
@@ -73,7 +74,10 @@ export function getDefaultMemoryDirs(workspaceDir: string): string[] {
  * Returns the standard files that are treated as memory roots.
  */
 export function getDefaultMemoryFilePaths(workspaceDir: string): string[] {
-  return [path.join(workspaceDir, "MEMORY.md"), path.join(workspaceDir, "memory.md")];
+  return [
+    resolveWorkspaceFilePath(workspaceDir, "MEMORY.md"),
+    resolveWorkspaceFilePath(workspaceDir, "memory.md"),
+  ];
 }
 
 /**

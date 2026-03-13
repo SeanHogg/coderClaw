@@ -1,6 +1,5 @@
 import fs from "node:fs";
-import path from "node:path";
-import { DEFAULT_AGENTS_FILENAME } from "../agents/workspace.js";
+import { DEFAULT_AGENTS_FILENAME, resolveWorkspaceFilePath } from "../agents/workspace.js";
 import { getDefaultMemoryFilePaths, getDefaultMemoryDirs } from "../memory/internal.js";
 import { shortenHomePath } from "../utils.js";
 
@@ -37,7 +36,7 @@ export async function shouldSuggestMemorySystem(workspaceDir: string): Promise<b
     // dir missing, continue to other checks below
   }
 
-  const agentsPath = path.join(workspaceDir, DEFAULT_AGENTS_FILENAME);
+  const agentsPath = resolveWorkspaceFilePath(workspaceDir, DEFAULT_AGENTS_FILENAME);
   try {
     const content = await fs.promises.readFile(agentsPath, "utf-8");
     if (/memory\.md/i.test(content)) {

@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { resolveWorkspaceFilePath } from "../agents/workspace.js";
 import { makeTempWorkspace } from "../test-helpers/workspace.js";
 import { baseConfigSnapshot, createTestRuntime } from "./test-runtime-config-helpers.js";
 
@@ -30,7 +31,8 @@ async function createIdentityWorkspace(subdir = "work") {
 }
 
 async function writeIdentityFile(workspace: string, lines: string[]) {
-  const identityPath = path.join(workspace, "IDENTITY.md");
+  const identityPath = resolveWorkspaceFilePath(workspace, "IDENTITY.md");
+  await fs.mkdir(path.dirname(identityPath), { recursive: true });
   await fs.writeFile(identityPath, `${lines.join("\n")}\n`, "utf-8");
   return identityPath;
 }

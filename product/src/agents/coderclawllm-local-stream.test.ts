@@ -12,6 +12,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // ── loadCoderClawMemory ───────────────────────────────────────────────────────
+import { resolveAgentRuntimeDir, resolveWorkspaceFilePath } from "./workspace.js";
 import { loadCoderClawMemory } from "./transformers-stream.js";
 
 describe("loadCoderClawMemory", () => {
@@ -19,6 +20,7 @@ describe("loadCoderClawMemory", () => {
 
   beforeEach(async () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "cc-mem-test-"));
+    await fs.mkdir(resolveAgentRuntimeDir(tmpDir), { recursive: true });
   });
 
   afterEach(async () => {
@@ -31,8 +33,12 @@ describe("loadCoderClawMemory", () => {
   });
 
   it("loads SOUL.md and USER.md into the context", async () => {
-    await fs.writeFile(path.join(tmpDir, "SOUL.md"), "I am the agent.", "utf-8");
-    await fs.writeFile(path.join(tmpDir, "USER.md"), "User likes TypeScript.", "utf-8");
+    await fs.writeFile(resolveWorkspaceFilePath(tmpDir, "SOUL.md"), "I am the agent.", "utf-8");
+    await fs.writeFile(
+      resolveWorkspaceFilePath(tmpDir, "USER.md"),
+      "User likes TypeScript.",
+      "utf-8",
+    );
     const result = await loadCoderClawMemory(tmpDir);
     expect(result).toContain("SOUL.md");
     expect(result).toContain("I am the agent.");
@@ -41,15 +47,19 @@ describe("loadCoderClawMemory", () => {
   });
 
   it("includes MEMORY.md in the default (non-shared) context", async () => {
-    await fs.writeFile(path.join(tmpDir, "MEMORY.md"), "Long-term memory.", "utf-8");
+    await fs.writeFile(
+      resolveWorkspaceFilePath(tmpDir, "MEMORY.md"),
+      "Long-term memory.",
+      "utf-8",
+    );
     const result = await loadCoderClawMemory(tmpDir);
     expect(result).toContain("MEMORY.md");
     expect(result).toContain("Long-term memory.");
   });
 
   it("omits MEMORY.md when isSharedContext is true", async () => {
-    await fs.writeFile(path.join(tmpDir, "SOUL.md"), "I am the agent.", "utf-8");
-    await fs.writeFile(path.join(tmpDir, "MEMORY.md"), "Personal data.", "utf-8");
+    await fs.writeFile(resolveWorkspaceFilePath(tmpDir, "SOUL.md"), "I am the agent.", "utf-8");
+    await fs.writeFile(resolveWorkspaceFilePath(tmpDir, "MEMORY.md"), "Personal data.", "utf-8");
     const result = await loadCoderClawMemory(tmpDir, { isSharedContext: true });
     expect(result).toContain("SOUL.md");
     expect(result).not.toContain("MEMORY.md");
@@ -57,7 +67,7 @@ describe("loadCoderClawMemory", () => {
   });
 
   it("loads today's daily note from workspace/memory/", async () => {
-    const memDir = path.join(tmpDir, "memory");
+    const memDir = path.join(resolveAgentRuntimeDir(tmpDir), "memory");
     await fs.mkdir(memDir, { recursive: true });
     const today = new Date().toISOString().slice(0, 10);
     await fs.writeFile(path.join(memDir, `${today}.md`), "Today I did X.", "utf-8");
@@ -67,14 +77,14 @@ describe("loadCoderClawMemory", () => {
 
   it("silently skips non-existent memory files", async () => {
     // Only SOUL.md present — should not throw for missing USER.md, MEMORY.md etc.
-    await fs.writeFile(path.join(tmpDir, "SOUL.md"), "Only soul here.", "utf-8");
+    await fs.writeFile(resolveWorkspaceFilePath(tmpDir, "SOUL.md"), "Only soul here.", "utf-8");
     await expect(loadCoderClawMemory(tmpDir)).resolves.toContain("Only soul here.");
   });
 
   it("respects the character budget and truncates long files", async () => {
     // Write a file larger than BRAIN_CONTEXT_CHAR_BUDGET (20000 chars)
     const bigContent = "x".repeat(25000);
-    await fs.writeFile(path.join(tmpDir, "SOUL.md"), bigContent, "utf-8");
+    await fs.writeFile(resolveWorkspaceFilePath(tmpDir, "SOUL.md"), bigContent, "utf-8");
     const result = await loadCoderClawMemory(tmpDir);
     expect(result.length).toBeLessThan(25000);
     expect(result).toContain("…");

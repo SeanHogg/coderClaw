@@ -2,7 +2,11 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../agents/agent-scope.js";
 import { identityHasValues, parseIdentityMarkdown } from "../agents/identity-file.js";
-import { DEFAULT_IDENTITY_FILENAME } from "../agents/workspace.js";
+import {
+  DEFAULT_IDENTITY_FILENAME,
+  WORKSPACE_RUNTIME_DIRNAME,
+  resolveWorkspaceFilePath,
+} from "../agents/workspace.js";
 import { writeConfigFile } from "../config/config.js";
 import { logConfigUpdated } from "../config/logging.js";
 import type { IdentityConfig } from "../config/types.js";
@@ -90,7 +94,11 @@ export async function agentsSetIdentityCommand(
 
   if (identityFileRaw) {
     identityFilePath = normalizeWorkspacePath(identityFileRaw);
-    workspaceDir = path.dirname(identityFilePath);
+    const parentDir = path.dirname(identityFilePath);
+    workspaceDir =
+      path.basename(parentDir).toLowerCase() === WORKSPACE_RUNTIME_DIRNAME
+        ? path.dirname(parentDir)
+        : parentDir;
   } else if (workspaceRaw) {
     workspaceDir = normalizeWorkspacePath(workspaceRaw);
   } else if (wantsIdentityFile || !agentRaw) {
@@ -132,7 +140,7 @@ export async function agentsSetIdentityCommand(
     if (!identityFromFile) {
       const targetPath =
         identityFilePath ??
-        (workspaceDir ? path.join(workspaceDir, DEFAULT_IDENTITY_FILENAME) : "IDENTITY.md");
+        (workspaceDir ? resolveWorkspaceFilePath(workspaceDir, DEFAULT_IDENTITY_FILENAME) : "IDENTITY.md");
       runtime.error(`No identity data found in ${shortenHomePath(targetPath)}.`);
       runtime.exit(1);
       return;

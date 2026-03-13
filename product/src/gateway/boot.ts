@@ -1,6 +1,5 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
-import path from "node:path";
 import { SILENT_REPLY_TOKEN } from "../auto-reply/tokens.js";
 import type { CliDeps } from "../cli/deps.js";
 import { agentCommand } from "../commands/agent.js";
@@ -14,6 +13,7 @@ import { loadSessionStore, updateSessionStore } from "../config/sessions/store.j
 import type { SessionEntry } from "../config/sessions/types.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { type RuntimeEnv, defaultRuntime } from "../runtime.js";
+import { resolveWorkspaceFilePath } from "../agents/workspace.js";
 
 function generateBootSessionId(): string {
   const now = new Date();
@@ -55,7 +55,7 @@ function buildBootPrompt(content: string) {
 async function loadBootFile(
   workspaceDir: string,
 ): Promise<{ content?: string; status: "ok" | "missing" | "empty" }> {
-  const bootPath = path.join(workspaceDir, BOOT_FILENAME);
+  const bootPath = resolveWorkspaceFilePath(workspaceDir, BOOT_FILENAME);
   try {
     const content = await fs.readFile(bootPath, "utf-8");
     const trimmed = content.trim();

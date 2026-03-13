@@ -6,6 +6,7 @@ import { HEARTBEAT_PROMPT } from "../auto-reply/heartbeat.js";
 import * as replyModule from "../auto-reply/reply.js";
 import { whatsappOutbound } from "../channels/plugins/outbound/whatsapp.js";
 import type { CoderClawConfig } from "../config/config.js";
+import { resolveWorkspaceFilePath } from "../agents/workspace.js";
 import {
   resolveAgentIdFromSessionKey,
   resolveAgentMainSessionKey,
@@ -1090,10 +1091,11 @@ describe("runHeartbeatOnce", () => {
     const replySpy = vi.spyOn(replyModule, "getReplyFromConfig");
     try {
       await fs.mkdir(workspaceDir, { recursive: true });
+      await fs.mkdir(path.join(workspaceDir, ".coderclaw"), { recursive: true });
 
       // Create effectively empty HEARTBEAT.md (only header and comments)
       await fs.writeFile(
-        path.join(workspaceDir, "HEARTBEAT.md"),
+        resolveWorkspaceFilePath(workspaceDir, "HEARTBEAT.md"),
         "# HEARTBEAT.md\n\n## Tasks\n\n",
         "utf-8",
       );
@@ -1161,8 +1163,9 @@ describe("runHeartbeatOnce", () => {
     const replySpy = vi.spyOn(replyModule, "getReplyFromConfig");
     try {
       await fs.mkdir(workspaceDir, { recursive: true });
+      await fs.mkdir(path.join(workspaceDir, ".coderclaw"), { recursive: true });
       await fs.writeFile(
-        path.join(workspaceDir, "HEARTBEAT.md"),
+        resolveWorkspaceFilePath(workspaceDir, "HEARTBEAT.md"),
         "# HEARTBEAT.md\n\n## Tasks\n\n",
         "utf-8",
       );
@@ -1228,10 +1231,11 @@ describe("runHeartbeatOnce", () => {
     const replySpy = vi.spyOn(replyModule, "getReplyFromConfig");
     try {
       await fs.mkdir(workspaceDir, { recursive: true });
+      await fs.mkdir(path.join(workspaceDir, ".coderclaw"), { recursive: true });
 
       // Create HEARTBEAT.md with actionable content
       await fs.writeFile(
-        path.join(workspaceDir, "HEARTBEAT.md"),
+        resolveWorkspaceFilePath(workspaceDir, "HEARTBEAT.md"),
         "# HEARTBEAT.md\n\n- Check server logs\n- Review pending PRs\n",
         "utf-8",
       );

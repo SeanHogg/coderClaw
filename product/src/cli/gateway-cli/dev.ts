@@ -2,7 +2,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { resolveWorkspaceTemplateDir } from "../../agents/workspace-templates.js";
-import { resolveDefaultAgentWorkspaceDir } from "../../agents/workspace.js";
+import {
+  resolveAgentRuntimeDir,
+  resolveDefaultAgentWorkspaceDir,
+  resolveWorkspaceFilePath,
+} from "../../agents/workspace.js";
 import { handleReset } from "../../commands/onboard-helpers.js";
 import { createConfigIO, writeConfigFile } from "../../config/config.js";
 import { defaultRuntime } from "../../runtime.js";
@@ -55,7 +59,8 @@ async function writeFileIfMissing(filePath: string, content: string) {
 
 async function ensureDevWorkspace(dir: string) {
   const resolvedDir = resolveUserPath(dir);
-  await fs.promises.mkdir(resolvedDir, { recursive: true });
+  const runtimeDir = resolveAgentRuntimeDir(resolvedDir);
+  await fs.promises.mkdir(runtimeDir, { recursive: true });
 
   const [agents, soul, tools, identity, user] = await Promise.all([
     loadDevTemplate(
@@ -80,11 +85,11 @@ async function ensureDevWorkspace(dir: string) {
     ),
   ]);
 
-  await writeFileIfMissing(path.join(resolvedDir, "AGENTS.md"), agents);
-  await writeFileIfMissing(path.join(resolvedDir, "SOUL.md"), soul);
-  await writeFileIfMissing(path.join(resolvedDir, "TOOLS.md"), tools);
-  await writeFileIfMissing(path.join(resolvedDir, "IDENTITY.md"), identity);
-  await writeFileIfMissing(path.join(resolvedDir, "USER.md"), user);
+  await writeFileIfMissing(resolveWorkspaceFilePath(resolvedDir, "AGENTS.md"), agents);
+  await writeFileIfMissing(resolveWorkspaceFilePath(resolvedDir, "SOUL.md"), soul);
+  await writeFileIfMissing(resolveWorkspaceFilePath(resolvedDir, "TOOLS.md"), tools);
+  await writeFileIfMissing(resolveWorkspaceFilePath(resolvedDir, "IDENTITY.md"), identity);
+  await writeFileIfMissing(resolveWorkspaceFilePath(resolvedDir, "USER.md"), user);
 }
 
 export async function ensureDevGatewayConfig(opts: { reset?: boolean }) {

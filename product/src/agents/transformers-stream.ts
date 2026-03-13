@@ -4,6 +4,7 @@ import type { StreamFn } from "@mariozechner/pi-agent-core";
 import type { AssistantMessage, StopReason, TextContent, Usage } from "@mariozechner/pi-ai";
 import { createAssistantMessageEventStream } from "@mariozechner/pi-ai";
 import { resolveStateDir } from "../config/paths.js";
+import { resolveAgentRuntimeDir, resolveWorkspaceFilePath } from "./workspace.js";
 
 // HuggingFaceTB/SmolLM2-1.7B-Instruct is the official HuggingFace ONNX build
 // with pre-quantized q4 weights — optimised for Transformers.js / Node.js inference.
@@ -21,7 +22,7 @@ export const AMYGDALA_DEFAULT_DTYPE = TRANSFORMERS_DEFAULT_DTYPE;
 export const HIPPOCAMPUS_DEFAULT_MODEL_ID = "onnx-community/Qwen3-0.6B-ONNX";
 export const HIPPOCAMPUS_DEFAULT_DTYPE = "q4f16";
 
-// Long-term memory files in the workspace root.
+// Long-term memory files in the runtime workspace directory.
 // MEMORY.md contains personal/curated knowledge — omit in shared/group contexts.
 const LONG_TERM_FILES_ALL = ["SOUL.md", "USER.md", "MEMORY.md", "AGENTS.md"] as const;
 const LONG_TERM_FILES_SHARED = ["SOUL.md", "USER.md", "AGENTS.md"] as const;
@@ -38,9 +39,9 @@ function dailyNoteFilenames(): string[] {
 }
 
 /**
- * Loads the full brain context from the agent workspace directory:
+ * Loads the full brain context from the agent runtime directory:
  *   - Long-term memory: SOUL.md, USER.md, MEMORY.md*, AGENTS.md
- *   - Short-term memory: workspace/memory/YYYY-MM-DD.md (today + yesterday)
+ *   - Short-term memory: workspace/.coderclaw/memory/YYYY-MM-DD.md (today + yesterday)
  *
  * *MEMORY.md contains personal curated knowledge and is skipped when
  * `isSharedContext` is true (Discord, group chats, multi-user sessions)
@@ -55,6 +56,7 @@ export async function loadCoderClawMemory(
   const longTermFiles = opts?.isSharedContext ? LONG_TERM_FILES_SHARED : LONG_TERM_FILES_ALL;
   const sections: string[] = [];
   let remaining = BRAIN_CONTEXT_CHAR_BUDGET;
+  const runtimeDir = resolveAgentRuntimeDir(workspaceDir);
 
   // Long-term memory
   for (const filename of longTermFiles) {
@@ -62,7 +64,7 @@ export async function loadCoderClawMemory(
       break;
     }
     try {
-      const raw = (await fs.readFile(path.join(workspaceDir, filename), "utf-8")).trim();
+      const raw = (await fs.readFile(resolveWorkspaceFilePath(workspaceDir, filename), "utf-8")).trim();
       if (!raw) {
         continue;
       }
@@ -80,7 +82,7 @@ export async function loadCoderClawMemory(
   }
 
   // Short-term memory: today's and yesterday's daily notes
-  const memoryDir = path.join(workspaceDir, "memory");
+  const memoryDir = path.join(runtimeDir, "memory");
   for (const filename of dailyNoteFilenames()) {
     if (remaining <= 0) {
       break;

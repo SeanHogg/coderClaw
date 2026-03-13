@@ -51,7 +51,11 @@ type MemorySourceScan = {
 function formatSourceLabel(source: string, workspaceDir: string, agentId: string): string {
   if (source === "memory") {
     return shortenHomeInString(
-      `memory (MEMORY.md + ${path.join(workspaceDir, ".coderclaw", "memory")}${path.sep}*.md)`,
+      `memory (${path.join(workspaceDir, ".coderclaw", "MEMORY.md")} + ${path.join(
+        workspaceDir,
+        ".coderclaw",
+        "memory",
+      )}${path.sep}*.md)`,
     );
   }
   if (source === "sessions") {

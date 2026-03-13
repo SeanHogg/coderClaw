@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { makeTempWorkspace, writeWorkspaceFile } from "../test-helpers/workspace.js";
+import { makeTempWorkspace } from "../test-helpers/workspace.js";
 import {
   DEFAULT_AGENTS_FILENAME,
   DEFAULT_BOOTSTRAP_FILENAME,
@@ -13,6 +13,7 @@ import {
   ensureAgentWorkspace,
   loadWorkspaceBootstrapFiles,
   resolveDefaultAgentWorkspaceDir,
+  resolveWorkspaceFilePath,
 } from "./workspace.js";
 
 describe("resolveDefaultAgentWorkspaceDir", () => {
@@ -48,7 +49,7 @@ describe("ensureAgentWorkspace", () => {
     await ensureAgentWorkspace({ dir: tempDir, ensureBootstrapFiles: true });
 
     await expect(
-      fs.access(path.join(tempDir, DEFAULT_BOOTSTRAP_FILENAME)),
+      fs.access(resolveWorkspaceFilePath(tempDir, DEFAULT_BOOTSTRAP_FILENAME)),
     ).resolves.toBeUndefined();
     const state = await readOnboardingState(tempDir);
     expect(state.bootstrapSeededAt).toMatch(/\d{4}-\d{2}-\d{2}T/);
@@ -57,12 +58,12 @@ describe("ensureAgentWorkspace", () => {
 
   it("recovers partial initialization by creating BOOTSTRAP.md when marker is missing", async () => {
     const tempDir = await makeTempWorkspace("coderclaw-workspace-");
-    await writeWorkspaceFile({ dir: tempDir, name: DEFAULT_AGENTS_FILENAME, content: "existing" });
+    await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_AGENTS_FILENAME), "existing", "utf-8");
 
     await ensureAgentWorkspace({ dir: tempDir, ensureBootstrapFiles: true });
 
     await expect(
-      fs.access(path.join(tempDir, DEFAULT_BOOTSTRAP_FILENAME)),
+      fs.access(resolveWorkspaceFilePath(tempDir, DEFAULT_BOOTSTRAP_FILENAME)),
     ).resolves.toBeUndefined();
     const state = await readOnboardingState(tempDir);
     expect(state.bootstrapSeededAt).toMatch(/\d{4}-\d{2}-\d{2}T/);
@@ -71,29 +72,33 @@ describe("ensureAgentWorkspace", () => {
   it("does not recreate BOOTSTRAP.md after completion, even when a core file is recreated", async () => {
     const tempDir = await makeTempWorkspace("coderclaw-workspace-");
     await ensureAgentWorkspace({ dir: tempDir, ensureBootstrapFiles: true });
-    await writeWorkspaceFile({ dir: tempDir, name: DEFAULT_IDENTITY_FILENAME, content: "custom" });
-    await writeWorkspaceFile({ dir: tempDir, name: DEFAULT_USER_FILENAME, content: "custom" });
-    await fs.unlink(path.join(tempDir, DEFAULT_BOOTSTRAP_FILENAME));
-    await fs.unlink(path.join(tempDir, DEFAULT_TOOLS_FILENAME));
+    await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_IDENTITY_FILENAME), "custom", "utf-8");
+    await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_USER_FILENAME), "custom", "utf-8");
+    await fs.unlink(resolveWorkspaceFilePath(tempDir, DEFAULT_BOOTSTRAP_FILENAME));
+    await fs.unlink(resolveWorkspaceFilePath(tempDir, DEFAULT_TOOLS_FILENAME));
 
     await ensureAgentWorkspace({ dir: tempDir, ensureBootstrapFiles: true });
 
-    await expect(fs.access(path.join(tempDir, DEFAULT_BOOTSTRAP_FILENAME))).rejects.toMatchObject({
+    await expect(
+      fs.access(resolveWorkspaceFilePath(tempDir, DEFAULT_BOOTSTRAP_FILENAME)),
+    ).rejects.toMatchObject({
       code: "ENOENT",
     });
-    await expect(fs.access(path.join(tempDir, DEFAULT_TOOLS_FILENAME))).resolves.toBeUndefined();
+    await expect(fs.access(resolveWorkspaceFilePath(tempDir, DEFAULT_TOOLS_FILENAME))).resolves.toBeUndefined();
     const state = await readOnboardingState(tempDir);
     expect(state.onboardingCompletedAt).toMatch(/\d{4}-\d{2}-\d{2}T/);
   });
 
   it("does not re-seed BOOTSTRAP.md for legacy completed workspaces without state marker", async () => {
     const tempDir = await makeTempWorkspace("coderclaw-workspace-");
-    await writeWorkspaceFile({ dir: tempDir, name: DEFAULT_IDENTITY_FILENAME, content: "custom" });
-    await writeWorkspaceFile({ dir: tempDir, name: DEFAULT_USER_FILENAME, content: "custom" });
+    await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_IDENTITY_FILENAME), "custom", "utf-8");
+    await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_USER_FILENAME), "custom", "utf-8");
 
     await ensureAgentWorkspace({ dir: tempDir, ensureBootstrapFiles: true });
 
-    await expect(fs.access(path.join(tempDir, DEFAULT_BOOTSTRAP_FILENAME))).rejects.toMatchObject({
+    await expect(
+      fs.access(resolveWorkspaceFilePath(tempDir, DEFAULT_BOOTSTRAP_FILENAME)),
+    ).rejects.toMatchObject({
       code: "ENOENT",
     });
     const state = await readOnboardingState(tempDir);
@@ -105,7 +110,7 @@ describe("ensureAgentWorkspace", () => {
 describe("loadWorkspaceBootstrapFiles", () => {
   it("includes MEMORY.md when present", async () => {
     const tempDir = await makeTempWorkspace("coderclaw-workspace-");
-    await writeWorkspaceFile({ dir: tempDir, name: "MEMORY.md", content: "memory" });
+    await fs.writeFile(resolveWorkspaceFilePath(tempDir, "MEMORY.md"), "memory", "utf-8");
 
     const files = await loadWorkspaceBootstrapFiles(tempDir);
     const memoryEntries = files.filter((file) =>
@@ -119,7 +124,7 @@ describe("loadWorkspaceBootstrapFiles", () => {
 
   it("includes memory.md when MEMORY.md is absent", async () => {
     const tempDir = await makeTempWorkspace("coderclaw-workspace-");
-    await writeWorkspaceFile({ dir: tempDir, name: "memory.md", content: "alt" });
+    await fs.writeFile(resolveWorkspaceFilePath(tempDir, "memory.md"), "alt", "utf-8");
 
     const files = await loadWorkspaceBootstrapFiles(tempDir);
     const memoryEntries = files.filter((file) =>

@@ -1,8 +1,8 @@
 import fs from "node:fs";
-import path from "node:path";
 import type { AgentMessage } from "@mariozechner/pi-agent-core";
 import type { ExtensionAPI, FileOperations } from "@mariozechner/pi-coding-agent";
 import { extractSections } from "../../auto-reply/reply/post-compaction-context.js";
+import { resolveWorkspaceFilePath } from "../workspace.js";
 import {
   BASE_CHUNK_RATIO,
   MIN_CHUNK_RATIO,
@@ -157,7 +157,7 @@ function formatFileOperations(readFiles: string[], modifiedFiles: string[]): str
 async function readWorkspaceContextForSummary(): Promise<string> {
   const MAX_SUMMARY_CONTEXT_CHARS = 2000;
   const workspaceDir = process.cwd();
-  const agentsPath = path.join(workspaceDir, "AGENTS.md");
+  const agentsPath = resolveWorkspaceFilePath(workspaceDir, "AGENTS.md");
 
   try {
     if (!fs.existsSync(agentsPath)) {

@@ -27,8 +27,10 @@ export const DEFAULT_IDENTITY_FILENAME = "IDENTITY.md";
 export const DEFAULT_USER_FILENAME = "USER.md";
 export const DEFAULT_HEARTBEAT_FILENAME = "HEARTBEAT.md";
 export const DEFAULT_BOOTSTRAP_FILENAME = "BOOTSTRAP.md";
+export const DEFAULT_BOOT_FILENAME = "BOOT.md";
 export const DEFAULT_MEMORY_FILENAME = "MEMORY.md";
 export const DEFAULT_MEMORY_ALT_FILENAME = "memory.md";
+export const WORKSPACE_RUNTIME_DIRNAME = ".coderclaw";
 
 const EMBEDDED_WORKSPACE_TEMPLATES: Record<string, string> = {
   [DEFAULT_AGENTS_FILENAME]: `# AGENTS\n\nProject rules and collaboration guidelines for this workspace.\n`,
@@ -39,7 +41,6 @@ const EMBEDDED_WORKSPACE_TEMPLATES: Record<string, string> = {
   [DEFAULT_HEARTBEAT_FILENAME]: `# HEARTBEAT\n\nOperational cadence, health checks, and routine maintenance notes.\n`,
   [DEFAULT_BOOTSTRAP_FILENAME]: `# BOOTSTRAP\n\nInitial onboarding checklist and first-run setup tasks.\n`,
 };
-const WORKSPACE_STATE_DIRNAME = ".coderclaw";
 const WORKSPACE_STATE_FILENAME = "workspace-state.json";
 const WORKSPACE_STATE_VERSION = 1;
 
@@ -116,6 +117,14 @@ type WorkspaceOnboardingState = {
   onboardingCompletedAt?: string;
 };
 
+export function resolveAgentRuntimeDir(dir: string): string {
+  return path.join(resolveUserPath(dir), WORKSPACE_RUNTIME_DIRNAME);
+}
+
+export function resolveWorkspaceFilePath(dir: string, filename: string): string {
+  return path.join(resolveAgentRuntimeDir(dir), filename);
+}
+
 /** Set of recognized bootstrap filenames for runtime validation */
 const VALID_BOOTSTRAP_NAMES: ReadonlySet<string> = new Set([
   DEFAULT_AGENTS_FILENAME,
@@ -155,7 +164,7 @@ async function fileExists(filePath: string): Promise<boolean> {
 }
 
 function resolveWorkspaceStatePath(dir: string): string {
-  return path.join(dir, WORKSPACE_STATE_DIRNAME, WORKSPACE_STATE_FILENAME);
+  return path.join(resolveAgentRuntimeDir(dir), WORKSPACE_STATE_FILENAME);
 }
 
 function parseWorkspaceOnboardingState(raw: string): WorkspaceOnboardingState | null {
@@ -274,6 +283,7 @@ export async function ensureAgentWorkspace(params?: {
   ensureBootstrapFiles?: boolean;
 }): Promise<{
   dir: string;
+  runtimeDir: string;
   agentsPath?: string;
   soulPath?: string;
   toolsPath?: string;
@@ -284,19 +294,21 @@ export async function ensureAgentWorkspace(params?: {
 }> {
   const rawDir = params?.dir?.trim() ? params.dir.trim() : DEFAULT_AGENT_WORKSPACE_DIR;
   const dir = resolveUserPath(rawDir);
+  const runtimeDir = resolveAgentRuntimeDir(dir);
   await fs.mkdir(dir, { recursive: true });
+  await fs.mkdir(runtimeDir, { recursive: true });
 
   if (!params?.ensureBootstrapFiles) {
-    return { dir };
+    return { dir, runtimeDir };
   }
 
-  const agentsPath = path.join(dir, DEFAULT_AGENTS_FILENAME);
-  const soulPath = path.join(dir, DEFAULT_SOUL_FILENAME);
-  const toolsPath = path.join(dir, DEFAULT_TOOLS_FILENAME);
-  const identityPath = path.join(dir, DEFAULT_IDENTITY_FILENAME);
-  const userPath = path.join(dir, DEFAULT_USER_FILENAME);
-  const heartbeatPath = path.join(dir, DEFAULT_HEARTBEAT_FILENAME);
-  const bootstrapPath = path.join(dir, DEFAULT_BOOTSTRAP_FILENAME);
+  const agentsPath = resolveWorkspaceFilePath(dir, DEFAULT_AGENTS_FILENAME);
+  const soulPath = resolveWorkspaceFilePath(dir, DEFAULT_SOUL_FILENAME);
+  const toolsPath = resolveWorkspaceFilePath(dir, DEFAULT_TOOLS_FILENAME);
+  const identityPath = resolveWorkspaceFilePath(dir, DEFAULT_IDENTITY_FILENAME);
+  const userPath = resolveWorkspaceFilePath(dir, DEFAULT_USER_FILENAME);
+  const heartbeatPath = resolveWorkspaceFilePath(dir, DEFAULT_HEARTBEAT_FILENAME);
+  const bootstrapPath = resolveWorkspaceFilePath(dir, DEFAULT_BOOTSTRAP_FILENAME);
   const statePath = resolveWorkspaceStatePath(dir);
 
   const isBrandNewWorkspace = await (async () => {
@@ -376,6 +388,7 @@ export async function ensureAgentWorkspace(params?: {
 
   return {
     dir,
+    runtimeDir,
     agentsPath,
     soulPath,
     toolsPath,
@@ -395,7 +408,7 @@ async function resolveMemoryBootstrapEntries(
   ];
   const entries: Array<{ name: WorkspaceBootstrapFileName; filePath: string }> = [];
   for (const name of candidates) {
-    const filePath = path.join(resolvedDir, name);
+    const filePath = resolveWorkspaceFilePath(resolvedDir, name);
     try {
       await fs.access(filePath);
       entries.push({ name, filePath });
@@ -432,31 +445,31 @@ export async function loadWorkspaceBootstrapFiles(dir: string): Promise<Workspac
   }> = [
     {
       name: DEFAULT_AGENTS_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_AGENTS_FILENAME),
+      filePath: resolveWorkspaceFilePath(resolvedDir, DEFAULT_AGENTS_FILENAME),
     },
     {
       name: DEFAULT_SOUL_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_SOUL_FILENAME),
+      filePath: resolveWorkspaceFilePath(resolvedDir, DEFAULT_SOUL_FILENAME),
     },
     {
       name: DEFAULT_TOOLS_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_TOOLS_FILENAME),
+      filePath: resolveWorkspaceFilePath(resolvedDir, DEFAULT_TOOLS_FILENAME),
     },
     {
       name: DEFAULT_IDENTITY_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_IDENTITY_FILENAME),
+      filePath: resolveWorkspaceFilePath(resolvedDir, DEFAULT_IDENTITY_FILENAME),
     },
     {
       name: DEFAULT_USER_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_USER_FILENAME),
+      filePath: resolveWorkspaceFilePath(resolvedDir, DEFAULT_USER_FILENAME),
     },
     {
       name: DEFAULT_HEARTBEAT_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_HEARTBEAT_FILENAME),
+      filePath: resolveWorkspaceFilePath(resolvedDir, DEFAULT_HEARTBEAT_FILENAME),
     },
     {
       name: DEFAULT_BOOTSTRAP_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_BOOTSTRAP_FILENAME),
+      filePath: resolveWorkspaceFilePath(resolvedDir, DEFAULT_BOOTSTRAP_FILENAME),
     },
   ];
 

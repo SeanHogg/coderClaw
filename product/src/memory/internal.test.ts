@@ -11,6 +11,7 @@ import {
   getDefaultMemoryDirs,
   getDefaultMemoryWatchPatterns,
 } from "./internal.js";
+import { resolveAgentRuntimeDir, resolveWorkspaceFilePath } from "../agents/workspace.js";
 
 describe("normalizeExtraMemoryPaths", () => {
   it("trims, resolves, and dedupes paths", () => {
@@ -32,13 +33,13 @@ describe("memory path helpers", () => {
     const workspaceDir = path.join("/home", "user", "proj");
     const files = getDefaultMemoryFilePaths(workspaceDir);
     expect(files).toEqual([
-      path.join(workspaceDir, "MEMORY.md"),
-      path.join(workspaceDir, "memory.md"),
+      resolveWorkspaceFilePath(workspaceDir, "MEMORY.md"),
+      resolveWorkspaceFilePath(workspaceDir, "memory.md"),
     ]);
     const dirs = getDefaultMemoryDirs(workspaceDir);
     expect(dirs).toEqual([
       path.join(workspaceDir, "memory"),
-      path.join(workspaceDir, ".coderclaw", "memory"),
+      path.join(resolveAgentRuntimeDir(workspaceDir), "memory"),
     ]);
     const patterns = getDefaultMemoryWatchPatterns(workspaceDir);
     expect(patterns).toEqual([
@@ -64,7 +65,7 @@ describe("listMemoryFiles", () => {
   });
 
   it("includes files from additional paths (directory)", async () => {
-    await fs.writeFile(path.join(tmpDir, "MEMORY.md"), "# Default memory");
+    await fs.writeFile(path.join(tmpDir, ".coderclaw", "MEMORY.md"), "# Default memory");
     const extraDir = path.join(tmpDir, "extra-notes");
     await fs.mkdir(extraDir, { recursive: true });
     await fs.writeFile(path.join(extraDir, "note1.md"), "# Note 1");
@@ -81,7 +82,7 @@ describe("listMemoryFiles", () => {
   });
 
   it("includes files from additional paths (single file)", async () => {
-    await fs.writeFile(path.join(tmpDir, "MEMORY.md"), "# Default memory");
+    await fs.writeFile(path.join(tmpDir, ".coderclaw", "MEMORY.md"), "# Default memory");
     const singleFile = path.join(tmpDir, "standalone.md");
     await fs.writeFile(singleFile, "# Standalone");
 
@@ -91,7 +92,7 @@ describe("listMemoryFiles", () => {
   });
 
   it("handles relative paths in additional paths", async () => {
-    await fs.writeFile(path.join(tmpDir, "MEMORY.md"), "# Default memory");
+    await fs.writeFile(path.join(tmpDir, ".coderclaw", "MEMORY.md"), "# Default memory");
     const extraDir = path.join(tmpDir, "subdir");
     await fs.mkdir(extraDir, { recursive: true });
     await fs.writeFile(path.join(extraDir, "nested.md"), "# Nested");
@@ -102,7 +103,7 @@ describe("listMemoryFiles", () => {
   });
 
   it("ignores non-existent additional paths", async () => {
-    await fs.writeFile(path.join(tmpDir, "MEMORY.md"), "# Default memory");
+    await fs.writeFile(path.join(tmpDir, ".coderclaw", "MEMORY.md"), "# Default memory");
 
     const files = await listMemoryFiles(tmpDir, ["/does/not/exist"]);
     expect(files).toHaveLength(1);
@@ -117,7 +118,7 @@ describe("listMemoryFiles", () => {
   });
 
   it("ignores symlinked files and directories", async () => {
-    await fs.writeFile(path.join(tmpDir, "MEMORY.md"), "# Default memory");
+    await fs.writeFile(path.join(tmpDir, ".coderclaw", "MEMORY.md"), "# Default memory");
     const extraDir = path.join(tmpDir, "extra");
     await fs.mkdir(extraDir, { recursive: true });
     await fs.writeFile(path.join(extraDir, "note.md"), "# Note");

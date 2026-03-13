@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+import { resolveWorkspaceFilePath } from "../agents/workspace.js";
 import { mergeHybridResults } from "./hybrid.js";
 import {
   applyTemporalDecayToHybridResults,
@@ -50,8 +51,9 @@ describe("temporal decay", () => {
   it("does not decay evergreen memory files", async () => {
     const dir = await makeTempDir();
 
-    const rootMemoryPath = path.join(dir, "MEMORY.md");
+    const rootMemoryPath = resolveWorkspaceFilePath(dir, "MEMORY.md");
     const topicPath = path.join(dir, "memory", "projects.md");
+    await fs.mkdir(path.dirname(rootMemoryPath), { recursive: true });
     await fs.mkdir(path.dirname(topicPath), { recursive: true });
     await fs.writeFile(rootMemoryPath, "evergreen");
     await fs.writeFile(topicPath, "topic evergreen");
@@ -62,7 +64,7 @@ describe("temporal decay", () => {
 
     const decayed = await applyTemporalDecayToHybridResults({
       results: [
-        { path: "MEMORY.md", score: 1, source: "memory" },
+        { path: ".coderclaw/MEMORY.md", score: 1, source: "memory" },
         { path: "memory/projects.md", score: 0.75, source: "memory" },
       ],
       workspaceDir: dir,

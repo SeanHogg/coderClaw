@@ -1,5 +1,4 @@
 import fs from "node:fs/promises";
-import path from "node:path";
 import {
   listAgentIds,
   resolveAgentDir,
@@ -17,6 +16,7 @@ import {
   DEFAULT_USER_FILENAME,
   ensureAgentWorkspace,
   isWorkspaceOnboardingCompleted,
+  resolveWorkspaceFilePath,
 } from "../../agents/workspace.js";
 import { movePathToTrash } from "../../browser/trash.js";
 import {
@@ -125,7 +125,7 @@ async function listAgentFiles(workspaceDir: string, options?: { hideBootstrap?: 
     ? BOOTSTRAP_FILE_NAMES_POST_ONBOARDING
     : BOOTSTRAP_FILE_NAMES;
   for (const name of bootstrapFileNames) {
-    const filePath = path.join(workspaceDir, name);
+    const filePath = resolveWorkspaceFilePath(workspaceDir, name);
     const meta = await statFile(filePath);
     if (meta) {
       files.push({
@@ -140,7 +140,7 @@ async function listAgentFiles(workspaceDir: string, options?: { hideBootstrap?: 
     }
   }
 
-  const primaryMemoryPath = path.join(workspaceDir, DEFAULT_MEMORY_FILENAME);
+  const primaryMemoryPath = resolveWorkspaceFilePath(workspaceDir, DEFAULT_MEMORY_FILENAME);
   const primaryMeta = await statFile(primaryMemoryPath);
   if (primaryMeta) {
     files.push({
@@ -151,7 +151,7 @@ async function listAgentFiles(workspaceDir: string, options?: { hideBootstrap?: 
       updatedAtMs: primaryMeta.updatedAtMs,
     });
   } else {
-    const altMemoryPath = path.join(workspaceDir, DEFAULT_MEMORY_ALT_FILENAME);
+    const altMemoryPath = resolveWorkspaceFilePath(workspaceDir, DEFAULT_MEMORY_ALT_FILENAME);
     const altMeta = await statFile(altMemoryPath);
     if (altMeta) {
       files.push({
@@ -280,7 +280,7 @@ export const agentsHandlers: GatewayRequestHandlers = {
     const safeName = sanitizeIdentityLine(rawName);
     const emoji = resolveOptionalStringParam(params.emoji);
     const avatar = resolveOptionalStringParam(params.avatar);
-    const identityPath = path.join(workspaceDir, DEFAULT_IDENTITY_FILENAME);
+    const identityPath = resolveWorkspaceFilePath(workspaceDir, DEFAULT_IDENTITY_FILENAME);
     const lines = [
       "",
       `- Name: ${safeName}`,
@@ -345,7 +345,7 @@ export const agentsHandlers: GatewayRequestHandlers = {
     if (avatar) {
       const workspace = workspaceDir ?? resolveAgentWorkspaceDir(nextConfig, agentId);
       await fs.mkdir(workspace, { recursive: true });
-      const identityPath = path.join(workspace, DEFAULT_IDENTITY_FILENAME);
+      const identityPath = resolveWorkspaceFilePath(workspace, DEFAULT_IDENTITY_FILENAME);
       await fs.appendFile(identityPath, `\n- Avatar: ${sanitizeIdentityLine(avatar)}\n`, "utf-8");
     }
 
@@ -452,7 +452,7 @@ export const agentsHandlers: GatewayRequestHandlers = {
       return;
     }
     const { agentId, workspaceDir, name } = resolved;
-    const filePath = path.join(workspaceDir, name);
+    const filePath = resolveWorkspaceFilePath(workspaceDir, name);
     const meta = await statFile(filePath);
     if (!meta) {
       respond(
@@ -504,7 +504,7 @@ export const agentsHandlers: GatewayRequestHandlers = {
     }
     const { agentId, workspaceDir, name } = resolved;
     await fs.mkdir(workspaceDir, { recursive: true });
-    const filePath = path.join(workspaceDir, name);
+    const filePath = resolveWorkspaceFilePath(workspaceDir, name);
     const content = String(params.content ?? "");
     await fs.writeFile(filePath, content, "utf-8");
     const meta = await statFile(filePath);

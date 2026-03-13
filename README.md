@@ -17,9 +17,26 @@
 
 **CoderClaw** is the self-hosted, multi-agent AI coding system that replaces GitHub Copilot, Cursor, Windsurf, and Claude Code. Your code stays on your machine. Your agents run your workflows. No vendor lock-in, no IDE tether, no subscription ceiling. It’s self-hosted and MIT‑licensed.
 
-More broadly, **coderClaw.ai** is a **self-healing AI engineering agent and orchestration platform** that manages tasks, workflows, and collaboration across all AI agents. It provides persistent memory, context-aware reasoning, and self-repair, allowing AI systems to detect failures, fix themselves, and adapt over time. Every autonomous action surfaces a human-in-the-loop approval gate, so teams stay in control. The result: resilient, self-healing software systems with less engineering toil and better delivery outcomes.
+**Built for anyone who wants their own custom assistant.** Whether you’re a solo developer, a bootstrapped startup, or a large engineering organization, CoderClaw lets you design the behaviors, memory, and workflows that match your needs — without giving up control.
 
-## 🔌 Connect Cursor or Continue.dev to CoderClaw (MCP)
+CoderClaw is modeled after the human brain:
+- **Amygdala (self-healing guardrails):** detects failures, drift, and anomalies; triggers repair workflows and escalation paths.
+- **Hippocampus (memory):** stores project history, decisions, and context in `.coderclaw/memory/` for reliable recall across sessions.
+- **Cortex (reasoning & planning):** orchestrates agents, plans tasks, and makes context-aware decisions using local “brain” state and persistent knowledge.
+
+More broadly, **coderclaw.ai** is a **self-healing AI engineering agent and orchestration platform** that manages tasks, workflows, and collaboration across all AI agents. It provides persistent memory, context-aware reasoning, and self-repair — allowing AI systems to detect failures, fix themselves, and adapt over time — while keeping humans in the loop for governance and approval. The result: resilient, self-healing software systems with less engineering toil and better delivery outcomes.
+
+**BuilderForce.ai integration:** CoderClaw can connect to **Builderforce.ai** for centralized project/task/agent management, workflow visibility, auditability, and human-in-the-loop control. Use BuilderForce as the orchestration portal while running agents locally for maximum privacy and control.
+
+## � Versioning (Release Process)
+
+CoderClaw follows the **`YYYY.M.D[-beta.N]`** version scheme (e.g. `2026.3.11` or `2026.3.11-beta.1`).
+
+- **Do not manually edit** `version` fields in `package.json` — use the official release tooling.
+- Run `pnpm release` to bump versions, update changelogs, and keep all extension packages in sync.
+
+
+## �🔌 Connect Cursor or Continue.dev to CoderClaw (MCP)
 
 CoderClaw exposes its tools as an **MCP server** at `http://localhost:18789/mcp`.
 Add it to Cursor or Continue.dev to get CoderClaw's semantic search, project knowledge,
@@ -162,6 +179,12 @@ So: **two terminals, two versions** — run the right `coderclaw` in each and gi
 The complete software development lifecycle — planning, coding, reviewing, testing, debugging, refactoring, documenting — orchestrated by specialized agents that deeply understand your codebase. No IDE required. No cloud lock-in. Runs on your infra.
 
 ### Key Capabilities
+
+### 🧠 Brain-inspired Architecture (Local Brain + Memory)
+
+- **Local Brain (on-device):** State lives in `.coderclaw/` so your assistant stays private, low-latency, and reproducible.
+- **Persistent Memory:** `.coderclaw/memory/` stores project knowledge, decisions, and patterns so agents recall past work and stay consistent.
+- **Self-Healing (Amygdala):** Automatic detection of failures, drift, or unmet goals; triggers repair workflows and human approvals.
 
 **🧠 Deep Knowledge & Context Engine**
 

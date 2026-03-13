@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import type { CoderClawConfig } from "../config/config.js";
+import { resolveWorkspaceFilePath } from "./workspace.js";
 import { resolveAgentAvatar } from "./identity-avatar.js";
 
 async function writeFile(filePath: string, contents = "avatar") {
@@ -71,7 +72,7 @@ describe("resolveAgentAvatar", () => {
     await writeFile(avatarPath);
     await fs.mkdir(workspace, { recursive: true });
     await fs.writeFile(
-      path.join(workspace, "IDENTITY.md"),
+      resolveWorkspaceFilePath(workspace, "IDENTITY.md"),
       "- Avatar: avatars/fallback.png\n",
       "utf-8",
     );

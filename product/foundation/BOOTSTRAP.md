@@ -27,7 +27,7 @@ Then figure out together:
 4. **Your emoji** — Everyone needs a signature.
 
 Governance is also important at this early stage: open or create
-`.coderClaw/governance.md` and start writing the high‑level rules you
+`.coderclaw/governance.md` and start writing the high-level rules you
 expect the agent to follow. A placeholder will already exist after
 initialization.
 

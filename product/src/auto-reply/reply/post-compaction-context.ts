@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import path from "node:path";
+import { resolveWorkspaceFilePath } from "../../agents/workspace.js";
 
 const MAX_CONTEXT_CHARS = 3000;
 
@@ -8,7 +8,7 @@ const MAX_CONTEXT_CHARS = 3000;
  * Returns formatted system event text, or null if no AGENTS.md or no relevant sections.
  */
 export async function readPostCompactionContext(workspaceDir: string): Promise<string | null> {
-  const agentsPath = path.join(workspaceDir, "AGENTS.md");
+  const agentsPath = resolveWorkspaceFilePath(workspaceDir, "AGENTS.md");
 
   try {
     if (!fs.existsSync(agentsPath)) {
