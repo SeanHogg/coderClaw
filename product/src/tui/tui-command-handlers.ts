@@ -713,24 +713,21 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         openSettings();
         break;
       case "restart": {
-        // When gateway is down, /restart runs the gateway restart locally so the user can recover.
-        if (!state.isConnected) {
-          chatLog.addSystem("Gateway not connected. Running: coderclaw gateway restart");
-          tui.requestRender();
-          const result = await runServiceCommand("restart");
-          if (result.lines.length > 0) {
-            for (const line of result.lines) {
-              chatLog.addSystem(line);
-            }
+        // Restart is a local recovery/control action and must not depend on
+        // the current gateway connection state.
+        chatLog.addSystem("Running: coderclaw gateway restart");
+        tui.requestRender();
+        const result = await runServiceCommand("restart");
+        if (result.lines.length > 0) {
+          for (const line of result.lines) {
+            chatLog.addSystem(line);
           }
-          if (!result.ok) {
-            chatLog.addSystem("gateway restart failed");
-          } else {
-            chatLog.addSystem("Gateway restart started. Reconnecting when it is up…");
-          }
-          break;
         }
-        await sendMessage(raw);
+        if (!result.ok) {
+          chatLog.addSystem("gateway restart failed");
+        } else {
+          chatLog.addSystem("Gateway restart started. Reconnecting when it is up…");
+        }
         break;
       }
       case "gateway":

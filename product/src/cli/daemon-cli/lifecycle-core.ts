@@ -20,6 +20,14 @@ type DaemonLifecycleOptions = {
 };
 
 const POST_START_SETTLE_MS = 2000;
+const POST_START_HEALTH_POLL_MS = 1000;
+const POST_START_HEALTH_TIMEOUT_MS = 120_000;
+
+type ServiceHealthProbe = () => Promise<boolean>;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 /**
  * Wait briefly after a service start/restart, then check if the process is
@@ -32,12 +40,26 @@ const POST_START_SETTLE_MS = 2000;
 async function detectServiceCrash(
   service: GatewayService,
   since: Date,
+  waitUntilHealthy?: ServiceHealthProbe,
 ): Promise<{ errors: string[] } | null> {
-  await new Promise((resolve) => setTimeout(resolve, POST_START_SETTLE_MS));
+  await sleep(POST_START_SETTLE_MS);
   try {
     const runtime = await service.readRuntime(process.env as Record<string, string | undefined>);
     if (runtime.status === "running") {
       return null;
+    }
+    if (waitUntilHealthy) {
+      const deadline = Date.now() + POST_START_HEALTH_TIMEOUT_MS;
+      while (Date.now() < deadline) {
+        if (await waitUntilHealthy().catch(() => false)) {
+          return null;
+        }
+        const errors = await readRecentGatewayLogErrors(since, { maxEntries: 5 });
+        if (errors.length > 0) {
+          return { errors };
+        }
+        await sleep(POST_START_HEALTH_POLL_MS);
+      }
     }
     const errors = await readRecentGatewayLogErrors(since);
     return { errors };
@@ -183,6 +205,7 @@ export async function runServiceStart(params: {
   service: GatewayService;
   renderStartHints: () => string[];
   opts?: DaemonLifecycleOptions;
+  waitUntilHealthy?: ServiceHealthProbe;
 }) {
   const json = Boolean(params.opts?.json);
   const { stdout, emit, fail } = createActionIO({ action: "start", json });
@@ -216,7 +239,7 @@ export async function runServiceStart(params: {
     return;
   }
 
-  const crashed = await detectServiceCrash(params.service, restartTime);
+  const crashed = await detectServiceCrash(params.service, restartTime, params.waitUntilHealthy);
   if (crashed) {
     if (json) {
       emit({
@@ -306,6 +329,7 @@ export async function runServiceRestart(params: {
   renderStartHints: () => string[];
   opts?: DaemonLifecycleOptions;
   checkTokenDrift?: boolean;
+  waitUntilHealthy?: ServiceHealthProbe;
 }): Promise<boolean> {
   const json = Boolean(params.opts?.json);
   const { stdout, emit, fail } = createActionIO({ action: "restart", json });
@@ -369,7 +393,7 @@ export async function runServiceRestart(params: {
     return false;
   }
 
-  const crashed = await detectServiceCrash(params.service, restartTime);
+  const crashed = await detectServiceCrash(params.service, restartTime, params.waitUntilHealthy);
   if (crashed) {
     if (json) {
       emit({

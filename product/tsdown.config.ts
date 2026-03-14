@@ -32,6 +32,14 @@ export default defineConfig([
     external,
   },
   {
+    entry: "src/agents/coderclawllm-local-worker.ts",
+    env,
+    fixedExtension: false,
+    minify,
+    platform: "node",
+    external,
+  },
+  {
     // Ensure this module is bundled as an entry so legacy CLI shims can resolve its exports.
     entry: "src/cli/daemon-cli.ts",
     env,

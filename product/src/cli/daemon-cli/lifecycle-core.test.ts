@@ -30,8 +30,14 @@ const service = {
   restart: vi.fn(),
 };
 
+const readRecentGatewayLogErrors = vi.fn(async () => []);
+
 vi.mock("../../config/config.js", () => ({
   loadConfig: () => loadConfig(),
+}));
+
+vi.mock("../../daemon/diagnostics.js", () => ({
+  readRecentGatewayLogErrors: (...args: unknown[]) => readRecentGatewayLogErrors(...args),
 }));
 
 vi.mock("../../runtime.js", () => ({
@@ -50,6 +56,9 @@ describe("runServiceRestart token drift", () => {
       environment: { CODERCLAW_GATEWAY_TOKEN: "service-token" },
     });
     service.restart.mockResolvedValue(undefined);
+    service.readRuntime.mockResolvedValue({ status: "running" });
+    readRecentGatewayLogErrors.mockClear();
+    readRecentGatewayLogErrors.mockResolvedValue([]);
     vi.unstubAllEnvs();
     vi.stubEnv("CODERCLAW_GATEWAY_TOKEN", "");
     vi.stubEnv("CODERCLAW_GATEWAY_TOKEN", "");
@@ -87,5 +96,47 @@ describe("runServiceRestart token drift", () => {
     const jsonLine = runtimeLogs.find((line) => line.trim().startsWith("{"));
     const payload = JSON.parse(jsonLine ?? "{}") as { warnings?: string[] };
     expect(payload.warnings).toBeUndefined();
+  });
+
+  it("waits for health probe when runtime does not report running", async () => {
+    const { runServiceRestart } = await import("./lifecycle-core.js");
+    service.readRuntime.mockResolvedValue({ status: "stopped" });
+    const waitUntilHealthy = vi
+      .fn<() => Promise<boolean>>()
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+
+    await runServiceRestart({
+      serviceNoun: "Gateway",
+      service,
+      renderStartHints: () => [],
+      opts: { json: true },
+      waitUntilHealthy,
+    });
+
+    const jsonLine = runtimeLogs.find((line) => line.trim().startsWith("{"));
+    const payload = JSON.parse(jsonLine ?? "{}") as { ok?: boolean; result?: string };
+    expect(waitUntilHealthy).toHaveBeenCalledTimes(2);
+    expect(payload.ok).toBe(true);
+    expect(payload.result).toBe("restarted");
+  });
+
+  it("still fails when runtime is stopped and health probe never succeeds", async () => {
+    const { runServiceRestart } = await import("./lifecycle-core.js");
+    service.readRuntime.mockResolvedValue({ status: "stopped" });
+    const waitUntilHealthy = vi.fn<() => Promise<boolean>>().mockResolvedValue(false);
+    readRecentGatewayLogErrors
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce(["gateway start blocked"]);
+
+    await expect(
+      runServiceRestart({
+        serviceNoun: "Gateway",
+        service,
+        renderStartHints: () => [],
+        opts: { json: true },
+        waitUntilHealthy,
+      }),
+    ).rejects.toThrow("__exit__:1");
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deriveActivitySummary } from "./knowledge-loop.js";
+import { buildKnowledgeMemoryEntry, deriveActivitySummary } from "./knowledge-loop.js";
 
 describe("deriveActivitySummary", () => {
   it("returns empty string when no activity", () => {
@@ -94,5 +94,32 @@ describe("deriveActivitySummary", () => {
       tools: ["create", "edit", "orchestrate", "git_history"],
     });
     expect(result).toBe("Multi-agent workflow execution");
+  });
+});
+
+describe("buildKnowledgeMemoryEntry", () => {
+  it("skips empty heading-only entries", () => {
+    expect(
+      buildKnowledgeMemoryEntry({
+        sessionKey: "agent:main:main",
+        ts: "2026-03-14T00:04:29.680Z",
+      }),
+    ).toBeNull();
+  });
+
+  it("persists entries when there is meaningful activity", () => {
+    const entry = buildKnowledgeMemoryEntry({
+      sessionKey: "agent:main:main",
+      ts: "2026-03-14T00:04:29.680Z",
+      acc: {
+        sessionKey: "agent:main:main",
+        filesCreated: [],
+        filesEdited: ["src/app.ts"],
+        toolNames: ["edit"],
+      },
+    });
+
+    expect(entry).toContain("**Edited**: src/app.ts");
+    expect(entry).toContain("**Summary**: Code modifications: 1 file(s) changed");
   });
 });

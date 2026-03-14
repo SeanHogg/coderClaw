@@ -92,6 +92,45 @@ type RunAccumulator = {
   toolNames: string[];
 };
 
+export function buildKnowledgeMemoryEntry(params: {
+  sessionKey: string;
+  ts: string;
+  acc?: RunAccumulator;
+}): string | null {
+  const lines: string[] = [`\n## [${params.ts}] session:${params.sessionKey}`, ""];
+  let hasMeaningfulContent = false;
+
+  if (params.acc) {
+    const created = [...new Set(params.acc.filesCreated)];
+    const edited = [...new Set(params.acc.filesEdited)];
+    const tools = [...new Set(params.acc.toolNames)];
+    if (created.length > 0) {
+      lines.push(`**Created**: ${created.join(", ")}`);
+      hasMeaningfulContent = true;
+    }
+    if (edited.length > 0) {
+      lines.push(`**Edited**: ${edited.join(", ")}`);
+      hasMeaningfulContent = true;
+    }
+    if (tools.length > 0) {
+      lines.push(`**Tools**: ${tools.join(", ")}`);
+      hasMeaningfulContent = true;
+    }
+    const summary = deriveActivitySummary({ created, edited, tools });
+    if (summary) {
+      lines.push(`**Summary**: ${summary}`);
+      hasMeaningfulContent = true;
+    }
+  }
+
+  if (!hasMeaningfulContent) {
+    return null;
+  }
+
+  lines.push("");
+  return lines.join("\n");
+}
+
 /**
  * Listens for agent run completions and writes a timestamped activity entry to
  * .coderclaw/memory/YYYY-MM-DD.md, then syncs .coderclaw/ to Builderforce if credentials
@@ -169,29 +208,10 @@ export class KnowledgeLoopService {
     this.runs.delete(runId);
 
     const ts = new Date().toISOString();
-    const lines: string[] = [`\n## [${ts}] session:${sessionKey}`, ""];
-
-    if (acc) {
-      const created = [...new Set(acc.filesCreated)];
-      const edited = [...new Set(acc.filesEdited)];
-      const tools = [...new Set(acc.toolNames)];
-      if (created.length > 0) {
-        lines.push(`**Created**: ${created.join(", ")}`);
-      }
-      if (edited.length > 0) {
-        lines.push(`**Edited**: ${edited.join(", ")}`);
-      }
-      if (tools.length > 0) {
-        lines.push(`**Tools**: ${tools.join(", ")}`);
-      }
-      const summary = deriveActivitySummary({ created, edited, tools });
-      if (summary) {
-        lines.push(`**Summary**: ${summary}`);
-      }
+    const entry = buildKnowledgeMemoryEntry({ ts, sessionKey, acc });
+    if (!entry) {
+      return;
     }
-    lines.push("");
-
-    const entry = lines.join("\n");
 
     try {
       await appendKnowledgeMemory(this.opts.workspaceDir, entry);

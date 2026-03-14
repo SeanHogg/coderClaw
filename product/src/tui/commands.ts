@@ -121,7 +121,7 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
     { name: "settings", description: "Open settings" },
     {
       name: "restart",
-      description: "Restart gateway (when disconnected: runs gateway restart locally)",
+      description: "Restart gateway locally",
     },
     {
       name: "gateway",

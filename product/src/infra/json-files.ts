@@ -2,6 +2,11 @@ import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+function shouldUseCopyFallback(err: unknown): boolean {
+  const code = err && typeof err === "object" && "code" in err ? String(err.code) : null;
+  return code === "EPERM" || code === "EEXIST" || code === "EACCES" || code === "EBUSY";
+}
+
 export async function readJsonFile<T>(filePath: string): Promise<T | null> {
   try {
     const raw = await fs.readFile(filePath, "utf8");
@@ -26,7 +31,22 @@ export async function writeJsonAtomic(
   } catch {
     // best-effort; ignore on platforms without chmod
   }
-  await fs.rename(tmp, filePath);
+  try {
+    await fs.rename(tmp, filePath);
+  } catch (err) {
+    // Windows can reject atomic replacement when the destination already exists
+    // or is momentarily observed by another process. Fall back to copy+unlink.
+    if (!shouldUseCopyFallback(err)) {
+      await fs.unlink(tmp).catch(() => {
+        // best-effort cleanup
+      });
+      throw err;
+    }
+    await fs.copyFile(tmp, filePath);
+    await fs.unlink(tmp).catch(() => {
+      // best-effort cleanup
+    });
+  }
   try {
     await fs.chmod(filePath, mode);
   } catch {

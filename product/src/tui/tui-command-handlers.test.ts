@@ -8,10 +8,13 @@ import * as selectors from "./components/selectors.js";
 import { createCommandHandlers } from "./tui-command-handlers.js";
 import type { TuiStateAccess } from "./tui-types.js";
 
-// spy on config helpers so tests can verify writes
-vi.hoisted(() => {
-  vi.spyOn({ loadConfig }, "loadConfig");
-  vi.spyOn({ writeConfigFile }, "writeConfigFile");
+vi.mock("../config/config.js", async () => {
+  const actual = await vi.importActual<typeof import("../config/config.js")>("../config/config.js");
+  return {
+    ...actual,
+    loadConfig: vi.fn(actual.loadConfig),
+    writeConfigFile: vi.fn(actual.writeConfigFile),
+  };
 });
 
 describe("tui command handlers", () => {
@@ -193,6 +196,49 @@ describe("tui command handlers", () => {
     expect(runGatewayServiceCommand).toHaveBeenCalledWith("restart");
     expect(addSystem).toHaveBeenCalledWith("running: coderclaw gateway restart");
     expect(addSystem).toHaveBeenCalledWith("restarted");
+  });
+
+  it("runs /restart locally without sending chat even when connected", async () => {
+    const addSystem = vi.fn();
+    const requestRender = vi.fn();
+    const sendChat = vi.fn();
+    const runGatewayServiceCommand = vi.fn().mockResolvedValue({
+      ok: true,
+      lines: ["restarted"],
+    });
+
+    const { handleCommand } = createCommandHandlers({
+      client: { sendChat } as never,
+      chatLog: { addSystem } as never,
+      tui: { requestRender } as never,
+      opts: {},
+      state: {
+        currentSessionKey: "agent:main:main",
+        activeChatRunId: null,
+        sessionInfo: {},
+        isConnected: true,
+      } as never,
+      deliverDefault: false,
+      openOverlay: vi.fn(),
+      closeOverlay: vi.fn(),
+      refreshSessionInfo: vi.fn(),
+      loadHistory: vi.fn(),
+      setSession: vi.fn(),
+      refreshAgents: vi.fn(),
+      abortActive: vi.fn(),
+      setActivityStatus: vi.fn(),
+      formatSessionKey: vi.fn(),
+      applySessionInfoFromPatch: vi.fn(),
+      noteLocalRunId: vi.fn(),
+      runGatewayServiceCommand,
+    });
+
+    await handleCommand("/restart");
+
+    expect(runGatewayServiceCommand).toHaveBeenCalledWith("restart");
+    expect(sendChat).not.toHaveBeenCalled();
+    expect(addSystem).toHaveBeenCalledWith("Running: coderclaw gateway restart");
+    expect(addSystem).toHaveBeenCalledWith("Gateway restart started. Reconnecting when it is up…");
   });
 
   it("treats /daemon as alias for /gateway", async () => {

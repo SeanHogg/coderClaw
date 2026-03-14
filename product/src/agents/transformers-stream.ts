@@ -14,13 +14,13 @@ export const TRANSFORMERS_DEFAULT_DTYPE = "q4";
 export const TRANSFORMERS_DEFAULT_CACHE_DIR = path.join(resolveStateDir(), "models");
 
 // ── Anatomical model defaults ────────────────────────────────────────────────
-// Amygdala  = SmolLM2 (fast routing / triage, <200 ms, 8K ctx)
-// Hippocampus = Qwen3-0.6B-ONNX (plan pass; built for Transformers.js + ONNX, ~40K ctx)
+// Amygdala  = Qwen3-0.6B-ONNX (fastest local router / triage)
+// Hippocampus = SmolLM2 (heavier planner / fallback local reasoner)
 // Cortex    = user's registered LLM (the actual agent model)
-export const AMYGDALA_DEFAULT_MODEL_ID = TRANSFORMERS_DEFAULT_MODEL_ID;
-export const AMYGDALA_DEFAULT_DTYPE = TRANSFORMERS_DEFAULT_DTYPE;
-export const HIPPOCAMPUS_DEFAULT_MODEL_ID = "onnx-community/Qwen3-0.6B-ONNX";
-export const HIPPOCAMPUS_DEFAULT_DTYPE = "q4f16";
+export const AMYGDALA_DEFAULT_MODEL_ID = "onnx-community/Qwen3-0.6B-ONNX";
+export const AMYGDALA_DEFAULT_DTYPE = "q4f16";
+export const HIPPOCAMPUS_DEFAULT_MODEL_ID = TRANSFORMERS_DEFAULT_MODEL_ID;
+export const HIPPOCAMPUS_DEFAULT_DTYPE = TRANSFORMERS_DEFAULT_DTYPE;
 
 // Long-term memory files in the runtime workspace directory.
 // MEMORY.md contains personal/curated knowledge — omit in shared/group contexts.

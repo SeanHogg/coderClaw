@@ -3,12 +3,12 @@
  *
  * Anatomy:
  *
- *   **Amygdala** (SmolLM2-1.7B, 8K ctx)
+ *   **Amygdala** (Qwen3-0.6B-ONNX)
  *     — fast intent routing / triage (<200 ms)
  *     — decides HANDLE or DELEGATE
  *     — runs tool loop (read_file, list_files, grep_files, run_code)
  *
- *   **Hippocampus** (Qwen3-0.6B-ONNX, ~40K ctx)
+ *   **Hippocampus** (SmolLM2-1.7B)
  *     — memory consolidation & synthesis
  *     — prompt compression for the cortex
  *     — plan pass in the DELEGATE multi-step chain
@@ -30,6 +30,8 @@
  *   - If hippocampus can't load → amygdala does the plan pass (smaller context)
  */
 
+import { randomUUID } from "node:crypto";
+import { Worker } from "node:worker_threads";
 import type { StreamFn } from "@mariozechner/pi-agent-core";
 import type { AssistantMessage, StopReason, TextContent, Usage } from "@mariozechner/pi-ai";
 import { createAssistantMessageEventStream } from "@mariozechner/pi-ai";
@@ -46,9 +48,9 @@ import {
   type ToolResult,
 } from "./coderclawllm-tools.js";
 import {
+  AMYGDALA_DEFAULT_DTYPE,
+  AMYGDALA_DEFAULT_MODEL_ID,
   TRANSFORMERS_DEFAULT_CACHE_DIR,
-  TRANSFORMERS_DEFAULT_DTYPE,
-  TRANSFORMERS_DEFAULT_MODEL_ID,
   HIPPOCAMPUS_DEFAULT_MODEL_ID,
   HIPPOCAMPUS_DEFAULT_DTYPE,
   convertToTransformersMessages,
@@ -60,6 +62,41 @@ import {
 
 const log = createSubsystemLogger("brain");
 const MAX_TOOL_ROUNDS = 3;
+const LOCAL_BRAIN_WORKER_URL = new URL("./coderclawllm-local-worker.js", import.meta.url);
+const AMYGDALA_ROUTING_TIMEOUT_MS = 8_000;
+const COMPLEX_QUERY_LENGTH = 500;
+const COMPLEX_CONVERSATION_MESSAGES = 10;
+const COMPLEX_RAG_CONTEXT_LENGTH = 2_500;
+const COMPLEX_TOTAL_CONTEXT_LENGTH = 9_000;
+
+const COMPLEX_REQUEST_PATTERNS = [
+  /\brefactor\b/i,
+  /\barchitecture\b/i,
+  /\bdebug(?:ging)?\b/i,
+  /\binvestigat(?:e|ion)\b/i,
+  /\bperformance\b/i,
+  /\boptimi[sz]e\b/i,
+  /\bcodebase\b/i,
+  /\bmulti(?:-|\s)?file\b/i,
+  /\bmultiple files\b/i,
+  /\bacross\b/i,
+  /\bgateway\b/i,
+  /\bworker\b/i,
+  /\bthread\b/i,
+];
+
+type LocalBrainPendingRequest = {
+  resolve: (value: string) => void;
+  reject: (error: Error) => void;
+};
+
+export type LocalBrainRoutingDecision = {
+  mode: "simple" | "complex";
+  reasons: string[];
+};
+
+let localBrainWorker: Worker | null = null;
+const localBrainWorkerPending = new Map<string, LocalBrainPendingRequest>();
 
 // ── Brain system prompt ───────────────────────────────────────────────────────
 
@@ -515,221 +552,472 @@ export type CoderClawLlmLocalStreamOptions = {
   allowRunCode?: boolean;
 };
 
+export type CoderClawLlmLocalRunRequest = {
+  config?: CoderClawConfig;
+  workspaceDir?: string;
+  modelId: string;
+  dtype: string;
+  hippocampusModelId: string;
+  hippocampusDtype: string;
+  cacheDir: string;
+  isSharedContext?: boolean;
+  allowRunCode: boolean;
+  contextSystemPrompt?: string;
+  rawMessages: Array<{ role: string; content: unknown }>;
+  maxTokens: number;
+  temperature: number;
+};
+
+const localBrainEligibilityCache = new Map<
+  string,
+  { amygdalaEligible: boolean; hippocampusEligible: boolean }
+>();
+
+function getLocalBrainEligibilityKey(request: CoderClawLlmLocalRunRequest): string {
+  return [
+    request.modelId,
+    request.dtype,
+    request.hippocampusModelId,
+    request.hippocampusDtype,
+    request.cacheDir,
+  ].join("|");
+}
+
+function resolveAmygdalaRoutingTimeoutMs(): number {
+  const raw = Number.parseInt(process.env.CODERCLAW_AMYGDALA_ROUTING_TIMEOUT_MS ?? "", 10);
+  if (Number.isFinite(raw) && raw > 0) {
+    return raw;
+  }
+  return AMYGDALA_ROUTING_TIMEOUT_MS;
+}
+
+export function classifyLocalBrainRequest(params: {
+  queryText: string;
+  rawMessages: Array<{ role: string; content: unknown }>;
+  ragContext: string;
+  memoryBlock: string;
+}): LocalBrainRoutingDecision {
+  const reasons: string[] = [];
+  const query = params.queryText.trim();
+  const normalizedQuery = query.toLowerCase();
+
+  if (query.length >= COMPLEX_QUERY_LENGTH) {
+    reasons.push("long-user-prompt");
+  }
+  if (params.rawMessages.length >= COMPLEX_CONVERSATION_MESSAGES) {
+    reasons.push("long-conversation");
+  }
+  if (params.ragContext.length >= COMPLEX_RAG_CONTEXT_LENGTH) {
+    reasons.push("large-rag-context");
+  }
+  if (params.ragContext.length + params.memoryBlock.length >= COMPLEX_TOTAL_CONTEXT_LENGTH) {
+    reasons.push("large-brain-context");
+  }
+  if (query.includes("\n\n") || query.includes("```")) {
+    reasons.push("structured-multi-part-request");
+  }
+  if (COMPLEX_REQUEST_PATTERNS.some((pattern) => pattern.test(normalizedQuery))) {
+    reasons.push("complex-intent");
+  }
+
+  return {
+    mode: reasons.length > 0 ? "complex" : "simple",
+    reasons,
+  };
+}
+
+function getOrCreateLocalBrainWorker(): Worker {
+  if (localBrainWorker) {
+    return localBrainWorker;
+  }
+  const worker = new Worker(LOCAL_BRAIN_WORKER_URL);
+  worker.on(
+    "message",
+    (message: { type?: string; id?: string; finalText?: string; error?: string }) => {
+      const id = typeof message.id === "string" ? message.id : "";
+      if (!id) {
+        return;
+      }
+      const pending = localBrainWorkerPending.get(id);
+      if (!pending) {
+        return;
+      }
+      localBrainWorkerPending.delete(id);
+      if (message.type === "result") {
+        pending.resolve(message.finalText ?? "");
+        return;
+      }
+      pending.reject(new Error(message.error || "Local brain worker failed"));
+    },
+  );
+  worker.on("error", (error) => {
+    for (const pending of localBrainWorkerPending.values()) {
+      pending.reject(error instanceof Error ? error : new Error(String(error)));
+    }
+    localBrainWorkerPending.clear();
+    localBrainWorker = null;
+  });
+  worker.on("exit", (code) => {
+    if (code !== 0) {
+      for (const pending of localBrainWorkerPending.values()) {
+        pending.reject(new Error(`Local brain worker exited with code ${code}`));
+      }
+      localBrainWorkerPending.clear();
+    }
+    localBrainWorker = null;
+  });
+  localBrainWorker = worker;
+  return worker;
+}
+
+async function restartLocalBrainWorker(): Promise<void> {
+  const worker = localBrainWorker;
+  localBrainWorker = null;
+  if (!worker) {
+    return;
+  }
+  await worker.terminate().catch(() => undefined);
+}
+
+async function runCoderClawLlmLocalRequestInWorker(
+  request: CoderClawLlmLocalRunRequest,
+  signal?: AbortSignal,
+): Promise<string> {
+  if (signal?.aborted) {
+    throw new Error("Request aborted");
+  }
+
+  const worker = getOrCreateLocalBrainWorker();
+  const id = randomUUID();
+
+  return await new Promise<string>((resolve, reject) => {
+    let settled = false;
+    const cleanup = () => {
+      settled = true;
+      signal?.removeEventListener("abort", onAbort);
+    };
+    const onAbort = () => {
+      if (settled) {
+        return;
+      }
+      localBrainWorkerPending.delete(id);
+      cleanup();
+      reject(new Error("Request aborted"));
+      void restartLocalBrainWorker();
+    };
+
+    localBrainWorkerPending.set(id, {
+      resolve: (value) => {
+        if (settled) {
+          return;
+        }
+        cleanup();
+        resolve(value);
+      },
+      reject: (error) => {
+        if (settled) {
+          return;
+        }
+        cleanup();
+        reject(error);
+      },
+    });
+
+    signal?.addEventListener("abort", onAbort, { once: true });
+
+    try {
+      worker.postMessage({ type: "run", id, request });
+    } catch (error) {
+      localBrainWorkerPending.delete(id);
+      cleanup();
+      reject(error instanceof Error ? error : new Error(String(error)));
+    }
+  });
+}
+
+async function runDirectCortexRequest(params: {
+  request: CoderClawLlmLocalRunRequest;
+  memoryBlock: string;
+  ragContext: string;
+  routingReason: string;
+}): Promise<string> {
+  log.info(`routing: using cortex directly (${params.routingReason})`);
+  const externalSystemParts = [
+    params.request.contextSystemPrompt,
+    params.memoryBlock,
+    params.ragContext,
+    `[Routing note]\nAmygdala was bypassed/escalated: ${params.routingReason}. Use the configured cortex model to answer directly.`,
+  ].filter(Boolean);
+
+  const externalMessages = convertToTransformersMessages(
+    params.request.rawMessages,
+    externalSystemParts.join("\n\n---\n\n") || undefined,
+  );
+
+  const externalResult = await callExecutionLlm({
+    config: params.request.config,
+    messages: externalMessages,
+    maxTokens: params.request.maxTokens,
+    temperature: params.request.temperature,
+  });
+
+  return (
+    externalResult ??
+    "I'm unable to process this request: the local router was bypassed and no cortex (external LLM) returned a result."
+  );
+}
+
+async function loadRoutingContext(request: CoderClawLlmLocalRunRequest): Promise<{
+  memoryBlock: string;
+  ragContext: string;
+  queryText: string;
+}> {
+  const memoryBlock = request.workspaceDir
+    ? await loadCoderClawMemory(request.workspaceDir, {
+        isSharedContext: request.isSharedContext,
+      })
+    : "";
+  if (memoryBlock) {
+    log.info(`loaded .coderclaw memory (${memoryBlock.length} chars)`);
+  }
+
+  const lastUserMsg = [...request.rawMessages].toReversed().find((m) => m.role === "user");
+  const queryText =
+    typeof lastUserMsg?.content === "string"
+      ? lastUserMsg.content
+      : ((lastUserMsg?.content as Array<{ text?: string }>)?.[0]?.text ?? "");
+
+  const ragContext =
+    request.workspaceDir && queryText
+      ? await retrieveRelevantContext({ query: queryText, workspaceDir: request.workspaceDir })
+      : "";
+  if (ragContext) {
+    log.info(`RAG context retrieved (${ragContext.length} chars)`);
+  }
+
+  return { memoryBlock, ragContext, queryText };
+}
+
+export async function runCoderClawLlmLocalRequest(
+  request: CoderClawLlmLocalRunRequest,
+): Promise<string> {
+  const eligibilityKey = getLocalBrainEligibilityKey(request);
+  let eligibility = localBrainEligibilityCache.get(eligibilityKey);
+  if (!eligibility) {
+    const check = await checkLocalBrainRequirements({
+      cacheDir: request.cacheDir,
+      modelId: request.modelId,
+      hippocampusModelId: request.hippocampusModelId,
+    });
+    eligibility = {
+      amygdalaEligible: check.eligible,
+      hippocampusEligible: check.hippocampusEligible,
+    };
+    localBrainEligibilityCache.set(eligibilityKey, eligibility);
+    if (!check.eligible) {
+      log.info(`amygdala: ${check.reason ?? "system requirements not met"}`);
+    }
+    if (!check.hippocampusEligible) {
+      log.info("hippocampus: insufficient RAM — plan pass will use amygdala");
+    }
+  }
+
+  const { memoryBlock, ragContext, queryText } = await loadRoutingContext(request);
+
+  const routingDecision = classifyLocalBrainRequest({
+    queryText,
+    rawMessages: request.rawMessages,
+    ragContext,
+    memoryBlock,
+  });
+  log.info(
+    `routing: request classified as ${routingDecision.mode}${routingDecision.reasons.length > 0 ? ` (${routingDecision.reasons.join(", ")})` : ""}`,
+  );
+
+  if (!eligibility.amygdalaEligible) {
+    log.info("amygdala not eligible → cortex handling entire request");
+    return await runDirectCortexRequest({
+      request,
+      memoryBlock,
+      ragContext,
+      routingReason: "amygdala not eligible",
+    });
+  }
+
+  const amygdalaSystem = [
+    request.contextSystemPrompt,
+    memoryBlock,
+    ragContext,
+    AMYGDALA_SYSTEM_PROMPT,
+  ]
+    .filter(Boolean)
+    .join("\n\n---\n\n");
+
+  const amygdalaPipe = await getOrCreatePipeline(request.modelId, request.dtype, request.cacheDir);
+
+  /* oxlint-disable-next-line typescript-eslint/no-redundant-type-constituents -- pipeline type from upstream */
+  let hippocampusPipe: Awaited<ReturnType<typeof getOrCreatePipeline>> | null = null;
+  if (eligibility.hippocampusEligible) {
+    try {
+      hippocampusPipe = await getOrCreatePipeline(
+        request.hippocampusModelId,
+        request.hippocampusDtype,
+        request.cacheDir,
+      );
+    } catch {
+      log.info("hippocampus: failed to load pipeline — plan pass will use amygdala");
+      eligibility.hippocampusEligible = false;
+    }
+  }
+
+  if (routingDecision.mode === "complex") {
+    log.info(
+      `routing: bypassing amygdala handle path → hippocampus/cortex (${routingDecision.reasons.join(", ")})`,
+    );
+    const finalText = await runMultiStepChain({
+      amygdalaPipe,
+      hippocampusPipe,
+      config: request.config,
+      rawMessages: request.rawMessages,
+      contextSystemPrompt: request.contextSystemPrompt,
+      brainPlan: queryText,
+      memoryBlock,
+      ragContext,
+      maxTokens: request.maxTokens,
+      temperature: request.temperature,
+      workspaceDir: request.workspaceDir,
+      allowRunCode: request.allowRunCode,
+    });
+    log.info(`response ready (${finalText.length} chars, routing=complex-bypass)`);
+    return finalText;
+  }
+
+  log.info("amygdala: starting reasoning pass...");
+  const amygdalaT0 = Date.now();
+  let amygdalaMessages = convertToTransformersMessages(request.rawMessages, amygdalaSystem);
+  let amygdalaText = await runPipeline(amygdalaPipe, amygdalaMessages, 256, 0.4);
+  log.info(`amygdala: reasoning pass completed in ${Date.now() - amygdalaT0}ms`);
+
+  let toolRounds = 0;
+  while (toolRounds < MAX_TOOL_ROUNDS && request.workspaceDir) {
+    const calls = parseToolCalls(amygdalaText);
+    if (calls.length === 0) {
+      break;
+    }
+
+    toolRounds++;
+    log.info(
+      `amygdala: tool round ${toolRounds}/${MAX_TOOL_ROUNDS} — ${calls.length} call(s): ${calls.map((c) => c.tool).join(", ")}`,
+    );
+    const results: ToolResult[] = [];
+    for (const call of calls) {
+      results.push(
+        await executeToolCall(call, request.workspaceDir, {
+          allowRunCode: request.allowRunCode,
+        }),
+      );
+    }
+    amygdalaMessages = [
+      ...amygdalaMessages,
+      { role: "assistant", content: amygdalaText },
+      { role: "user", content: `Tool results:\n\n${formatToolResults(results)}` },
+    ];
+    amygdalaText = await runPipeline(amygdalaPipe, amygdalaMessages, 256, 0.4);
+  }
+
+  const isDelegating = amygdalaText.toUpperCase().trimStart().startsWith("DELEGATE");
+  const brainPlan = amygdalaText.replace(/^DELEGATE[:\s]*/i, "").trim();
+
+  log.info(
+    `routing: amygdala decision=${isDelegating ? "DELEGATE → hippocampus/cortex" : "HANDLE (responding directly)"}`,
+  );
+
+  if (isDelegating) {
+    log.info(
+      `routing: entering multi-step chain hippocampus=${hippocampusPipe ? "loaded" : "unavailable (amygdala fallback)"} cortex=configured`,
+    );
+  }
+
+  const finalText = isDelegating
+    ? await runMultiStepChain({
+        amygdalaPipe,
+        hippocampusPipe,
+        config: request.config,
+        rawMessages: request.rawMessages,
+        contextSystemPrompt: request.contextSystemPrompt,
+        brainPlan,
+        memoryBlock,
+        ragContext,
+        maxTokens: request.maxTokens,
+        temperature: request.temperature,
+        workspaceDir: request.workspaceDir,
+        allowRunCode: request.allowRunCode,
+      })
+    : amygdalaText;
+  log.info(`response ready (${finalText.length} chars, total=${Date.now() - amygdalaT0}ms)`);
+  return finalText;
+}
+
 export function createCoderClawLlmLocalStreamFn(
   opts: CoderClawLlmLocalStreamOptions = {},
 ): StreamFn {
-  const modelId = opts.modelId ?? TRANSFORMERS_DEFAULT_MODEL_ID;
-  const dtype = opts.dtype ?? TRANSFORMERS_DEFAULT_DTYPE;
+  const modelId = opts.modelId ?? AMYGDALA_DEFAULT_MODEL_ID;
+  const dtype = opts.dtype ?? AMYGDALA_DEFAULT_DTYPE;
   const hippocampusModelId = opts.hippocampusModelId ?? HIPPOCAMPUS_DEFAULT_MODEL_ID;
   const hippocampusDtype = opts.hippocampusDtype ?? HIPPOCAMPUS_DEFAULT_DTYPE;
   const cacheDir = opts.cacheDir ?? TRANSFORMERS_DEFAULT_CACHE_DIR;
-
-  // Lazy system-requirements check — performed once on the first request,
-  // then cached for the lifetime of this factory instance.
-  // null  = not yet checked
-  // true  = amygdala eligible
-  // false = requirements not met; route all requests to cortex
-  let amygdalaEligible: boolean | null = null;
-  let hippocampusEligible: boolean | null = null;
 
   return (model, context, options) => {
     const stream = createAssistantMessageEventStream();
 
     const run = async () => {
       try {
-        // ── 0. One-time system requirements check ─────────────────────────────
-        if (amygdalaEligible === null) {
-          const check = await checkLocalBrainRequirements({
-            cacheDir,
-            modelId,
-            hippocampusModelId,
-          });
-          amygdalaEligible = check.eligible;
-          hippocampusEligible = check.hippocampusEligible;
-          if (!check.eligible) {
-            log.info(`amygdala: ${check.reason ?? "system requirements not met"}`);
-          }
-          if (!check.hippocampusEligible) {
-            log.info("hippocampus: insufficient RAM — plan pass will use amygdala");
-          }
-        }
-
-        // ── 1. Load .coderclaw memory (long-term + short-term daily notes) ────
-        const memoryBlock = opts.workspaceDir
-          ? await loadCoderClawMemory(opts.workspaceDir, { isSharedContext: opts.isSharedContext })
-          : "";
-        if (memoryBlock) {
-          log.info(`loaded .coderclaw memory (${memoryBlock.length} chars)`);
-        }
-
-        // ── 2. RAG — retrieve relevant workspace context ───────────────────────
-        const lastUserMsg = [...(context.messages ?? [])]
-          .toReversed()
-          .find((m) => m.role === "user");
-        const queryText =
-          typeof lastUserMsg?.content === "string"
-            ? lastUserMsg.content
-            : ((lastUserMsg?.content as Array<{ text?: string }>)?.[0]?.text ?? "");
-
-        const ragContext =
-          opts.workspaceDir && queryText
-            ? await retrieveRelevantContext({ query: queryText, workspaceDir: opts.workspaceDir })
-            : "";
-        if (ragContext) {
-          log.info(`RAG context retrieved (${ragContext.length} chars)`);
-        }
-
         const maxTokens = typeof options?.maxTokens === "number" ? options.maxTokens : 512;
         const temperature = typeof options?.temperature === "number" ? options.temperature : 0.6;
-        const rawMessages = context.messages ?? [];
+        const request: CoderClawLlmLocalRunRequest = {
+          config: opts.config,
+          workspaceDir: opts.workspaceDir,
+          modelId,
+          dtype,
+          hippocampusModelId,
+          hippocampusDtype,
+          cacheDir,
+          isSharedContext: opts.isSharedContext,
+          allowRunCode: opts.allowRunCode ?? false,
+          contextSystemPrompt: context.systemPrompt,
+          rawMessages: context.messages ?? [],
+          maxTokens,
+          temperature,
+        };
+        const timeoutMs = resolveAmygdalaRoutingTimeoutMs();
+        const timeoutController = new AbortController();
+        let timedOut = false;
+        const timeoutHandle = setTimeout(() => {
+          timedOut = true;
+          timeoutController.abort();
+        }, timeoutMs);
+        const abortListener = () => timeoutController.abort();
+        options?.signal?.addEventListener("abort", abortListener, { once: true });
 
-        // ── Cortex fallback (amygdala requirements not met) ───────────────────
-        // When the amygdala can't load, the cortex handles everything directly.
-        // Memory and RAG context are prepended so it's grounded in .coderclaw.
-        if (!amygdalaEligible) {
-          log.info("amygdala not eligible → cortex handling entire request");
-          const externalSystemParts = [
-            context.systemPrompt,
+        let finalText: string;
+        try {
+          finalText = await runCoderClawLlmLocalRequestInWorker(request, timeoutController.signal);
+        } catch (err) {
+          if (!timedOut) {
+            throw err;
+          }
+          log.warn(`amygdala: routing exceeded ${timeoutMs}ms — escalating to cortex`);
+          const { memoryBlock, ragContext } = await loadRoutingContext(request);
+          finalText = await runDirectCortexRequest({
+            request,
             memoryBlock,
             ragContext,
-            AMYGDALA_SYSTEM_PROMPT,
-          ].filter(Boolean);
-
-          const externalMessages = convertToTransformersMessages(
-            rawMessages,
-            externalSystemParts.join("\n\n---\n\n") || undefined,
-          );
-
-          const externalResult = await callExecutionLlm({
-            config: opts.config,
-            messages: externalMessages,
-            maxTokens,
-            temperature,
-            signal: options?.signal,
+            routingReason: `amygdala timeout after ${timeoutMs}ms`,
           });
-
-          const finalText =
-            externalResult ??
-            "I'm unable to process this request: no amygdala model and no cortex (external LLM) is configured.";
-
-          const externalContent: TextContent[] = finalText
-            ? [{ type: "text" as const, text: finalText }]
-            : [];
-          stream.push({
-            type: "done",
-            reason: "stop",
-            message: {
-              role: "assistant",
-              content: externalContent,
-              stopReason: "stop" as StopReason,
-              api: model.api,
-              provider: model.provider,
-              model: model.id,
-              usage: {
-                input: 0,
-                output: 0,
-                cacheRead: 0,
-                cacheWrite: 0,
-                totalTokens: 0,
-                cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
-              },
-              timestamp: Date.now(),
-            } satisfies AssistantMessage,
-          });
-          return;
+        } finally {
+          clearTimeout(timeoutHandle);
+          options?.signal?.removeEventListener("abort", abortListener);
         }
-
-        const amygdalaSystem = [
-          context.systemPrompt,
-          memoryBlock,
-          ragContext,
-          AMYGDALA_SYSTEM_PROMPT,
-        ]
-          .filter(Boolean)
-          .join("\n\n---\n\n");
-
-        const amygdalaPipe = await getOrCreatePipeline(modelId, dtype, cacheDir);
-
-        // Lazily load hippocampus pipeline only when eligible.
-        /* oxlint-disable-next-line typescript-eslint/no-redundant-type-constituents -- pipeline type from upstream */
-        let hippocampusPipe: Awaited<ReturnType<typeof getOrCreatePipeline>> | null = null;
-        if (hippocampusEligible) {
-          try {
-            hippocampusPipe = await getOrCreatePipeline(
-              hippocampusModelId,
-              hippocampusDtype,
-              cacheDir,
-            );
-          } catch {
-            log.info("hippocampus: failed to load pipeline — plan pass will use amygdala");
-            hippocampusEligible = false;
-          }
-        }
-
-        // ── 3. Amygdala reasoning pass (fast routing) ─────────────────────────
-        log.info("amygdala: starting reasoning pass...");
-        const amygdalaT0 = Date.now();
-        let amygdalaMessages = convertToTransformersMessages(rawMessages, amygdalaSystem);
-        let amygdalaText = await runPipeline(amygdalaPipe, amygdalaMessages, 256, 0.4);
-        log.info(`amygdala: reasoning pass completed in ${Date.now() - amygdalaT0}ms`);
-
-        // ── 4. Tool loop — execute tool calls the amygdala emitted ────────────
-
-        const wsDir = opts.workspaceDir;
-        let toolRounds = 0;
-        while (toolRounds < MAX_TOOL_ROUNDS && wsDir) {
-          const calls = parseToolCalls(amygdalaText);
-          if (calls.length === 0) {
-            break;
-          }
-
-          toolRounds++;
-          log.info(
-            `amygdala: tool round ${toolRounds}/${MAX_TOOL_ROUNDS} — ${calls.length} call(s): ${calls.map((c) => c.tool).join(", ")}`,
-          );
-          const results: ToolResult[] = [];
-          for (const call of calls) {
-            results.push(await executeToolCall(call, wsDir, { allowRunCode: opts.allowRunCode }));
-          }
-          amygdalaMessages = [
-            ...amygdalaMessages,
-            { role: "assistant", content: amygdalaText },
-            { role: "user", content: `Tool results:\n\n${formatToolResults(results)}` },
-          ];
-          amygdalaText = await runPipeline(amygdalaPipe, amygdalaMessages, 256, 0.4);
-        }
-
-        const isDelegating = amygdalaText.toUpperCase().trimStart().startsWith("DELEGATE");
-        const brainPlan = amygdalaText.replace(/^DELEGATE[:\s]*/i, "").trim();
-
-        log.info(
-          `routing: amygdala decision=${isDelegating ? "DELEGATE → hippocampus/cortex" : "HANDLE (responding directly)"}`,
-        );
-
-        // ── 5. DELEGATE → hippocampus plans, cortex executes ──────────────────
-        if (isDelegating) {
-          log.info(
-            `routing: entering multi-step chain hippocampus=${hippocampusPipe ? "loaded" : "unavailable (amygdala fallback)"} cortex=configured`,
-          );
-        }
-        const finalText = isDelegating
-          ? await runMultiStepChain({
-              amygdalaPipe,
-              hippocampusPipe,
-              config: opts.config,
-              rawMessages,
-              contextSystemPrompt: context.systemPrompt,
-              brainPlan,
-              memoryBlock,
-              ragContext,
-              maxTokens,
-              temperature,
-              workspaceDir: wsDir,
-              allowRunCode: opts.allowRunCode ?? false,
-              signal: options?.signal,
-            })
-          : amygdalaText;
-        log.info(`response ready (${finalText.length} chars, total=${Date.now() - amygdalaT0}ms)`);
 
         const content: TextContent[] = finalText
           ? [{ type: "text" as const, text: finalText }]

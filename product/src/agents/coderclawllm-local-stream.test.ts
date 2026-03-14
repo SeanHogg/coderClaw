@@ -14,6 +14,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // ── loadCoderClawMemory ───────────────────────────────────────────────────────
 import { resolveAgentRuntimeDir, resolveWorkspaceFilePath } from "./workspace.js";
 import { loadCoderClawMemory } from "./transformers-stream.js";
+import { classifyLocalBrainRequest } from "./coderclawllm-local-stream.js";
 
 describe("loadCoderClawMemory", () => {
   let tmpDir: string;
@@ -204,6 +205,37 @@ describe("DELEGATE detection logic", () => {
   it("strips lowercase 'delegate: ' prefix", () => {
     const plan = extractBrainPlan("delegate: write a complete test suite for the API");
     expect(plan).toBe("write a complete test suite for the API");
+  });
+});
+
+describe("classifyLocalBrainRequest", () => {
+  it("marks short direct prompts as simple", () => {
+    const result = classifyLocalBrainRequest({
+      queryText: "What does this function do?",
+      rawMessages: [{ role: "user", content: "What does this function do?" }],
+      ragContext: "",
+      memoryBlock: "",
+    });
+
+    expect(result.mode).toBe("simple");
+    expect(result.reasons).toEqual([]);
+  });
+
+  it("marks long debugging prompts as complex", () => {
+    const result = classifyLocalBrainRequest({
+      queryText: "Please debug the gateway and refactor the routing across multiple files. ".repeat(
+        12,
+      ),
+      rawMessages: [{ role: "user", content: "debug the gateway" }],
+      ragContext: "x".repeat(3_000),
+      memoryBlock: "y".repeat(7_000),
+    });
+
+    expect(result.mode).toBe("complex");
+    expect(result.reasons).toContain("long-user-prompt");
+    expect(result.reasons).toContain("complex-intent");
+    expect(result.reasons).toContain("large-rag-context");
+    expect(result.reasons).toContain("large-brain-context");
   });
 });
 
