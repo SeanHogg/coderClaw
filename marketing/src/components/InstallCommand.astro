@@ -1,0 +1,131 @@
+---
+interface Props {
+  command: string;
+  label?: string;
+  comment?: string;
+}
+
+const { command, label, comment } = Astro.props;
+const id = `cmd-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div class="install-cmd">
+  {label && <span class="install-cmd__label">{label}</span>}
+  {comment && <div class="code-line comment">{comment}</div>}
+  <div class="code-line cmd">
+    <span class="code-prompt">$</span>
+    <span class="install-cmd__text">{command}</span>
+    <button
+      class="copy-line-btn"
+      data-copy-cmd={command}
+      title="Copy"
+      aria-label={`Copy: ${command}`}
+    >
+      <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  .install-cmd {
+    background: var(--bg-elevated, #111827);
+    border: 1px solid var(--border-subtle, rgba(136,146,176,0.15));
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.85rem;
+  }
+
+  .install-cmd__label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted, #5a6480);
+    margin-bottom: 6px;
+    font-family: var(--font-body, sans-serif);
+  }
+
+  .code-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .code-line.comment {
+    color: var(--text-muted, #5a6480);
+    font-style: italic;
+    margin-bottom: 4px;
+  }
+
+  .code-line.cmd {
+    color: var(--text-primary, #f0f4ff);
+  }
+
+  .code-prompt {
+    color: var(--cyan-bright, #00e5cc);
+    user-select: none;
+  }
+
+  .install-cmd__text {
+    flex: 1;
+  }
+
+  .copy-line-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: var(--text-muted, #5a6480);
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .copy-line-btn:hover {
+    color: var(--cyan-bright, #00e5cc);
+  }
+
+  .copy-line-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-cmd]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const cmd = btn.dataset.copyCmd ?? '';
+      try {
+        await navigator.clipboard.writeText(cmd);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = cmd;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      const copy = btn.querySelector('.copy-icon') as SVGElement | null;
+      const check = btn.querySelector('.check-icon') as SVGElement | null;
+      if (copy && check) {
+        copy.style.display = 'none';
+        check.style.display = '';
+        setTimeout(() => {
+          copy.style.display = '';
+          check.style.display = 'none';
+        }, 1800);
+      }
+    });
+  });
+</script>

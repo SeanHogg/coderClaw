@@ -1,0 +1,85 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CoderClaw App</title>
+    <style>
+      body { font-family: system-ui, sans-serif; padding: 1rem; }
+      form { margin-bottom: 1rem; max-width: 400px; }
+      label { display: block; margin-top: .5rem; }
+      input[type=text], input[type=password], textarea { width: 100%; padding: .5rem; }
+      button { padding: .5rem 1rem; margin-top: .5rem; }
+    </style>
+  </head>
+  <body>
+    <h1>CoderClaw Web App</h1>
+    <div id="content"></div>
+    <script>
+      const CCL = 'https://api.builderforce.ai';
+      const api = (path, opts = {}) => {
+        const headers = { 'Content-Type': 'application/json', ...(opts.headers ?? {}) };
+        return fetch(`${CCL}/${path}`, { ...opts, headers });
+      };
+      let token = localStorage.getItem('token');
+
+      async function render() {
+        const cont = document.getElementById('content');
+        cont.innerHTML = '';
+        if (!token) {
+          cont.innerHTML = `<h2>Login</h2>
+            <form id="login"><label>Email <input name="email" type="text"></label><label>Password <input name="password" type="password"></label><button>Log in</button></form>
+            <h2>Register</h2>
+            <form id="register"><label>Email <input name="email" type="text"></label><label>Username <input name="username" type="text"></label><label>Password <input name="password" type="password"></label>
+              <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" name="agreeTerms" required> I agree to the <a href="#" id="termsLink">Terms of Use</a></label>
+              <button>Sign up</button></form>`;
+          document.getElementById('login').addEventListener('submit', async e => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            const res = await api('api/auth/web/login', { method: 'POST', body: JSON.stringify(data) });
+            const j = await res.json();
+            if (res.ok) { localStorage.setItem('token', j.token); token = j.token; render(); } else alert(j.error);
+          });
+          document.getElementById('register').addEventListener('submit', async e => {
+            e.preventDefault();
+            const form = e.target;
+            const data = Object.fromEntries(new FormData(form));
+            const res = await api('api/auth/web/register', { method: 'POST', body: JSON.stringify(data) });
+            const j = await res.json();
+            if (res.ok) {
+              // attempt to accept terms immediately
+              try {
+                await api('api/auth/legal/terms/accept', { method: 'POST', headers: { Authorization: 'Bearer ' + j.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ version: '1.0.0' }) });
+              } catch {}
+              localStorage.setItem('token', j.token); token = j.token; render();
+            } else alert(j.error);
+          });
+          const termsLink = document.getElementById('termsLink');
+          if (termsLink) {
+            termsLink.addEventListener('click', e => { e.preventDefault(); window.open('https://coderclaw.ai/terms', '_blank'); });
+          }
+        } else {
+          cont.innerHTML = `<button id="logout">Log out</button><div id="profile"></div><h2>Upload Skill</h2>
+            <form id="upload"><label>Name <input name="name"></label><label>Slug <input name="slug"></label><label>Description <textarea name="description"></textarea></label><label>Category <input name="category"></label><button>Upload</button></form>`;
+          const pr = await api('api/auth/me', { headers: { Authorization: 'Bearer ' + token } });
+          if (pr.ok) {
+            const pu = await pr.json();
+            document.getElementById('profile').innerHTML = `<strong>${pu.user.username}</strong> (${pu.user.email})`;
+          }
+          document.getElementById('logout').addEventListener('click', () => { localStorage.removeItem('token'); token = null; render(); });
+          document.getElementById('upload').addEventListener('submit', async e => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            const res = await api('marketplace/skills', { method: 'POST', body: JSON.stringify(data), headers: { Authorization: 'Bearer ' + token } });
+            const j = await res.json();
+            if (res.ok) { alert('uploaded'); } else alert(j.error);
+          });
+        }
+      }
+      render();
+    </script>
+  </body>
+</html>

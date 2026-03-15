@@ -1,0 +1,829 @@
+---
+// QuickStart.astro — Reusable interactive install command block.
+// Extracted from the homepage so it can be dropped into any page.
+---
+
+<section class="quickstart">
+  <h2 class="section-title">
+    <span class="claw-accent">⟩</span> Quick Start
+  </h2>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-dot"></span>
+      <span class="code-dot"></span>
+      <span class="code-dot"></span>
+      <div class="mode-switch">
+        <button class="mode-btn active" data-mode="oneliner">One-liner</button>
+        <button class="mode-btn" data-mode="quick">npm</button>
+        <button class="mode-btn" data-mode="hackable">Hackable</button>
+        <button class="mode-btn" data-mode="macos">macOS</button>
+      </div>
+      <div class="pm-switch" id="pm-switch" style="display: none;">
+        <button class="pm-btn active" data-pm="npm">npm</button>
+        <button class="pm-btn" data-pm="pnpm">pnpm</button>
+      </div>
+      <div class="hackable-switch" id="hackable-switch" style="display: none;">
+        <button class="hackable-btn active" data-hackable="installer">installer</button>
+        <button class="hackable-btn" data-hackable="pnpm">pnpm</button>
+      </div>
+      <div class="os-indicator" id="os-indicator">
+        <span class="os-detected" id="os-detected">macOS/Linux</span>
+        <button class="os-change-btn" id="os-change-btn">change</button>
+      </div>
+      <div class="os-switch" id="os-switch" style="display: none;">
+        <button class="os-btn active" data-os="unix">macOS/Linux</button>
+        <button class="os-btn" data-os="windows">Windows</button>
+      </div>
+      <div class="win-shell-switch" id="win-shell-switch" style="display: none;">
+        <button class="win-shell-btn active" data-shell="powershell">PowerShell</button>
+        <button class="win-shell-btn" data-shell="cmd">CMD</button>
+      </div>
+      <div class="beta-switch" id="beta-switch">
+        <button class="beta-btn" id="beta-btn" data-beta="false">
+          <span class="beta-label">β</span>
+          <span class="beta-text">Beta</span>
+        </button>
+      </div>
+      <div class="switch-placeholder" id="switch-placeholder" aria-hidden="true"></div>
+    </div>
+    <div id="code-oneliner" class="code-content">
+      <div class="code-line comment" id="oneliner-comment"># Works everywhere. Installs everything. You're welcome. 🦞</div>
+      <div class="code-line cmd">
+        <span class="code-prompt">$</span>
+        <span class="os-cmd">curl -fsSL https://coderclaw.ai/install.sh | bash</span>
+        <button class="copy-line-btn" data-cmd="oneliner" title="Copy">
+          <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="code-quick" class="code-content" style="display: none;">
+      <div class="code-line comment" id="quick-comment-install"># Install CoderClaw</div>
+      <div class="code-line cmd">
+        <span class="code-prompt">$</span>
+        <span class="pm-install">npm i -g coderclaw</span>
+        <button class="copy-line-btn" data-cmd="install" title="Copy">
+          <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+      </div>
+      <div class="code-line comment" id="quick-comment-onboard"># Meet your lobster</div>
+      <div class="code-line cmd">
+        <span class="code-prompt">$</span>
+        <span>coderclaw onboard</span>
+        <button class="copy-line-btn" data-cmd="onboard" title="Copy">
+          <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="code-hackable" class="code-content" style="display: none;">
+      <div id="hackable-installer-content">
+        <div class="code-line comment"># For those who read source code for fun</div>
+        <div class="code-line cmd">
+          <span class="code-prompt">$</span>
+          <span class="os-cmd-hackable">curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git</span>
+          <button class="copy-line-btn" data-cmd="hackable-installer" title="Copy">
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="hackable-pnpm-content" style="display: none;">
+        <div class="code-line comment"># You clearly know what you're doing</div>
+        <div class="code-line cmd">
+          <span class="code-prompt">$</span>
+          <span>git clone https://github.com/seanhogg/coderclaw.git</span>
+          <button class="copy-line-btn" data-cmd="clone" title="Copy">
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+        <div class="code-line cmd">
+          <span class="code-prompt">$</span>
+          <span>cd coderclaw && pnpm install && pnpm run build</span>
+          <button class="copy-line-btn" data-cmd="build" title="Copy">
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+        <div class="code-line comment"># You built it, now meet it</div>
+        <div class="code-line cmd">
+          <span class="code-prompt">$</span>
+          <span>pnpm run coderclaw onboard</span>
+          <button class="copy-line-btn" data-cmd="hackable-onboard" title="Copy">
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="code-macos" class="code-content" style="display: none;">
+      <div class="macos-app-content">
+        <div class="macos-description">
+          <span class="macos-tagline">Companion App (Beta)</span>
+          <span class="macos-subtitle">Menubar access to your lobster. Works great alongside the CLI.</span>
+        </div>
+        <a href="https://github.com/SeanHogg/coderClaw/releases/latest" class="macos-download-btn" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download for macOS
+        </a>
+        <span class="macos-meta">Requires macOS 14+ · Universal Binary</span>
+      </div>
+    </div>
+  </div>
+  <p class="quickstart-note">
+    Works on macOS, Windows & Linux. The one-liner installs Node.js and everything else for you.
+  </p>
+</section>
+
+<style>
+  .quickstart {
+    margin-bottom: 56px;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+  }
+
+  .claw-accent {
+    color: var(--coral-bright);
+    font-weight: 700;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .code-block {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--surface-overlay);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .code-content {
+    padding: 16px 20px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .code-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+  }
+
+  .code-line.comment {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .code-line.cmd {
+    color: var(--text-primary);
+  }
+
+  .copy-line-btn {
+    opacity: 0.6;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: var(--surface-interactive);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .code-line:hover .copy-line-btn {
+    opacity: 1;
+  }
+
+  .copy-line-btn:hover {
+    background: var(--surface-interactive-hover);
+    color: var(--text-primary);
+  }
+
+  .copy-line-btn.copied {
+    opacity: 1;
+    background: var(--surface-cyan-soft);
+    color: var(--cyan-bright);
+  }
+
+  .copy-line-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .code-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+
+  .code-dot:nth-child(1) { background: #ff5f57; }
+  .code-dot:nth-child(2) { background: #febc2e; }
+  .code-dot:nth-child(3) { background: #28c840; }
+
+  .code-title {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .mode-switch,
+  .pm-switch,
+  .hackable-switch,
+  .os-switch,
+  .win-shell-switch {
+    display: flex;
+    gap: 4px;
+    background: var(--surface-overlay);
+    padding: 3px;
+    border-radius: 6px;
+  }
+
+  .pm-switch,
+  .hackable-switch,
+  .os-switch,
+  .win-shell-switch {
+    margin-left: auto;
+  }
+
+  .win-shell-switch {
+    margin-left: 8px;
+  }
+
+  .mode-btn,
+  .pm-btn,
+  .hackable-btn,
+  .os-btn,
+  .win-shell-btn {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mode-btn:hover,
+  .pm-btn:hover,
+  .hackable-btn:hover,
+  .os-btn:hover,
+  .win-shell-btn:hover {
+    color: var(--text-secondary);
+  }
+
+  .pm-btn.active,
+  .hackable-btn.active,
+  .os-btn.active,
+  .win-shell-btn.active {
+    background: var(--coral-bright);
+    color: var(--bg-deep);
+    font-weight: 600;
+  }
+
+  .mode-btn.active {
+    background: var(--cyan-bright);
+    color: var(--bg-deep);
+    font-weight: 600;
+  }
+
+  /* Beta Switch */
+  .beta-switch {
+    margin-left: 8px;
+  }
+
+  /* Placeholder to prevent layout shift when no switches visible */
+  .switch-placeholder {
+    display: none;
+    height: 26px;
+    margin-left: auto;
+  }
+
+  .beta-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .beta-btn:hover {
+    border-color: var(--cyan-bright);
+    color: var(--cyan-bright);
+  }
+
+  .beta-btn.active {
+    background: var(--surface-cyan-soft);
+    border-color: var(--cyan-bright);
+    color: var(--cyan-bright);
+  }
+
+  .beta-label {
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  .beta-text {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .pm-cmd,
+  .pm-install {
+    color: var(--cyan-bright);
+  }
+
+  .code-block pre {
+    padding: 20px;
+    overflow-x: auto;
+  }
+
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+
+  .code-comment {
+    color: var(--text-muted);
+  }
+
+  .code-prompt {
+    color: var(--coral-bright);
+    user-select: none;
+  }
+
+  .quickstart-note {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* OS Indicator */
+  .os-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .os-detected {
+    color: var(--text-secondary);
+  }
+
+  .os-change-btn {
+    background: none;
+    border: none;
+    color: var(--coral-bright);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+  }
+
+  .os-change-btn:hover {
+    background: var(--surface-coral-soft);
+    color: var(--cyan-bright);
+  }
+
+  /* macOS App Download Section */
+  .macos-app-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 16px;
+    text-align: center;
+  }
+
+  .macos-description {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .macos-tagline {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .macos-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .macos-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--coral-bright) 0%, var(--coral-dark) 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px var(--shadow-coral-mid);
+  }
+
+  .macos-download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px var(--shadow-coral-strong);
+  }
+
+  .macos-download-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .macos-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 640px) {
+    /* Quick Start mobile layout */
+    .code-header {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .code-dot {
+      order: 0;
+    }
+
+    /* Contextual switches appear first (after dots), right-aligned */
+    .os-indicator,
+    .os-switch,
+    .win-shell-switch,
+    .pm-switch,
+    .hackable-switch,
+    .beta-switch,
+    .switch-placeholder {
+      order: 1;
+      margin-left: auto;
+    }
+
+    .win-shell-switch {
+      margin-left: 4px;
+    }
+
+    /* Mode tabs appear last */
+    .mode-switch {
+      order: 2;
+      width: 100%;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    .mode-btn {
+      padding: 6px 8px;
+      font-size: 0.65rem;
+    }
+
+    .os-btn,
+    .pm-btn,
+    .win-shell-btn {
+      padding: 4px 8px;
+      font-size: 0.65rem;
+    }
+
+    .code-content {
+      padding: 12px 14px;
+      font-size: 0.65rem;
+    }
+
+    .code-line {
+      gap: 6px;
+    }
+
+    .macos-download-btn {
+      padding: 12px 20px;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<script>
+  // Windows install commands
+  const windowsPsCmd = 'iwr -useb https://coderclaw.ai/install.ps1 | iex';
+  const windowsPsBetaCmd = '& ([scriptblock]::Create((iwr -useb https://coderclaw.ai/install.ps1))) -Tag beta';
+  const windowsCmdCmd = 'curl -fsSL https://coderclaw.ai/install.cmd -o install.cmd && install.cmd && del install.cmd';
+  const windowsCmdBetaCmd = 'curl -fsSL https://coderclaw.ai/install.cmd -o install.cmd && install.cmd --tag beta && del install.cmd';
+
+  const osLabels: Record<string, string> = {
+    unix: 'macOS/Linux',
+    windows: 'Windows'
+  };
+
+  // State
+  let currentPm = 'npm';
+  let currentMode = 'oneliner';
+  let currentHackable = 'installer';
+  let currentBeta = false;
+  let osPickerExpanded = false;
+  let currentWinShell = 'powershell';
+
+  // Auto-detect OS using modern API with fallback
+  const isWindows = (navigator as any).userAgentData?.platform === 'Windows' ||
+                    navigator.userAgent.toLowerCase().includes('windows');
+  let currentOs = isWindows ? 'windows' : 'unix';
+
+  // DOM Elements - cached once for performance
+  const pmBtns = document.querySelectorAll<HTMLButtonElement>('.pm-btn');
+  const hackableBtns = document.querySelectorAll<HTMLButtonElement>('.hackable-btn');
+  const osBtns = document.querySelectorAll<HTMLButtonElement>('.os-btn');
+  const winShellBtns = document.querySelectorAll<HTMLButtonElement>('.win-shell-btn');
+  const modeBtns = document.querySelectorAll<HTMLButtonElement>('.mode-btn');
+  const pmSwitch = document.getElementById('pm-switch');
+  const hackableSwitch = document.getElementById('hackable-switch');
+  const osSwitch = document.getElementById('os-switch');
+  const winShellSwitch = document.getElementById('win-shell-switch');
+  const osIndicator = document.getElementById('os-indicator');
+  const osDetected = document.getElementById('os-detected');
+  const osChangeBtn = document.getElementById('os-change-btn');
+  const betaSwitch = document.getElementById('beta-switch');
+  const betaBtn = document.getElementById('beta-btn');
+  const switchPlaceholder = document.getElementById('switch-placeholder');
+  const codeOneliner = document.getElementById('code-oneliner');
+  const codeQuick = document.getElementById('code-quick');
+  const codeHackable = document.getElementById('code-hackable');
+  const codeMacos = document.getElementById('code-macos');
+  const hackableInstallerContent = document.getElementById('hackable-installer-content');
+  const hackablePnpmContent = document.getElementById('hackable-pnpm-content');
+  const onelinerComment = document.getElementById('oneliner-comment');
+  const quickCommentInstall = document.getElementById('quick-comment-install');
+  const quickCommentOnboard = document.getElementById('quick-comment-onboard');
+
+  // Cached query selectors for frequently updated elements
+  const pmCmdElements = document.querySelectorAll('.pm-cmd');
+  const pmInstallElements = document.querySelectorAll('.pm-install');
+  const osCmdElements = document.querySelectorAll('.os-cmd');
+  const osCmdHackableElements = document.querySelectorAll('.os-cmd-hackable');
+
+  const comments: Record<string, Record<string, string>> = {
+    oneliner: {
+      stable: "# Works everywhere. Installs everything. You're welcome. 🦞",
+      beta: "# Living on the edge. Bugs are features you found first. 🦞"
+    },
+    quickInstall: {
+      stable: "# Install CoderClaw",
+      beta: "# Install CoderClaw (beta) — Fresh from the lab 🧪"
+    },
+    quickOnboard: {
+      stable: "# Meet your lobster",
+      beta: "# Meet your experimental lobster"
+    }
+  };
+
+  function updateCommands() {
+    pmCmdElements.forEach(cmd => (cmd as HTMLElement).textContent = currentPm);
+    const betaSuffix = currentBeta ? '@beta' : '';
+    const installCmd = currentPm === 'npm'
+      ? `npm i -g coderclaw${betaSuffix}`
+      : `pnpm add -g coderclaw${betaSuffix}`;
+    pmInstallElements.forEach(cmd => (cmd as HTMLElement).textContent = installCmd);
+    let onelinerCmd: string;
+    if (currentOs === 'unix') {
+      onelinerCmd = currentBeta
+        ? "curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --beta"
+        : "curl -fsSL https://coderclaw.ai/install.sh | bash";
+    } else if (currentWinShell === 'cmd') {
+      onelinerCmd = currentBeta ? windowsCmdBetaCmd : windowsCmdCmd;
+    } else {
+      onelinerCmd = currentBeta ? windowsPsBetaCmd : windowsPsCmd;
+    }
+    osCmdElements.forEach(cmd => (cmd as HTMLElement).textContent = onelinerCmd);
+    const hackableOsCmd = "curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git";
+    osCmdHackableElements.forEach(cmd => (cmd as HTMLElement).textContent = hackableOsCmd);
+    if (osDetected) osDetected.textContent = osLabels[currentOs];
+    if (currentMode === 'hackable') {
+      if (hackableInstallerContent) hackableInstallerContent.style.display = currentHackable === 'installer' ? 'block' : 'none';
+      if (hackablePnpmContent) hackablePnpmContent.style.display = currentHackable === 'pnpm' ? 'block' : 'none';
+    }
+    if (betaBtn) {
+      betaBtn.classList.toggle('active', currentBeta);
+      (betaBtn as HTMLButtonElement).dataset.beta = currentBeta.toString();
+    }
+    const mode = currentBeta ? 'beta' : 'stable';
+    if (onelinerComment) onelinerComment.textContent = comments.oneliner[mode];
+    if (quickCommentInstall) quickCommentInstall.textContent = comments.quickInstall[mode];
+    if (quickCommentOnboard) quickCommentOnboard.textContent = comments.quickOnboard[mode];
+  }
+
+  function updateVisibility() {
+    if (codeOneliner) codeOneliner.style.display = currentMode === 'oneliner' ? 'block' : 'none';
+    if (codeQuick) codeQuick.style.display = currentMode === 'quick' ? 'block' : 'none';
+    if (codeHackable) codeHackable.style.display = currentMode === 'hackable' ? 'block' : 'none';
+    if (codeMacos) codeMacos.style.display = currentMode === 'macos' ? 'block' : 'none';
+
+    const showOsControls = currentMode === 'oneliner';
+    const showPmControls = currentMode === 'quick';
+    const showHackableControls = currentMode === 'hackable';
+    const showBetaControls = currentMode === 'oneliner' || currentMode === 'quick';
+    const showWinShellControls = showOsControls && currentOs === 'windows';
+
+    if (osIndicator) osIndicator.style.display = showOsControls && !osPickerExpanded ? 'flex' : 'none';
+    if (osSwitch) osSwitch.style.display = showOsControls && osPickerExpanded ? 'flex' : 'none';
+    if (winShellSwitch) winShellSwitch.style.display = showWinShellControls ? 'flex' : 'none';
+    if (pmSwitch) pmSwitch.style.display = showPmControls ? 'flex' : 'none';
+    if (hackableSwitch) hackableSwitch.style.display = showHackableControls ? 'flex' : 'none';
+    if (betaSwitch) betaSwitch.style.display = showBetaControls ? 'flex' : 'none';
+    const noSwitchesVisible = !showOsControls && !showPmControls && !showHackableControls && !showBetaControls;
+    if (switchPlaceholder) switchPlaceholder.style.display = noSwitchesVisible ? 'block' : 'none';
+  }
+
+  if (osChangeBtn) {
+    osChangeBtn.addEventListener('click', () => {
+      osPickerExpanded = true;
+      updateVisibility();
+    });
+  }
+
+  if (betaBtn) {
+    betaBtn.addEventListener('click', () => {
+      currentBeta = !currentBeta;
+      updateCommands();
+    });
+  }
+
+  pmBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentPm = btn.dataset.pm!;
+      pmBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateCommands();
+    });
+  });
+
+  hackableBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentHackable = btn.dataset.hackable!;
+      hackableBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateCommands();
+    });
+  });
+
+  osBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentOs = btn.dataset.os!;
+      osBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      osPickerExpanded = false;
+      updateCommands();
+      updateVisibility();
+    });
+  });
+
+  winShellBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentWinShell = btn.dataset.shell!;
+      winShellBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateCommands();
+    });
+  });
+
+  modeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentMode = btn.dataset.mode!;
+      modeBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      osPickerExpanded = false;
+      updateVisibility();
+    });
+  });
+
+  // Initialize UI based on detected OS
+  osBtns.forEach(b => b.classList.toggle('active', b.dataset.os === currentOs));
+  updateCommands();
+  updateVisibility();
+
+  // Copy button functionality
+  const copyCommands: Record<string, () => string> = {
+    'oneliner': () => {
+      if (currentOs === 'unix') {
+        return currentBeta
+          ? "curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --beta"
+          : "curl -fsSL https://coderclaw.ai/install.sh | bash";
+      } else if (currentWinShell === 'cmd') {
+        return currentBeta ? windowsCmdBetaCmd : windowsCmdCmd;
+      } else {
+        return currentBeta ? windowsPsBetaCmd : windowsPsCmd;
+      }
+    },
+    'install': () => {
+      const betaSuffix = currentBeta ? '@beta' : '';
+      return currentPm === 'npm' ? `npm i -g coderclaw${betaSuffix}` : `pnpm add -g coderclaw${betaSuffix}`;
+    },
+    'onboard': () => 'coderclaw onboard',
+    'hackable-installer': () => "curl -fsSL https://coderclaw.ai/install.sh | bash -s -- --install-method git",
+    'clone': () => 'git clone https://github.com/seanhogg/coderclaw.git',
+    'build': () => 'cd coderclaw && pnpm install && pnpm run build',
+    'hackable-onboard': () => 'node coderclaw.mjs onboard',
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('.copy-line-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const cmdKey = btn.dataset.cmd!;
+      const cmdFn = copyCommands[cmdKey];
+      if (!cmdFn) return;
+
+      const code = cmdFn();
+      const copyIcon = btn.querySelector('.copy-icon') as HTMLElement | null;
+      const checkIcon = btn.querySelector('.check-icon') as HTMLElement | null;
+
+      let success = false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(code);
+          success = true;
+        } else {
+          const textArea = document.createElement('textarea');
+          textArea.value = code;
+          textArea.style.position = 'fixed';
+          textArea.style.opacity = '0';
+          document.body.appendChild(textArea);
+          try {
+            textArea.select();
+            success = document.execCommand('copy');
+          } finally {
+            textArea.remove();
+          }
+        }
+      } catch (err) {
+        console.error('Failed to copy:', err);
+        success = false;
+      }
+
+      if (success) {
+        btn.classList.add('copied');
+        if (copyIcon) copyIcon.style.display = 'none';
+        if (checkIcon) checkIcon.style.display = 'block';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          if (copyIcon) copyIcon.style.display = 'block';
+          if (checkIcon) checkIcon.style.display = 'none';
+        }, 2000);
+      } else {
+        btn.style.background = 'rgba(239, 68, 68, 0.3)';
+        setTimeout(() => {
+          btn.style.background = '';
+        }, 1000);
+      }
+    });
+  });
+</script>

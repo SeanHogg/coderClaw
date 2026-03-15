@@ -1,0 +1,374 @@
+---
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+
+const isActive = (href: string) => {
+  if (href === '/' && currentPath === '/') return true;
+  if (href !== '/' && currentPath?.startsWith(href)) return true;
+  return false;
+};
+---
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="nav-logo">
+      <img src="https://cdn.builder.io/api/v1/image/assets%2Fac94883aaa0849cc897eb61793256164%2Fc284d818569a472aa80fdbee574db744?format=webp&width=800&height=1200" alt="CoderClaw" />
+    </a>
+
+    <div class="nav-menu">
+      <div class="nav-links">
+        <a href="/" class={`nav-link ${isActive('/') ? 'active' : ''}`}>Home</a>
+        
+        <div class="nav-dropdown">
+          <button class="nav-link dropdown-trigger">
+            Docs
+            <svg class="dropdown-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="dropdown-menu">
+            <a href="/docs/getting-started" class="dropdown-item">Getting Started</a>
+            <a href="/docs/guides" class="dropdown-item">Guides & Tutorials</a>
+            <a href="/docs/api-reference" class="dropdown-item">API Reference</a>
+            <a href="/docs/examples" class="dropdown-item">Examples</a>
+          </div>
+        </div>
+
+        <a href="/skills" class={`nav-link ${isActive('/skills') ? 'active' : ''}`}>Skills</a>
+        <a href="/showcase" class={`nav-link ${isActive('/showcase') ? 'active' : ''}`}>Showcase</a>
+        <a href="/blog" class={`nav-link ${isActive('/blog') ? 'active' : ''}`}>Blog</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="https://builderforce.ai" target="_blank" rel="noopener" class="btn-login">
+          Login to Builderforce
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="external-icon">
+            <path d="M13.5 2.5H8M13.5 2.5V8M13.5 2.5L2.5 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <button class="nav-mobile-toggle" data-mobile-toggle aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<style>
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    backdrop-filter: blur(10px);
+    background: rgba(10, 15, 26, 0.8);
+  }
+
+  html[data-theme='light'] .navbar {
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 18px;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .nav-logo:hover {
+    opacity: 0.8;
+  }
+
+  .nav-logo img {
+    height: 40px;
+    width: auto;
+    filter: hue-rotate(0deg) saturate(1.05);
+    transition: filter 0.3s ease;
+  }
+
+  .nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex: 1;
+    justify-content: space-between;
+    margin-left: 40px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    list-style: none;
+  }
+
+  .nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--text-primary);
+  }
+
+  .nav-dropdown {
+    position: relative;
+  }
+
+  .dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dropdown-icon {
+    transition: transform 0.2s ease;
+  }
+
+  .nav-dropdown:hover .dropdown-icon {
+    transform: translateY(-2px);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: -12px;
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 8px;
+    min-width: 200px;
+    margin-top: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .nav-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdown-item {
+    display: block;
+    padding: 10px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .dropdown-item:hover {
+    background: var(--surface-interactive);
+    color: var(--text-primary);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .btn-login {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: var(--coral-bright);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .btn-login:hover {
+    background: var(--coral-mid);
+    transform: translateY(-1px);
+  }
+
+  .external-icon {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-login:hover .external-icon {
+    opacity: 1;
+  }
+
+  .nav-mobile-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  .nav-mobile-toggle span {
+    width: 24px;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-mobile-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+  }
+
+  .nav-mobile-toggle.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-mobile-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+  }
+
+  @media (max-width: 768px) {
+    .nav-container {
+      padding: 0 16px;
+      height: 60px;
+    }
+
+    .nav-menu {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 0;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .nav-menu.active {
+      max-height: 500px;
+    }
+
+    .nav-links {
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+    }
+
+    .nav-link {
+      width: 100%;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .nav-dropdown:hover .dropdown-menu {
+      position: static;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      background: var(--bg-elevated);
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      min-width: 100%;
+    }
+
+    .dropdown-item {
+      padding: 12px 40px;
+      border-radius: 0;
+    }
+
+    .nav-actions {
+      width: 100%;
+      flex-direction: column;
+      padding: 16px 20px;
+      gap: 12px;
+    }
+
+    .btn-login {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .nav-mobile-toggle {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .nav-logo img {
+      height: 32px;
+    }
+
+    .nav-links {
+      gap: 0;
+    }
+
+    .nav-menu {
+      gap: 0;
+    }
+  }
+</style>
+
+<script>
+  const mobileToggle = document.querySelector('[data-mobile-toggle]');
+  const navMenu = document.querySelector('.nav-menu');
+
+  if (mobileToggle && navMenu) {
+    mobileToggle.addEventListener('click', () => {
+      mobileToggle.classList.toggle('active');
+      navMenu.classList.toggle('active');
+    });
+
+    // Close menu when clicking on a link
+    const links = navMenu.querySelectorAll('a');
+    links.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileToggle.classList.remove('active');
+        navMenu.classList.remove('active');
+      });
+    });
+  }
+</script>

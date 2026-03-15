@@ -1,0 +1,84 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="CCPA Data Request — CoderClaw"
+  description="Submit a California CCPA data access or deletion request."
+  canonicalUrl="https://coderclaw.ai/ccpa"
+>
+  <main class="newsletter-main">
+    <section class="newsletter-hero">
+      <h1 class="newsletter-title">California CCPA Request</h1>
+      <p class="newsletter-desc">Fill out the form below to request access to or deletion of your personal data under California's CCPA law. We will respond as required.</p>
+    </section>
+
+    <form class="newsletter-form" id="privacy-form">
+      <input
+        type="email"
+        name="email"
+        placeholder="your@email.com"
+        required
+        class="newsletter-input"
+        aria-label="Email address"
+      />
+      <textarea
+        name="details"
+        placeholder="Additional details (optional)"
+        class="newsletter-input"
+        style="height:100px;"
+      ></textarea>
+      <button type="submit" class="newsletter-btn">Submit Request</button>
+    </form>
+    <p id="privacy-status" class="newsletter-status" aria-live="polite"></p>
+  </main>
+</Layout>
+
+<script>
+  const form = document.getElementById('privacy-form');
+  const statusEl = document.getElementById('privacy-status');
+  if (form instanceof HTMLFormElement && statusEl instanceof HTMLElement) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emailInput = form.querySelector('input[name="email"]');
+      const detailsInput = form.querySelector('textarea[name="details"]');
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (!(emailInput instanceof HTMLInputElement) || !(submitButton instanceof HTMLButtonElement)) return;
+      const email = emailInput.value.trim();
+      const details = detailsInput instanceof HTMLTextAreaElement ? detailsInput.value.trim() : '';
+      if (!email) return;
+
+      statusEl.classList.remove('ok','error');
+      statusEl.textContent = 'Submitting…';
+      submitButton.disabled = true;
+      try {
+        const res = await fetch('https://api.builderforce.ai/api/auth/privacy-requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, requestType: 'ccpa', details }),
+        });
+        if (!res.ok) throw new Error('Request failed');
+        statusEl.classList.add('ok');
+        statusEl.textContent = 'Request submitted. Thank you.';
+      } catch {
+        statusEl.classList.add('error');
+        statusEl.textContent = 'Unable to submit request right now.';
+        submitButton.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  /* reuse same styles as unsubscribe page */
+  .newsletter-main { max-width: 600px; margin: 0 auto; padding: 60px 24px; }
+  .newsletter-hero { text-align: center; margin-bottom: 32px; }
+  .newsletter-title { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 2.5rem); font-weight:700; }
+  .newsletter-desc { font-size:1.1rem; color:var(--text-secondary); }
+  .newsletter-form { display:flex; flex-direction:column; gap:8px; }
+  .newsletter-input { padding:12px; border-radius:8px; border:1px solid var(--border-subtle); }
+  .newsletter-btn { padding:12px 24px; border:none; border-radius:8px; background-color:var(--coral-bright); color:#fff; cursor:pointer; }
+  .newsletter-status { margin-top:16px; text-align:center; }
+  .ok { color:var(--success-text,#065f46); }
+  .error { color:var(--error-text,#991b1b); }
+</style>

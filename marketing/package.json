@@ -1,0 +1,28 @@
+{
+  "name": "coderclaw-landing",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "dev:host": "astro dev --host",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.15",
+    "@lucide/astro": "^0.575.0",
+    "@vercel/analytics": "^1.6.1",
+    "astro": "^5.17.2",
+    "js-yaml": "^4.1.1",
+    "simple-icons": "^16.8.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9"
+  }
+}

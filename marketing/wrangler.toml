@@ -1,0 +1,6 @@
+name = "coderclaw-ai-marketing"
+compatibility_date = "2024-01-01"
+account_id = "15a91c1cf46bbc3377e7aad68190e1f1"
+
+[assets]
+directory = "./dist"

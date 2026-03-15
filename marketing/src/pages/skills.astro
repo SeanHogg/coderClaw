@@ -1,0 +1,488 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Fetch skills from the coderClawLink API at build/runtime
+const registryUrl = import.meta.env.SKILLS_REGISTRY_URL || 'https://api.builderforce.ai';
+let skills = [];
+
+try {
+  const res = await fetch(`${registryUrl}/marketplace/skills?limit=100`, {
+    headers: { Accept: 'application/json' },
+  });
+  if (res.ok) {
+    const body = await res.json();
+    skills = body.skills || [];
+  } else {
+    console.warn('skills page: failed to fetch registry', res.status, res.statusText);
+  }
+} catch (err) {
+  console.warn('skills page: error fetching registry', err);
+}
+
+// Hardcoded coderClaw built-in skills used as fallback when the API is unavailable
+const BUILTIN_SKILLS = [
+  { id: 'github', name: 'GitHub', author: 'coderClaw', description: 'Interact with GitHub repositories, issues, PRs, and workflows.', category: 'Development', likes: 89, downloads: 420, tags: ['github', 'git', 'development'], image: '' },
+  { id: 'coding-agent', name: 'Coding Agent', author: 'coderClaw', description: 'An autonomous programming agent that writes, refactors, and tests code.', category: 'Development', likes: 112, downloads: 580, tags: ['coding', 'agent', 'automation'], image: '' },
+  { id: 'coderclaw', name: 'coderClaw', author: 'coderClaw', description: 'Core skill for coderClaw self-management, configuration, and introspection.', category: 'Development', likes: 67, downloads: 340, tags: ['core', 'management'], image: '' },
+  { id: 'skill-creator', name: 'Skill Creator', author: 'coderClaw', description: 'Create, test, and package new coderClaw skills from natural language.', category: 'Development', likes: 45, downloads: 210, tags: ['skills', 'creator', 'development'], image: '' },
+  { id: 'slack', name: 'Slack', author: 'coderClaw', description: 'Manage Slack channels, messages, and team collaboration.', category: 'Communication', likes: 74, downloads: 360, tags: ['slack', 'chat', 'collaboration'], image: '' },
+  { id: 'discord', name: 'Discord', author: 'coderClaw', description: 'Interact with Discord servers, channels, roles, and messages.', category: 'Communication', likes: 58, downloads: 290, tags: ['discord', 'chat', 'community'], image: '' },
+  { id: 'notion', name: 'Notion', author: 'Notion', description: 'Manage Notion pages, databases, blocks, and workspace content.', category: 'Productivity', likes: 82, downloads: 400, tags: ['notion', 'notes', 'wiki'], image: '' },
+  { id: 'obsidian', name: 'Obsidian', author: 'Obsidian', description: 'Manage Obsidian vault notes, links, and knowledge graph.', category: 'Productivity', likes: 63, downloads: 310, tags: ['obsidian', 'notes', 'knowledge'], image: '' },
+  { id: 'trello', name: 'Trello', author: 'Atlassian', description: 'Manage Trello boards, lists, cards, and workflows.', category: 'Productivity', likes: 41, downloads: 195, tags: ['trello', 'project', 'kanban'], image: '' },
+  { id: 'gemini', name: 'Gemini', author: 'Google', description: 'Integrate with Google Gemini for advanced AI generation tasks.', category: 'AI & ML', likes: 95, downloads: 470, tags: ['gemini', 'ai', 'google'], image: '' },
+  { id: 'openai-image-gen', name: 'OpenAI Image Gen', author: 'OpenAI', description: 'Generate and manipulate images using OpenAI DALL-E models.', category: 'AI & ML', likes: 78, downloads: 380, tags: ['openai', 'images', 'dall-e'], image: '' },
+  { id: 'openai-whisper', name: 'OpenAI Whisper', author: 'OpenAI', description: 'Local speech-to-text transcription via the Whisper model.', category: 'AI & ML', likes: 56, downloads: 270, tags: ['whisper', 'speech', 'transcription'], image: '' },
+  { id: 'spotify-player', name: 'Spotify Player', author: 'Spotify', description: 'Control Spotify playback, playlists, and music discovery.', category: 'Media', likes: 71, downloads: 350, tags: ['spotify', 'music', 'player'], image: '' },
+  { id: 'video-frames', name: 'Video Frames', author: 'FFmpeg', description: 'Extract, analyze, and manipulate video frames.', category: 'Media', likes: 33, downloads: 160, tags: ['video', 'frames', 'media'], image: '' },
+  { id: 'weather', name: 'Weather', author: 'wttr.in', description: 'Get real-time weather data, forecasts, and historical climate info.', category: 'Utilities', likes: 48, downloads: 230, tags: ['weather', 'forecast', 'data'], image: '' },
+  { id: 'tmux', name: 'Tmux', author: 'coderClaw', description: 'Manage tmux terminal sessions, windows, panes, and screen multiplexing.', category: 'Utilities', likes: 37, downloads: 175, tags: ['tmux', 'terminal', 'shell'], image: '' },
+  { id: '1password', name: '1Password', author: '1Password', description: 'Securely access and manage 1Password vault items.', category: 'Security', likes: 52, downloads: 250, tags: ['1password', 'secrets', 'security'], image: '' },
+  { id: 'bluebubbles', name: 'BlueBubbles', author: 'BlueBubbles', description: 'Send and manage iMessages through the BlueBubbles bridge.', category: 'Communication', likes: 29, downloads: 140, tags: ['imessage', 'sms', 'messaging'], image: '' },
+  { id: 'summarize', name: 'Summarize', author: 'Summarize', description: 'Generate concise summaries of documents, articles, and conversations.', category: 'AI & ML', likes: 64, downloads: 315, tags: ['summary', 'ai', 'text'], image: '' },
+  { id: 'canvas', name: 'Canvas', author: 'coderClaw', description: 'Visual thinking canvas for brainstorming and diagramming.', category: 'Productivity', likes: 42, downloads: 205, tags: ['canvas', 'visual', 'brainstorm'], image: '' },
+  { id: 'oracle', name: 'Oracle', author: 'AskOracle', description: 'Multi-model AI oracle for comparing responses across providers.', category: 'AI & ML', likes: 55, downloads: 268, tags: ['oracle', 'ai', 'multi-model'], image: '' },
+  { id: 'voice-call', name: 'Voice Call', author: 'coderClaw', description: 'Real-time voice call interface for agent conversations.', category: 'Communication', likes: 38, downloads: 185, tags: ['voice', 'call', 'realtime'], image: '' },
+  { id: 'openhue', name: 'OpenHue', author: 'OpenHue', description: 'Control Philips Hue smart lights, scenes, and automation.', category: 'IoT & Hardware', likes: 25, downloads: 120, tags: ['hue', 'lights', 'smart-home'], image: '' },
+  { id: 'gh-issues', name: 'GitHub Issues', author: 'coderClaw', description: 'Manage GitHub issues with advanced filtering, labeling, and workflows.', category: 'Development', likes: 68, downloads: 330, tags: ['github', 'issues', 'tracking'], image: '' },
+];
+
+if (!skills || skills.length === 0) {
+  skills = BUILTIN_SKILLS;
+}
+
+const categories = [...new Set(skills.map(s => s.category).filter(Boolean))];
+---
+
+<Layout title="Skills Directory - CoderClaw" description="Browse the CoderClaw agent skills directory. Discover pre-built skills for code review, testing, documentation, security scanning, and more.">
+  <main class="skills-container">
+    <header class="skills-header">
+      <h1>Agent Skills Directory</h1>
+      <p class="lead">
+        Discover and share powerful agent skills. Browse our community-created skills or upload your own.
+      </p>
+      <a href="https://builderforce.ai/login" class="btn-upload-skill">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Share Your Skill
+      </a>
+    </header>
+
+    <section class="filters-section">
+      <div class="filter-group">
+        <label for="category-filter">Category</label>
+        <select id="category-filter" class="filter-select">
+          <option value="">All Categories</option>
+          {categories.map(cat => (
+            <option value={cat}>{cat}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="search-skills">Search</label>
+        <input 
+          id="search-skills"
+          type="text" 
+          placeholder="Search skills..." 
+          class="filter-input"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label for="sort-by">Sort By</label>
+        <select id="sort-by" class="filter-select">
+          <option value="trending">Trending</option>
+          <option value="newest">Newest</option>
+          <option value="popular">Most Popular</option>
+          <option value="downloads">Most Downloaded</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="skills-grid">
+      {skills.map(skill => (
+        <article class="skill-card" data-category={skill.category || ''}>
+          {skill.image
+            ? <div class="skill-image" style={`background-image: url('${skill.image}')`}></div>
+            : <div class="skill-image skill-image-placeholder">
+                <span class="skill-category-label">{skill.category || 'Skill'}</span>
+              </div>
+          }
+          <div class="skill-content">
+            <h3 class="skill-name">{skill.name}</h3>
+            <p class="skill-author">by {skill.author}</p>
+            <p class="skill-description">{skill.description}</p>
+            
+            <div class="skill-tags">
+              {skill.tags.map(tag => (
+                <span class="skill-tag">{tag}</span>
+              ))}
+            </div>
+
+            <div class="skill-footer">
+              <div class="skill-stats">
+                <div class="stat">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                  <span>{skill.likes}</span>
+                </div>
+                <div class="stat">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  <span>{skill.downloads}</span>
+                </div>
+              </div>
+              <a href="https://builderforce.ai/login" class="btn-use-skill">Use Skill →</a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <section class="upload-cta">
+      <h2>Created an Amazing Skill?</h2>
+      <p>Share it with our community and help other developers build better agents.</p>
+      <a href="https://builderforce.ai/login" class="btn-primary-large">
+        Upload Your Skill
+      </a>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .skills-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  .skills-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .skills-header h1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+
+  .lead {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-upload-skill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: var(--coral-bright);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .btn-upload-skill:hover {
+    background: var(--coral-mid);
+    transform: translateY(-2px);
+  }
+
+  .filters-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .filter-select,
+  .filter-input {
+    padding: 10px 14px;
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+  }
+
+  .filter-select:focus,
+  .filter-input:focus {
+    outline: none;
+    border-color: var(--coral-bright);
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 60px;
+  }
+
+  .skill-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .skill-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-accent);
+    box-shadow: 0 8px 24px rgba(77, 158, 255, 0.15);
+  }
+
+  .skill-image {
+    width: 100%;
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .skill-image-placeholder {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .skill-category-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 16px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+  }
+
+  .skill-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .skill-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .skill-author {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .skill-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 16px;
+    flex: 1;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .skill-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--surface-interactive);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 20px;
+  }
+
+  .skill-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .skill-stats {
+    display: flex;
+    gap: 16px;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .stat svg {
+    color: var(--coral-bright);
+  }
+
+  .btn-use-skill {
+    padding: 8px 16px;
+    background: var(--surface-interactive-hover);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-use-skill:hover {
+    background: var(--coral-bright);
+    color: white;
+    border-color: var(--coral-bright);
+  }
+
+  .upload-cta {
+    background: linear-gradient(135deg, var(--surface-coral-soft) 0%, var(--surface-cyan-soft) 100%);
+    border: 1px solid var(--border-accent);
+    border-radius: 12px;
+    padding: 48px 32px;
+    text-align: center;
+  }
+
+  .upload-cta h2 {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .upload-cta p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-primary-large {
+    display: inline-flex;
+    padding: 14px 32px;
+    background: var(--coral-bright);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary-large:hover {
+    background: var(--coral-mid);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 1024px) {
+    .skills-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .skills-container {
+      padding: 24px 16px;
+    }
+
+    .skills-header h1 {
+      font-size: 36px;
+    }
+
+    .skills-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .filters-section {
+      grid-template-columns: 1fr;
+    }
+
+    .upload-cta {
+      padding: 32px 24px;
+    }
+
+    .upload-cta h2 {
+      font-size: 28px;
+    }
+  }
+</style>
+
+<script>
+  // Search and filter functionality
+  const searchInput = document.getElementById('search-skills');
+  const categoryFilter = document.getElementById('category-filter');
+  const sortBy = document.getElementById('sort-by');
+
+  if (searchInput && categoryFilter && sortBy) {
+    const filterSkills = () => {
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedCategory = categoryFilter.value;
+      const cards = document.querySelectorAll('.skill-card');
+
+      cards.forEach(card => {
+        const name = card.querySelector('.skill-name').textContent.toLowerCase();
+        const description = card.querySelector('.skill-description').textContent.toLowerCase();
+        const category = card.dataset.category || '';
+
+        const matchesSearch = !searchTerm || name.includes(searchTerm) || description.includes(searchTerm);
+        const matchesCategory = !selectedCategory || category === selectedCategory;
+
+        card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
+      });
+    };
+
+    searchInput.addEventListener('input', filterSkills);
+    categoryFilter.addEventListener('change', filterSkills);
+  }
+</script>

@@ -1,0 +1,490 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="CoderClaw vs Alternatives — Copilot, Cursor, Claude"
+  description="See how CoderClaw compares to GitHub Copilot, Cursor, and Claude. CoderClaw is the only framework built for autonomous agents, sub-agents, and full mesh orchestration."
+  canonicalUrl="https://coderclaw.ai/docs/coderclaw-vs-alternatives"
+>
+  <main class="docs-container">
+    <aside class="docs-sidebar">
+      <div class="sidebar-group">
+        <h3 class="sidebar-title">Getting Started</h3>
+        <nav class="sidebar-nav">
+          <a href="/docs/getting-started" class="sidebar-link">Quick Start</a>
+          <a href="/docs/getting-started#installation" class="sidebar-link">Installation</a>
+          <a href="/docs/getting-started#first-agent" class="sidebar-link">Your First Agent</a>
+        </nav>
+      </div>
+
+      <div class="sidebar-group">
+        <h3 class="sidebar-title">Guides</h3>
+        <nav class="sidebar-nav">
+          <a href="/docs/guides" class="sidebar-link">All Guides</a>
+          <a href="/docs/guides#agents" class="sidebar-link">Creating Agents</a>
+          <a href="/docs/guides#subagents" class="sidebar-link">Sub-Agents</a>
+          <a href="/docs/guides#orchestration" class="sidebar-link">Mesh Orchestration</a>
+        </nav>
+      </div>
+
+      <div class="sidebar-group">
+        <h3 class="sidebar-title">Resources</h3>
+        <nav class="sidebar-nav">
+          <a href="/docs/coderclaw-vs-alternatives" class="sidebar-link active">vs Alternatives</a>
+          <a href="/docs/api-reference" class="sidebar-link">API Reference</a>
+          <a href="/docs/examples" class="sidebar-link">Examples</a>
+          <a href="/blog" class="sidebar-link">Blog</a>
+        </nav>
+      </div>
+    </aside>
+
+    <article class="docs-content">
+      <h1>CoderClaw vs Alternatives</h1>
+
+      <p class="lead">
+        Not all AI coding tools are built the same. Here's how CoderClaw compares to GitHub Copilot,
+        Cursor, and Claude — and why CoderClaw is the only choice when you need autonomous, orchestrated agents.
+      </p>
+
+      <section>
+        <h2>The Core Difference</h2>
+        <p>
+          Copilot, Cursor, and Claude are <strong>code assistants</strong> — they wait for you to ask,
+          then generate a suggestion. CoderClaw is an <strong>autonomous agent framework</strong> — it
+          takes a goal, breaks it down, spins up sub-agents, and completes real work while you focus
+          on outcomes.
+        </p>
+        <p>
+          The mental model shift: you stop being a developer who uses AI tools, and start being a
+          manager who directs intelligent agents.
+        </p>
+      </section>
+
+      <section>
+        <h2>Feature Comparison</h2>
+
+        <div class="table-wrapper">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th class="highlight">CoderClaw</th>
+                <th>GitHub Copilot</th>
+                <th>Cursor</th>
+                <th>Claude</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Autonomous agents</td>
+                <td class="highlight check">✓</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+              </tr>
+              <tr>
+                <td>Sub-agent orchestration</td>
+                <td class="highlight check">✓</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+              </tr>
+              <tr>
+                <td>Mesh networking (Builderforce.ai)</td>
+                <td class="highlight check">✓</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+              </tr>
+              <tr>
+                <td>Runs tasks while you sleep</td>
+                <td class="highlight check">✓</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+              </tr>
+              <tr>
+                <td>IDE integration</td>
+                <td class="highlight check">✓</td>
+                <td class="check">✓</td>
+                <td class="check">✓</td>
+                <td class="cross">✗</td>
+              </tr>
+              <tr>
+                <td>In-line code completion</td>
+                <td class="cross">✗</td>
+                <td class="check">✓</td>
+                <td class="check">✓</td>
+                <td class="cross">✗</td>
+              </tr>
+              <tr>
+                <td>Multi-model support</td>
+                <td class="highlight check">✓</td>
+                <td class="cross">✗</td>
+                <td class="check">✓</td>
+                <td class="cross">✗</td>
+              </tr>
+              <tr>
+                <td>Custom skills / tools</td>
+                <td class="highlight check">✓</td>
+                <td class="cross">✗</td>
+                <td class="partial">~</td>
+                <td class="cross">✗</td>
+              </tr>
+              <tr>
+                <td>CLI-first workflow</td>
+                <td class="highlight check">✓</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+                <td class="partial">~</td>
+              </tr>
+              <tr>
+                <td>Open / hackable install</td>
+                <td class="highlight check">✓</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+              </tr>
+              <tr>
+                <td>Business outcome focus</td>
+                <td class="highlight check">✓</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>CoderClaw vs GitHub Copilot</h2>
+        <p>
+          Copilot is a productivity booster — it makes writing code faster by suggesting completions
+          as you type. That's valuable, but it's fundamentally reactive. You drive every line.
+        </p>
+        <p>
+          CoderClaw is proactive. You describe what needs to happen — <em>"refactor the auth module,
+          write tests, and open a PR"</em> — and the agent handles it end-to-end. CoderClaw can also
+          run overnight jobs, spawn parallel sub-agents for large tasks, and report back results via
+          Builderforce.ai.
+        </p>
+        <p>
+          <strong>Choose Copilot if</strong> you want autocomplete inside your editor.<br />
+          <strong>Choose CoderClaw if</strong> you want an agent that completes whole tasks.
+        </p>
+      </section>
+
+      <section>
+        <h2>CoderClaw vs Cursor</h2>
+        <p>
+          Cursor is an AI-native editor with strong context awareness. It can read your codebase and
+          make multi-file edits. It's a step beyond Copilot — but you're still in the driver's seat
+          at all times.
+        </p>
+        <p>
+          CoderClaw adds the orchestration layer that Cursor lacks. With CoderClaw you can define
+          skills, wire agents together via Builderforce.ai mesh, and run complex pipelines that span
+          multiple repositories, services, and environments — entirely unattended.
+        </p>
+        <p>
+          <strong>Choose Cursor if</strong> you want a smarter editor.<br />
+          <strong>Choose CoderClaw if</strong> you want agents that operate independently.
+        </p>
+      </section>
+
+      <section>
+        <h2>CoderClaw vs Claude</h2>
+        <p>
+          Claude (via Claude.ai or the API) is a powerful conversational AI. Developers use it for
+          architectural discussions, code review, and problem-solving in chat. With Claude's computer
+          use and code execution features it can take some direct actions, but it requires manual
+          supervision.
+        </p>
+        <p>
+          CoderClaw is built on top of models like Claude (and others). It wraps the model in an
+          agent framework with persistent context, custom skills, mesh networking, and an opinionated
+          CLI workflow — turning raw model capabilities into a production-ready autonomous coding
+          system.
+        </p>
+        <p>
+          <strong>Choose Claude if</strong> you want to chat your way through a problem.<br />
+          <strong>Choose CoderClaw if</strong> you want that same intelligence working autonomously on your codebase.
+        </p>
+      </section>
+
+      <section>
+        <h2>Get Started</h2>
+        <ul class="docs-list">
+          <li><a href="/docs/getting-started">Quick start guide</a> — up and running in minutes</li>
+          <li><a href="/docs/guides">Comprehensive guides</a> — agents, sub-agents, orchestration</li>
+          <li><a href="/docs/examples">Examples</a> — real-world CoderClaw workflows</li>
+          <li><a href="https://builderforce.ai" target="_blank" rel="noopener">Builderforce dashboard</a> — manage your mesh</li>
+        </ul>
+      </section>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  .docs-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 48px;
+  }
+
+  .docs-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sidebar-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    list-style: none;
+  }
+
+  .sidebar-link {
+    padding: 8px 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: background 0.2s ease, color 0.2s ease;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar-link:hover {
+    background: var(--surface-interactive);
+    color: var(--text-primary);
+  }
+
+  .sidebar-link.active {
+    background: var(--surface-interactive);
+    border-left-color: var(--coral-bright);
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .docs-content {
+    min-width: 0;
+  }
+
+  .docs-content h1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+
+  .lead {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  .docs-content section {
+    margin-bottom: 48px;
+  }
+
+  .docs-content section:last-child {
+    margin-bottom: 0;
+  }
+
+  .docs-content h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    margin-top: 32px;
+  }
+
+  .docs-content p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.7;
+  }
+
+  .docs-content strong {
+    color: var(--text-primary);
+  }
+
+  .docs-content em {
+    color: var(--cyan-bright);
+    font-style: normal;
+  }
+
+  .docs-content a {
+    color: var(--coral-bright);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .docs-content a:hover {
+    color: var(--coral-mid);
+    text-decoration: underline;
+  }
+
+  .docs-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 24px 0;
+  }
+
+  .docs-list li {
+    padding-left: 24px;
+    position: relative;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+
+  .docs-list li:before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--coral-bright);
+    font-weight: bold;
+  }
+
+  /* Comparison table */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 24px 0;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .comparison-table thead tr {
+    background: var(--surface-card);
+  }
+
+  .comparison-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .comparison-table th.highlight {
+    color: var(--coral-bright);
+  }
+
+  .comparison-table td {
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+    vertical-align: middle;
+  }
+
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .comparison-table tr:hover td {
+    background: var(--surface-interactive);
+  }
+
+  .comparison-table td.highlight {
+    background: rgba(77, 158, 255, 0.05);
+  }
+
+  .comparison-table tr:hover td.highlight {
+    background: rgba(77, 158, 255, 0.1);
+  }
+
+  .comparison-table td.check {
+    color: var(--cyan-bright);
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .comparison-table td.cross {
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+
+  .comparison-table td.partial {
+    color: var(--text-secondary);
+    font-size: 16px;
+  }
+
+  @media (max-width: 1024px) {
+    .docs-container {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .docs-sidebar {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      top: auto;
+    }
+
+    .docs-content h1 {
+      font-size: 36px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .docs-container {
+      padding: 24px 16px;
+      gap: 24px;
+    }
+
+    .docs-sidebar {
+      grid-template-columns: 1fr;
+    }
+
+    .docs-content h1 {
+      font-size: 28px;
+    }
+
+    .docs-content h2 {
+      font-size: 22px;
+    }
+
+    .lead {
+      font-size: 16px;
+    }
+  }
+</style>

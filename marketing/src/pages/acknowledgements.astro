@@ -1,0 +1,413 @@
+---
+import Layout from '../layouts/Layout.astro';
+import InstallCommand from '../components/InstallCommand.astro';
+
+const packages = [
+  { name: 'lit', description: 'Reactive web components powering the dashboard UI.', url: 'https://lit.dev' },
+  { name: '@agentclientprotocol/sdk', description: 'Agent Client Protocol — structured agent ↔ gateway communication.', url: 'https://github.com/agentclientprotocol' },
+  { name: 'typescript', description: 'Strongly-typed JavaScript across the entire runtime.', url: 'https://www.typescriptlang.org' },
+  { name: 'zod', description: 'Runtime schema validation for configs, tools, and payloads.', url: 'https://zod.dev' },
+  { name: 'express', description: 'HTTP server powering the gateway REST surface.', url: 'https://expressjs.com' },
+  { name: 'ws', description: 'WebSocket transport between the dashboard and gateway.', url: 'https://github.com/websockets/ws' },
+  { name: 'yaml', description: 'Project configuration, rules, and context persistence.', url: 'https://eemeli.org/yaml/' },
+  { name: 'playwright-core', description: 'Headless browser control for web-scraping and automation skills.', url: 'https://playwright.dev' },
+  { name: 'sharp', description: 'Fast image processing for media-understanding pipelines.', url: 'https://sharp.pixelplumbing.com' },
+  { name: 'croner', description: 'Lightweight cron scheduler for recurring agent runs.', url: 'https://github.com/hexagon/croner' },
+  { name: 'commander', description: 'CLI argument parsing for the coderclaw command.', url: 'https://github.com/tj/commander.js' },
+  { name: 'undici', description: 'High-performance HTTP client for provider integrations.', url: 'https://undici.nodejs.org' },
+  { name: 'vitest', description: 'Fast unit and integration testing framework.', url: 'https://vitest.dev' },
+  { name: 'pdfjs-dist', description: 'PDF parsing support for document-understanding skills.', url: 'https://mozilla.github.io/pdf.js/' },
+  { name: '@sinclair/typebox', description: 'JSON schema generation for typed tool definitions.', url: 'https://github.com/sinclairzx81/typebox' },
+  { name: '@slack/bolt', description: 'Slack channel integration.', url: 'https://slack.dev/bolt-js/' },
+  { name: 'grammy', description: 'Telegram bot framework behind the Telegram channel.', url: 'https://grammy.dev' },
+  { name: 'markdown-it', description: 'Markdown rendering in the dashboard chat view.', url: 'https://markdown-it.github.io' },
+  { name: 'astro', description: 'The framework powering coderclaw.ai itself.', url: 'https://astro.build' },
+  { name: 'drizzle-orm', description: 'Type-safe ORM used in Builderforce for PostgreSQL.', url: 'https://orm.drizzle.team' },
+  { name: 'hono', description: 'Edge-first web framework for the Builderforce API.', url: 'https://hono.dev' },
+];
+
+const differences = [
+  {
+    title: 'Deep Code Knowledge',
+    body: 'AST parsing, semantic code maps, dependency graphs, cross-file reference tracking, and Git history awareness — persisted to .coderClaw/.',
+  },
+  {
+    title: 'Multi-Agent Orchestration',
+    body: '7 built-in specialist roles (Architect, Developer, Reviewer, Tester, Debugger, Refactorer, Documenter) with dynamic task lifecycle management and formal execution state machines.',
+  },
+  {
+    title: 'Full Dev Lifecycle',
+    body: 'PRD → Architecture → Task breakdown → Code → Review → Test → Debug → Refactor — all orchestrated in a single runtime, no IDE required.',
+  },
+  {
+    title: 'Builderforce Integration',
+    body: 'REST API at api.builderforce.ai for multi-tenant project and task management, agent registration, execution tracking, and audit trails — powered by Cloudflare Workers + Neon PostgreSQL (Builderforce replaces CoderClawLink).',
+  },
+  {
+    title: 'Self-Hosted & Open',
+    body: 'Your code stays on your machine. MIT-licensed. No IDE tether, no vendor cloud, no subscription ceiling.',
+  },
+  {
+    title: 'Channel-Agnostic',
+    body: 'Inherits all of OpenClaw\'s channel integrations — trigger coding workflows from WhatsApp, Telegram, Slack, or Discord just as easily as from the terminal.',
+  },
+];
+---
+
+<Layout
+  title="Acknowledgements — CoderClaw"
+  description="CoderClaw's roots, key open-source packages, and the people who made it possible."
+  canonicalUrl="https://coderclaw.ai/acknowledgements"
+>
+  <main class="ack-main">
+
+    <!-- Hero -->
+    <section class="ack-hero">
+      <h1 class="ack-title">Acknowledgements</h1>
+      <p class="ack-sub">
+        CoderClaw wouldn't exist without giants to stand on.
+        Here's where we came from and who we thank.
+      </p>
+    </section>
+
+    <!-- OpenClaw fork credit -->
+    <section class="ack-section card-section">
+      <div class="card-accent">
+        <div class="card-inner">
+          <h2 class="card-title">🦞 Built on OpenClaw</h2>
+          <p>
+            CoderClaw started as a fork of <a href="https://openclaw.ai" target="_blank" rel="noopener">OpenClaw</a> —
+            the fantastic open-source personal AI assistant built by the openclaw team.
+            OpenClaw gave us a rock-solid foundation: a battle-tested gateway runtime,
+            multi-channel connectivity (WhatsApp, Telegram, Slack, Discord, Signal, iMessage…),
+            a reactive Lit-based dashboard UI, the plugin&nbsp;/&nbsp;skills infrastructure, and an opinionated project
+            structure we could build on immediately.
+          </p>
+          <div class="callout">
+            <strong>Thank you</strong> to every contributor at&nbsp;
+            <a href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener">
+              github.com/openclaw/openclaw
+            </a>
+            &nbsp;for the head-start. CoderClaw would not exist without your work.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How CoderClaw differs -->
+    <section class="ack-section">
+      <h2 class="section-heading">🚀 How CoderClaw Extends OpenClaw</h2>
+      <p class="section-sub">
+        CoderClaw kept everything that makes OpenClaw great and added a focused
+        developer-first orchestration layer on top.
+      </p>
+      <div class="diff-grid">
+        {differences.map(d => (
+          <div class="diff-card">
+            <h3 class="diff-title">{d.title}</h3>
+            <p class="diff-body">{d.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Install commands -->
+    <section class="ack-section">
+      <h2 class="section-heading">📦 Get Started</h2>
+      <p class="section-sub">Node ≥ 22 required.</p>
+      <div class="cmd-stack">
+        <InstallCommand command="npm install -g coderclaw@latest" label="npm" comment="# Install CoderClaw" />
+        <InstallCommand command="pnpm add -g coderclaw@latest" label="pnpm" />
+        <InstallCommand command="coderclaw onboard --install-daemon" label="Onboard" comment="# Meet your lobster" />
+      </div>
+    </section>
+
+    <!-- Open-source packages -->
+    <section class="ack-section">
+      <h2 class="section-heading">📚 Open-Source Packages</h2>
+      <p class="section-sub">
+        CoderClaw is powered by an excellent ecosystem of open-source projects.
+        We're grateful to every maintainer.
+      </p>
+      <div class="pkg-grid">
+        {packages.map(pkg => (
+          <div class="pkg-card">
+            <a href={pkg.url} target="_blank" rel="noopener" class="pkg-name">{pkg.name}</a>
+            <p class="pkg-desc">{pkg.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Built by -->
+    <section class="ack-section card-section">
+      <div class="card-accent">
+        <div class="card-inner">
+          <h2 class="card-title">👤 Built By</h2>
+          <div class="built-by-row">
+            <a href="https://myvideoresu.me/resumes/seanhogg" target="_blank" rel="noopener" class="built-by-name">
+              Sean Hogg
+            </a>
+            <span class="sep">·</span>
+            <span class="built-by-bio">Developer, architect, and maintainer of CoderClaw.</span>
+          </div>
+          <div style="margin-top: 12px;">
+            <a href="https://github.com/SeanHogg" target="_blank" rel="noopener" class="link-muted">GitHub</a>
+            <span class="sep">·</span>
+            <a href="https://myvideoresu.me/resumes/seanhogg" target="_blank" rel="noopener" class="link-muted">Resume</a>
+            <span class="sep">·</span>
+            <a href="/contact" class="link-muted">Contact</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- License -->
+    <section class="ack-section">
+      <h2 class="section-heading">⚖️ License</h2>
+      <p class="section-sub">
+        CoderClaw is released under the
+        <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT License</a>.
+        Use it, fork it, ship it.
+      </p>
+    </section>
+
+  </main>
+</Layout>
+
+<style>
+  .ack-main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+  }
+
+  .ack-hero {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .ack-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+
+  .ack-sub {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .ack-section {
+    margin-bottom: 56px;
+  }
+
+  .section-heading {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .section-sub {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  .section-sub a,
+  p a {
+    color: var(--coral-bright);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .section-sub a:hover,
+  p a:hover {
+    color: var(--cyan-bright);
+  }
+
+  /* Card accent */
+  .card-accent {
+    border: 1px solid var(--border-accent);
+    border-radius: 16px;
+    background: var(--surface-coral-soft);
+    overflow: hidden;
+  }
+
+  .card-inner {
+    padding: 28px 32px;
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+  }
+
+  .card-inner p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .callout {
+    background: var(--surface-interactive);
+    border-left: 3px solid var(--cyan-bright);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .callout a {
+    color: var(--coral-bright);
+    text-decoration: none;
+  }
+
+  .callout a:hover {
+    color: var(--cyan-bright);
+  }
+
+  /* Differences grid */
+  .diff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .diff-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s ease;
+  }
+
+  .diff-card:hover {
+    border-color: var(--border-accent);
+  }
+
+  .diff-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--coral-bright);
+    margin-bottom: 8px;
+  }
+
+  .diff-body {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* Install command stack */
+  .cmd-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Package grid */
+  .pkg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+
+  .pkg-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 16px;
+    transition: border-color 0.2s ease;
+  }
+
+  .pkg-card:hover {
+    border-color: var(--border-accent);
+  }
+
+  .pkg-name {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--cyan-bright);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 6px;
+    transition: color 0.2s ease;
+  }
+
+  .pkg-name:hover {
+    color: var(--coral-bright);
+  }
+
+  .pkg-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Built by */
+  .built-by-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .built-by-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--coral-bright);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .built-by-name:hover {
+    color: var(--cyan-bright);
+  }
+
+  .built-by-bio {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+
+  .sep {
+    color: var(--text-muted);
+  }
+
+  .link-muted {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .link-muted:hover {
+    color: var(--coral-bright);
+  }
+
+  @media (max-width: 640px) {
+    .card-inner {
+      padding: 20px;
+    }
+
+    .diff-grid,
+    .pkg-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

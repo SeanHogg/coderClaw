@@ -1,0 +1,403 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="API Reference - CoderClaw Docs" description="Complete CoderClaw API reference — agents, tasks, skills, Builderforce.ai mesh networking, and all configuration options documented in full.">
+  <main class="docs-container">
+    <aside class="docs-sidebar">
+      <div class="sidebar-group">
+        <h3 class="sidebar-title">Getting Started</h3>
+        <nav class="sidebar-nav">
+          <a href="/docs/getting-started" class="sidebar-link">Quick Start</a>
+          <a href="/docs/getting-started#installation" class="sidebar-link">Installation</a>
+          <a href="/docs/getting-started#first-agent" class="sidebar-link">Your First Agent</a>
+        </nav>
+      </div>
+
+      <div class="sidebar-group">
+        <h3 class="sidebar-title">Guides</h3>
+        <nav class="sidebar-nav">
+          <a href="/docs/guides" class="sidebar-link">All Guides</a>
+          <a href="/docs/guides#agents" class="sidebar-link">Creating Agents</a>
+          <a href="/docs/guides#subagents" class="sidebar-link">Sub-Agents</a>
+          <a href="/docs/guides#orchestration" class="sidebar-link">Mesh Orchestration</a>
+        </nav>
+      </div>
+
+      <div class="sidebar-group">
+        <h3 class="sidebar-title">Resources</h3>
+        <nav class="sidebar-nav">
+          <a href="/docs/api-reference" class="sidebar-link active">API Reference</a>
+          <a href="/docs/examples" class="sidebar-link">Examples</a>
+          <a href="/blog" class="sidebar-link">Blog</a>
+        </nav>
+      </div>
+    </aside>
+
+    <article class="docs-content">
+      <h1>API Reference</h1>
+      
+      <p class="lead">
+        Complete API documentation for CoderClaw SDK and Builderforce.ai orchestration services.
+      </p>
+
+      <section>
+        <h2>Agent Class</h2>
+        <p>The main class for creating and managing autonomous agents.</p>
+
+        <div class="api-section">
+          <h3>Constructor</h3>
+          <div class="code-block">
+            <pre><code>{`new Agent(config: AgentConfig)`}</code></pre>
+          </div>
+          <p><strong>Parameters:</strong></p>
+          <ul class="docs-list">
+            <li><code>name</code> (string) - Unique agent identifier</li>
+            <li><code>model</code> (string) - LLM model to use</li>
+            <li><code>instructions</code> (string) - System prompt</li>
+            <li><code>tools</code> (Tool[]) - Available tools/functions</li>
+            <li><code>memory</code> (MemoryConfig) - Memory configuration</li>
+          </ul>
+        </div>
+
+        <div class="api-section">
+          <h3>Methods</h3>
+          
+          <h4>run(task: Task): Promise&lt;Result&gt;</h4>
+          <p>Execute a task with the agent.</p>
+          <div class="code-block">
+            <pre><code>{`const result = await agent.run({
+  task: 'Analyze this code',
+  input: codeString,
+  timeout: 30000
+});`}</code></pre>
+          </div>
+
+          <h4>addTool(tool: Tool): void</h4>
+          <p>Add a new tool/function to the agent's capabilities.</p>
+
+          <h4>setInstructions(instructions: string): void</h4>
+          <p>Update agent's system instructions.</p>
+
+          <h4>getState(): AgentState</h4>
+          <p>Get current agent state and metrics.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>SubAgent Class</h2>
+        <p>Create and manage sub-agents for parallel processing.</p>
+
+        <div class="api-section">
+          <h3>Constructor</h3>
+          <div class="code-block">
+            <pre><code>{`new SubAgent(config: SubAgentConfig)`}</code></pre>
+          </div>
+        </div>
+
+        <div class="api-section">
+          <h3>Methods</h3>
+          
+          <h4>spawn(count: number): Promise&lt;SubAgentInstance[]&gt;</h4>
+          <p>Create multiple sub-agent instances.</p>
+
+          <h4>dispatch(task: Task): Promise&lt;Result&gt;</h4>
+          <p>Dispatch a task to available sub-agents.</p>
+
+          <h4>waitAll(): Promise&lt;void&gt;</h4>
+          <p>Wait for all sub-agents to complete their tasks.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Orchestration API (Builderforce.ai)</h2>
+        <p>REST API at api.builderforce.ai for orchestrating agents through the mesh.</p>
+
+        <div class="api-section">
+          <h3>Endpoints</h3>
+
+          <h4>POST /api/agents</h4>
+          <p>Create a new agent.</p>
+          
+          <h4>GET /api/agents/:id</h4>
+          <p>Get agent details and status.</p>
+
+          <h4>POST /api/agents/:id/tasks</h4>
+          <p>Submit a task to an agent.</p>
+
+          <h4>GET /api/tasks/:taskId</h4>
+          <p>Get task status and results.</p>
+
+          <h4>GET /api/mesh/status</h4>
+          <p>Get mesh network status and connected agents.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Type Definitions</h2>
+
+        <div class="api-section">
+          <h3>AgentConfig</h3>
+          <div class="code-block">
+            <pre><code>{`interface AgentConfig {
+  name: string;
+  model: string;
+  instructions: string;
+  tools?: Tool[];
+  memory?: MemoryConfig;
+  timeout?: number;
+}`}</code></pre>
+          </div>
+        </div>
+
+        <div class="api-section">
+          <h3>Task</h3>
+          <div class="code-block">
+            <pre><code>{`interface Task {
+  task: string;
+  input?: any;
+  timeout?: number;
+  priority?: 'low' | 'normal' | 'high';
+}`}</code></pre>
+          </div>
+        </div>
+
+        <div class="api-section">
+          <h3>Result</h3>
+          <div class="code-block">
+            <pre><code>{`interface Result {
+  success: boolean;
+  output: any;
+  error?: string;
+  executionTime: number;
+  tokens?: {
+    input: number;
+    output: number;
+  };
+}`}</code></pre>
+          </div>
+        </div>
+      </section>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  .docs-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 48px;
+  }
+
+  .docs-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sidebar-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    list-style: none;
+  }
+
+  .sidebar-link {
+    padding: 8px 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: background 0.2s ease, color 0.2s ease;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar-link:hover {
+    background: var(--surface-interactive);
+    color: var(--text-primary);
+  }
+
+  .sidebar-link.active {
+    background: var(--surface-interactive);
+    border-left-color: var(--coral-bright);
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .docs-content {
+    min-width: 0;
+  }
+
+  .docs-content h1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+
+  .lead {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  .docs-content section {
+    margin-bottom: 48px;
+  }
+
+  .docs-content section:last-child {
+    margin-bottom: 0;
+  }
+
+  .docs-content h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    margin-top: 32px;
+  }
+
+  .docs-content h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .docs-content h4 {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    color: var(--coral-bright);
+  }
+
+  .docs-content p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.7;
+  }
+
+  .api-section {
+    margin: 24px 0;
+  }
+
+  .code-block {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0 24px 0;
+    overflow-x: auto;
+  }
+
+  .code-block pre {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .code-block code {
+    color: var(--text-secondary);
+  }
+
+  .docs-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 24px 0;
+  }
+
+  .docs-list li {
+    padding-left: 24px;
+    position: relative;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+
+  .docs-list li:before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--coral-bright);
+    font-weight: bold;
+  }
+
+  .docs-list code {
+    background: var(--surface-card);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    color: var(--coral-bright);
+    font-size: 14px;
+  }
+
+  @media (max-width: 1024px) {
+    .docs-container {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .docs-sidebar {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      top: auto;
+    }
+
+    .docs-content h1 {
+      font-size: 36px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .docs-container {
+      padding: 24px 16px;
+      gap: 24px;
+    }
+
+    .docs-sidebar {
+      grid-template-columns: 1fr;
+    }
+
+    .docs-content h1 {
+      font-size: 28px;
+    }
+
+    .docs-content h2 {
+      font-size: 22px;
+    }
+
+    .lead {
+      font-size: 16px;
+    }
+  }
+</style>

@@ -1,0 +1,38 @@
+name: Deploy Marketing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'marketing/**'
+      - '.github/workflows/deploy-marketing.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+        working-directory: marketing
+
+      - name: Build
+        run: bun run build
+        working-directory: marketing
+
+      - name: Deploy to Cloudflare Workers
+        run: npx wrangler deploy
+        working-directory: marketing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -1,0 +1,589 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Static page structure - content loads dynamically via JavaScript
+---
+
+<Layout title="Showcase � What People Are Building with CoderClaw" description="See what developers are building with CoderClaw autonomous agents. Real projects, workflows, and automations from the CoderClaw community.">
+  <div class="stars"></div>
+  <div class="nebula"></div>
+
+  <main class="container">
+    <header class="header">
+      <a href="/" class="back-link">? Back to home</a>
+      <h1 class="title">
+        <span class="claw-accent">?</span> What People Are Building
+      </h1>
+      <p class="subtitle">Real projects, real automation, real magic.</p>
+      <div class="filter-controls">
+        <button class="filter-toggle active" data-filter="coderclaw" aria-pressed="true">
+          CoderClaw Projects (<span id="coderclaw-count">0</span>)
+        </button>
+        <button class="filter-toggle" data-filter="all" aria-pressed="false">
+          All Projects (<span id="all-count">0</span>)
+        </button>
+      </div>
+      <div id="loading" class="loading-message">Loading projects...</div>
+    </header>
+
+    <div class="showcase-grid" id="showcase-grid">
+      <!-- Content loaded dynamically -->
+    </div>
+
+    <section class="cta-section">
+      <h2 class="cta-title">Built something cool?</h2>
+      <p class="cta-desc">Share your CoderClaw creation with the community</p>
+      <div class="cta-buttons">
+        <a href="https://twitter.com/intent/tweet?text=Check%20out%20what%20I%20built%20with%20%40coderclaw%21" target="_blank" rel="noopener" class="cta-btn cta-primary">Share on X</a>
+        <a href="https://coderclaw.ai/skills" target="_blank" rel="noopener" class="cta-btn cta-hub">Browse Skills</a>
+        <a href="https://discord.gg/9gUsc2sNG6" target="_blank" rel="noopener" class="cta-btn cta-secondary">Join Discord</a>
+      </div>
+    </section>
+
+    <p class="more-examples">
+      Looking for more? Check out <a href="https://docs.coderclaw.ai/start/showcase" target="_blank" rel="noopener">even more examples in our docs</a> ?
+    </p>
+
+    <footer class="footer">
+      <nav class="footer-nav">
+        <a href="/">Home</a>
+        <span class="footer-separator">�</span>
+        <a href="/blog">Blog</a>
+        <span class="footer-separator">�</span>
+        <a href="/shoutouts">Shoutouts</a>
+        <span class="footer-separator">�</span>
+        <a href="/integrations">Integrations</a>
+        <span class="footer-separator">�</span>
+        <a href="https://coderclaw.ai/trust/">Trust</a>
+      </nav>
+      <p>Built by coders</p>
+    </footer>
+  </main>
+</Layout>
+
+<style>
+  .stars {
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
+      radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.6), transparent),
+      radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.7), transparent),
+      radial-gradient(2px 2px at 200px 60px, rgba(0,229,204,0.6), transparent),
+      radial-gradient(1px 1px at 250px 150px, rgba(255,255,255,0.5), transparent),
+      radial-gradient(2px 2px at 300px 40px, rgba(255,77,77,0.4), transparent);
+    background-size: 350px 200px;
+    animation: twinkle 8s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.7; }
+  }
+
+  .nebula {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 20%, rgba(255, 77, 77, 0.12), transparent 50%),
+      radial-gradient(ellipse 60% 60% at 80% 30%, rgba(0, 229, 204, 0.08), transparent 50%),
+      radial-gradient(ellipse 90% 70% at 50% 90%, rgba(255, 77, 77, 0.06), transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+  }
+
+  .back-link:hover {
+    color: var(--coral-bright);
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .claw-accent {
+    color: var(--coral-bright);
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 24px;
+  }
+
+  .filter-controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .filter-toggle {
+    padding: 10px 20px;
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filter-toggle:hover {
+    border-color: var(--border-accent);
+    color: var(--text-primary);
+  }
+
+  .filter-toggle.active {
+    background: var(--coral-bright);
+    border-color: var(--coral-bright);
+    color: white;
+  }
+
+  .loading-message {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-secondary);
+    font-size: 16px;
+  }
+
+  .loading-message.hidden {
+    display: none;
+  }
+
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 56px;
+  }
+
+  .showcase-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-card-strong);
+    backdrop-filter: blur(8px);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .showcase-card:hover {
+    border-color: var(--coral-bright);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px var(--shadow-coral-soft);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--border-subtle);
+    background: var(--bg-elevated);
+    flex-shrink: 0;
+  }
+
+  .author-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .author-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+  }
+
+  .category-tag {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .likes {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .quote {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+    flex: 1;
+  }
+
+  .images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+
+  .tweet-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .view-link {
+    display: inline-block;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .showcase-card:hover .view-link {
+    color: var(--coral-bright);
+  }
+
+  .showcase-card.hidden {
+    display: none;
+  }
+
+  .showcase-grid.filter-coderclaw .showcase-card:not([data-type="coderclaw"]) {
+    display: none;
+  }
+
+  .cta-section {
+    text-align: center;
+    padding: 48px 24px;
+    border-radius: 20px;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-card-strong);
+    backdrop-filter: blur(12px);
+    margin-bottom: 48px;
+  }
+
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .cta-desc {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .cta-primary {
+    background: linear-gradient(135deg, var(--coral-bright) 0%, var(--coral-dark) 100%);
+    color: white;
+  }
+
+  .cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--shadow-coral-soft);
+  }
+
+  .cta-hub {
+    background: var(--surface-interactive);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .cta-hub:hover {
+    background: var(--surface-interactive-hover);
+    border-color: var(--coral-bright);
+  }
+
+  .cta-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .cta-secondary:hover {
+    border-color: var(--coral-bright);
+    color: var(--coral-bright);
+  }
+
+  .more-examples {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    font-size: 0.95rem;
+  }
+
+  .more-examples a {
+    color: var(--coral-bright);
+    text-decoration: none;
+  }
+
+  .more-examples a:hover {
+    text-decoration: underline;
+  }
+
+  .footer {
+    margin-top: auto;
+    padding-top: 48px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px 12px;
+    margin-bottom: 16px;
+  }
+
+  .footer-separator {
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 600px) {
+    .footer-nav {
+      gap: 6px 16px;
+    }
+    .footer-separator {
+      display: none;
+    }
+  }
+
+  .footer a {
+    color: var(--coral-bright);
+    text-decoration: none;
+  }
+
+  .footer a:hover {
+    color: var(--cyan-bright);
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 24px 16px;
+    }
+
+    .showcase-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .cta-btn {
+      width: 100%;
+      max-width: 280px;
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  const categoryLabels: Record<string, string> = {
+    'power-user': '?? Power User',
+    'automation': '? Automation',
+    'productivity': '?? Productivity',
+    'integration': '?? Integration',
+    'developer': '?? Developer',
+    'personal': '?? Personal',
+    'family': '???????? Family',
+    'smart-home': '?? Smart Home',
+    'creative': '?? Creative',
+    'hardware': '?? Hardware',
+    'general': '?? General',
+    'setup': '?? Setup',
+  };
+
+  interface Tweet {
+    id: string;
+    author: string;
+    quote: string;
+    likes: number;
+    images?: string[];
+  }
+
+  async function loadShowcase() {
+    const grid = document.getElementById('showcase-grid') as HTMLDivElement;
+    const loading = document.getElementById('loading') as HTMLDivElement;
+    const filterButtons = document.querySelectorAll('.filter-toggle');
+
+    try {
+      // Fetch showcase data from API endpoint
+      const response = await fetch('/api/showcase');
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch showcase data');
+      }
+
+      const allTweets: Tweet[] = await response.json();
+      
+      // Filter for CodercClaw mentions
+      const coderclawTweets = allTweets.filter(tweet => {
+        const text = `${tweet.quote} ${tweet.author}`.toLowerCase();
+        return text.includes('@coderclaw') || text.includes('#coderclaw');
+      });
+
+      // Render tweets
+      const renderTweets = (tweets: Tweet[], showAll: boolean = false) => {
+        grid.innerHTML = '';
+        const tweetsToRender = showAll ? allTweets : coderclawTweets;
+        
+        tweetsToRender.forEach(tweet => {
+          const hasCoderclaw = `${tweet.quote} ${tweet.author}`.toLowerCase().includes('@coderclaw') || 
+                               `${tweet.quote} ${tweet.author}`.toLowerCase().includes('#coderclaw');
+          
+          const card = document.createElement('a');
+          card.href = `https://x.com/${tweet.author}/status/${tweet.id}`;
+          card.target = '_blank';
+          card.rel = 'noopener';
+          card.className = `showcase-card ${hasCoderclaw ? 'has-coderclaw' : ''}`;
+          card.setAttribute('data-type', hasCoderclaw ? 'coderclaw' : 'other');
+          
+          let imagesHTML = '';
+          if (tweet.images && tweet.images.length > 0) {
+            imagesHTML = `
+              <div class="images">
+                ${tweet.images.map(img => `<img src="${img}" alt="Screenshot" class="tweet-image" loading="lazy" />`).join('')}
+              </div>
+            `;
+          }
+          
+          card.innerHTML = `
+            <div class="card-header">
+              <img src="https://unavatar.io/x/${tweet.author}" alt="${tweet.author}" class="avatar" loading="lazy" />
+              <div class="author-info">
+                <span class="author-name">@${tweet.author}</span>
+                <span class="category-tag">?? Tweet</span>
+              </div>
+              <span class="likes">?? ${tweet.likes}</span>
+            </div>
+            <p class="quote">${tweet.quote}</p>
+            ${imagesHTML}
+            <span class="view-link">View on X ?</span>
+          `;
+          
+          grid.appendChild(card);
+        });
+
+        // Update counts
+        (document.getElementById('coderclaw-count') as HTMLSpanElement).textContent = coderclawTweets.length.toString();
+        (document.getElementById('all-count') as HTMLSpanElement).textContent = allTweets.length.toString();
+      };
+
+      // Initial render with coderclaw filter
+      renderTweets(coderclawTweets, false);
+      grid.classList.add('filter-coderclaw');
+
+      // Setup filter buttons
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const filter = (button as HTMLElement).getAttribute('data-filter');
+          
+          // Update active state
+          filterButtons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+          });
+          button.classList.add('active');
+          button.setAttribute('aria-pressed', 'true');
+
+          // Update grid
+          if (filter === 'coderclaw') {
+            grid.classList.add('filter-coderclaw');
+          } else {
+            grid.classList.remove('filter-coderclaw');
+          }
+        });
+      });
+
+      // Hide loading message
+      loading.classList.add('hidden');
+    } catch (error) {
+      console.error('Error loading showcase:', error);
+      loading.textContent = 'Unable to load projects. Please try again later.';
+    }
+  }
+
+  // Load on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadShowcase);
+  } else {
+    loadShowcase();
+  }
+</script>

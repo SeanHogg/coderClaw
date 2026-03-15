@@ -1,0 +1,76 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Unsubscribe — CoderClaw"
+  description="Remove your email from the CoderClaw newsletter mailing list."
+  canonicalUrl="https://coderclaw.ai/unsubscribe"
+>
+  <main class="newsletter-main">
+    <section class="newsletter-hero">
+      <h1 class="newsletter-title">Unsubscribe</h1>
+      <p class="newsletter-desc">Enter your email address below and we'll remove you from future updates.</p>
+    </section>
+
+    <form class="newsletter-form" id="unsubscribe-form">
+      <input
+        type="email"
+        name="email"
+        placeholder="your@email.com"
+        required
+        class="newsletter-input"
+        aria-label="Email address"
+      />
+      <button type="submit" class="newsletter-btn">Unsubscribe</button>
+    </form>
+    <p id="newsletter-status" class="newsletter-status" aria-live="polite"></p>
+  </main>
+</Layout>
+
+<script>
+  const form = document.getElementById('unsubscribe-form');
+  const statusEl = document.getElementById('newsletter-status');
+  if (form instanceof HTMLFormElement && statusEl instanceof HTMLElement) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emailInput = form.querySelector('input[name="email"]');
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (!(emailInput instanceof HTMLInputElement) || !(submitButton instanceof HTMLButtonElement)) return;
+      const email = emailInput.value.trim();
+      if (!email) return;
+
+      statusEl.classList.remove('ok','error');
+      statusEl.textContent = 'Processing…';
+      submitButton.disabled = true;
+      try {
+        const res = await fetch('https://api.builderforce.ai/api/auth/newsletter/subscribers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, action: 'unsubscribe', source: 'coderclaw.ai' }),
+        });
+        if (!res.ok) throw new Error('Failed');
+        statusEl.classList.add('ok');
+        statusEl.textContent = 'You have been unsubscribed.';
+      } catch {
+        statusEl.classList.add('error');
+        statusEl.textContent = 'Unable to process your request right now.';
+        submitButton.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  /* reuse styles defined in index; fallback if not imported */
+  .newsletter-main { max-width: 600px; margin: 0 auto; padding: 60px 24px; }
+  .newsletter-hero { text-align: center; margin-bottom: 32px; }
+  .newsletter-title { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 2.5rem); font-weight:700; }
+  .newsletter-desc { font-size:1.1rem; color:var(--text-secondary); }
+  .newsletter-form { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  .newsletter-input { flex:1 1 250px; padding:12px; border-radius:8px; border:1px solid var(--border-subtle); }
+  .newsletter-btn { padding:12px 24px; border:none; border-radius:8px; background-color:var(--coral-bright); color:#fff; cursor:pointer; }
+  .newsletter-status { margin-top:16px; text-align:center; }
+  .ok { color:var(--success-text,#065f46); }
+  .error { color:var(--error-text,#991b1b); }
+</style>

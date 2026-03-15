@@ -138,6 +138,7 @@ This repository is organized so that the **CoderClaw product** (CLI, gateway, ag
 | **`product/`** | All CoderClaw product code: CLI, gateway, agents, extensions, skills, tests. This is the main package you run and extend. |
 | **`apps/`**    | Companion apps (e.g. Android, iOS, macOS) — shared, built separately from the product. |
 | **`assets/`**  | Shared assets (images, branding). Used by product and apps. |
+| **`marketing/`** | Marketing site for [coderclaw.ai](https://coderclaw.ai) (Astro -> Cloudflare Workers via Wrangler). |
 | **`docs-site/`** | Documentation site (now inside this repo). Source for [docs.coderclaw.ai](https://docs.coderclaw.ai). |
 
 When you run CoderClaw (e.g. `coderclaw gateway` or `coderclaw agent`), it **only creates or updates files** in:

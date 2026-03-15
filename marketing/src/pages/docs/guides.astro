@@ -1,0 +1,314 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Guides - CoderClaw Docs" description="In-depth guides for CoderClaw — learn to create agents, wire up sub-agents, configure mesh orchestration, and build real-world autonomous workflows.">
+  <main class="docs-container">
+    <aside class="docs-sidebar">
+      <div class="sidebar-group">
+        <h3 class="sidebar-title">Getting Started</h3>
+        <nav class="sidebar-nav">
+          <a href="/docs/getting-started" class="sidebar-link">Quick Start</a>
+          <a href="/docs/getting-started#installation" class="sidebar-link">Installation</a>
+          <a href="/docs/getting-started#first-agent" class="sidebar-link">Your First Agent</a>
+        </nav>
+      </div>
+
+      <div class="sidebar-group">
+        <h3 class="sidebar-title">Guides</h3>
+        <nav class="sidebar-nav">
+          <a href="/docs/guides" class="sidebar-link active">All Guides</a>
+          <a href="/docs/guides#agents" class="sidebar-link">Creating Agents</a>
+          <a href="/docs/guides#subagents" class="sidebar-link">Sub-Agents</a>
+          <a href="/docs/guides#orchestration" class="sidebar-link">Mesh Orchestration</a>
+        </nav>
+      </div>
+
+      <div class="sidebar-group">
+        <h3 class="sidebar-title">Resources</h3>
+        <nav class="sidebar-nav">
+          <a href="/docs/api-reference" class="sidebar-link">API Reference</a>
+          <a href="/docs/examples" class="sidebar-link">Examples</a>
+          <a href="/blog" class="sidebar-link">Blog</a>
+        </nav>
+      </div>
+    </aside>
+
+    <article class="docs-content">
+      <h1>Comprehensive Guides</h1>
+      
+      <p class="lead">
+        Master the advanced features of CoderClaw with our in-depth guides and tutorials.
+      </p>
+
+      <section id="agents">
+        <h2>Creating Agents</h2>
+        <p>
+          Agents are the core building blocks of CoderClaw. Learn how to create, configure, and deploy autonomous agents that can handle complex coding tasks.
+        </p>
+
+        <h3>Agent Configuration</h3>
+        <p>
+          When creating an agent, you can configure several parameters to control its behavior:
+        </p>
+        <ul class="docs-list">
+          <li><strong>Model:</strong> The LLM to use (e.g., claude-opus, gpt-4)</li>
+          <li><strong>Instructions:</strong> System prompt defining agent behavior</li>
+          <li><strong>Tools:</strong> Available functions the agent can call</li>
+          <li><strong>Memory:</strong> How the agent remembers previous interactions</li>
+          <li><strong>Timeout:</strong> Maximum execution time</li>
+        </ul>
+
+        <h3>Best Practices</h3>
+        <ul class="docs-list">
+          <li>Write clear, concise instructions for your agents</li>
+          <li>Give agents specific tools to reduce hallucination</li>
+          <li>Monitor agent performance and iterate on instructions</li>
+          <li>Use sub-agents for complex, multi-step tasks</li>
+        </ul>
+      </section>
+
+      <section id="subagents">
+        <h2>Working with Sub-Agents</h2>
+        <p>
+          Sub-agents allow you to break complex tasks into smaller, manageable pieces. A parent agent can create and orchestrate multiple sub-agents working in parallel.
+        </p>
+
+        <h3>When to Use Sub-Agents</h3>
+        <ul class="docs-list">
+          <li>Breaking down large projects into independent components</li>
+          <li>Handling specialized subtasks in parallel</li>
+          <li>Creating hierarchical task structures</li>
+          <li>Improving performance through parallelization</li>
+        </ul>
+
+        <h3>Creating Sub-Agents</h3>
+        <p>
+          Sub-agents are created dynamically by parent agents as needed. The parent agent communicates with sub-agents through defined interfaces and monitors their progress.
+        </p>
+      </section>
+
+      <section id="orchestration">
+        <h2>Mesh Orchestration with Builderforce.ai</h2>
+        <p>
+          Builderforce.ai is the mesh orchestration layer that connects and coordinates multiple agents, projects, and services (api.builderforce.ai).
+        </p>
+
+        <h3>Core Concepts</h3>
+        <ul class="docs-list">
+          <li><strong>Mesh Network:</strong> A network of interconnected agents</li>
+          <li><strong>Service Discovery:</strong> Automatic agent discovery and registration</li>
+          <li><strong>Message Bus:</strong> Reliable inter-agent communication</li>
+          <li><strong>Orchestration Engine:</strong> Centralized coordination</li>
+        </ul>
+
+        <h3>Getting Started with Builderforce</h3>
+        <p>
+          Access the Builderforce dashboard at <a href="https://builderforce.ai" target="_blank">builderforce.ai</a> to:
+        </p>
+        <ul class="docs-list">
+          <li>Visualize your agent network</li>
+          <li>Monitor agent health and performance</li>
+          <li>Configure mesh topology</li>
+          <li>Manage deployments</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>More Resources</h2>
+        <p>
+          For detailed API documentation and examples, check out our <a href="/docs/api-reference">API Reference</a> and <a href="/docs/examples">Examples</a> sections.
+        </p>
+      </section>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  .docs-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 48px;
+  }
+
+  .docs-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sidebar-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    list-style: none;
+  }
+
+  .sidebar-link {
+    padding: 8px 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: background 0.2s ease, color 0.2s ease;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar-link:hover {
+    background: var(--surface-interactive);
+    color: var(--text-primary);
+  }
+
+  .sidebar-link.active {
+    background: var(--surface-interactive);
+    border-left-color: var(--coral-bright);
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .docs-content {
+    min-width: 0;
+  }
+
+  .docs-content h1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+
+  .lead {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  .docs-content section {
+    margin-bottom: 48px;
+  }
+
+  .docs-content section:last-child {
+    margin-bottom: 0;
+  }
+
+  .docs-content h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    margin-top: 32px;
+  }
+
+  .docs-content h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .docs-content p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.7;
+  }
+
+  .docs-content a {
+    color: var(--coral-bright);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .docs-content a:hover {
+    color: var(--coral-mid);
+    text-decoration: underline;
+  }
+
+  .docs-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 24px 0;
+  }
+
+  .docs-list li {
+    padding-left: 24px;
+    position: relative;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+
+  .docs-list li:before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--coral-bright);
+    font-weight: bold;
+  }
+
+  @media (max-width: 1024px) {
+    .docs-container {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .docs-sidebar {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      top: auto;
+    }
+
+    .docs-content h1 {
+      font-size: 36px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .docs-container {
+      padding: 24px 16px;
+      gap: 24px;
+    }
+
+    .docs-sidebar {
+      grid-template-columns: 1fr;
+    }
+
+    .docs-content h1 {
+      font-size: 28px;
+    }
+
+    .docs-content h2 {
+      font-size: 22px;
+    }
+
+    .lead {
+      font-size: 16px;
+    }
+  }
+</style>
