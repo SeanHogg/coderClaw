@@ -40,6 +40,35 @@ export type ProjectContext = {
     tenantId?: number;
     /** CoderClawLink server URL */
     url?: string;
+    /** Runtime machine and tunnel profile persisted from registration/heartbeat. */
+    machineProfile?: {
+      machineName?: string;
+      machineIp?: string;
+      rootInstallDirectory?: string;
+      workspaceDirectory?: string;
+      gatewayPort?: number;
+      relayPort?: number;
+      tunnelUrl?: string;
+      tunnelStatus?: string;
+      networkMetadata?: Record<string, unknown>;
+    };
+    /** Project assignment context snapshot pulled from Builderforce. */
+    assignmentContext?: {
+      syncedAt?: string;
+      project?: {
+        id?: string;
+        key?: string;
+        name?: string;
+        rootWorkingDirectory?: string;
+        directoryPath?: string;
+      };
+      contextHints?: {
+        manifestFiles?: string[];
+        prdFiles?: string[];
+        taskFiles?: string[];
+        memoryFiles?: string[];
+      };
+    };
   };
   /**
    * Persona assignments for this claw.

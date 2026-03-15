@@ -13,6 +13,12 @@ import { randomUUID } from "node:crypto";
 import { WebSocket } from "ws";
 import { GatewayClient, type GatewayClientOptions } from "../gateway/client.js";
 import type { EventFrame } from "../gateway/protocol/index.js";
+import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
+import {
+  buildLocalMachineProfile,
+  mergeClawLinkContext,
+  type AssignmentContextResponse,
+} from "./clawlink-context.js";
 import { logDebug, logWarn } from "../logger.js";
 
 function extractChatText(message: unknown): string {
@@ -59,6 +65,8 @@ export type ClawLinkRelayOptions = {
   apiKey: string;
   /** Local coderClaw gateway WebSocket URL. Defaults to ws://127.0.0.1:18789 */
   gatewayUrl?: string;
+  /** Workspace path for updating .coderClaw/context.yaml with assignment metadata. */
+  workspaceDir?: string;
 };
 
 export class ClawLinkRelayService {
@@ -73,6 +81,7 @@ export class ClawLinkRelayService {
 
   private readonly upstreamWsUrl: string;
   private readonly heartbeatHttpUrl: string;
+  private readonly assignmentContextUrl: string;
   private readonly gatewayWsUrl: string;
 
   private dispatchTaskFromRelay(payload: {
@@ -128,6 +137,7 @@ export class ClawLinkRelayService {
       .replace(/\/$/, "");
     this.upstreamWsUrl = `${base}/api/claws/${opts.clawId}/upstream?key=${encodeURIComponent(opts.apiKey)}`;
     this.heartbeatHttpUrl = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${opts.clawId}/heartbeat?key=${encodeURIComponent(opts.apiKey)}`;
+    this.assignmentContextUrl = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${opts.clawId}/assignment-context?key=${encodeURIComponent(opts.apiKey)}`;
     this.gatewayWsUrl = opts.gatewayUrl ?? "ws://127.0.0.1:18789";
   }
 
@@ -168,6 +178,7 @@ export class ClawLinkRelayService {
       logWarn("[clawlink-relay] upstream connected");
       this.backoffMs = 1000;
       this.scheduleHeartbeat();
+      void this.syncAssignmentContext("ws-open");
     });
 
     ws.on("message", (raw) => {
@@ -363,6 +374,7 @@ export class ClawLinkRelayService {
           taskId,
           artifacts,
         });
+        void this.syncAssignmentContext(type);
         break;
       }
 
@@ -645,16 +657,60 @@ export class ClawLinkRelayService {
 
   private async sendHeartbeat(): Promise<void> {
     try {
+      const machineProfile = buildLocalMachineProfile({
+        workspaceDirectory: this.opts.workspaceDir,
+        rootInstallDirectory: process.cwd(),
+        gatewayPort: 18789,
+        tunnelUrl: process.env.CODERCLAW_PUBLIC_TUNNEL_URL,
+        tunnelStatus: process.env.CODERCLAW_PUBLIC_TUNNEL_URL ? "connected" : "none",
+      });
       await fetch(this.heartbeatHttpUrl, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           capabilities: ["chat", "tasks", "relay", "remote-dispatch"],
+          machineProfile,
         }),
         signal: AbortSignal.timeout(10_000),
       });
     } catch (err) {
       logDebug(`[clawlink-relay] heartbeat failed: ${String(err)}`);
+    }
+  }
+
+  private async syncAssignmentContext(reason: string): Promise<void> {
+    if (!this.opts.workspaceDir) return;
+    try {
+      const response = await fetch(this.assignmentContextUrl, {
+        method: "GET",
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!response.ok) {
+        logDebug(`[clawlink-relay] assignment-context ${reason} failed: ${response.status}`);
+        return;
+      }
+      const assignmentContext = (await response.json()) as AssignmentContextResponse;
+      const context = await loadProjectContext(this.opts.workspaceDir);
+      if (!context) return;
+
+      const machineProfile = buildLocalMachineProfile({
+        workspaceDirectory: this.opts.workspaceDir,
+        rootInstallDirectory: process.cwd(),
+        gatewayPort: 18789,
+        tunnelUrl: process.env.CODERCLAW_PUBLIC_TUNNEL_URL,
+        tunnelStatus: process.env.CODERCLAW_PUBLIC_TUNNEL_URL ? "connected" : "none",
+      });
+
+      const clawLink = mergeClawLinkContext({
+        existing: context.clawLink,
+        assignmentContext,
+        fallback: { instanceId: this.opts.clawId, url: this.opts.baseUrl },
+        machineProfile,
+      });
+
+      await updateProjectContextFields(this.opts.workspaceDir, { clawLink });
+    } catch (err) {
+      logDebug(`[clawlink-relay] assignment-context ${reason} failed: ${String(err)}`);
     }
   }
 }

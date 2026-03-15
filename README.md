@@ -28,6 +28,11 @@ More broadly, **coderclaw.ai** is a **self-healing AI engineering agent and orch
 
 **BuilderForce.ai integration:** CoderClaw can connect to **Builderforce.ai** for centralized project/task/agent management, workflow visibility, auditability, and human-in-the-loop control. Use BuilderForce as the orchestration portal while running agents locally for maximum privacy and control.
 
+When linked, coderClaw now performs a project-assignment handshake with Builderforce:
+- registration + heartbeat persist machine/network/tunnel metadata,
+- relay fetches `GET /api/claws/:id/assignment-context`,
+- `.coderClaw/context.yaml` is updated with assigned project metadata and context hints (manifest/PRD/tasks/memory paths) so task execution stays in the correct working context.
+
 ## � Versioning (Release Process)
 
 CoderClaw follows the **`YYYY.M.D[-beta.N]`** version scheme (e.g. `2026.3.11` or `2026.3.11-beta.1`).

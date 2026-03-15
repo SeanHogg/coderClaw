@@ -1,6 +1,7 @@
 import { confirm, note, password, select, spinner, text } from "@clack/prompts";
 import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
 import { readSharedEnvVar, upsertSharedEnvVar } from "../infra/env-file.js";
+import { buildLocalMachineProfile } from "../infra/clawlink-context.js";
 import { authenticateViaBrowser } from "./browser-auth-server.js";
 import { detectBrowserOpenSupport } from "./onboard-helpers.js";
 
@@ -314,6 +315,13 @@ export async function promptCoderClawLinkOnboarding(params: {
   let apiKey = "";
   let projectId = "";
   let projectAction: "created" | "updated" | "unknown" = "unknown";
+  const machineProfile = buildLocalMachineProfile({
+    workspaceDirectory: params.projectRoot,
+    rootInstallDirectory: process.cwd(),
+    gatewayPort: 18789,
+    tunnelUrl: process.env.CODERCLAW_PUBLIC_TUNNEL_URL,
+    tunnelStatus: process.env.CODERCLAW_PUBLIC_TUNNEL_URL ? "connected" : "none",
+  });
   try {
     const res = await clawLinkFetch<{
       claw: { id: number; name: string; slug: string };
@@ -321,7 +329,7 @@ export async function promptCoderClawLinkOnboarding(params: {
     }>(`${serverUrl}/api/claws`, {
       method: "POST",
       token: tenantJwt,
-      body: JSON.stringify({ name: clawName }),
+      body: JSON.stringify({ name: clawName, machineProfile }),
     });
     clawId = String(res.claw.id);
     clawSlug = res.claw.slug;
@@ -362,6 +370,7 @@ export async function promptCoderClawLinkOnboarding(params: {
         ...(projectId ? { projectId } : {}),
         tenantId,
         url: serverUrl,
+        machineProfile,
       },
     });
   } catch {}

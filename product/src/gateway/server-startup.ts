@@ -198,7 +198,12 @@ export async function startGatewaySidecars(params: {
       const projectId = ctx?.clawLink?.projectId ? Number(ctx.clawLink.projectId) : undefined;
 
       if (clawId) {
-        clawLinkRelay = new ClawLinkRelayService({ baseUrl, clawId: String(clawId), apiKey });
+        clawLinkRelay = new ClawLinkRelayService({
+          baseUrl,
+          clawId: String(clawId),
+          apiKey,
+          workspaceDir: params.defaultWorkspaceDir,
+        });
         clawLinkRelay.start();
         params.log.warn(`[clawlink] relay started for claw ${clawId}`);
         void syncCoderClawDirectoryOnStartup({
