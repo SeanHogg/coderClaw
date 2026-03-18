@@ -22,6 +22,12 @@ import {
   setGeminiApiKey,
   setOpenrouterApiKey,
 } from "./onboard-auth.credentials.js";
+import {
+  installWorkforceAgent,
+  showWorkforceAgentInfo,
+  removeWorkforceAgent,
+  DEFAULT_REGISTRY_URL,
+} from "./workforce-agent.js";
 
 // ---------------------------------------------------------------------------
 // Persistent session
@@ -416,6 +422,7 @@ type ProviderChoice =
   | "gemini"
   | "ollama"
   | "vllm"
+  | "workforce"
   | "skip";
 
 interface ProviderMeta {
@@ -466,6 +473,11 @@ const PROVIDERS: ProviderMeta[] = [
     label: "vLLM / llama.cpp / LiteLLM (local)",
     defaultModel: "vllm/your-model-id",
   },
+  {
+    id: "workforce",
+    label: "Builderforce Workforce Agent (custom trained LLM)",
+    defaultModel: "coderclawllm/auto",
+  },
 ];
 
 function isProviderConfigured(p: ProviderMeta): boolean {
@@ -485,6 +497,44 @@ async function applyLlmProviderModel(
     await updateProjectContextFields(projectRoot, { llm: { provider, model: modelRef } });
   } catch {
     // non-fatal: context write failures shouldn't break init
+  }
+}
+
+/**
+ * Wizard sub-step: prompt for and install a Builderforce Workforce agent.
+ * Extracted from `promptLlmProvider` for clarity.
+ */
+async function promptWorkforceAgentProvider(projectRoot: string): Promise<string | null> {
+  const registryUrl = await text({
+    message: "Builderforce registry URL:",
+    initialValue: DEFAULT_REGISTRY_URL,
+  });
+  if (typeof registryUrl === "symbol") {
+    return null;
+  }
+
+  const agentIdInput = await text({
+    message: "Workforce agent ID (from the Builderforce registry):",
+    placeholder: "e.g. 550e8400-e29b-41d4-a716-446655440000",
+  });
+  if (typeof agentIdInput === "symbol" || !agentIdInput.trim()) {
+    return null;
+  }
+
+  const agentId = agentIdInput.trim();
+  try {
+    return await installWorkforceAgent({
+      agentId,
+      projectRoot,
+      registryUrl: registryUrl.trim().replace(/\/+$/, "") || DEFAULT_REGISTRY_URL,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    note(
+      [msg, "", "You can retry later with: coderclaw agent install <agentId>"].join("\n"),
+      "Failed to install Workforce agent",
+    );
+    return null;
   }
 }
 
@@ -516,6 +566,11 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
 
   if (typeof chosen === "symbol" || chosen === "skip") {
     return null;
+  }
+
+  // ── Builderforce Workforce Agent (custom trained LLM) ─────────────────────
+  if (chosen === "workforce") {
+    return promptWorkforceAgentProvider(projectRoot);
   }
 
   const meta = PROVIDERS.find((p) => p.id === chosen)!;
@@ -1281,4 +1336,67 @@ function createStatusCommand(): Command {
       console.log(theme.success("✓ coderClaw project detected"));
       console.log(theme.muted(`  Location: ${projectRoot}/.coderClaw/`));
     });
+}
+
+// ---------------------------------------------------------------------------
+// coderclaw agent — Workforce agent management
+// ---------------------------------------------------------------------------
+
+/**
+ * `coderclaw agent` sub-command group.
+ *
+ * Subcommands:
+ *   coderclaw agent install <agentId>   — download and activate a Workforce agent
+ *   coderclaw agent info                — show the currently installed agent
+ *   coderclaw agent remove              — uninstall the Workforce agent
+ */
+export function createAgentCommand(): Command {
+  const cmd = new Command("agent").description(
+    "Manage Builderforce Workforce agents (custom trained LLMs)",
+  );
+
+  cmd.addCommand(
+    new Command("install")
+      .description("Install a Workforce agent from the Builderforce registry")
+      .argument("<agentId>", "Agent UUID or name from the Workforce Registry")
+      .option("--registry <url>", "Builderforce registry URL", DEFAULT_REGISTRY_URL)
+      .option("--path <dir>", "Project directory", ".")
+      .action(async (agentId: string, opts: { registry: string; path: string }) => {
+        const projectRoot = opts.path === "." ? process.cwd() : opts.path;
+        intro(theme.accent("coderClaw") + " " + theme.muted("agent install"));
+        try {
+          const summary = await installWorkforceAgent({
+            agentId,
+            projectRoot,
+            registryUrl: opts.registry,
+          });
+          outro(theme.success("Agent installed!\n\n" + summary));
+        } catch (err) {
+          outro(theme.error(err instanceof Error ? err.message : String(err)));
+          process.exitCode = 1;
+        }
+      }),
+  );
+
+  cmd.addCommand(
+    new Command("info")
+      .description("Show the currently installed Workforce agent")
+      .option("--path <dir>", "Project directory", ".")
+      .action(async (opts: { path: string }) => {
+        const projectRoot = opts.path === "." ? process.cwd() : opts.path;
+        await showWorkforceAgentInfo(projectRoot);
+      }),
+  );
+
+  cmd.addCommand(
+    new Command("remove")
+      .description("Remove the installed Workforce agent and revert to default LLM")
+      .option("--path <dir>", "Project directory", ".")
+      .action(async (opts: { path: string }) => {
+        const projectRoot = opts.path === "." ? process.cwd() : opts.path;
+        await removeWorkforceAgent(projectRoot);
+      }),
+  );
+
+  return cmd;
 }

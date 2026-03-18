@@ -2,6 +2,109 @@
  * Type definitions for coderClaw project-specific context
  */
 
+// ---------------------------------------------------------------------------
+// Workforce Agent Package (Builderforce Workforce Registry)
+// ---------------------------------------------------------------------------
+
+/**
+ * LoRA adapter configuration embedded in an agent package.
+ */
+export type LoraConfig = {
+  rank: number;
+  alpha: number;
+  target_modules: string[];
+};
+
+/**
+ * Mamba SSM state snapshot — serialised form of the Mamba State Engine state.
+ * Present only in v2.0 packages (agents trained with Memory or Hybrid mode).
+ */
+export type MambaStateSnapshot = {
+  /** Packed Float32 values (channels × order) */
+  data: number[];
+  /** Input embedding dimension */
+  dim: number;
+  /** SSM hidden states per channel */
+  order: number;
+  /** Parallel channels */
+  channels: number;
+  /** Monotonic interaction counter */
+  step: number;
+};
+
+/**
+ * Portable agent package downloaded from the Builderforce Workforce Registry.
+ * v1.0 — LoRA adapter only.
+ */
+export type AgentPackageV1 = {
+  version: "1.0";
+  platform: "builderforce.ai";
+  name: string;
+  title: string;
+  bio: string;
+  skills: string[];
+  base_model: string;
+  lora_config: LoraConfig;
+  training_job_id?: string;
+  r2_artifact_key?: string;
+  resume_md?: string;
+  created_at: string;
+};
+
+/**
+ * Portable agent package downloaded from the Builderforce Workforce Registry.
+ * v2.0 — LoRA adapter + Mamba persistent memory state.
+ */
+export type AgentPackageV2 = {
+  version: "2.0";
+  platform: "builderforce.ai";
+  name: string;
+  title: string;
+  bio: string;
+  skills: string[];
+  base_model: string;
+  lora_config: LoraConfig;
+  training_job_id?: string;
+  r2_artifact_key?: string;
+  resume_md?: string;
+  /** Persistent Mamba SSM state serialised at publish time */
+  mamba_state?: MambaStateSnapshot;
+  created_at: string;
+};
+
+/** Union of all supported agent package versions. */
+export type AgentPackage = AgentPackageV1 | AgentPackageV2;
+
+/**
+ * Metadata stored in `.coderClaw/context.yaml` after a Workforce agent is installed.
+ * Records where the agent came from and how to invoke its custom LLM.
+ */
+export type InstalledWorkforceAgent = {
+  /** Workforce Registry agent ID */
+  agentId: string;
+  /** Human-readable display name */
+  name: string;
+  /** Short description / title */
+  title?: string;
+  /** Base model used for inference (e.g. "gpt-neox-20m" or "codeparrot-350m") */
+  baseModel: string;
+  /**
+   * CoderClaw model reference used at runtime, e.g. "coderclawllm/workforce-<agentId>".
+   * Points to the Builderforce inference endpoint that loads the LoRA adapter.
+   */
+  modelRef: string;
+  /** R2 key for the LoRA adapter artifact */
+  loraArtifactKey?: string;
+  /** Package version ("1.0" or "2.0") */
+  packageVersion: "1.0" | "2.0";
+  /** Whether this agent carries a Mamba persistent memory state */
+  hasMambaState: boolean;
+  /** ISO timestamp of when the agent package was installed */
+  installedAt: string;
+  /** Builderforce server URL the package was fetched from */
+  registryUrl: string;
+};
+
 export type ProjectContext = {
   version: number;
   projectName: string;
@@ -27,6 +130,12 @@ export type ProjectContext = {
     provider: string;
     model: string;
   };
+  /**
+   * Workforce agent installed into this project via `coderclaw agent install`.
+   * When present, the agent's custom LLM (Builderforce inference endpoint) is
+   * used by default instead of the standard provider set in `llm`.
+   */
+  customAgent?: InstalledWorkforceAgent;
   clawLink?: {
     /** Numeric claw ID returned by POST /api/claws */
     instanceId: string;
