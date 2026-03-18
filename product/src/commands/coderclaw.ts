@@ -501,6 +501,44 @@ async function applyLlmProviderModel(
 }
 
 /**
+ * Wizard sub-step: prompt for and install a Builderforce Workforce agent.
+ * Extracted from `promptLlmProvider` for clarity.
+ */
+async function promptWorkforceAgentProvider(projectRoot: string): Promise<string | null> {
+  const registryUrl = await text({
+    message: "Builderforce registry URL:",
+    initialValue: DEFAULT_REGISTRY_URL,
+  });
+  if (typeof registryUrl === "symbol") {
+    return null;
+  }
+
+  const agentIdInput = await text({
+    message: "Workforce agent ID (from the Builderforce registry):",
+    placeholder: "e.g. 550e8400-e29b-41d4-a716-446655440000",
+  });
+  if (typeof agentIdInput === "symbol" || !agentIdInput.trim()) {
+    return null;
+  }
+
+  const agentId = agentIdInput.trim();
+  try {
+    return await installWorkforceAgent({
+      agentId,
+      projectRoot,
+      registryUrl: registryUrl.trim().replace(/\/+$/, "") || DEFAULT_REGISTRY_URL,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    note(
+      [msg, "", "You can retry later with: coderclaw agent install <agentId>"].join("\n"),
+      "Failed to install Workforce agent",
+    );
+    return null;
+  }
+}
+
+/**
  * Interactive wizard step: choose and configure an LLM provider.
  * Returns summary string of what was done (for the outro), or null if skipped.
  */
@@ -532,42 +570,7 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
 
   // ── Builderforce Workforce Agent (custom trained LLM) ─────────────────────
   if (chosen === "workforce") {
-    const registryUrl = await text({
-      message: "Builderforce registry URL:",
-      initialValue: DEFAULT_REGISTRY_URL,
-    });
-    if (typeof registryUrl === "symbol") {
-      return null;
-    }
-
-    const agentIdInput = await text({
-      message: "Workforce agent ID (from the Builderforce registry):",
-      placeholder: "e.g. 550e8400-e29b-41d4-a716-446655440000",
-    });
-    if (typeof agentIdInput === "symbol" || !agentIdInput.trim()) {
-      return null;
-    }
-
-    const agentId = agentIdInput.trim();
-    try {
-      const summary = await installWorkforceAgent({
-        agentId,
-        projectRoot,
-        registryUrl: registryUrl.trim().replace(/\/+$/, "") || DEFAULT_REGISTRY_URL,
-      });
-      return summary;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      note(
-        [
-          msg,
-          "",
-          "You can retry later with: coderclaw agent install <agentId>",
-        ].join("\n"),
-        "Failed to install Workforce agent",
-      );
-      return null;
-    }
+    return promptWorkforceAgentProvider(projectRoot);
   }
 
   const meta = PROVIDERS.find((p) => p.id === chosen)!;

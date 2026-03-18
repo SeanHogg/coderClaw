@@ -1,7 +1,9 @@
 # Custom CoderClaws with a Custom LLM
 
 > **See also:** [Architecture](../ARCHITECTURE.md) · [Agent Personas](agent-personas.md) · [Business Roadmap](../BUSINESS_ROADMAP.md)  
-> **IDE spec reference:** `ide-architecture (1).md` (Builderforce.ai IDE v2.0, March 2026)
+> **IDE spec reference:** `ide-architecture (1).md` in the repository root — the Builderforce.ai IDE
+> architecture document (v2.0, March 2026). The filename with `(1)` is the verbatim filename as
+> it exists in the repo root.
 
 This guide describes how coderClaw is extended to support **custom coderclaws** — AI
 coding agents that have been **fine-tuned in the Builderforce IDE** and published to the
@@ -622,8 +624,10 @@ const model = role.workforceAgentId
 
 | Area | Description | Priority |
 |---|---|---|
+| **CLI key auto-issuance** | `coderclaw init` calls `POST /api/auth/cli-key` after Builderforce login and saves the key automatically | High |
 | **Mamba JS engine** | `src/agents/mamba-state-engine.ts` — pure JS SSM for Node.js | Medium |
 | **Mamba state persistence** | Auto-load/save `.coderClaw/memory/mamba-state.json` | Medium |
+| **Mamba state sync** | After each session push updated state to `PUT /api/agents/:id/mamba-state` | Medium |
 | **Confidence scoring** | Opt-in hybrid inference escalation | Low |
 | **`coderclaw agent list`** | Browse and search the Workforce Registry from the CLI | Medium |
 | **`coderclaw agent update`** | Re-download an updated package version | Low |
@@ -631,6 +635,9 @@ const model = role.workforceAgentId
 | **Provider model entry** | Add `workforce-*` pattern to `buildCoderclawllmProvider()` model list | High |
 | **`/model workforce`** | TUI shortcut to switch to the installed Workforce agent | Low |
 | **Agent State Viewer TUI** | `/state` command to inspect Mamba memory (mirrors IDE's 🔬 State tab) | Low |
+
+> **See also:** [Builderforce.ai Custom LLM Changes](builderforce-custom-llm.md) — the
+> required backend / IDE changes that enable the Builderforce side of this integration.
 
 ---
 
