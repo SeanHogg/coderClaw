@@ -218,11 +218,17 @@ const coreEntries: CoreCliEntry[] = [
         description: "Manage coderClaw project context",
         hasSubcommands: true,
       },
+      {
+        name: "agent",
+        description: "Manage Builderforce Workforce agents (custom trained LLMs)",
+        hasSubcommands: true,
+      },
     ],
     register: async ({ program }) => {
       const mod = await import("../../commands/coderclaw.js");
       program.addCommand(mod.createInitCommand());
       program.addCommand(mod.createCoderClawCommand());
+      program.addCommand(mod.createAgentCommand());
     },
   },
 ];
