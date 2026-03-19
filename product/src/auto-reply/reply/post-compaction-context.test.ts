@@ -22,7 +22,10 @@ describe("readPostCompactionContext", () => {
   });
 
   it("returns null when AGENTS.md has no relevant sections", async () => {
-    fs.writeFileSync(resolveWorkspaceFilePath(tmpDir, "AGENTS.md"), "# My Agent\n\nSome content.\n");
+    fs.writeFileSync(
+      resolveWorkspaceFilePath(tmpDir, "AGENTS.md"),
+      "# My Agent\n\nSome content.\n",
+    );
     const result = await readPostCompactionContext(tmpDir);
     expect(result).toBeNull();
   });

@@ -64,7 +64,9 @@ export async function loadCoderClawMemory(
       break;
     }
     try {
-      const raw = (await fs.readFile(resolveWorkspaceFilePath(workspaceDir, filename), "utf-8")).trim();
+      const raw = (
+        await fs.readFile(resolveWorkspaceFilePath(workspaceDir, filename), "utf-8")
+      ).trim();
       if (!raw) {
         continue;
       }

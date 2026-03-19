@@ -11,10 +11,10 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { classifyLocalBrainRequest } from "./coderclawllm-local-stream.js";
+import { loadCoderClawMemory } from "./transformers-stream.js";
 // ── loadCoderClawMemory ───────────────────────────────────────────────────────
 import { resolveAgentRuntimeDir, resolveWorkspaceFilePath } from "./workspace.js";
-import { loadCoderClawMemory } from "./transformers-stream.js";
-import { classifyLocalBrainRequest } from "./coderclawllm-local-stream.js";
 
 describe("loadCoderClawMemory", () => {
   let tmpDir: string;
@@ -48,11 +48,7 @@ describe("loadCoderClawMemory", () => {
   });
 
   it("includes MEMORY.md in the default (non-shared) context", async () => {
-    await fs.writeFile(
-      resolveWorkspaceFilePath(tmpDir, "MEMORY.md"),
-      "Long-term memory.",
-      "utf-8",
-    );
+    await fs.writeFile(resolveWorkspaceFilePath(tmpDir, "MEMORY.md"), "Long-term memory.", "utf-8");
     const result = await loadCoderClawMemory(tmpDir);
     expect(result).toContain("MEMORY.md");
     expect(result).toContain("Long-term memory.");

@@ -89,7 +89,10 @@ describeIfSqlite("memory vector dedupe", () => {
       manager as unknown as { ensureVectorReady: (dims?: number) => Promise<boolean> }
     ).ensureVectorReady = async () => true;
 
-    const entry = await buildFileEntry(path.join(getDefaultMemoryDirs(workspaceDir)[1], "MEMORY.md"), workspaceDir);
+    const entry = await buildFileEntry(
+      path.join(getDefaultMemoryDirs(workspaceDir)[1], "MEMORY.md"),
+      workspaceDir,
+    );
     await (
       manager as unknown as {
         indexFile: (entry: unknown, options: { source: "memory" }) => Promise<void>;

@@ -44,30 +44,30 @@ clients in production.
 
 ### What exists today
 
-| Component | Status | Notes |
-|---|---|---|
-| In-browser LoRA training (WebGPU) | ✅ | `frontend/src/lib/webgpu-trainer.ts` |
-| Adapter storage in R2 | ✅ | `artifacts/{projectId}/{jobId}/adapter.bin` |
-| Workforce Registry (publish / browse) | ✅ | `POST /api/agents`, `GET /api/agents` |
-| Agent package download | ✅ | `GET /api/agents/:id/package` → v1.0 JSON |
-| AI chat inference | ✅ | `POST /api/ai/chat` → Cloudflare AI / OpenRouter |
-| Mamba State Engine (in-browser) | ✅ | `frontend/src/lib/mamba-engine.ts` |
-| Agent Runtime SDK (in-browser) | ✅ | `frontend/src/lib/agent-runtime.ts` |
+| Component                             | Status | Notes                                            |
+| ------------------------------------- | ------ | ------------------------------------------------ |
+| In-browser LoRA training (WebGPU)     | ✅     | `frontend/src/lib/webgpu-trainer.ts`             |
+| Adapter storage in R2                 | ✅     | `artifacts/{projectId}/{jobId}/adapter.bin`      |
+| Workforce Registry (publish / browse) | ✅     | `POST /api/agents`, `GET /api/agents`            |
+| Agent package download                | ✅     | `GET /api/agents/:id/package` → v1.0 JSON        |
+| AI chat inference                     | ✅     | `POST /api/ai/chat` → Cloudflare AI / OpenRouter |
+| Mamba State Engine (in-browser)       | ✅     | `frontend/src/lib/mamba-engine.ts`               |
+| Agent Runtime SDK (in-browser)        | ✅     | `frontend/src/lib/agent-runtime.ts`              |
 
 ### What is missing
 
-| Gap | Impact | Priority |
-|---|---|---|
-| **No inference endpoint for custom agents** | CoderClaw CLI cannot run a trained agent | P0 |
-| **No LoRA adapter loading on inference server** | Training produces `.bin` but nothing serves it | P0 |
-| **No `mamba_state` in DB / package** | v2.0 agents cannot round-trip their memory | P0 |
-| **No CLI auth token** | CLI has no way to call Builderforce inference API | P0 |
-| **`POST /api/ai/chat` ignores `model` field** | Cannot route to `workforce-<id>` | P1 |
-| **No agent streaming inference** | CLI needs SSE chunked responses | P1 |
-| **No rate limiting per API key** | Inference endpoint open to abuse | P1 |
-| **No agent package v2.0** | Mamba state not shipped with download | P1 |
-| **No usage tracking per agent** | Cannot bill or monitor custom model usage | P2 |
-| **No model artifact versioning** | Cannot distinguish adapter generations | P2 |
+| Gap                                             | Impact                                            | Priority |
+| ----------------------------------------------- | ------------------------------------------------- | -------- |
+| **No inference endpoint for custom agents**     | CoderClaw CLI cannot run a trained agent          | P0       |
+| **No LoRA adapter loading on inference server** | Training produces `.bin` but nothing serves it    | P0       |
+| **No `mamba_state` in DB / package**            | v2.0 agents cannot round-trip their memory        | P0       |
+| **No CLI auth token**                           | CLI has no way to call Builderforce inference API | P0       |
+| **`POST /api/ai/chat` ignores `model` field**   | Cannot route to `workforce-<id>`                  | P1       |
+| **No agent streaming inference**                | CLI needs SSE chunked responses                   | P1       |
+| **No rate limiting per API key**                | Inference endpoint open to abuse                  | P1       |
+| **No agent package v2.0**                       | Mamba state not shipped with download             | P1       |
+| **No usage tracking per agent**                 | Cannot bill or monitor custom model usage         | P2       |
+| **No model artifact versioning**                | Cannot distinguish adapter generations            | P2       |
 
 ---
 
@@ -190,11 +190,13 @@ data: [DONE]
 {
   "id": "chatcmpl-abc",
   "object": "chat.completion",
-  "choices": [{
-    "message": { "role": "assistant", "content": "The error means..." },
-    "finish_reason": "stop",
-    "index": 0
-  }],
+  "choices": [
+    {
+      "message": { "role": "assistant", "content": "The error means..." },
+      "finish_reason": "stop",
+      "index": 0
+    }
+  ],
   "usage": { "prompt_tokens": 180, "completion_tokens": 340, "total_tokens": 520 }
 }
 ```
@@ -226,9 +228,7 @@ app.post("/api/agents/:id/chat", async (c) => {
   });
 
   // 5. Log usage (non-blocking)
-  c.executionCtx.waitUntil(
-    logInference({ agentId: agent.id, keyId, ...result.usage, env: c.env })
-  );
+  c.executionCtx.waitUntil(logInference({ agentId: agent.id, keyId, ...result.usage, env: c.env }));
 
   return result.response;
 });
@@ -252,7 +252,10 @@ Authorization: Bearer <cli-api-key>
   "agentId": "550e8400-e29b-41d4-a716-446655440000",
   "snapshot": {
     "data": [0.12, -0.05, 0.31],
-    "dim": 64, "order": 4, "channels": 16, "step": 142
+    "dim": 64,
+    "order": 4,
+    "channels": 16,
+    "step": 142
   },
   "updatedAt": "2026-03-18T09:00:00.000Z"
 }
@@ -387,6 +390,7 @@ Accept `mamba_state` and `package_version` in the request body:
 ```
 
 Set `inference_mode`:
+
 - `"base"` if no `r2_artifact_key`
 - `"lora"` if `r2_artifact_key` present but no `mamba_state`
 - `"hybrid"` if both `r2_artifact_key` and `mamba_state` are present
@@ -414,7 +418,7 @@ Use the **AI Gateway** `finetune` parameter once Cloudflare exposes it, or use t
 const response = await c.env.AI.run("@cf/codeparrot-350m", {
   messages,
   stream: true,
-  finetune: r2SignedUrl,   // Pre-signed R2 URL to adapter.bin
+  finetune: r2SignedUrl, // Pre-signed R2 URL to adapter.bin
 });
 ```
 
@@ -458,14 +462,14 @@ CoderClaw CLI
 
 **Inference service tech stack:**
 
-| Component | Technology |
-|---|---|
-| HTTP server | Rust (Axum) or Python (FastAPI) |
-| Model loading | `candle` (Rust) or `transformers` (Python) with PEFT |
-| LoRA application | PEFT `PeftModel.from_pretrained()` from bytes |
-| Streaming | SSE (tokio-stream / asyncio) |
-| Caching | LRU cache for adapter bytes + loaded model |
-| Deployment | Cloudflare Workers (WASM for small models) or GPU server |
+| Component        | Technology                                               |
+| ---------------- | -------------------------------------------------------- |
+| HTTP server      | Rust (Axum) or Python (FastAPI)                          |
+| Model loading    | `candle` (Rust) or `transformers` (Python) with PEFT     |
+| LoRA application | PEFT `PeftModel.from_pretrained()` from bytes            |
+| Streaming        | SSE (tokio-stream / asyncio)                             |
+| Caching          | LRU cache for adapter bytes + loaded model               |
+| Deployment       | Cloudflare Workers (WASM for small models) or GPU server |
 
 ### 5.2 Provider Selection
 
@@ -534,7 +538,9 @@ export async function authenticateCliKey(
   const hash = await sha256hex(raw);
   const row = await c.env.DB.prepare(
     "SELECT id, user_id, revoked_at, rate_limit FROM cli_api_keys WHERE key_hash = ?1",
-  ).bind(hash).first();
+  )
+    .bind(hash)
+    .first();
 
   if (!row || row.revoked_at) return null;
 
@@ -542,7 +548,9 @@ export async function authenticateCliKey(
   const today = new Date().toISOString().slice(0, 10);
   const count = await c.env.DB.prepare(
     "SELECT COUNT(*) as n FROM agent_inference_logs WHERE cli_key_id = ?1 AND DATE(created_at) = ?2",
-  ).bind(row.id, today).first<{ n: number }>();
+  )
+    .bind(row.id, today)
+    .first<{ n: number }>();
 
   if ((count?.n ?? 0) >= row.rate_limit) {
     c.header("Retry-After", "86400");
@@ -553,7 +561,9 @@ export async function authenticateCliKey(
   c.executionCtx.waitUntil(
     c.env.DB.prepare(
       "UPDATE cli_api_keys SET last_used_at = CURRENT_TIMESTAMP, request_count = request_count + 1 WHERE id = ?1",
-    ).bind(row.id).run(),
+    )
+      .bind(row.id)
+      .run(),
   );
 
   return { keyId: row.id, userId: row.user_id };
@@ -574,11 +584,13 @@ After a successful Hybrid training run the adapter has an associated Mamba snaps
 `IndexedDB`. Add a button to serialise it and attach to the agent publish payload:
 
 ```tsx
-{job.status === "completed" && mambaState && (
-  <button onClick={() => setMambaForPublish(mambaState)}>
-    📦 Include Mamba memory in publish
-  </button>
-)}
+{
+  job.status === "completed" && mambaState && (
+    <button onClick={() => setMambaForPublish(mambaState)}>
+      📦 Include Mamba memory in publish
+    </button>
+  );
+}
 ```
 
 #### Add inference mode indicator to job list
@@ -602,12 +614,14 @@ When `mambaForPublish` is set, include it in `POST /api/agents`:
 ```typescript
 const publishPayload = {
   // ... existing fields ...
-  ...(mambaForPublish ? {
-    mamba_state: mambaForPublish,
-    package_version: "2.0" as const,
-  } : {
-    package_version: "1.0" as const,
-  }),
+  ...(mambaForPublish
+    ? {
+        mamba_state: mambaForPublish,
+        package_version: "2.0" as const,
+      }
+    : {
+        package_version: "1.0" as const,
+      }),
 };
 ```
 
@@ -638,7 +652,9 @@ export function AgentStateViewer({ agentId, projectId }: Props) {
   const [snapshot, setSnapshot] = useState<MambaStateSnapshot | null>(null);
 
   // Load from IndexedDB on mount
-  useEffect(() => { loadMambaState(agentId).then(setSnapshot); }, [agentId]);
+  useEffect(() => {
+    loadMambaState(agentId).then(setSnapshot);
+  }, [agentId]);
 
   return (
     <div className="state-viewer">
@@ -709,22 +725,22 @@ ALTER TABLE agents
 
 ### New endpoints
 
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| `POST` | `/api/agents/:id/chat` | CLI key | Run inference on a custom agent (streaming SSE or JSON) |
-| `GET` | `/api/agents/:id/mamba-state` | CLI key | Fetch the stored Mamba SSM state snapshot |
-| `PUT` | `/api/agents/:id/mamba-state` | CLI key | Push an updated Mamba state from CLI session |
-| `POST` | `/api/auth/cli-key` | Web token | Issue a new CLI API key |
-| `DELETE` | `/api/auth/cli-key/:keyId` | Web token | Revoke a CLI API key |
-| `GET` | `/api/auth/cli-keys` | Web token | List all CLI API keys for the current user |
+| Method   | Path                          | Auth      | Description                                             |
+| -------- | ----------------------------- | --------- | ------------------------------------------------------- |
+| `POST`   | `/api/agents/:id/chat`        | CLI key   | Run inference on a custom agent (streaming SSE or JSON) |
+| `GET`    | `/api/agents/:id/mamba-state` | CLI key   | Fetch the stored Mamba SSM state snapshot               |
+| `PUT`    | `/api/agents/:id/mamba-state` | CLI key   | Push an updated Mamba state from CLI session            |
+| `POST`   | `/api/auth/cli-key`           | Web token | Issue a new CLI API key                                 |
+| `DELETE` | `/api/auth/cli-key/:keyId`    | Web token | Revoke a CLI API key                                    |
+| `GET`    | `/api/auth/cli-keys`          | Web token | List all CLI API keys for the current user              |
 
 ### Changed endpoints
 
-| Method | Path | Change |
-|---|---|---|
-| `POST` | `/api/agents` | Accept `mamba_state`, `package_version` in body; set `inference_mode` |
-| `GET` | `/api/agents/:id/package` | Return v2.0 format when `mamba_state` is present |
-| `POST` | `/api/ai/chat` | Detect `workforce-<id>` model prefix → delegate to agent inference |
+| Method | Path                      | Change                                                                |
+| ------ | ------------------------- | --------------------------------------------------------------------- |
+| `POST` | `/api/agents`             | Accept `mamba_state`, `package_version` in body; set `inference_mode` |
+| `GET`  | `/api/agents/:id/package` | Return v2.0 format when `mamba_state` is present                      |
+| `POST` | `/api/ai/chat`            | Detect `workforce-<id>` model prefix → delegate to agent inference    |
 
 ### Request / response types (TypeScript)
 
@@ -732,10 +748,10 @@ ALTER TABLE agents
 // POST /api/agents/:id/chat
 type AgentChatRequest = {
   messages: { role: "system" | "user" | "assistant"; content: string }[];
-  stream?: boolean;            // default: false
-  max_tokens?: number;         // default: 1024
-  temperature?: number;        // default: 0.7
-  mamba_context?: string;      // optional: pre-computed memory context from CLI
+  stream?: boolean; // default: false
+  max_tokens?: number; // default: 1024
+  temperature?: number; // default: 0.7
+  mamba_context?: string; // optional: pre-computed memory context from CLI
 };
 
 type AgentChatChunk = {
@@ -834,7 +850,7 @@ User types message in coderClaw TUI
 - [ ] **`GET /api/agents/:id/package`** — v2.0 response when `mamba_state` is set
 - [ ] **`POST /api/agents`** — accept `mamba_state` and `package_version` fields
 - [ ] **Frontend: Publish panel** — include Mamba state checkbox and CLI install command
-- [ ] **CoderClaw CLI** — `coderclaw init` calls `POST /api/auth/cli-key` and saves key *(see `product/src/commands/coderclaw.ts`)*
+- [ ] **CoderClaw CLI** — `coderclaw init` calls `POST /api/auth/cli-key` and saves key _(see `product/src/commands/coderclaw.ts`)_
 
 ### Phase 2 — Inference Routing (P0)
 
@@ -861,4 +877,4 @@ User types message in coderClaw TUI
 
 ---
 
-*Last updated: March 2026*
+_Last updated: March 2026_

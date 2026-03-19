@@ -58,7 +58,11 @@ describe("ensureAgentWorkspace", () => {
 
   it("recovers partial initialization by creating BOOTSTRAP.md when marker is missing", async () => {
     const tempDir = await makeTempWorkspace("coderclaw-workspace-");
-    await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_AGENTS_FILENAME), "existing", "utf-8");
+    await fs.writeFile(
+      resolveWorkspaceFilePath(tempDir, DEFAULT_AGENTS_FILENAME),
+      "existing",
+      "utf-8",
+    );
 
     await ensureAgentWorkspace({ dir: tempDir, ensureBootstrapFiles: true });
 
@@ -72,7 +76,11 @@ describe("ensureAgentWorkspace", () => {
   it("does not recreate BOOTSTRAP.md after completion, even when a core file is recreated", async () => {
     const tempDir = await makeTempWorkspace("coderclaw-workspace-");
     await ensureAgentWorkspace({ dir: tempDir, ensureBootstrapFiles: true });
-    await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_IDENTITY_FILENAME), "custom", "utf-8");
+    await fs.writeFile(
+      resolveWorkspaceFilePath(tempDir, DEFAULT_IDENTITY_FILENAME),
+      "custom",
+      "utf-8",
+    );
     await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_USER_FILENAME), "custom", "utf-8");
     await fs.unlink(resolveWorkspaceFilePath(tempDir, DEFAULT_BOOTSTRAP_FILENAME));
     await fs.unlink(resolveWorkspaceFilePath(tempDir, DEFAULT_TOOLS_FILENAME));
@@ -84,14 +92,20 @@ describe("ensureAgentWorkspace", () => {
     ).rejects.toMatchObject({
       code: "ENOENT",
     });
-    await expect(fs.access(resolveWorkspaceFilePath(tempDir, DEFAULT_TOOLS_FILENAME))).resolves.toBeUndefined();
+    await expect(
+      fs.access(resolveWorkspaceFilePath(tempDir, DEFAULT_TOOLS_FILENAME)),
+    ).resolves.toBeUndefined();
     const state = await readOnboardingState(tempDir);
     expect(state.onboardingCompletedAt).toMatch(/\d{4}-\d{2}-\d{2}T/);
   });
 
   it("does not re-seed BOOTSTRAP.md for legacy completed workspaces without state marker", async () => {
     const tempDir = await makeTempWorkspace("coderclaw-workspace-");
-    await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_IDENTITY_FILENAME), "custom", "utf-8");
+    await fs.writeFile(
+      resolveWorkspaceFilePath(tempDir, DEFAULT_IDENTITY_FILENAME),
+      "custom",
+      "utf-8",
+    );
     await fs.writeFile(resolveWorkspaceFilePath(tempDir, DEFAULT_USER_FILENAME), "custom", "utf-8");
 
     await ensureAgentWorkspace({ dir: tempDir, ensureBootstrapFiles: true });

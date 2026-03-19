@@ -76,18 +76,19 @@ MambaStateSnapshot {
 ### Agent Runtime SDK
 
 The `createAgentRuntime()` SDK wraps:
+
 1. The Mamba state engine (`engine.step()`)
 2. Local LLM inference via the Builderforce Workers AI proxy
 3. Confidence scoring → optional cloud escalation
 
 ### Workforce Registry API
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/agents` | List all published agents |
-| `GET` | `/api/agents/:id` | Agent metadata |
-| `GET` | `/api/agents/:id/package` | Download portable agent package JSON |
-| `POST` | `/api/agents/:id/hire` | Increment hire count |
+| Method | Endpoint                  | Description                          |
+| ------ | ------------------------- | ------------------------------------ |
+| `GET`  | `/api/agents`             | List all published agents            |
+| `GET`  | `/api/agents/:id`         | Agent metadata                       |
+| `GET`  | `/api/agents/:id/package` | Download portable agent package JSON |
+| `POST` | `/api/agents/:id/hire`    | Increment hire count                 |
 
 ---
 
@@ -107,12 +108,12 @@ The `createAgentRuntime()` SDK wraps:
   "lora_config": {
     "rank": 8,
     "alpha": 16,
-    "target_modules": ["q_proj", "v_proj"]
+    "target_modules": ["q_proj", "v_proj"],
   },
   "training_job_id": "job_abc123",
   "r2_artifact_key": "artifacts/proj_xyz/job_abc123/adapter.bin",
   "resume_md": "# PythonExpert\n\nSpecialises in ...",
-  "created_at": "2026-03-18T07:00:00.000Z"
+  "created_at": "2026-03-18T07:00:00.000Z",
 }
 ```
 
@@ -130,18 +131,18 @@ The `createAgentRuntime()` SDK wraps:
   "lora_config": {
     "rank": 8,
     "alpha": 16,
-    "target_modules": ["q_proj", "v_proj"]
+    "target_modules": ["q_proj", "v_proj"],
   },
   "mamba_state": {
     "data": [0.12, -0.05, 0.31 /* ... 64 floats */],
     "dim": 64,
     "order": 4,
     "channels": 16,
-    "step": 142
+    "step": 142,
   },
   "training_job_id": "job_abc123",
   "r2_artifact_key": "artifacts/proj_xyz/job_abc123/adapter.bin",
-  "created_at": "2026-03-18T07:00:00.000Z"
+  "created_at": "2026-03-18T07:00:00.000Z",
 }
 ```
 
@@ -190,16 +191,16 @@ Stored under `customAgent` in `.coderClaw/context.yaml` after `coderclaw agent i
 
 ```typescript
 export type InstalledWorkforceAgent = {
-  agentId: string;          // Workforce Registry UUID
-  name: string;             // Display name
-  title?: string;           // Short title
-  baseModel: string;        // e.g. "codeparrot-350m"
-  modelRef: string;         // coderClaw model reference used at runtime
+  agentId: string; // Workforce Registry UUID
+  name: string; // Display name
+  title?: string; // Short title
+  baseModel: string; // e.g. "codeparrot-350m"
+  modelRef: string; // coderClaw model reference used at runtime
   loraArtifactKey?: string; // R2 key for the LoRA adapter
   packageVersion: "1.0" | "2.0";
   hasMambaState: boolean;
-  installedAt: string;      // ISO 8601
-  registryUrl: string;      // Which registry it came from
+  installedAt: string; // ISO 8601
+  registryUrl: string; // Which registry it came from
 };
 ```
 
@@ -310,6 +311,7 @@ the `coderclaw init` LLM provider wizard (`promptLlmProvider`).
 ```
 
 When selected, the wizard:
+
 1. Prompts for the Builderforce registry URL (default: `https://api.builderforce.ai`)
 2. Prompts for the Workforce agent ID
 3. Calls `installWorkforceAgent()` inline
@@ -353,10 +355,10 @@ agent name:
 The `resolveWorkforceModelRef()` function in `src/commands/workforce-agent.ts` determines
 how coderClaw routes inference for a Workforce agent:
 
-| Scenario | Model reference | Notes |
-|---|---|---|
-| **CoderClawLLM connected** | `coderclawllm/workforce-<agentId>` | Managed proxy loads the LoRA adapter on the Builderforce inference cluster |
-| **No CoderClawLLM key** | `<base_model>` (e.g. `codeparrot-350m`) | Falls back to the base model; the user must provide a local server (Ollama / vLLM) that serves this model ID |
+| Scenario                   | Model reference                         | Notes                                                                                                        |
+| -------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **CoderClawLLM connected** | `coderclawllm/workforce-<agentId>`      | Managed proxy loads the LoRA adapter on the Builderforce inference cluster                                   |
+| **No CoderClawLLM key**    | `<base_model>` (e.g. `codeparrot-350m`) | Falls back to the base model; the user must provide a local server (Ollama / vLLM) that serves this model ID |
 
 For the managed proxy route, no additional configuration is required — the
 `CODERCLAW_LINK_API_KEY` (set during `coderclaw init --reconnect`) is used to authenticate
@@ -517,7 +519,7 @@ You can give a workflow role a different model than the installed Workforce agen
 ```yaml
 # .coderClaw/personas/security-reviewer.yaml
 name: security-reviewer
-model: anthropic/claude-opus-4-6   # use Claude for security passes
+model: anthropic/claude-opus-4-6 # use Claude for security passes
 ```
 
 The orchestrator merges per-role model overrides on top of the project default.
@@ -600,6 +602,7 @@ When `workforceAgentId` is set, `spawnSubagentDirect()` passes `model: resolveWo
 **Required code change:**
 
 `src/coderclaw/types.ts` → `AgentRole`:
+
 ```typescript
 export type AgentRole = {
   // ... existing fields ...
@@ -611,34 +614,35 @@ export type AgentRole = {
 ```
 
 `src/coderclaw/orchestrator.ts` → `spawnSubagentDirect()`:
+
 ```typescript
 // Resolve model — Workforce agent takes precedence
 const model = role.workforceAgentId
   ? resolveWorkforceModelRef({ agentId: role.workforceAgentId, pkg: ctx.agentPackage })
-  : role.model ?? cfg.agents?.defaults?.model;
+  : (role.model ?? cfg.agents?.defaults?.model);
 ```
 
 ---
 
 ## 9. Future Work
 
-| Area | Description | Priority |
-|---|---|---|
-| **CLI key auto-issuance** | `coderclaw init` calls `POST /api/auth/cli-key` after Builderforce login and saves the key automatically | High |
-| **Mamba JS engine** | `src/agents/mamba-state-engine.ts` — pure JS SSM for Node.js | Medium |
-| **Mamba state persistence** | Auto-load/save `.coderClaw/memory/mamba-state.json` | Medium |
-| **Mamba state sync** | After each session push updated state to `PUT /api/agents/:id/mamba-state` | Medium |
-| **Confidence scoring** | Opt-in hybrid inference escalation | Low |
-| **`coderclaw agent list`** | Browse and search the Workforce Registry from the CLI | Medium |
-| **`coderclaw agent update`** | Re-download an updated package version | Low |
-| **Persona `workforceAgentId`** | Per-role Workforce agent model binding | High |
-| **Provider model entry** | Add `workforce-*` pattern to `buildCoderclawllmProvider()` model list | High |
-| **`/model workforce`** | TUI shortcut to switch to the installed Workforce agent | Low |
-| **Agent State Viewer TUI** | `/state` command to inspect Mamba memory (mirrors IDE's 🔬 State tab) | Low |
+| Area                           | Description                                                                                              | Priority |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- | -------- |
+| **CLI key auto-issuance**      | `coderclaw init` calls `POST /api/auth/cli-key` after Builderforce login and saves the key automatically | High     |
+| **Mamba JS engine**            | `src/agents/mamba-state-engine.ts` — pure JS SSM for Node.js                                             | Medium   |
+| **Mamba state persistence**    | Auto-load/save `.coderClaw/memory/mamba-state.json`                                                      | Medium   |
+| **Mamba state sync**           | After each session push updated state to `PUT /api/agents/:id/mamba-state`                               | Medium   |
+| **Confidence scoring**         | Opt-in hybrid inference escalation                                                                       | Low      |
+| **`coderclaw agent list`**     | Browse and search the Workforce Registry from the CLI                                                    | Medium   |
+| **`coderclaw agent update`**   | Re-download an updated package version                                                                   | Low      |
+| **Persona `workforceAgentId`** | Per-role Workforce agent model binding                                                                   | High     |
+| **Provider model entry**       | Add `workforce-*` pattern to `buildCoderclawllmProvider()` model list                                    | High     |
+| **`/model workforce`**         | TUI shortcut to switch to the installed Workforce agent                                                  | Low      |
+| **Agent State Viewer TUI**     | `/state` command to inspect Mamba memory (mirrors IDE's 🔬 State tab)                                    | Low      |
 
 > **See also:** [Builderforce.ai Custom LLM Changes](builderforce-custom-llm.md) — the
 > required backend / IDE changes that enable the Builderforce side of this integration.
 
 ---
 
-*Last updated: March 2026*
+_Last updated: March 2026_

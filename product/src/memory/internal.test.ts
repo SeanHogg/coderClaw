@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { resolveAgentRuntimeDir, resolveWorkspaceFilePath } from "../agents/workspace.js";
 import {
   chunkMarkdown,
   listMemoryFiles,
@@ -11,7 +12,6 @@ import {
   getDefaultMemoryDirs,
   getDefaultMemoryWatchPatterns,
 } from "./internal.js";
-import { resolveAgentRuntimeDir, resolveWorkspaceFilePath } from "../agents/workspace.js";
 
 describe("normalizeExtraMemoryPaths", () => {
   it("trims, resolves, and dedupes paths", () => {

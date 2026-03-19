@@ -2,12 +2,12 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { resolveWorkspaceFilePath } from "../../agents/workspace.js";
 import {
   addSubagentRunForTests,
   listSubagentRunsForRequester,
   resetSubagentRegistryForTests,
 } from "../../agents/subagent-registry.js";
+import { resolveWorkspaceFilePath } from "../../agents/workspace.js";
 import type { CoderClawConfig } from "../../config/config.js";
 import { updateSessionStore } from "../../config/sessions.js";
 import * as internalHooks from "../../hooks/internal-hooks.js";
@@ -125,7 +125,11 @@ let testWorkspaceDir = os.tmpdir();
 beforeAll(async () => {
   testWorkspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-commands-"));
   await fs.mkdir(path.join(testWorkspaceDir, ".coderclaw"), { recursive: true });
-  await fs.writeFile(resolveWorkspaceFilePath(testWorkspaceDir, "AGENTS.md"), "# Agents\n", "utf-8");
+  await fs.writeFile(
+    resolveWorkspaceFilePath(testWorkspaceDir, "AGENTS.md"),
+    "# Agents\n",
+    "utf-8",
+  );
 });
 
 afterAll(async () => {

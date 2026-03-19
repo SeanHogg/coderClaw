@@ -260,9 +260,10 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
     }
 
     // Prefer the claw-scoped skills endpoint when we know our claw id.
-    const endpoint = this.clawId != null
-      ? `${this.baseUrl}/api/claws/${this.clawId}/skills`
-      : `${this.baseUrl}/api/skills`;
+    const endpoint =
+      this.clawId != null
+        ? `${this.baseUrl}/api/claws/${this.clawId}/skills`
+        : `${this.baseUrl}/api/skills`;
 
     const response = await this.post<ClawLinkSkillResponse[] | ClawLinkSkillsEnvelope>(
       `${endpoint}${params.size > 0 ? `?${params}` : ""}`,
@@ -297,7 +298,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
       headers.Authorization = `Bearer ${this.authToken}`;
     }
     if (this.clawId != null) {
-      headers['X-Claw-Id'] = String(this.clawId);
+      headers["X-Claw-Id"] = String(this.clawId);
     }
 
     const init: RequestInit = {

@@ -2,11 +2,11 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { resolveWorkspaceFilePath } from "../agents/workspace.js";
 import { HEARTBEAT_PROMPT } from "../auto-reply/heartbeat.js";
 import * as replyModule from "../auto-reply/reply.js";
 import { whatsappOutbound } from "../channels/plugins/outbound/whatsapp.js";
 import type { CoderClawConfig } from "../config/config.js";
-import { resolveWorkspaceFilePath } from "../agents/workspace.js";
 import {
   resolveAgentIdFromSessionKey,
   resolveAgentMainSessionKey,

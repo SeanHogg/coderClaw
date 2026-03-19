@@ -9,12 +9,8 @@
  */
 
 import { note, outro, spinner } from "@clack/prompts";
-import type {
-  AgentPackage,
-  AgentPackageV2,
-  InstalledWorkforceAgent,
-} from "../coderclaw/types.js";
 import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
+import type { AgentPackage, AgentPackageV2, InstalledWorkforceAgent } from "../coderclaw/types.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { theme } from "../terminal/theme.js";
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
@@ -85,7 +81,9 @@ export async function fetchAgentPackage(params: {
 
   const pkg = (await res.json()) as AgentPackage;
   if (!pkg.version || !pkg.platform || !pkg.name || !pkg.base_model) {
-    throw new Error("Invalid agent package: missing required fields (version, platform, name, base_model)");
+    throw new Error(
+      "Invalid agent package: missing required fields (version, platform, name, base_model)",
+    );
   }
   return pkg;
 }
@@ -103,10 +101,7 @@ export async function fetchAgentPackage(params: {
  *
  * Otherwise fall back to the base model through the default provider.
  */
-export function resolveWorkforceModelRef(params: {
-  agentId: string;
-  pkg: AgentPackage;
-}): string {
+export function resolveWorkforceModelRef(params: { agentId: string; pkg: AgentPackage }): string {
   const linkedKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
   if (linkedKey) {
     return `coderclawllm/workforce-${params.agentId}`;
@@ -191,7 +186,10 @@ export async function installWorkforceAgent(params: {
 export async function showWorkforceAgentInfo(projectRoot: string): Promise<void> {
   const ctx = await loadProjectContext(projectRoot);
   if (!ctx?.customAgent) {
-    note("No Workforce agent is installed in this project.\n\nRun: coderclaw agent install <agentId>", "No agent installed");
+    note(
+      "No Workforce agent is installed in this project.\n\nRun: coderclaw agent install <agentId>",
+      "No agent installed",
+    );
     return;
   }
 
