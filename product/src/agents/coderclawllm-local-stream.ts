@@ -48,6 +48,12 @@ import {
   type ToolResult,
 } from "./coderclawllm-tools.js";
 import {
+  describePolicyDecision,
+  selectModelTier,
+  shouldTriggerWsla,
+} from "./hybrid-model-policy.js";
+import { adaptOnFailure, getConsecutiveFailures, recordSuccess } from "./mamba-wsla.js";
+import {
   AMYGDALA_DEFAULT_DTYPE,
   AMYGDALA_DEFAULT_MODEL_ID,
   TRANSFORMERS_DEFAULT_CACHE_DIR,
@@ -834,6 +840,28 @@ export async function runCoderClawLlmLocalRequest(
     `routing: request classified as ${routingDecision.mode}${routingDecision.reasons.length > 0 ? ` (${routingDecision.reasons.join(", ")})` : ""}`,
   );
 
+  // ── Hybrid model policy — WSLA-aware tier selection ───────────────────────
+  const agentId = request.workspaceDir ?? "default";
+  const consecutiveFailures = getConsecutiveFailures(queryText);
+  const policyDecision = selectModelTier({
+    localClassification: routingDecision,
+    consecutiveFailures,
+    mambaEligible: eligibility.amygdalaEligible,
+  });
+  log.info(describePolicyDecision(policyDecision));
+
+  if (policyDecision.tier === "external-llm") {
+    const routingReason = policyDecision.wslaInfluenced
+      ? `wsla-escalation after ${consecutiveFailures} failure(s)`
+      : policyDecision.reasons.join(", ");
+    return await runDirectCortexRequest({
+      request,
+      memoryBlock,
+      ragContext,
+      routingReason,
+    });
+  }
+
   if (!eligibility.amygdalaEligible) {
     log.info("amygdala not eligible → cortex handling entire request");
     return await runDirectCortexRequest({
@@ -955,6 +983,8 @@ export async function runCoderClawLlmLocalRequest(
       })
     : amygdalaText;
   log.info(`response ready (${finalText.length} chars, total=${Date.now() - amygdalaT0}ms)`);
+  // Record success — clears the WSLA failure counter for this query fingerprint.
+  recordSuccess(queryText);
   return finalText;
 }
 
@@ -1004,6 +1034,19 @@ export function createCoderClawLlmLocalStreamFn(
           finalText = await runCoderClawLlmLocalRequestInWorker(request, timeoutController.signal);
         } catch (err) {
           if (!timedOut) {
+            // Non-timeout failure → trigger WSLA adaptation before re-throwing
+            // so the next invocation benefits from the adapted B/C matrices.
+            const queryText = request.rawMessages.findLast((m) => m.role === "user")?.content ?? "";
+            const errorMsg = err instanceof Error ? err.message : String(err);
+            const queryStr = typeof queryText === "string" ? queryText : JSON.stringify(queryText);
+            const wslaResult = await adaptOnFailure(
+              request.workspaceDir ?? "default",
+              queryStr,
+              errorMsg,
+            );
+            if (shouldTriggerWsla(wslaResult.consecutiveFailures)) {
+              log.info(`mamba-wsla: adapted after failure (step=${wslaResult.snapshot.step})`);
+            }
             throw err;
           }
           log.warn(`amygdala: routing exceeded ${timeoutMs}ms — escalating to cortex`);
