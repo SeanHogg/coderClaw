@@ -1,7 +1,7 @@
 # CoderClaw Capability Gaps — Deep Audit
 
 > Last updated: 2026-03-01
-> Source: Code audit of `coderClaw/src/` and `coderClawLink/api/src/`
+> Source: Code audit of `coderClaw/src/` and `builderforce.ai/api/src/`
 
 This document records what **actually works** vs. what is **facade code** (exists
 but is never called) vs. what is **completely missing**. Every item here blocks
@@ -154,7 +154,7 @@ agent features.
 
 ## Gap 5: No Post-Task Knowledge Update
 
-**Status**: ✅ PARTIALLY RESOLVED — activity log written after every run; CoderClawLink synced automatically; `project_knowledge memory` query wired
+**Status**: ✅ PARTIALLY RESOLVED — activity log written after every run; builderforce.ai synced automatically; `project_knowledge memory` query wired
 
 **Resolution (2026-03-01)**:
 
@@ -202,7 +202,7 @@ agent features.
 2. Send a message that causes file edits
 3. After run completes → `.coderClaw/memory/YYYY-MM-DD.md` has a new `## [timestamp]`
    entry listing edited files and tools used
-4. CoderClawLink → Claw panel → Directories shows updated memory file timestamp
+4. builderforce.ai → Claw panel → Directories shows updated memory file timestamp
 5. `project_knowledge memory` → returns recent entries
 
 ---
@@ -213,7 +213,7 @@ agent features.
 
 **Resolution (2026-03-01)**:
 
-### Infrastructure (CoderClawLink)
+### Infrastructure (builderforce.ai)
 
 - **Migration `0007_claw_capabilities.sql`**: Added `capabilities TEXT` column
   to `coderclaw_instances` (stores JSON array of capability strings).
@@ -238,7 +238,7 @@ agent features.
 
 - **Heartbeat sends capabilities** (`src/infra/clawlink-relay.ts`):
   `sendHeartbeat()` now POSTs `{ capabilities: ["chat","tasks","relay","remote-dispatch"] }`
-  so the CoderClawLink DB always has accurate metadata.
+  so the builderforce.ai DB always has accurate metadata.
 - **`remote.task` message handler** (`ClawLinkRelayService.handleRelayMessage`):
   when the relay delivers a `{ type: "remote.task", task, fromClawId }` to the
   upstream WS, the relay service dispatches it as a local `chat.send` with a
@@ -281,7 +281,7 @@ Orchestrator sees step: { role: "remote:456", task: "Implement feature X" }
 3. On claw A: orchestrate a workflow with `{ role: "remote:<clawBId>", task: "echo hello from B" }`
 4. Claw B's gateway log shows `[Remote task from claw <A>]` chat message
 5. Orchestrator marks the step `completed` once delivery is confirmed
-6. CoderClawLink → Claw panel → fleet shows `remoteDispatch: true` for both
+6. builderforce.ai → Claw panel → fleet shows `remoteDispatch: true` for both
 
 **Remaining gaps**:
 
@@ -372,7 +372,7 @@ After each gap is fixed, verify:
       logs "N incomplete workflow(s) restored". `workflow_status` shows pending tasks.
       `resumeWorkflow()` skips completed tasks and re-executes the rest.
 - [x] **-1.5** (2026-03-01, partial): Complete a task → `.coderClaw/memory/YYYY-MM-DD.md`
-      gets a timestamped entry with files touched and tools used. CoderClawLink
+      gets a timestamped entry with files touched and tools used. builderforce.ai
       syncs the memory file. `project_knowledge memory` returns recent entries.
       _(Semantic auto-update of `architecture.md` still pending.)_
 - [x] **-1.6a** (2026-03-01): coderClaw connects to ClawRelayDO upstream WS on
@@ -503,7 +503,7 @@ steps that use `remote:<clawId>` roles cannot receive output from the remote exe
 
 - A result-streaming channel from target claw back to orchestrating claw.
 - Options: (a) reverse HTTP callback, (b) WS result frame via `ClawRelayDO`,
-  (c) polling a result endpoint added to coderClawLink.
+  (c) polling a result endpoint added to builderforce.ai.
 - Orchestrator should surface result in `task.output` so dependent steps can use it.
 
 **Acceptance criteria**:
@@ -511,7 +511,7 @@ steps that use `remote:<clawId>` roles cannot receive output from the remote exe
 - `orchestrate` workflow with `remote:<clawId>` step completes with non-empty `output`.
 - Dependent steps receive the remote output as `input`.
 
-**Requires**: coderClawLink API change — see `CODERCLAW_LINK_GAPS.md`.
+**Requires**: builderforce.ai API change — see `CODERCLAW_LINK_GAPS.md`.
 
 ---
 
@@ -636,10 +636,10 @@ it was playing.
 
 ## Gap N: Persona Plugin Architecture (Marketplace-Ready)
 
-**Status**: ✅ RESOLVED — `PersonaRegistry`, PERSONA.yaml format, coderClawLink assignment (2026-03-04)
+**Status**: ✅ RESOLVED — `PersonaRegistry`, PERSONA.yaml format, builderforce.ai assignment (2026-03-04)
 
 **Problem**: Roles were a flat list in `agent-roles.ts`. No install lifecycle, no
-versioning, no marketplace metadata, no way to assign from coderClawLink.
+versioning, no marketplace metadata, no way to assign from builderforce.ai.
 
 **Resolution (2026-03-04)**:
 
@@ -655,12 +655,12 @@ versioning, no marketplace metadata, no way to assign from coderClawLink.
   - `personasDir` added to `CoderClawDirectory`
   - `loadProjectPersonaPlugins()`, `loadPersonaAssignments()`, `savePersonaAssignment()`,
     `removePersonaAssignment()`
-  - `context.yaml` `personas.assignments` field for coderClawLink assignments
+  - `context.yaml` `personas.assignments` field for builderforce.ai assignments
 - **Gateway bootstrap** (`src/gateway/server.impl.ts`):
   Loads built-ins → user-global → project-local → applies assignments on startup
 - **`findAgentRole()` delegation**: checks registry as third tier after built-ins + custom roles
 
-**Remaining**: ClawHub download/install CLI flow; coderClawLink Persona Assignment API endpoint.
+**Remaining**: ClawHub download/install CLI flow; builderforce.ai Persona Assignment API endpoint.
 
 ---
 
@@ -714,4 +714,4 @@ late with cryptic errors; there was no fallback.
 | ✅       | N    | Persona plugin architecture          | RESOLVED |
 | ✅       | O    | CoderClawLLM syscheck + fallback     | RESOLVED |
 | 🔲       | P    | ClawHub persona marketplace          | OPEN     |
-| 🔲       | Q    | coderClawLink Persona Assignment API | OPEN     |
+| 🔲       | Q    | builderforce.ai Persona Assignment API | OPEN     |

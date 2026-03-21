@@ -214,7 +214,7 @@ See [Troubleshooting](/troubleshooting) and [Doctor](/cli/doctor) for full guida
 
 ---
 
-## CoderClawLink Relay
+## builderforce.ai Relay
 
 When `CODERCLAW_LINK_API_KEY` is set and the project's `.coderClaw/context.yaml`
 contains a `clawLink.instanceId`, the gateway starts `ClawLinkRelayService` automatically

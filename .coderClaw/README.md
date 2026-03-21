@@ -32,6 +32,6 @@ coderClaw agents automatically load context from this directory when working on 
 - Multi-agent orchestration with dependency DAG scheduling
 - Session handoff and workflow persistence
 - Knowledge loop with automatic memory updates
-- Claw-to-claw mesh via coderClawLink
+- Claw-to-claw mesh via builderforce.ai
 - 37 extension plugins
 - Full WebSocket gateway with channel support

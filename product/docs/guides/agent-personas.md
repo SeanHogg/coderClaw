@@ -9,7 +9,7 @@ decision-making** for every sub-agent spawned in a workflow. They can be:
 - **Project-local** — defined in `.coderClaw/personas/*.yaml` (this project only)
 - **User-global** — defined in `~/.coderclaw/personas/*.yaml` (all projects on this machine)
 - **Marketplace** — purchased from ClawHub and installed via `clawhub install <name>`
-- **coderClawLink-assigned** — pushed to a specific claw by an operator via the portal
+- **builderforce.ai-assigned** — pushed to a specific claw by an operator via the portal
 
 ---
 
@@ -156,13 +156,13 @@ The gateway automatically loads new personas on the next startup (or `/sync`).
 
 ---
 
-## Assigning Personas via coderClawLink
+## Assigning Personas via builderforce.ai
 
-Operators can push persona assignments to specific claws from the coderClawLink portal.
+Operators can push persona assignments to specific claws from the builderforce.ai portal.
 The assignment is stored in `.coderClaw/context.yaml` and activated at gateway startup:
 
 ```yaml
-# .coderClaw/context.yaml (managed by coderClawLink — do not edit manually)
+# .coderClaw/context.yaml (managed by builderforce.ai — do not edit manually)
 personas:
   assignments:
     - name: senior-security-reviewer
@@ -183,7 +183,7 @@ source wins:
 
 | Priority    | Source              | Location                                       |
 | ----------- | ------------------- | ---------------------------------------------- |
-| 5 (highest) | `clawlink-assigned` | pushed from coderClawLink portal               |
+| 5 (highest) | `clawlink-assigned` | pushed from builderforce.ai portal               |
 | 4           | `clawhub`           | `~/.coderclaw/personas/` (marketplace install) |
 | 3           | `project-local`     | `.coderClaw/personas/*.yaml`                   |
 | 2           | `user-global`       | `~/.coderclaw/personas/*.yaml`                 |

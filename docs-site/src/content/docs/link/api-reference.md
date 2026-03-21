@@ -217,7 +217,7 @@ PENDING → SUBMITTED → RUNNING → COMPLETED
 PENDING / SUBMITTED / RUNNING → CANCELLED
 ```
 
-> **Legacy compatibility:** Older coderClawLink transport adapter paths (`/api/runtime/sessions`, `/api/runtime/tasks/submit`, etc.) are supported for backward compatibility.
+> **Legacy compatibility:** Older builderforce.ai transport adapter paths (`/api/runtime/sessions`, `/api/runtime/tasks/submit`, etc.) are supported for backward compatibility.
 
 **Legacy endpoints (ClawLink compatibility)**
 

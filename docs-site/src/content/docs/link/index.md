@@ -1,11 +1,11 @@
 ---
 title: Orchestration (Builderforce)
-description: Documentation for the CoderClaw orchestration portal (Builderforce.ai replaces CoderClawLink)
+description: Documentation for the CoderClaw orchestration portal (Builderforce.ai replaces builderforce.ai)
 ---
 
 # Documentation Index — Orchestration (Builderforce)
 
-Welcome to the orchestration documentation. Builderforce.ai replaces CoderClawLink. Use the links below to find what you need.
+Welcome to the orchestration documentation. Builderforce.ai replaces builderforce.ai. Use the links below to find what you need.
 
 ---
 
@@ -47,7 +47,7 @@ Welcome to the orchestration documentation. Builderforce.ai replaces CoderClawLi
 ## External links
 
 - [CoderClaw core agent runtime](https://github.com/SeanHogg/coderClaw)
-- [Builderforce.ai](https://builderforce.ai) · [Builderforce repo](https://github.com/SeanHogg/coderClawLink)
+- [Builderforce.ai](https://builderforce.ai) · [Builderforce repo](https://github.com/SeanHogg/builderforce.ai)
 - [Discord community](https://discord.gg/qkhbAGHRBT)
 - [coderclaw.ai](https://coderclaw.ai)
 - [builderforce.ai](https://builderforce.ai)

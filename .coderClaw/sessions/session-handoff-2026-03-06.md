@@ -8,7 +8,7 @@
 
 ## Summary
 
-This session completed multiple phases of the SmolLM2 local brain integration and surrounding infrastructure. Key accomplishments: (1) diagnosed and fixed local brain not routing requests — `/localbrain on` now sets `agents.defaults.model.primary` to `coderclawllm-local/{amygdalaModelId}` so `resolveModel()` yields `api:"transformers"` and the brain pipeline activates; (2) fixed the exec host error message to show the _requested_ host rather than the configured one; (3) changed `tools.exec.host` default from `sandbox` to `gateway` across code (bash-tools.exec.ts, directive-handling.impl.ts, onboard-config.ts) and documentation (5 doc files in coderclaw.ai, EN + ZH); (4) added `[brain-routing]` logging in attempt.ts and coderclawllm-local-stream.ts; (5) fixed TUI message duplication by noting `user-${clientRunId}` variant in dedup guard; (6) fixed execution hang from missing path separator bug (`fixMissingRootSeparator()` in pi-tools.read.ts); (7) renamed `.coderClaw/` → `.coderclaw/` directory constant and all doc references. On the coderClawLink side: added unified artifact likes system (`artifact_likes` table, `marketplaceStatsRoutes.ts`), wired likes/installs into marketplace, personas, skills, and content views with real API stats.
+This session completed multiple phases of the SmolLM2 local brain integration and surrounding infrastructure. Key accomplishments: (1) diagnosed and fixed local brain not routing requests — `/localbrain on` now sets `agents.defaults.model.primary` to `coderclawllm-local/{amygdalaModelId}` so `resolveModel()` yields `api:"transformers"` and the brain pipeline activates; (2) fixed the exec host error message to show the _requested_ host rather than the configured one; (3) changed `tools.exec.host` default from `sandbox` to `gateway` across code (bash-tools.exec.ts, directive-handling.impl.ts, onboard-config.ts) and documentation (5 doc files in coderclaw.ai, EN + ZH); (4) added `[brain-routing]` logging in attempt.ts and coderclawllm-local-stream.ts; (5) fixed TUI message duplication by noting `user-${clientRunId}` variant in dedup guard; (6) fixed execution hang from missing path separator bug (`fixMissingRootSeparator()` in pi-tools.read.ts); (7) renamed `.coderClaw/` → `.coderclaw/` directory constant and all doc references. On the builderforce.ai side: added unified artifact likes system (`artifact_likes` table, `marketplaceStatsRoutes.ts`), wired likes/installs into marketplace, personas, skills, and content views with real API stats.
 
 ---
 
@@ -22,7 +22,7 @@ This session completed multiple phases of the SmolLM2 local brain integration an
 
 4. **`fixMissingRootSeparator()` for LLM path bugs** — LLMs sometimes emit `C:\code\project.coderclaw\file` instead of `C:\code\project\.coderclaw\file`. The fix inserts the missing separator at the tool param normalization layer.
 
-5. **Unified artifact likes in coderClawLink** — Single `artifact_likes` table + `artifact_assignments` replaces per-type like tracking. Stats fetched via batch `GET /api/marketplace-stats/stats?type=skill&slugs=a,b,c`.
+5. **Unified artifact likes in builderforce.ai** — Single `artifact_likes` table + `artifact_assignments` replaces per-type like tracking. Stats fetched via batch `GET /api/marketplace-stats/stats?type=skill&slugs=a,b,c`.
 
 6. **`.coderClaw/` → `.coderclaw/`** — The project context directory constant (`CODERCLAW_DIR`) was renamed to lowercase for consistency. All planning docs updated to match.
 
@@ -34,11 +34,11 @@ This session completed multiple phases of the SmolLM2 local brain integration an
 
 2. **Verify local brain end-to-end** — Start the gateway, send a message through TUI, and confirm `[brain-routing]` logs show `api=transformers localBrain=enabled → amygdala/hippocampus pipeline`. Verify model download triggers if not cached.
 
-3. **Run coderClawLink migration** — Migrations `0020_artifact_assignments.sql` and `0021_artifact_likes.sql` need to be applied to the database. Then verify the marketplace stats routes work end-to-end.
+3. **Run builderforce.ai migration** — Migrations `0020_artifact_assignments.sql` and `0021_artifact_likes.sql` need to be applied to the database. Then verify the marketplace stats routes work end-to-end.
 
-4. **Build verification** — Run `npm run build:windows` in coderClaw and `npx tsc --noEmit` in coderClawLink to confirm clean builds.
+4. **Build verification** — Run `npm run build:windows` in coderClaw and `npx tsc --noEmit` in builderforce.ai to confirm clean builds.
 
-5. **PR description update** — PR #36 description should be updated to reflect the exec host default change, brain routing fix, and all the new coderClawLink marketplace features.
+5. **PR description update** — PR #36 description should be updated to reflect the exec host default change, brain routing fix, and all the new builderforce.ai marketplace features.
 
 6. **Consider onboarding UX** — The onboarding flow now sets `tools.exec.host = "gateway"` explicitly. Verify this works for fresh installs by testing the onboarding wizard path.
 
@@ -52,7 +52,7 @@ This session completed multiple phases of the SmolLM2 local brain integration an
 
 3. **Flaky gateway-lock test** — One test (`gateway-lock`) has been intermittently failing across sessions. Needs investigation.
 
-4. **coderClawLink build output** — The `index.html` diff shows only whitespace/formatting changes but the built assets reference specific hashes (`index-oL-O1KNO.js`, `index-nqgKTvWh.css`). Need to rebuild after the marketplace/stats changes.
+4. **builderforce.ai build output** — The `index.html` diff shows only whitespace/formatting changes but the built assets reference specific hashes (`index-oL-O1KNO.js`, `index-nqgKTvWh.css`). Need to rebuild after the marketplace/stats changes.
 
 ---
 
@@ -95,7 +95,7 @@ This session completed multiple phases of the SmolLM2 local brain integration an
 - `docs-site/src/content/docs/zh-cn/gateway/security/index.md` — same (Chinese)
 - `docs-site/src/content/docs/zh-cn/refactor/exec-host.md` — default security updated
 
-### coderClawLink (branch: `main`)
+### builderforce.ai (branch: `main`)
 
 **Modified:**
 

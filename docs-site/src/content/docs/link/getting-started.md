@@ -45,8 +45,8 @@ You also need:
 ## 2. Clone and Install
 
 ```bash
-git clone https://github.com/SeanHogg/coderClawLink.git
-cd coderClawLink
+git clone https://github.com/SeanHogg/builderforce.ai.git
+cd builderforce.ai
 pnpm install
 ```
 
@@ -66,7 +66,7 @@ npm install -g neonctl
 neonctl auth
 
 # Create a project
-neonctl projects create --name coderclawlink
+neonctl projects create --name builderforce.ai
 
 # Get your connection string
 neonctl connection-string --project-id <your-project-id>
@@ -99,7 +99,7 @@ wrangler login
 ### Create a Hyperdrive binding (Cloudflare-managed connection pool)
 
 ```bash
-wrangler hyperdrive create coderclawlink-db \
+wrangler hyperdrive create builderforce.ai-db \
   --connection-string="postgresql://user:password@host/db"
 ```
 

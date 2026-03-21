@@ -8,7 +8,7 @@
 CoderClaw is a self-hosted AI coding agent gateway that runs on developer machines.  
 It provides **7 built-in agent roles**, a **multi-agent orchestrator**, **53 skills**, a
 **semantic knowledge loop**, and a **WebSocket-based transport layer**. It connects to
-**coderClawLink** (cloud portal) for fleet management, task delegation, approval
+**builderforce.ai** (cloud portal) for fleet management, task delegation, approval
 workflows, and observability.
 
 ---
@@ -73,7 +73,7 @@ Human Developer
 │  │  Per-run: files created/edited, tools used            │     │
 │  │  Semantic summary (heuristic, no model call)          │     │
 │  │  Writes: .coderClaw/memory/YYYY-MM-DD.md              │     │
-│  │  Auto-syncs to CoderClawLink on completion            │     │
+│  │  Auto-syncs to builderforce.ai on completion            │     │
 │  └─────────────────────────────────────────────────────┘     │
 │                                                               │
 │  ┌─────────────────────────────────────────────────────┐     │
@@ -116,7 +116,7 @@ Human Developer
                                         │
                                         ▼
 ┌──────────────────────────────────────────────────────────────┐
-│                   coderClawLink  (Cloud)                       │
+│                   builderforce.ai  (Cloud)                       │
 │                                                               │
 │  Runtime: Hono on Cloudflare Workers                          │
 │  DB: Drizzle ORM → Postgres (Hyperdrive)                     │
@@ -176,11 +176,11 @@ re-loaded per spawn so sub-agents have isolated, role-specific identities.
 
 - `agent-roles.ts` — 7 built-in roles with `persona` + `outputFormat` definitions.
   `findAgentRole()` resolves in order: built-ins → `.coderclaw/personas/` (project-local) →
-  `PersonaRegistry` (marketplace / coderClawLink). `registerCustomRoles()` /
+  `PersonaRegistry` (marketplace / builderforce.ai). `registerCustomRoles()` /
   `clearCustomRoles()` for runtime management.
 - `personas.ts` — **`PersonaRegistry`**: plugin install/activate/assign lifecycle;
   loads from `~/.coderclaw/personas/` (user-global), `.coderClaw/personas/` (project),
-  ClawHub-installed files, and coderClawLink assignments.
+  ClawHub-installed files, and builderforce.ai assignments.
   `buildPersonaSystemBlock()` encodes a role's voice/perspective/decisionStyle/
   outputFormat into a structured `--- Agent Persona ---` section for brain injection.
 - `orchestrator.ts` — workflow engine: dependency DAG, task scheduling, disk persistence,
@@ -220,7 +220,7 @@ re-loaded per spawn so sub-agents have isolated, role-specific identities.
 ### Loading Precedence (highest wins)
 
 ```
-clawlink-assigned  ← pushed from coderClawLink by an operator
+clawlink-assigned  ← pushed from builderforce.ai by an operator
       clawhub      ← installed from ClawHub marketplace (clawhub install <name>)
   project-local    ← .coderClaw/personas/*.yaml  (this project only)
    user-global     ← ~/.coderclaw/personas/*.yaml (all projects on this machine)
@@ -284,12 +284,12 @@ constraints:
 7. Each sub-agent spawn → new brain instance → isolated persona identity
 ```
 
-### coderClawLink Persona Assignment
+### builderforce.ai Persona Assignment
 
-Operators assign marketplace personas to specific claws via the coderClawLink portal:
+Operators assign marketplace personas to specific claws via the builderforce.ai portal:
 
 ```
-coderClawLink assigns persona → context.yaml personas.assignments updated
+builderforce.ai assigns persona → context.yaml personas.assignments updated
                                → gateway reads on startup → applyAssignments()
                                → persona.active = true for matching plugins
 ```
@@ -360,7 +360,7 @@ labels each prior agent's section so the receiving agent can quickly find the re
 7. KnowledgeLoopService accumulates tool/file activity
 8. Agent produces response
 9. Response rendered in TUI / forwarded to channel
-10. On lifecycle.end: knowledge entry written + CoderClawLink synced
+10. On lifecycle.end: knowledge entry written + builderforce.ai synced
 ```
 
 ### Spec-Driven Development (`/spec`)
@@ -378,7 +378,7 @@ labels each prior agent's section so the receiving agent can quickly find the re
 7. Agent reports summary to user
 ```
 
-### coderClawLink Integration
+### builderforce.ai Integration
 
 ```
 1. coderclaw init → login → register claw → get API key
@@ -415,7 +415,7 @@ Auto-routing:     role: "remote:auto[cap1,cap2]"
 6. CoderClawLLM syscheck — RAM + disk check before SmolLM2 load; external LLM fallback
 7. Session handoff — `save_session_handoff` tool + `/handoff` + auto-load on start
 8. Workflow persistence — checkpoints to `.coderClaw/sessions/workflow-*.yaml`; resume after restart
-9. Knowledge loop — activity log + CoderClawLink sync + `project_knowledge memory` query
+9. Knowledge loop — activity log + builderforce.ai sync + `project_knowledge memory` query
 10. Claw mesh — fleet discovery, heartbeat, `/forward` dispatch, `claw_fleet` tool
 11. Capability-based claw routing — `remote:auto` / `remote:auto[cap1,cap2]`
 12. `/spec`, `/workflow`, `/compact`, `/handoff` TUI commands
@@ -425,7 +425,7 @@ Auto-routing:     role: "remote:auto[cap1,cap2]"
 ### 🔲 Open Items
 
 - ClawHub marketplace download/install flow (client-side types ready, backend pending)
-- coderClawLink: Persona Assignment API endpoint
+- builderforce.ai: Persona Assignment API endpoint
 - Remote task result streaming (claw-to-claw result channel)
 - Semantic knowledge synthesis (architecture.md auto-update after structural edits)
 - VS Code extension (sidebar + inline diff decoration)

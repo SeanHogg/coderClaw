@@ -22,10 +22,10 @@ CoderClaw is a self-hosted AI coding agent gateway. Core capabilities:
 
 - Multi-agent orchestration (dependency DAG, 6 workflow types)
 - 7 built-in roles with personas and output contracts
-- Persona plugin registry (marketplace + coderClawLink assignment)
+- Persona plugin registry (marketplace + builderforce.ai assignment)
 - CoderClawLLM brain (local SmolLM2 ONNX or external LLM fallback)
 - 53 skills, 30+ model providers, all major messaging channels
-- coderClawLink cloud portal integration (relay, directory sync, fleet)
+- builderforce.ai cloud portal integration (relay, directory sync, fleet)
 
 ---
 
@@ -86,7 +86,7 @@ All domain types. Key types added in this sprint:
 
 1. Built-ins (always available, cannot be overridden)
 2. `globalCustomRoles` — `.coderClaw/agents/*.yaml`, registered via `registerCustomRoles()`
-3. `globalPersonaRegistry.resolve(name)` — marketplace / coderClawLink personas
+3. `globalPersonaRegistry.resolve(name)` — marketplace / builderforce.ai personas
 
 ### Persona Plugin Registry — `src/coderclaw/personas.ts`
 
@@ -305,7 +305,7 @@ Human Developer (TUI / IDE / messaging channel)
 │
 ▼
 ┌─────────────────────────────────────────┐
-│ coderClawLink (Cloud) │
+│ builderforce.ai (Cloud) │
 │ Hono on Cloudflare Workers │
 │ Drizzle ORM → Postgres (Hyperdrive) │
 │ ClawRelayDO (Durable Object, WS relay) │
@@ -386,7 +386,7 @@ Human Developer (TUI / IDE / messaging channel)
 
 ### Transport (`src/transport/`)
 
-- `clawlink-adapter.ts` — HTTP transport to coderClawLink API (runtime executions)
+- `clawlink-adapter.ts` — HTTP transport to builderforce.ai API (runtime executions)
 - Types: TransportAdapter interface, ClawLinkConfig, RuntimeInterface
 
 ### ClawLink Relay (`src/infra/`)
@@ -424,7 +424,7 @@ Human Developer (TUI / IDE / messaging channel)
 2. ✅ `agent-roles.ts` wired — 7 built-in + custom YAML roles enforced at spawn
 3. ✅ Session handoff — `save_session_handoff` tool + `/handoff` + auto-load on start
 4. ✅ Workflow persistence — checkpoints to `.coderClaw/sessions/workflow-*.yaml`; resume after restart
-5. ✅ Knowledge loop — activity log + CoderClawLink sync + `project_knowledge memory` query
+5. ✅ Knowledge loop — activity log + builderforce.ai sync + `project_knowledge memory` query
 6. ✅ Claw mesh — fleet discovery, heartbeat, `/forward` dispatch, `claw_fleet` tool,
    `remote:<clawId>` orchestrator routing
 
@@ -446,7 +446,7 @@ Human Developer (TUI / IDE / messaging channel)
 
 - Subscribes to `onAgentEvent`; accumulates tool/file activity per run
 - On `lifecycle.end`: appends timestamped entry to `.coderClaw/memory/YYYY-MM-DD.md`
-- Calls `syncCoderClawDirectory()` to push the updated file to CoderClawLink
+- Calls `syncCoderClawDirectory()` to push the updated file to builderforce.ai
 
 **Claw-to-Claw Mesh** (`src/infra/remote-subagent.ts`, `src/coderclaw/tools/claw-fleet-tool.ts`):
 
@@ -470,7 +470,7 @@ Human Developer (TUI / IDE / messaging channel)
 
 ```
 
-### coderClawLink Persona Assignment
+### builderforce.ai Persona Assignment
 
 ```
 
@@ -502,7 +502,7 @@ operator assigns persona in portal
 | Gateway bootstrap (registry init) | server.impl.ts |
 | Session handoff save/load | save-session-handoff-tool.ts, tui-session-actions.ts |
 | Workflow persistence + resume | orchestrator.ts |
-| Knowledge loop + coderClawLink sync | knowledge-loop.ts |
+| Knowledge loop + builderforce.ai sync | knowledge-loop.ts |
 | Claw mesh + capability routing | remote-subagent.ts, orchestrator.ts |
 | /spec, /workflow, /compact, /handoff | tui-command-handlers.ts |
 | Staged edits (/diff, /accept, /reject) | staged-edits.ts |
@@ -513,8 +513,8 @@ operator assigns persona in portal
 | Item | Notes |
 |------|-------|
 | ClawHub persona download/install flow | Client types ready; clawhub CLI + backend pending |
-| coderClawLink Persona Assignment API | Backend endpoint to push assignments to claws |
-| Remote task result streaming | Claw-to-claw result channel (requires coderClawLink relay frame) |
+| builderforce.ai Persona Assignment API | Backend endpoint to push assignments to claws |
+| Remote task result streaming | Claw-to-claw result channel (requires builderforce.ai relay frame) |
 | Semantic architecture.md auto-update | Trigger doc-agent after ≥3 structural edits in a run |
 | VS Code extension | Sidebar + inline diff decoration |
 | Tab autocomplete / FIM proxy | `/fim` endpoint |

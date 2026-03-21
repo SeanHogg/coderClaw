@@ -19,7 +19,7 @@ more sophisticated self-improvement capabilities.
 
 - coderClaw installed and working (`coderclaw` TUI launches successfully)
 - Access to an LLM provider (Anthropic, OpenAI, etc.)
-- Both repos cloned: `coderClaw/` and `coderClawLink/`
+- Both repos cloned: `coderClaw/` and `builderforce.ai/`
 
 ## Phase Map
 
@@ -62,10 +62,10 @@ This creates `.coderClaw/` with:
 - `memory/` — persistent knowledge (not yet wired — that's Gap 5)
 - `sessions/` — session handoff documents (not yet wired — that's Gap 3)
 
-**Also initialize for coderClawLink** if you'll work on both repos:
+**Also initialize for builderforce.ai** if you'll work on both repos:
 
 ```bash
-cd ../coderClawLink
+cd ../builderforce.ai
 coderclaw init
 ```
 
@@ -264,7 +264,7 @@ Build platform   →  CoderClaw is a production AI coding mesh
 
 ## Cross-Repo Work
 
-Some roadmap items touch both `coderClaw/` and `coderClawLink/`. Run separate
+Some roadmap items touch both `coderClaw/` and `builderforce.ai/`. Run separate
 sessions in each repo:
 
 ```bash
@@ -273,8 +273,8 @@ cd coderClaw
 coderclaw
 > [implement the claw-side changes]
 
-# Session 2: coderClawLink side
-cd coderClawLink
+# Session 2: builderforce.ai side
+cd builderforce.ai
 coderclaw
 > [implement the Link-side changes]
 ```

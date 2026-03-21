@@ -32,7 +32,7 @@
 
 - `KnowledgeLoopService` writes `.coderclaw/memory/YYYY-MM-DD.md` after every run.
 - `project_knowledge memory` query surfaces recent entries to agents.
-- Auto-synced to CoderClawLink on write.
+- Auto-synced to builderforce.ai on write.
 
 ### Claw-to-claw mesh ✅
 
@@ -81,7 +81,7 @@
 
 - Protocol-agnostic `RuntimeInterface` + pluggable `TransportAdapter`.
 - `LocalTransportAdapter` — in-process execution reference implementation.
-- `ClawLinkTransportAdapter` — HTTP adapter to CoderClawLink runtime API.
+- `ClawLinkTransportAdapter` — HTTP adapter to builderforce.ai runtime API.
 - File: `src/transport/`
 
 ### Distributed task lifecycle ✅
@@ -132,7 +132,7 @@
 - `PersonaRegistry` — load/activate/assign lifecycle for marketplace + local personas.
 - PERSONA.yaml format with `clawhubId`, `version`, `author`, `license`, `requiresLicense`.
 - Source precedence: builtin < user-global < project-local < clawhub < clawlink-assigned.
-- `context.yaml` `personas.assignments` for coderClawLink-assigned personas.
+- `context.yaml` `personas.assignments` for builderforce.ai-assigned personas.
 - Gateway bootstraps registry on startup (built-ins → user → project → assignments).
 - File: `src/coderclaw/personas.ts`, `src/coderclaw/project-context.ts`,
   `src/gateway/server.impl.ts`
@@ -152,7 +152,7 @@
 ### Remote task result streaming
 
 - Claw-to-claw tasks are fire-and-forget; dependent steps cannot consume remote output.
-- **Requires coderClawLink change**: `remote.result` relay frame in `ClawRelayDO`.
+- **Requires builderforce.ai change**: `remote.result` relay frame in `ClawRelayDO`.
 - See CAPABILITY_GAPS.md Gap I.
 
 ### Architecture.md semantic auto-update
@@ -162,7 +162,7 @@
 - Add `/knowledge update` TUI command.
 - See CAPABILITY_GAPS.md Gap K.
 
-### coderClawLink feature gaps
+### builderforce.ai feature gaps
 
 - See `.coderclaw/planning/CODERCLAW_LINK_GAPS.md` for full list.
 - Key items: workflow/spec portal UI, execution WS streaming, spec storage API,
@@ -180,12 +180,12 @@
 **Problem**: No live visibility into which agent is executing, what it is doing, or how far along it is.  
 **Competitors with this**: Devin, Windsurf Cascade, Cursor Composer, OpenHands web UI.
 
-- coderClawLink portal: live workflow DAG with per-task status badge and elapsed time
+- builderforce.ai portal: live workflow DAG with per-task status badge and elapsed time
 - New WS relay frames: `workflow.update`, `task.started`, `task.output_delta`, `task.completed`
 - TUI: `/pane` command to toggle chat ↔ live workflow view
 - Per-task agent persona display (role name, model, current action)
 
-Files: `src/coderclaw/orchestrator.ts`, `src/infra/clawlink-relay.ts`, coderClawLink SPA
+Files: `src/coderclaw/orchestrator.ts`, `src/infra/clawlink-relay.ts`, builderforce.ai SPA
 
 ### 2.2 MCP Codebase Semantic Search 🔲 (P0)
 
@@ -207,7 +207,7 @@ Files: `src/coderclaw/tools/project-knowledge-tool.ts`, `extensions/memory-lance
 - Diff staging buffer: agent writes to staged store; `/accept [file]` applies, `/reject [file]` discards
 - TUI `/diff` command: show pending changes as unified diff
 - TUI `/accept all` and `/reject all` for batch approval
-- Integration with approval workflow API (coderClawLink P3-3)
+- Integration with approval workflow API (builderforce.ai P3-3)
 
 Files: `src/agents/tools/`, `src/tui/commands.ts`, `src/tui/tui-command-handlers.ts`
 
@@ -234,10 +234,10 @@ Files: `src/tui/tui-command-handlers.ts`, `src/coderclaw/project-context.ts`
 - Brain injection: `context.systemPrompt` now prepended to `brainSystem` — persona active on ALL paths
 - `project-context.ts`: `personasDir`, `loadProjectPersonaPlugins()`, `loadPersonaAssignments()`,
   `savePersonaAssignment()`, `removePersonaAssignment()`
-- `context.yaml`: `personas.assignments` field for coderClawLink-assigned personas
+- `context.yaml`: `personas.assignments` field for builderforce.ai-assigned personas
 - Gateway bootstrap loads all persona layers on startup
 
-**Remaining**: ClawHub install CLI + coderClawLink Persona Assignment API endpoint.
+**Remaining**: ClawHub install CLI + builderforce.ai Persona Assignment API endpoint.
 
 ### 2.6 GitHub Issue → PR End-to-End Workflow 🔲 (P1)
 
@@ -261,7 +261,7 @@ Files: `src/coderclaw/orchestrator-enhanced.ts`, new `src/coderclaw/tools/gh-iss
 - Configurable depth: quick (security/bugs only) vs. full (style + architecture)
 - Free for open-source repositories (community growth driver)
 
-Files: new `src/github-app/`, coderClawLink webhook handler
+Files: new `src/github-app/`, builderforce.ai webhook handler
 
 ---
 

@@ -1,19 +1,19 @@
-# coderClawLink Feature Gaps
+# builderforce.ai Feature Gaps
 
-> Repo: https://github.com/SeanHogg/coderClawLink  
+> Repo: https://github.com/SeanHogg/builderforce.ai  
 > Last updated: 2026-03-04 (revised 2026-03-04 — capability routing implemented)  
-> Source: Deep audit of coderClaw ↔ coderClawLink API surface, capability gap analysis,
+> Source: Deep audit of coderClaw ↔ builderforce.ai API surface, capability gap analysis,
 > and comparison with market-leading agents (Claude Code, Cursor, mini-swe-agent, Devin).
 
 This document is the **canonical requirements handoff** from the coderClaw client to
-the coderClawLink backend/portal team. Each item is prioritised, self-contained, and
+the builderforce.ai backend/portal team. Each item is prioritised, self-contained, and
 traceable to a specific coderClaw gap or market capability.
 
 > **Note on P2-3 (Fleet Capability Management)**: The coderClaw orchestrator now supports
 > `remote:auto` and `remote:auto[cap1,cap2]` capability-based routing using the existing
 > `GET /api/claws/fleet` heartbeat capabilities. The coderClaw-side implementation is
 > complete. The SPA management UI for declaring additional capabilities is still a
-> coderClawLink-side gap.
+> builderforce.ai-side gap.
 
 ---
 
@@ -38,7 +38,7 @@ sends a `remote.task` to a peer claw via `ClawRelayDO` but receives no result.
 Any orchestrator workflow step using `remote:<clawId>` always produces `output: ""`
 — making multi-claw orchestration non-functional for dependent steps.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **New relay frame type** in `ClawRelayDO`:
    ```json
@@ -79,7 +79,7 @@ with non-empty `output`; dependent steps receive it as `input`.
 `src/transport/clawlink-adapter.ts`. This creates unnecessary load and adds up to
 2 s of latency to every execution result.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **WebSocket upgrade** on `GET /api/runtime/executions/:id`:
    - Client upgrades the connection; server streams `ExecutionEvent` frames:
@@ -91,7 +91,7 @@ with non-empty `output`; dependent steps receive it as `input`.
 2. **Fallback**: keep existing polling endpoint for clients that cannot upgrade.
 
 **coderClaw side** (`src/transport/clawlink-adapter.ts`):  
-Code comment already flags this: _"CoderClawLink currently exposes polling;
+Code comment already flags this: _"builderforce.ai currently exposes polling;
 WebSocket streaming is on its roadmap."_
 
 ---
@@ -102,7 +102,7 @@ WebSocket streaming is on its roadmap."_
 
 **Problem**  
 The `/spec <goal>` TUI command triggers a planning workflow that saves outputs to
-`.coderclaw/planning/` locally. These files are eventually synced to coderClawLink
+`.coderclaw/planning/` locally. These files are eventually synced to builderforce.ai
 via the directory-sync endpoint, but they are stored as raw blobs with no structured
 schema. There is no way to:
 
@@ -110,7 +110,7 @@ schema. There is no way to:
 - Track spec status (draft → reviewed → approved → implemented)
 - Link a spec to workflow executions
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **New table**: `specs`
 
@@ -155,7 +155,7 @@ Workflows run locally and are only visible via `.coderclaw/sessions/workflow-*.y
 files and the TUI `/workflow` command. There is no web UI showing workflow history,
 task breakdown, timings, or outputs.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **New table**: `workflows`
 
@@ -204,17 +204,17 @@ task breakdown, timings, or outputs.
    ```
 
 **coderClaw side** (`src/coderclaw/orchestrator.ts`): Push workflow state changes to
-coderClawLink so the portal shows live progress.
+builderforce.ai so the portal shows live progress.
 
 ---
 
 ### P1-3: Spec Review Portal (SPA)
 
 **Problem**  
-The coderClawLink SPA has no page for viewing, reviewing, or approving specs. Product
+The builderforce.ai SPA has no page for viewing, reviewing, or approving specs. Product
 owners cannot interact with agent-generated specs without accessing raw YAML files.
 
-**Required Changes to coderClawLink SPA**
+**Required Changes to builderforce.ai SPA**
 
 1. **Specs list page** (`/specs`): table of specs with goal, project, status, date.
 2. **Spec detail page** (`/specs/:id`):
@@ -234,11 +234,11 @@ owners cannot interact with agent-generated specs without accessing raw YAML fil
 ### P2-1: Knowledge / Memory Query API
 
 **Problem**  
-`.coderclaw/memory/` files are synced to coderClawLink via directory-sync but are
+`.coderclaw/memory/` files are synced to builderforce.ai via directory-sync but are
 stored as raw text blobs. There is no structured endpoint to search, filter, or render
 them. Agents currently query memory only locally via `project_knowledge memory`.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **Memory indexing job**: after directory-sync, parse `memory/YYYY-MM-DD.md` files
    and extract structured entries (timestamp, session key, created/edited/tools, summary).
@@ -260,7 +260,7 @@ them. Agents currently query memory only locally via `project_knowledge memory`.
 Token usage per session is visible only in the TUI status footer. There is no
 historical view of token spend, context pressure, or compaction events.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **New relay frame** from upstream WS:
    ```json
@@ -286,7 +286,7 @@ historical view of token spend, context pressure, or compaction events.
 Heartbeat capabilities are stored in the DB but the SPA has no UI to view or configure
 them. Fleet routing (`remote:auto`) needs a way to declare required capabilities per claw.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **Extend claws table**: `declared_capabilities jsonb` (user-configured, in addition to
    the runtime `capabilities` from heartbeat).
@@ -306,7 +306,7 @@ them. Fleet routing (`remote:auto`) needs a way to declare required capabilities
 There is no immutable, queryable log of which agent called which tool with what arguments
 and results. This makes debugging multi-agent orchestration extremely difficult.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **New relay frame** from upstream WS:
    ```json
@@ -359,7 +359,7 @@ deduplication, or conflict resolution.
 **Required**:
 
 - When an agent wants to perform a destructive action (rm, force-push, deploy), it can
-  request human approval via coderClawLink.
+  request human approval via builderforce.ai.
 - `POST /api/approvals` creates a pending approval.
 - `PATCH /api/approvals/:id` accepts/rejects.
 - Relay frame `{ type: "approval.request" }` triggers browser notification.
@@ -372,7 +372,7 @@ deduplication, or conflict resolution.
 **Required**:
 
 - OAuth connections to issue trackers.
-- "Import as spec" converts a GitHub Issue / Linear ticket into a coderClawLink spec.
+- "Import as spec" converts a GitHub Issue / Linear ticket into a builderforce.ai spec.
 - `/spec import <url>` TUI command triggers the import and starts planning.
 
 ---
@@ -392,7 +392,7 @@ which agents are executing, which tasks are pending/running/failed, or what the 
 agent persona is doing in real time. Devin, Windsurf Cascade, and OpenHands all show
 this live.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **New relay frames** from upstream WS:
 
@@ -429,7 +429,7 @@ available inside CoderClaw sessions. Developers using Cursor, Windsurf, Continue
 or Goose cannot call them. The `mcporter` bridge enables consuming external MCP servers
 but does not expose CoderClaw as a provider.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **MCP endpoint**: expose `GET /api/mcp/manifest` (MCP tool manifest) and
    `POST /api/mcp/call` (tool invocation) authenticated by API key.
@@ -461,7 +461,7 @@ review. For teams or risky refactors, developers want to review diffs before the
 Aider and Cursor Composer both offer this. The existing approval workflow API (P3-3)
 is for destructive tool calls, not file diffs.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **New table**: `pending_diffs`
 
@@ -505,7 +505,7 @@ POST diff to `/api/diffs` and await `diff.accepted` relay frame before applying.
 Agent personas (model + system-prompt customization) are currently local YAML files.
 Teams cannot share personas or enforce a standard persona set across all claws.
 
-**Required Changes to coderClawLink**
+**Required Changes to builderforce.ai**
 
 1. **New table**: `personas`
 
@@ -535,7 +535,7 @@ Teams cannot share personas or enforce a standard persona set across all claws.
    can load team personas without manual file sync.
 
 **coderClaw side** (`src/coderclaw/personas.ts`):  
-On startup, fetch tenant personas from coderClawLink and write to
+On startup, fetch tenant personas from builderforce.ai and write to
 `.coderclaw/personas/<name>.yaml`; `/persona` TUI command activates one.
 
 ---
@@ -583,7 +583,7 @@ On startup, fetch tenant personas from coderClawLink and write to
 > **P2-3 coderClaw status**: `remote:auto` and `remote:auto[cap1,cap2]` capability routing
 > implemented in `src/coderclaw/orchestrator.ts` and `src/infra/remote-subagent.ts`.
 > The SPA fleet management UI (declared capabilities, fleet routing endpoint) is the
-> remaining coderClawLink-side work.
+> remaining builderforce.ai-side work.
 
 ---
 

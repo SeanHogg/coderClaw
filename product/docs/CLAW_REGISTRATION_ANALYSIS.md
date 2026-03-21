@@ -1,6 +1,6 @@
 # Claw Registration — End-to-End Analysis
 
-> Deep-dive across **coderClaw** and **coderClawLink** covering registration,
+> Deep-dive across **coderClaw** and **builderforce.ai** covering registration,
 > connection, relay protocol, gaps blocking ROADMAP Phases 2 & 4, and the
 > proposed **coderclawLLM** routing API.
 
@@ -8,7 +8,7 @@
 
 ## 1. Is Registration Implemented in Both Projects?
 
-| Concern                        | coderClawLink (server)                                                               | coderClaw (client)                                                                         |
+| Concern                        | builderforce.ai (server)                                                               | coderClaw (client)                                                                         |
 | ------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | **Claw CRUD API**              | ✅ Full — `POST /api/claws`, `GET /api/claws`, `DELETE /api/claws/:id`               | N/A (consumer only)                                                                        |
 | **Registration wizard**        | N/A (receives requests)                                                              | ✅ Full — interactive TUI wizard in `coderclaw init` (`promptClawLink`)                    |
@@ -42,7 +42,7 @@ around claw domain modeling and claw-scoped skill resolution.
          └──────────────────────┬──────────────────────────┘
                                 │ (not connected)
          ┌──────────────────────▼──────────────────────────┐
-   2     │ Prompt: "Connect to coderClawLink?"              │
+   2     │ Prompt: "Connect to builderforce.ai?"              │
          │   → No  ⇒ writes CODERCLAW_LINK_SKIPPED=1       │
          │   → Yes ⇒ continue                              │
          └──────────────────────┬──────────────────────────┘
@@ -111,7 +111,7 @@ around claw domain modeling and claw-scoped skill resolution.
 #### Path A — Task delegation (HTTP transport, WORKS today)
 
 ```
-coderClaw                        coderClawLink
+coderClaw                        builderforce.ai
    │                                   │
    │  ClawLinkTransportAdapter         │
    │  ─────────────────────────        │
@@ -209,9 +209,9 @@ and discovery routes:
 The adapter now supports authenticated calls via optional `authToken` in
 `ClawLinkConfig`.
 
-### GAP 4: No Claw Domain Entity in coderClawLink
+### GAP 4: No Claw Domain Entity in builderforce.ai
 
-`coderClawLink/api/src/domain/` has: agent, audit, execution, project, shared, skill, task, tenant, user — but **no `claw/` domain**. The claw registration routes directly query the DB with raw Drizzle calls instead of going through proper domain entities and repository abstractions.
+`builderforce.ai/api/src/domain/` has: agent, audit, execution, project, shared, skill, task, tenant, user — but **no `claw/` domain**. The claw registration routes directly query the DB with raw Drizzle calls instead of going through proper domain entities and repository abstractions.
 
 **Impact**: Business rules for claw lifecycle (suspension, limits, audit trails) are ad-hoc in the route handlers. Phase 2 approval workflows need a proper claw domain entity.
 
@@ -222,7 +222,7 @@ The schema defines both:
 - `tenant_skill_assignments` — all claws in a tenant inherit these
 - `claw_skill_assignments` — per-claw overrides
 
-But the coderClaw side has **no mechanism to query its own effective skill assignments** from coderClawLink. While discovery now uses `GET /api/skills`, this is tenant-global and not claw-scoped effective policy.
+But the coderClaw side has **no mechanism to query its own effective skill assignments** from builderforce.ai. While discovery now uses `GET /api/skills`, this is tenant-global and not claw-scoped effective policy.
 
 ### GAP 6: Session execution visibility
 
@@ -249,7 +249,7 @@ single session without manual correlation.
   └── Tenant-scoped visibility (all users see all claws)
 
 ❌ MISSING / BROKEN
-  ├── Claw domain entity in coderClawLink (routes use raw DB queries)
+  ├── Claw domain entity in builderforce.ai (routes use raw DB queries)
   └── Effective claw-scoped skill sync (claw can't query merged tenant+claw assignments)
 ```
 
@@ -260,7 +260,7 @@ single session without manual correlation.
 ### Vision
 
 An LLM routing API that **coderClaw instances call instead of directly calling
-provider APIs**. Like OpenRouter, but private to the coderClawLink mesh.
+provider APIs**. Like OpenRouter, but private to the builderforce.ai mesh.
 
 ```
 ┌────────────┐       ┌──────────────────┐       ┌──────────────────┐
@@ -416,9 +416,9 @@ coderClaw agent                 coderclawLLM                  SPA Dashboard
 
 | Step | What                                             | Where                                                                                                            |
 | ---- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| 1    | Create `/v1/chat/completions` proxy route        | `coderClawLink/api/src/presentation/routes/llmRoutes.ts`                                                         |
+| 1    | Create `/v1/chat/completions` proxy route        | `builderforce.ai/api/src/presentation/routes/llmRoutes.ts`                                                         |
 | 2    | Add `llm_requests` table (log every call)        | `schema.ts`: clawId, tenantId, model, provider, inputTokens, outputTokens, costUsd, latencyMs, approvalId        |
-| 3    | Build routing engine (aliases, fallback, budget) | `coderClawLink/api/src/application/llm/RoutingEngine.ts`                                                         |
+| 3    | Build routing engine (aliases, fallback, budget) | `builderforce.ai/api/src/application/llm/RoutingEngine.ts`                                                         |
 | 4    | Add `routing_policies` table                     | schema: tenantId, policy JSON, monthlyBudgetUsd, alertPercent                                                    |
 | 5    | Wire approval workflow                           | Reuse execution approval from Phase 2; add `status: 'awaiting_approval'` to LLM request lifecycle                |
 | 6    | Configure coderClaw to use it                    | New provider in `src/providers/coderclawllm.ts` that points at `CODERCLAW_LINK_URL + /v1` using existing API key |
@@ -455,7 +455,7 @@ export function createCoderClawLLMProvider() {
 
 ```
 Phase 0 — Fix Foundation (prerequisite for everything)
-  ├── 0a. Create claw domain entity in coderClawLink
+  ├── 0a. Create claw domain entity in builderforce.ai
   └── 0b. Add effective claw-skill endpoint + client sync path
 
 Phase 2 — Approval Workflows (from ROADMAP.md)

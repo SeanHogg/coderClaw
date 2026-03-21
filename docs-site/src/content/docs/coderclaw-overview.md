@@ -290,7 +290,7 @@ A: If you're just exploring — start simple. If you know you need team features
 - Persistent memory and context-aware reasoning across sessions
 - Self-repair: agents detect failures, fix themselves, and adapt over time
 - Human-in-the-loop governance with approval flows and audit trails
-- **[Builderforce.ai](https://builderforce.ai)** (API: api.builderforce.ai) replaces Jira with a centralized orchestration portal (replaces CoderClawLink)
+- **[Builderforce.ai](https://builderforce.ai)** (API: api.builderforce.ai) replaces Jira with a centralized orchestration portal (replaces builderforce.ai)
 - **coderClawLLM** — pay-per-use API layer for AI agent compute
 
 Choose your setup based on requirements:

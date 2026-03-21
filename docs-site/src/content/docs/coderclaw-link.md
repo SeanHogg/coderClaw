@@ -1,5 +1,5 @@
 ---
-summary: "Builderforce — orchestration portal (replaces CoderClawLink) with project/task management, Kanban/List/Gantt views, and OpenRouter integration"
+summary: "Builderforce — orchestration portal (replaces builderforce.ai) with project/task management, Kanban/List/Gantt views, and OpenRouter integration"
 read_when:
   - You want to manage projects and tasks in a Jira-style web UI
   - You want to use AI to write PRDs and task descriptions
@@ -10,7 +10,7 @@ title: "Builderforce (Orchestration)"
 
 # Builderforce (Orchestration)
 
-**[Builderforce.ai](https://builderforce.ai)** is the orchestration platform for the CoderClaw ecosystem (CoderClawLink has been replaced by Builderforce.ai). Portal at [builderforce.ai](https://builderforce.ai), API at **api.builderforce.ai**. It provides a Jira-style web UI for managing projects, tasks, and AI agent mesh — with Kanban, List, and Gantt views, AI-powered PRD writing via OpenRouter, drag-and-drop task management, and full multi-tenant workspace support.
+**[Builderforce.ai](https://builderforce.ai)** is the orchestration platform for the CoderClaw ecosystem (builderforce.ai has been replaced by Builderforce.ai). Portal at [builderforce.ai](https://builderforce.ai), API at **api.builderforce.ai**. It provides a Jira-style web UI for managing projects, tasks, and AI agent mesh — with Kanban, List, and Gantt views, AI-powered PRD writing via OpenRouter, drag-and-drop task management, and full multi-tenant workspace support.
 
 ## Features
 
@@ -264,8 +264,8 @@ All API endpoints are at `https://api.builderforce.ai`.
 
 ## Further reading
 
-- **[Orchestration docs](/link/)** — Full documentation (Builderforce.ai replaces CoderClawLink): [Getting Started](/link/getting-started/), [Architecture](/link/architecture/), [API Reference](/link/api-reference/), [Marketplace](/link/marketplace/), [Multi-Agent Orchestration](/link/multi-agent-orchestration/), [Pricing](/link/pricing/), [Visual Debugging](/link/visual-debugging/).
-- [Builderforce.ai](https://builderforce.ai) · [CoderClawLink repository (legacy)](https://github.com/SeanHogg/coderClawLink)
+- **[Orchestration docs](/link/)** — Full documentation (Builderforce.ai replaces builderforce.ai): [Getting Started](/link/getting-started/), [Architecture](/link/architecture/), [API Reference](/link/api-reference/), [Marketplace](/link/marketplace/), [Multi-Agent Orchestration](/link/multi-agent-orchestration/), [Pricing](/link/pricing/), [Visual Debugging](/link/visual-debugging/).
+- [Builderforce.ai](https://builderforce.ai) · [builderforce.ai repository (legacy)](https://github.com/SeanHogg/builderforce.ai)
 - [OpenRouter documentation](https://openrouter.ai/docs)
 - [CoderClaw workflows](/coderclaw-workflows)
 - [Phase 2 distributed runtime](/phase2)

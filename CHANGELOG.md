@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Handoff hint on `/new`/`/reset`: when the gateway is connected and the session has user messages, a tip is shown reminding users to run `/handoff` before resetting
 - `deriveActivitySummary()` in `src/infra/knowledge-loop.ts`: produces a one-line semantic label per agent run based on tool-usage heuristics (no model call); appended as `**Summary**:` in `.coderClaw/memory/YYYY-MM-DD.md` entries
 - `src/infra/knowledge-loop.test.ts`: 11 unit tests for `deriveActivitySummary`
-- `.coderClaw/planning/CODERCLAW_LINK_GAPS.md`: comprehensive feature gap analysis for the `SeanHogg/coderClawLink` backend/portal, covering 13 features across P0–P3 priorities
+- `.coderClaw/planning/CODERCLAW_LINK_GAPS.md`: comprehensive feature gap analysis for the `SeanHogg/builderforce.ai` backend/portal, covering 13 features across P0–P3 priorities
 
 ### Updated
 

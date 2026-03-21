@@ -515,7 +515,7 @@ See [examples/phase2/](examples/phase2/) for distributed runtime usage examples.
 
 **Status**: Fully shipped — 194+ passing tests, backward compatible, zero breaking changes.
 
-## 🔗 CoderClawLink
+## 🔗 builderforce.ai
 
 **[Builderforce.ai](https://builderforce.ai)** is the orchestration portal (API: api.builderforce.ai). CoderClaw connects to it via the built-in **ClawLink transport adapter** — your multi-agent workflows run seamlessly on Builderforce with zero protocol boilerplate:
 
@@ -534,7 +534,7 @@ const state = await runtime.submitTask({
 });
 ```
 
-Full guide: [Builderforce Integration](https://docs.coderclaw.ai/coderclaw-link)
+Full guide: [Builderforce Integration](https://docs.coderclaw.ai/builderforce.ai)
 
 ### Builderforce in the coderClaw.ai Ecosystem
 

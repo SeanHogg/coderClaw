@@ -18,14 +18,14 @@
 
 **Post-Task Knowledge Loop**
 
-- `KnowledgeLoopService` — subscribes to `onAgentEvent`; writes timestamped activity entries (files created/edited, tools used) to `.coderClaw/memory/YYYY-MM-DD.md` after each run; auto-syncs the full `.coderClaw/` directory to CoderClawLink.
+- `KnowledgeLoopService` — subscribes to `onAgentEvent`; writes timestamped activity entries (files created/edited, tools used) to `.coderClaw/memory/YYYY-MM-DD.md` after each run; auto-syncs the full `.coderClaw/` directory to builderforce.ai.
 - `syncCoderClawDirectory()` extracted as a standalone reusable export — callable any time, not just on gateway startup.
 - `appendKnowledgeMemory()` added to `project-context.ts`.
 - `project_knowledge` tool: new `"memory"` query type reads the last 7 `.coderClaw/memory/*.md` files. Included in `"all"`.
 
 **Claw-to-Claw Mesh Delegation**
 
-- `GET /api/claws/fleet` (CoderClawLink) — claw-authenticated fleet discovery; returns all claws in the tenant with online status and capabilities.
+- `GET /api/claws/fleet` (builderforce.ai) — claw-authenticated fleet discovery; returns all claws in the tenant with online status and capabilities.
 - `PATCH /api/claws/:id/heartbeat` now accepts `{ capabilities: string[] }` and persists to a new `capabilities` column (migration `0007`). Heartbeat sends `["chat","tasks","relay","remote-dispatch"]`.
 - `POST /api/claws/:id/forward` — source-claw-authenticated dispatch; delivers JSON payload to target claw via `ClawRelayDO`.
 - `ClawLinkRelayService` handles `remote.task` messages by dispatching them as local `chat.send`.
@@ -93,7 +93,7 @@ Docs: https://docs.coderclaw.ai
 ### Changes
 
 - Release: version bump to beta.9 with extension versions synced.
-- UI: update control UI metadata, icons, and colors to coderClaw branding — use `coderclaw.png` logo across favicon/Apple touch icons, add SEO metadata (`og:image`, `application-name`), and replace red accent tokens (#ff5c5c, #dc2626) with blue (#4d9eff, #3b82f6) to align with coderClawLink design system.
+- UI: update control UI metadata, icons, and colors to coderClaw branding — use `coderclaw.png` logo across favicon/Apple touch icons, add SEO metadata (`og:image`, `application-name`), and replace red accent tokens (#ff5c5c, #dc2626) with blue (#4d9eff, #3b82f6) to align with builderforce.ai design system.
 - TUI: add `/init` slash command to initialize coderClaw project locally (creates `.coderClaw/context.yaml`, `architecture.md`, `rules.yaml`), preventing collision with gateway session reset and providing clear separation between local project init and session management.
 - CI/Release: harden release workflow auth handling by removing invalid job-level `secrets.*` checks and specifying explicit auth secrets without conditional gates, allowing safe skip when credentials are unconfigured in forks.
 

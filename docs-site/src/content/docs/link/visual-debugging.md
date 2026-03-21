@@ -5,7 +5,7 @@ description: Timeline, list, and graph views for execution debugging
 
 # Visual Debugging & Execution Timeline
 
-CoderClawLink provides a multi-view **visual debugger** that lets you see exactly what a claw (and any sub-agents it delegates to) did during an execution — without reading raw log output.
+builderforce.ai provides a multi-view **visual debugger** that lets you see exactly what a claw (and any sub-agents it delegates to) did during an execution — without reading raw log output.
 
 ## Overview
 
