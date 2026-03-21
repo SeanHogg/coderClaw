@@ -13,7 +13,7 @@ Welcome to the orchestration documentation. Builderforce.ai replaces CoderClawLi
 
 | Document | Description |
 |----------|-------------|
-| [Getting Started](/link/getting-started/) | Set up coderClawLink locally and deploy to Cloudflare in ~20 minutes |
+| [Getting Started](/link/getting-started/) | Set up Builderforce locally and deploy to Cloudflare in ~20 minutes |
 | [Architecture](/link/architecture/) | Four-layer DDD, Durable Object relay, database schema, data-flow examples |
 | [API Reference](/link/api-reference/) | Complete REST + WebSocket endpoint reference with examples |
 
@@ -23,6 +23,11 @@ Welcome to the orchestration documentation. Builderforce.ai replaces CoderClawLi
 |----------|-------------|
 | [Multi-Agent Orchestration](/link/multi-agent-orchestration/) | Register claws, route tasks, delegate between agents, approval gates |
 | [Skills Marketplace](/link/marketplace/) | Publish, discover, and install reusable agent skills |
+| [Skill Registry](/link/skill-registry/) | How CoderClaw fetches, merges, and applies portal-managed skills at startup |
+| [Approval Gates](/link/approval-gates/) | Human-in-the-loop gates — block execution until a manager approves in the portal |
+| [Workflow Telemetry](/link/workflow-telemetry/) | Span schema, local JSONL files, and live portal sync |
+| [Workflow Recovery](/link/workflow-recovery/) | Checkpoint schema, resuming after failure, debugging stuck workflows |
+| [Knowledge Loop](/link/knowledge-loop/) | Persistent project memory — daily markdown logs, querying, and portal sync |
 
 ## Business
 
@@ -42,7 +47,7 @@ Welcome to the orchestration documentation. Builderforce.ai replaces CoderClawLi
 ## External links
 
 - [CoderClaw core agent runtime](https://github.com/SeanHogg/coderClaw)
-- [Builderforce.ai](https://builderforce.ai) · [CoderClawLink repo (legacy)](https://github.com/SeanHogg/coderClawLink)
+- [Builderforce.ai](https://builderforce.ai) · [Builderforce repo](https://github.com/SeanHogg/coderClawLink)
 - [Discord community](https://discord.gg/qkhbAGHRBT)
 - [coderclaw.ai](https://coderclaw.ai)
 - [builderforce.ai](https://builderforce.ai)

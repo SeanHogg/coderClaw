@@ -507,6 +507,44 @@ Immediate system event without creating a job:
 coderclaw system event --mode now --text "Next heartbeat: check battery."
 ```
 
+## Portal-managed cron (Builderforce)
+
+When CoderClaw is connected to Builderforce, cron jobs can also be created and managed from the portal — not just locally via the CLI.
+
+Portal-managed jobs are fetched from Builderforce at claw startup:
+
+```
+GET /api/claws/:id/cron
+```
+
+The response is a list of scheduled jobs. CoderClaw schedules them locally using the same cron engine, then reports back after each run:
+
+```
+PATCH /api/claws/:id/cron/:jobId
+{ "lastRunAt": "2026-03-21T09:00:00.000Z", "lastStatus": "ok" }
+```
+
+### Expression support in portal-managed jobs
+
+Portal-managed cron jobs support 5-field cron expressions. The supported field syntax is:
+
+| Field | Supported | Not supported |
+|-------|-----------|---------------|
+| `*` | Yes | — |
+| `*/n` | Yes (e.g. `*/15`) | — |
+| Ranges (`1-5`) | No | Use `*/n` instead |
+| Lists (`1,3,5`) | No | Create multiple jobs instead |
+
+If an unsupported expression is configured in the portal, the claw logs a warning and skips that job.
+
+### Dispatch format
+
+Each portal-managed job fires as a `chat.send` message to the claw gateway, equivalent to typing a message into the chat interface. The message is the `description` field set on the job in the portal.
+
+### Re-sync interval
+
+Portal-managed jobs are re-synced from the portal every 5 minutes. New jobs added in the portal are picked up automatically without a claw restart.
+
 ## Gateway API surface
 
 - `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`

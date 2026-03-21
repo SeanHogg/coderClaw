@@ -5,7 +5,7 @@ description: Register claws, route tasks, delegate between agents, and use human
 
 # Multi-Agent Orchestration with coderClaw.ai
 
-This guide explains how to design, register, and coordinate multiple AI agents (Claws) using coderClawLink. It covers agent registration, skill assignment, execution routing, claw-to-claw delegation, and the human-in-the-loop approval workflow.
+This guide explains how to design, register, and coordinate multiple AI agents (Claws) using Builderforce. It covers agent registration, skill assignment, execution routing, claw-to-claw delegation, and the human-in-the-loop approval workflow.
 
 ---
 
@@ -16,7 +16,7 @@ A **Claw** is a registered instance of the [coderClaw](https://github.com/SeanHo
 - Belongs to exactly one tenant
 - Has a unique API key for authentication
 - Declares **capabilities** (e.g. `["typescript", "testing", "refactor"]`)
-- Exposes a **persistent WebSocket connection** to the coderClawLink relay
+- Exposes a **persistent WebSocket connection** to the Builderforce relay
 - Can be assigned **marketplace skills** at the tenant level or claw level
 
 Multiple Claws in the same tenant form a **mesh** — they can discover each other and delegate tasks bidirectionally.
@@ -80,12 +80,12 @@ Content-Type: application/json
 In your coderClaw project:
 
 ```bash
-coderclaw config set portal.url https://api.coderclaw.ai
+coderclaw config set portal.url https://api.builderforce.ai
 coderclaw config set portal.clawId 7
 coderclaw config set portal.apiKey clw_abc...xyz
 ```
 
-The runtime opens a WebSocket to `wss://api.coderclaw.ai/api/relay/7?key=clw_abc...xyz` and announces itself as online.
+The runtime opens a WebSocket to `wss://api.builderforce.ai/api/relay/7?key=clw_abc...xyz` and announces itself as online.
 
 ---
 
@@ -170,7 +170,7 @@ Content-Type: application/json
 }
 ```
 
-coderClawLink forwards a relay frame to the target claw over its WebSocket connection. The claw begins processing the task immediately.
+Builderforce forwards a relay frame to the target claw over its WebSocket connection. The claw begins processing the task immediately.
 
 ---
 
@@ -226,7 +226,7 @@ GET /api/runtime/executions/exec_xyz
 
 Or upgrade to WebSocket for zero-latency updates:
 ```
-GET wss://api.coderclaw.ai/api/runtime/executions/exec_xyz/stream
+GET wss://api.builderforce.ai/api/runtime/executions/exec_xyz/stream
 Authorization: Bearer <user-jwt>
 ```
 
@@ -288,7 +288,7 @@ Content-Type: application/json
 }
 ```
 
-coderClawLink routes the `remote.result` frame back to claw 7 via its relay WebSocket. Claw 7 unblocks and continues the workflow with the lint findings.
+Builderforce routes the `remote.result` frame back to claw 7 via its relay WebSocket. Claw 7 unblocks and continues the workflow with the lint findings.
 
 ---
 
@@ -313,7 +313,7 @@ Content-Type: application/json
 }
 ```
 
-coderClawLink creates a pending approval record and fires an `approval.request` relay frame to all connected portal clients. A MANAGER-role user sees the notification, reviews the action, and responds:
+Builderforce creates a pending approval record and fires an `approval.request` relay frame to all connected portal clients. A MANAGER-role user sees the notification, reviews the action, and responds:
 
 ```http
 PATCH /api/approvals/appr_xyz
@@ -322,7 +322,7 @@ Authorization: Bearer <user-jwt>
 { "status": "approved", "reviewNote": "Confirmed redundant after auth refactor" }
 ```
 
-coderClawLink fires an `approval.decision` relay frame back to claw 7. The claw receives the decision and either proceeds or aborts.
+Builderforce fires an `approval.decision` relay frame back to claw 7. The claw receives the decision and either proceeds or aborts.
 
 ---
 

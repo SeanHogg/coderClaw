@@ -3,9 +3,9 @@ title: Architecture
 description: Four-layer DDD API, Lit 3 SPA, ClawRelayDO Durable Object, and how the pieces connect
 ---
 
-# coderClawLink — Technical Architecture
+# Builderforce — Technical Architecture
 
-This document describes the system design of coderClawLink: the four-layer DDD API, the Lit 3 SPA, the Cloudflare Durable Object relay, and how all the pieces connect.
+This document describes the system design of Builderforce: the four-layer DDD API, the Lit 3 SPA, the Cloudflare Durable Object relay, and how all the pieces connect.
 
 ---
 
@@ -168,7 +168,7 @@ The `ClawRelayDO` is a Cloudflare **Durable Object** — a stateful serverless p
 
 ```
 coderClaw runtime
-  │  wss://api.coderclaw.ai/api/relay/:clawId?key=<apiKey>
+  │  wss://api.builderforce.ai/api/relay/:clawId?key=<apiKey>
   ▼
 ClawRelayDO (one instance per Claw ID)
   │  Fanout to all connected browser clients
@@ -235,8 +235,8 @@ All cryptography uses the **Web Crypto API** — no third-party auth libraries i
 ## 7. Repository Layout
 
 ```
-coderClawLink/
-├── api/                              # Cloudflare Worker – api.coderclaw.ai
+Builderforce/
+├── api/                              # Cloudflare Worker – api.builderforce.ai
 │   ├── src/
 │   │   ├── domain/                   # Layer 1 – pure business logic
 │   │   ├── application/              # Layer 2 – use-case services

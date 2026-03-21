@@ -24,6 +24,9 @@ import { ClawLinkRelayService } from "../infra/clawlink-relay.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { KnowledgeLoopService } from "../infra/knowledge-loop.js";
+import { initApprovalGate } from "../infra/approval-gate.js";
+import { fetchAndLoadSkills } from "../infra/skill-registry.js";
+import { CronPollerService } from "../infra/cron-poller.js";
 import type { loadCoderClawPlugins } from "../plugins/loader.js";
 import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
 import { startBrowserControlServerIfEnabled } from "./server-browser.js";
@@ -67,6 +70,7 @@ export async function startGatewaySidecars(params: {
 
   // Enable workflow persistence — sets .coderClaw/ as the storage root and
   // re-hydrates any incomplete workflows that survived a prior crash/restart.
+  // clawId is populated later (after credentials are loaded) via a second call.
   globalOrchestrator.setProjectRoot(params.defaultWorkspaceDir);
   const incompleteWorkflows = await globalOrchestrator.loadPersistedWorkflows();
   if (incompleteWorkflows.length > 0) {
@@ -198,6 +202,14 @@ export async function startGatewaySidecars(params: {
       const projectId = ctx?.clawLink?.projectId ? Number(ctx.clawLink.projectId) : undefined;
 
       if (clawId) {
+        // Re-init telemetry now that the claw ID is known so all subsequent
+        // workflow spans are tagged with this claw's identity and forwarded to Builderforce.ai.
+        globalOrchestrator.setProjectRoot(params.defaultWorkspaceDir, String(clawId), baseUrl, apiKey);
+
+        // Approval gate: enables requestApproval() to POST to Builderforce and
+        // await manager decisions delivered via the relay WebSocket.
+        initApprovalGate({ baseUrl, clawId: String(clawId), apiKey });
+
         clawLinkRelay = new ClawLinkRelayService({
           baseUrl,
           clawId: String(clawId),
@@ -206,6 +218,15 @@ export async function startGatewaySidecars(params: {
         });
         clawLinkRelay.start();
         params.log.warn(`[clawlink] relay started for claw ${clawId}`);
+
+        // Fetch assigned skills from the portal and populate the local registry.
+        void fetchAndLoadSkills({ baseUrl, clawId: String(clawId), apiKey });
+
+        // Start the cron poller: pulls scheduled jobs from Builderforce and
+        // executes them locally according to their cron expressions.
+        const cronPoller = new CronPollerService({ baseUrl, clawId: String(clawId), apiKey });
+        void cronPoller.start();
+        params.log.warn("[cron-poller] started");
         void syncCoderClawDirectoryOnStartup({
           workspaceDir: params.defaultWorkspaceDir,
           log: params.log,
@@ -229,6 +250,12 @@ export async function startGatewaySidecars(params: {
       });
       knowledgeLoop.start();
       params.log.warn("[knowledge-loop] started");
+    } else {
+      params.log.warn(
+        "[clawlink] standalone mode — CODERCLAW_LINK_API_KEY not set; " +
+          "Builderforce connection and claw-to-claw dispatch are disabled. " +
+          "Set CODERCLAW_LINK_API_KEY in ~/.coderclaw/.env to enable them.",
+      );
     }
   } catch (err) {
     params.log.warn(`[clawlink/knowledge-loop] startup failed: ${String(err)}`);

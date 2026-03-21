@@ -9,6 +9,13 @@ import {
   selectClawByCapability,
   type RemoteDispatchOptions,
 } from "../infra/remote-subagent.js";
+import {
+  emitTaskEnd,
+  emitTaskStart,
+  emitWorkflowEnd,
+  emitWorkflowStart,
+  initTelemetry,
+} from "../infra/workflow-telemetry.js";
 import { logDebug } from "../logger.js";
 import { findAgentRole } from "./agent-roles.js";
 import {
@@ -62,9 +69,15 @@ export class AgentOrchestrator {
   private projectRoot: string | null = null;
   private remoteDispatchOpts: RemoteDispatchOptions | null = null;
 
-  /** Enable disk persistence for workflows. Call at gateway startup. */
-  setProjectRoot(root: string): void {
+  /** Enable disk persistence for workflows and workflow telemetry. Call at gateway startup. */
+  setProjectRoot(
+    root: string,
+    clawId?: string | null,
+    linkApiUrl?: string | null,
+    linkApiKey?: string | null,
+  ): void {
     this.projectRoot = root;
+    initTelemetry({ projectRoot: root, clawId, linkApiUrl, linkApiKey });
   }
 
   /**
@@ -158,6 +171,7 @@ export class AgentOrchestrator {
     }
 
     workflow.status = "running";
+    emitWorkflowStart(workflowId);
     const results = new Map<string, string>();
 
     // Execute tasks in dependency order
@@ -208,6 +222,7 @@ export class AgentOrchestrator {
     } else {
       workflow.status = "completed";
     }
+    emitWorkflowEnd(workflowId, workflow.status === "failed");
     this.persistWorkflow(workflow);
 
     return results;
@@ -261,6 +276,7 @@ export class AgentOrchestrator {
     task.status = "running";
     task.startedAt = new Date();
     this.persistWorkflow(workflow);
+    emitTaskStart(workflow.id, task.id, task.agentRole, task.description);
 
     // Build structured context block for this task
     const taskInput = this.buildStructuredContext(task, workflow);
@@ -273,6 +289,7 @@ export class AgentOrchestrator {
         task.error =
           "Remote dispatch not configured — set CODERCLAW_LINK_API_KEY and clawLink.instanceId";
         task.completedAt = new Date();
+        emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
         this.persistWorkflow(workflow);
         throw new Error(task.error);
       }
@@ -296,6 +313,7 @@ export class AgentOrchestrator {
             ? `No online claw satisfies required capabilities: ${requiredCaps.join(", ")}`
             : "No online peer claws available for automatic routing";
           task.completedAt = new Date();
+          emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
           this.persistWorkflow(workflow);
           throw new Error(task.error);
         }
@@ -314,12 +332,14 @@ export class AgentOrchestrator {
         const output = `Task ${task.id} dispatched to remote claw ${targetClawId}`;
         task.output = output;
         this.taskResults.set(task.id, output);
+        emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
         this.persistWorkflow(workflow);
         return output;
       } else {
         task.status = "failed";
         task.error = remoteResult.error;
         task.completedAt = new Date();
+        emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
         this.persistWorkflow(workflow);
         throw new Error(task.error);
       }
@@ -328,9 +348,9 @@ export class AgentOrchestrator {
     // Local dispatch: spawn a subagent in this process.
     const roleConfig = findAgentRole(task.agentRole);
     if (!roleConfig) {
-      throw new Error(
-        `Unknown agent role: ${task.agentRole}. Define it in .coderclaw/personas/ or use a built-in role.`,
-      );
+      const err = `Unknown agent role: ${task.agentRole}. Define it in .coderclaw/personas/ or use a built-in role.`;
+      emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, err);
+      throw new Error(err);
     }
     const result = await spawnSubagentDirect(
       {
@@ -350,6 +370,7 @@ export class AgentOrchestrator {
       const output = `Task ${task.id} completed successfully`;
       task.output = output;
       this.taskResults.set(task.id, output);
+      emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
       this.persistWorkflow(workflow);
 
       return output;
@@ -357,6 +378,7 @@ export class AgentOrchestrator {
       task.status = "failed";
       task.error = result.error || "Failed to spawn subagent";
       task.completedAt = new Date();
+      emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
       this.persistWorkflow(workflow);
       throw new Error(task.error);
     }

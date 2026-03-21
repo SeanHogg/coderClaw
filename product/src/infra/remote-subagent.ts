@@ -12,7 +12,20 @@
  * online claw that satisfies the required capabilities.
  */
 
+import { createHmac } from "node:crypto";
 import { logDebug } from "../logger.js";
+
+/**
+ * HMAC-SHA256 signature of the serialised payload using the claw's API key
+ * as the shared secret. The receiving Builderforce endpoint should verify this
+ * before accepting the dispatch, ensuring only claws with a valid key can
+ * forward tasks and that the payload has not been tampered with in transit.
+ *
+ * Signature covers the exact JSON body bytes that are sent in the request.
+ */
+function signPayload(body: string, secret: string): string {
+  return createHmac("sha256", secret).update(body).digest("hex");
+}
 
 export type RemoteDispatchOptions = {
   /** Base HTTP URL of CoderClawLink, e.g. "https://api.coderclaw.ai" */
@@ -43,10 +56,18 @@ export async function selectClawByCapability(
   opts: RemoteDispatchOptions,
   requiredCapabilities: string[] = [],
 ): Promise<FleetEntry | null> {
-  const url = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/fleet?from=${opts.myClawId}&key=${encodeURIComponent(opts.apiKey)}`;
+  // API key moved to Authorization header — never embed secrets in URLs
+  // (query params appear in server access logs, browser history, and CDN caches).
+  const url = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/fleet`;
 
   try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(15_000) });
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${opts.apiKey}`,
+        "X-Claw-From": opts.myClawId,
+      },
+      signal: AbortSignal.timeout(15_000),
+    });
     if (!res.ok) {
       logDebug(`[remote-subagent] fleet query failed: HTTP ${res.status}`);
       return null;
@@ -88,7 +109,10 @@ export async function dispatchToRemoteClaw(
   targetClawId: string,
   task: string,
 ): Promise<RemoteDispatchResult> {
-  const url = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${targetClawId}/forward?from=${opts.myClawId}&key=${encodeURIComponent(opts.apiKey)}`;
+  // API key moved to Authorization header; payload is HMAC-signed so the
+  // receiving endpoint can verify both the caller's identity and that the
+  // task body has not been tampered with in transit.
+  const url = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${targetClawId}/forward`;
 
   const payload = {
     type: "remote.task",
@@ -96,14 +120,22 @@ export async function dispatchToRemoteClaw(
     fromClawId: opts.myClawId,
     timestamp: new Date().toISOString(),
   };
+  const body = JSON.stringify(payload);
+  const signature = signPayload(body, opts.apiKey);
 
   try {
     logDebug(`[remote-subagent] dispatching to claw ${targetClawId}: ${task.slice(0, 80)}…`);
 
     const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${opts.apiKey}`,
+        "X-Claw-From": opts.myClawId,
+        // SHA-256 HMAC of the exact body bytes — receiver should verify before accepting
+        "X-Claw-Signature": `sha256=${signature}`,
+      },
+      body,
       signal: AbortSignal.timeout(30_000),
     });
 

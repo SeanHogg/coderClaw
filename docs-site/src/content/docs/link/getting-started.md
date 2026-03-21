@@ -1,11 +1,11 @@
 ---
 title: Getting Started
-description: Set up coderClawLink locally and deploy to Cloudflare in ~20 minutes
+description: Set up Builderforce locally and deploy to Cloudflare in ~20 minutes
 ---
 
-# Getting Started with coderClawLink
+# Getting Started with Builderforce
 
-**coderClawLink** is the AI-native orchestration portal for [coderClaw.ai](https://coderclaw.ai). This guide walks you from zero to a running local dev environment — including the API, frontend, and database.
+**Builderforce** is the AI-native orchestration portal for [CoderClaw](https://coderclaw.ai). This guide walks you from zero to a running local dev environment — including the API, frontend, and database.
 
 **Time to complete:** ~20 minutes
 

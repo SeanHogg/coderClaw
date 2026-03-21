@@ -1,11 +1,11 @@
 ---
 title: API Reference
-description: Complete REST + WebSocket endpoint reference for api.coderclaw.ai
+description: Complete REST + WebSocket endpoint reference for api.builderforce.ai
 ---
 
-# coderClawLink — Complete API Reference
+# Builderforce — Complete API Reference
 
-> Base URL: `https://api.coderclaw.ai`
+> Base URL: `https://api.builderforce.ai`
 > All protected routes require `Authorization: Bearer <jwt>` unless noted.
 
 ---
@@ -129,15 +129,17 @@ Content-Type: application/json
 | `GET` | `/api/tenants/:id/default-claw` | VIEWER | Get tenant default claw |
 | `PUT` | `/api/tenants/:id/default-claw` | MANAGER | Set or clear default claw |
 | `GET` | `/api/tenants/:id/subscription` | VIEWER | Current plan + usage metrics |
-| `POST` | `/api/tenants/:id/subscription/pro` | OWNER | Upgrade to Pro |
-| `POST` | `/api/tenants/:id/subscription/free` | OWNER | Downgrade to Free |
+| `POST` | `/api/tenants/:id/subscription/checkout` | MANAGER | Initiate Pro upgrade — returns `checkoutUrl` (redirect) or `null` (manual) |
+| `POST` | `/api/tenants/:id/subscription/pro` | MANAGER | Legacy: direct upgrade (manual provider only; new code use `/checkout`) |
+| `POST` | `/api/tenants/:id/subscription/free` | MANAGER | Downgrade to Free; cancels active subscription with provider |
+| `POST` | `/api/webhooks/payment` | — | Payment provider webhook (raw body; HMAC-verified; no JWT) |
 | `GET` | `/api/tenants/:id/insights?days=30` | VIEWER | Code-change insights (all plans) |
 
 ---
 
 ## Claws (AI Agent Instances)
 
-A **Claw** is a registered coderClaw runtime connected to a tenant. Claws authenticate with their own API key (not a user JWT).
+A **Claw** is a registered CoderClaw runtime connected to a Builderforce tenant. Claws authenticate with their own API key (not a user JWT).
 
 ### Portal endpoints (JWT auth)
 
@@ -163,13 +165,17 @@ A **Claw** is a registered coderClaw runtime connected to a tenant. Claws authen
 |--------|------|-------------|
 | `GET` | `/api/claws/fleet?from=&key=` | Discover all claws in same tenant (for peer routing) |
 | `GET` | `/api/claws/fleet/route?requires=<cap1,cap2>` | Best-matching claw for required capabilities |
+| `GET` | `/api/claws/:id/skills` | Fetch merged skill list (tenant + claw assignments) for this claw |
+| `GET` | `/api/claws/:id/cron` | Fetch portal-managed cron jobs for this claw |
+| `PATCH` | `/api/claws/:id/cron/:jobId` | Update lastRunAt / lastStatus after a cron job fires |
+| `PATCH` | `/api/claws/:id/executions/:eid/state` | Report execution state change (`running`, `completed`, `failed`) |
 
 ### WebSocket relay
 
 #### Browser client (portal)
 
 ```
-GET wss://api.coderclaw.ai/api/claws/:clawId/ws?token=<jwt>
+GET wss://api.builderforce.ai/api/claws/:clawId/ws?token=<jwt>
 ```
 
 - The portal uses the tenant JWT (`token=`) to authenticate.
@@ -178,7 +184,7 @@ GET wss://api.coderclaw.ai/api/claws/:clawId/ws?token=<jwt>
 #### CoderClaw runtime (upstream)
 
 ```
-GET wss://api.coderclaw.ai/api/claws/:clawId/upstream?key=<clawApiKey>
+GET wss://api.builderforce.ai/api/claws/:clawId/upstream?key=<clawApiKey>
 ```
 
 - The Claw authenticates using its API key (query param `key=`).
@@ -211,7 +217,7 @@ PENDING → SUBMITTED → RUNNING → COMPLETED
 PENDING / SUBMITTED / RUNNING → CANCELLED
 ```
 
-> **Legacy compatibility:** The older ClawLink transport adapter uses legacy paths (`/api/runtime/sessions`, `/api/runtime/tasks/submit`, etc.). Builderforce supports those for backward compatibility.
+> **Legacy compatibility:** Older coderClawLink transport adapter paths (`/api/runtime/sessions`, `/api/runtime/tasks/submit`, etc.) are supported for backward compatibility.
 
 **Legacy endpoints (ClawLink compatibility)**
 
@@ -360,7 +366,7 @@ Assign marketplace skills at the tenant level (all claws inherit) or scoped to a
 
 ---
 
-## coderClawLLM Proxy
+## Builderforce LLM Proxy
 
 OpenAI-compatible LLM proxy with tenant-aware billing, free/pro model pools, and automatic failover.
 
@@ -376,7 +382,7 @@ OpenAI-compatible LLM proxy with tenant-aware billing, free/pro model pools, and
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://api.coderclaw.ai/llm/v1",
+  baseURL: "https://api.builderforce.ai/llm/v1",
   apiKey: "<your-jwt>",
 });
 
@@ -429,6 +435,51 @@ Claw-authenticated endpoints for pushing telemetry from the agent runtime.
 
 ---
 
+## Payment Provider
+
+Builderforce supports swappable payment providers. The active provider is selected by `PAYMENT_PROVIDER` env var.
+
+| Provider | Value | Status |
+|----------|-------|--------|
+| Manual (no processor) | `manual` | Default — activates immediately, no redirect |
+| Stripe | `stripe` | Full implementation — requires `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_YEARLY` |
+| Helcim | `helcim` | Stub ready — requires `HELCIM_API_TOKEN`, `HELCIM_WEBHOOK_SECRET` |
+
+### Checkout flow (hosted providers)
+
+```
+POST /api/tenants/:id/subscription/checkout
+{ billingCycle: "monthly" | "yearly", billingEmail: "..." }
+
+→ { checkoutUrl: "https://checkout.stripe.com/...", sessionId: "cs_..." }
+→ frontend redirects user to checkoutUrl
+→ provider fires POST /api/webhooks/payment after payment
+→ webhook activates subscription
+```
+
+### Manual provider flow
+
+```
+POST /api/tenants/:id/subscription/checkout
+{ billingCycle: "monthly", billingEmail: "...", billingPaymentBrand: "visa", billingPaymentLast4: "4242" }
+
+→ { checkoutUrl: null, sessionId: "manual-..." }
+→ subscription activated immediately
+```
+
+### Webhook endpoint
+
+```
+POST /api/webhooks/payment
+Stripe-Signature: t=...,v1=...    (Stripe)
+X-Helcim-Signature: sha256=...    (Helcim)
+Body: <raw provider payload>
+```
+
+The webhook handler verifies the signature, normalises the event, and updates the tenant's subscription state.
+
+---
+
 ## Admin (Superadmin only)
 
 Requires a WebJWT with `sa: true`. Not available on managed cloud to regular users.
@@ -459,7 +510,7 @@ Roles (ascending authority): `viewer` → `developer` → `manager` → `owner`
 
 ## WebSocket Relay Frames
 
-The `ClawRelayDO` Durable Object at `wss://api.coderclaw.ai/api/relay/:clawId` brokers all real-time frames between the portal and the claw runtime.
+The `ClawRelayDO` Durable Object at `wss://api.builderforce.ai/api/relay/:clawId` brokers all real-time frames between the portal and the claw runtime.
 
 ### Outbound (portal → claw)
 

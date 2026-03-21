@@ -142,12 +142,12 @@ const duration2 = (row2.length / 2 * pixelsPerItem) / pixelsPerSecond;
         <a href="https://builderforce.ai" target="_blank" rel="noopener" class="feature-card">
           <div class="feature-icon"><Icon icon="lucide:users" color="var(--coral-bright)" size={28} /></div>
           <h3 class="feature-title">Human-in-the-Loop Control</h3>
-          <p class="feature-desc">Builderforce.ai replaces Jira with workflow visibility, auditability, and approval gates — keeping humans in control of every agent decision that matters.</p>
+          <p class="feature-desc">Approval gates block agent execution until a manager approves in the Builderforce.ai portal. Workflow visibility, auditability, and human sign-off — enforced, not optional.</p>
         </a>
-        <a href="https://docs.coderclaw.ai/coderclaw-overview" target="_blank" rel="noopener" class="feature-card">
+        <a href="https://docs.coderclaw.ai/mesh" target="_blank" rel="noopener" class="feature-card">
           <div class="feature-icon"><Icon icon="lucide:zap" color="var(--coral-bright)" size={28} /></div>
-          <h3 class="feature-title">coderClawLLM</h3>
-          <p class="feature-desc">Pay-per-use API layer for AI agent compute — managed model access for startups (5–50 devs) through enterprises (100–1,000+) without provider key sprawl.</p>
+          <h3 class="feature-title">Claw-to-Claw Mesh</h3>
+          <p class="feature-desc">Distribute work across a fleet of Claws. Use <code>remote:auto[caps]</code> to route tasks to the best-matched peer. All dispatch is HMAC-signed and Bearer-authenticated.</p>
         </a>
         <a href="https://docs.coderclaw.ai/browser" target="_blank" rel="noopener" class="feature-card">
           <div class="feature-icon"><Icon icon="lucide:globe" color="var(--coral-bright)" size={28} /></div>
@@ -162,7 +162,7 @@ const duration2 = (row2.length / 2 * pixelsPerItem) / pixelsPerSecond;
         <a href="https://docs.coderclaw.ai/skills" target="_blank" rel="noopener" class="feature-card">
           <div class="feature-icon"><Icon icon="lucide:puzzle" color="var(--coral-bright)" size={28} /></div>
           <h3 class="feature-title">Skills &amp; Plugins</h3>
-          <p class="feature-desc">Extend with community skills or build your own. Agents can even write and deploy new capabilities on the fly.</p>
+          <p class="feature-desc">Extend with community skills or build your own. Skills assigned in the Builderforce.ai portal are loaded automatically at startup. Agents can write and deploy new capabilities on the fly.</p>
         </a>
         <a href="https://docs.coderclaw.ai/deep-understanding" target="_blank" rel="noopener" class="feature-card">
           <div class="feature-icon"><Icon icon="lucide:layers" color="var(--coral-bright)" size={28} /></div>
@@ -174,10 +174,15 @@ const duration2 = (row2.length / 2 * pixelsPerItem) / pixelsPerSecond;
           <h3 class="feature-title">Multi-Agent Workflows</h3>
           <p class="feature-desc">Built‑in patterns for planning, feature dev, bug fixes, refactors and adversarial reviews keep work moving.</p>
         </a>
-        <a href="https://docs.coderclaw.ai/phase2" target="_blank" rel="noopener" class="feature-card">
+        <a href="https://docs.coderclaw.ai/coderclaw-overview" target="_blank" rel="noopener" class="feature-card">
           <div class="feature-icon"><Icon icon="lucide:shield" color="var(--coral-bright)" size={28} /></div>
           <h3 class="feature-title">Security &amp; RBAC</h3>
-          <p class="feature-desc">Enterprise‑ready model with role‑based access control, device trust and audit trails (Phase 2).</p>
+          <p class="feature-desc">Role‑based access control, device trust, and complete audit trails. HMAC‑signed inter‑Claw dispatch with Bearer authentication on all API surfaces.</p>
+        </a>
+        <a href="https://docs.coderclaw.ai/telemetry" target="_blank" rel="noopener" class="feature-card">
+          <div class="feature-icon"><Icon icon="lucide:bar-chart-2" color="var(--coral-bright)" size={28} /></div>
+          <h3 class="feature-title">Workflow Telemetry</h3>
+          <p class="feature-desc">Every task and workflow emits structured JSONL spans locally and forwards to the Builderforce.ai portal timeline in real time. Query with jq or pipe to Grafana and any OTel collector.</p>
         </a>
         <a href="https://docs.coderclaw.ai/coderclaw-overview" target="_blank" rel="noopener" class="feature-card">
           <div class="feature-icon"><Icon icon="lucide:globe" color="var(--coral-bright)" size={28} /></div>
@@ -198,9 +203,13 @@ const duration2 = (row2.length / 2 * pixelsPerItem) / pixelsPerSecond;
         <li>Pre‑built multi-agent workflows: planning, coding, review, testing, adversarial passes.</li>
         <li>Self-healing runtime: agents detect failures, fix themselves, and adapt over time.</li>
         <li>Persistent memory &amp; context-aware reasoning across sessions — no re-explaining your codebase.</li>
-        <li>Security &amp; governance: RBAC, device trust, audit trails.</li>
-        <li>Human-in-the-loop governance: approval flows and workflow visibility via Builderforce.ai.</li>
-        <li>coderClawLLM: pay-per-use API layer for AI agent compute.</li>
+        <li>Staged diff review: all agent changes buffered for accept/reject — like Cursor Composer but for your whole workflow.</li>
+        <li>Claw-to-claw mesh: distribute tasks across a fleet of Claws; <code>remote:auto[caps]</code> routes to the best peer automatically.</li>
+        <li>Workflow telemetry: every task emits JSONL spans locally and forwards to the Builderforce.ai portal timeline in real time.</li>
+        <li>Enforced approval gates: <code>requestApproval()</code> blocks agent execution until a manager approves in the portal.</li>
+        <li>Portal-managed skills loaded at startup; portal-managed cron jobs executed on schedule.</li>
+        <li>Security &amp; governance: RBAC, device trust, HMAC-signed dispatch, and audit trails.</li>
+        <li>Human-in-the-loop governance: live task tracking, approval flows, and workflow visibility via <a href="https://builderforce.ai" target="_blank" rel="noopener">Builderforce.ai</a>.</li>
         <li>CI/CD integration and private/self-hosted deployments.</li>
         <li>Works from any channel or CLI, with any model provider.</li>
         <li>Open source (MIT) with no vendor lock-in.</li>

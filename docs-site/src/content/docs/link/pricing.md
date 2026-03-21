@@ -46,7 +46,7 @@ The Free plan is designed for individuals, hobbyists, and teams evaluating the p
 - 1 registered Claw (AI agent)
 - 3 projects, 50 tasks
 - 1,000 LLM requests / month via the free model pool
-- Full access to the coderClawLink portal: specs, workflows, approvals, chat history (7-day window), audit log (30-day window)
+- Full access to the Builderforce portal: specs, workflows, approvals, chat history (7-day window), audit log (30-day window)
 - Install skills from the marketplace
 - TOTP MFA and GDPR/CCPA self-service tools
 
@@ -105,7 +105,7 @@ Track usage at `GET /llm/v1/usage?days=30` or in the portal under **Settings →
 
 ## Self-Hosted Deployments
 
-**coderClawLink is MIT-licensed.** You can run the full platform — portal, API, relay, and database — on your own infrastructure at zero licensing cost.
+**Builderforce is MIT-licensed.** You can run the full platform — portal, API, relay, and database — on your own infrastructure at zero licensing cost.
 
 Self-hosted users are responsible for:
 - Cloudflare Workers account and compute costs

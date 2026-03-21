@@ -5,7 +5,7 @@ description: Positioning, ICP, competitive landscape, acquisition channels, laun
 
 # Go-to-Market Strategy — coderClaw.ai
 
-This document covers the positioning, ICP, channels, competitive differentiation, pricing strategy, launch plan, and growth motions for coderClaw.ai and coderClawLink.
+This document covers the positioning, ICP, channels, competitive differentiation, pricing strategy, launch plan, and growth motions for coderClaw.ai and Builderforce.
 
 ---
 

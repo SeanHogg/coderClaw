@@ -19,6 +19,7 @@ import {
   mergeClawLinkContext,
   type AssignmentContextResponse,
 } from "./clawlink-context.js";
+import { resolveApproval } from "./approval-gate.js";
 import { logDebug, logWarn } from "../logger.js";
 
 function extractChatText(message: unknown): string {
@@ -78,6 +79,8 @@ export class ClawLinkRelayService {
   private logsCursor: number | undefined;
   private presenceTimer: ReturnType<typeof setInterval> | null = null;
   private gatewayClient: GatewayClient | null = null;
+  /** executionId from the last task.assign / task.broadcast dispatch, if any. */
+  private pendingExecutionId: number | null = null;
 
   private readonly upstreamWsUrl: string;
   private readonly heartbeatHttpUrl: string;
@@ -119,6 +122,12 @@ export class ClawLinkRelayService {
         });
     }
 
+    // Track executionId so we can report running/completed/failed back to Builderforce.
+    if (payload.executionId != null) {
+      this.pendingExecutionId = payload.executionId;
+      void this.reportExecutionState(payload.executionId, "running");
+    }
+
     this.gatewayClient
       ?.request("chat.send", {
         sessionKey: "main",
@@ -130,14 +139,43 @@ export class ClawLinkRelayService {
       });
   }
 
+  /**
+   * Report execution lifecycle state back to Builderforce.
+   * Fire-and-forget — errors are logged but never surfaced to the caller.
+   */
+  private async reportExecutionState(
+    executionId: number,
+    status: "running" | "completed" | "failed" | "cancelled",
+    extra?: { result?: string; errorMessage?: string },
+  ): Promise<void> {
+    const base = this.opts.baseUrl.replace(/\/$/, "");
+    const url = `${base}/api/claws/${this.opts.clawId}/executions/${executionId}/state`;
+    try {
+      await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.opts.apiKey}`,
+        },
+        body: JSON.stringify({ status, ...extra }),
+        signal: AbortSignal.timeout(10_000),
+      });
+      logDebug(`[clawlink-relay] execution ${executionId} → ${status}`);
+    } catch (err) {
+      logDebug(`[clawlink-relay] execution state report failed: ${String(err)}`);
+    }
+  }
+
   constructor(private readonly opts: ClawLinkRelayOptions) {
     const base = opts.baseUrl
       .replace(/^https:/, "wss:")
       .replace(/^http:/, "ws:")
       .replace(/\/$/, "");
-    this.upstreamWsUrl = `${base}/api/claws/${opts.clawId}/upstream?key=${encodeURIComponent(opts.apiKey)}`;
-    this.heartbeatHttpUrl = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${opts.clawId}/heartbeat?key=${encodeURIComponent(opts.apiKey)}`;
-    this.assignmentContextUrl = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${opts.clawId}/assignment-context?key=${encodeURIComponent(opts.apiKey)}`;
+    // API key is passed via Authorization header, not as a query param.
+    // Query params appear in server access logs and CDN caches — headers are safer.
+    this.upstreamWsUrl = `${base}/api/claws/${opts.clawId}/upstream`;
+    this.heartbeatHttpUrl = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${opts.clawId}/heartbeat`;
+    this.assignmentContextUrl = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${opts.clawId}/assignment-context`;
     this.gatewayWsUrl = opts.gatewayUrl ?? "ws://127.0.0.1:18789";
   }
 
@@ -171,7 +209,9 @@ export class ClawLinkRelayService {
       return;
     }
 
-    const ws = new WebSocket(this.upstreamWsUrl);
+    const ws = new WebSocket(this.upstreamWsUrl, {
+      headers: { Authorization: `Bearer ${this.opts.apiKey}` },
+    });
     this.ws = ws;
 
     ws.on("open", () => {
@@ -378,6 +418,17 @@ export class ClawLinkRelayService {
         break;
       }
 
+      case "approval.decision": {
+        // Manager approved or rejected a pending approval request in the portal.
+        const approvalId = typeof msg.approvalId === "string" ? msg.approvalId : "";
+        const decision = typeof msg.status === "string" ? msg.status : "";
+        if (approvalId && (decision === "approved" || decision === "rejected")) {
+          logWarn(`[clawlink-relay] approval.decision ${approvalId}: ${decision}`);
+          resolveApproval(approvalId, decision);
+        }
+        break;
+      }
+
       default:
         break;
     }
@@ -581,6 +632,12 @@ export class ClawLinkRelayService {
             session,
           });
         }
+        // Report execution completed to Builderforce if one is pending.
+        if (this.pendingExecutionId != null) {
+          const eid = this.pendingExecutionId;
+          this.pendingExecutionId = null;
+          void this.reportExecutionState(eid, "completed", { result: text || undefined });
+        }
         return;
       }
       if (legacy.state === "error") {
@@ -592,6 +649,12 @@ export class ClawLinkRelayService {
             text: `[error] ${text}`,
             session,
           });
+        }
+        // Report execution failed to Builderforce if one is pending.
+        if (this.pendingExecutionId != null) {
+          const eid = this.pendingExecutionId;
+          this.pendingExecutionId = null;
+          void this.reportExecutionState(eid, "failed", { errorMessage: text || undefined });
         }
         return;
       }
@@ -666,7 +729,10 @@ export class ClawLinkRelayService {
       });
       await fetch(this.heartbeatHttpUrl, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.opts.apiKey}`,
+        },
         body: JSON.stringify({
           capabilities: ["chat", "tasks", "relay", "remote-dispatch"],
           machineProfile,
@@ -683,6 +749,7 @@ export class ClawLinkRelayService {
     try {
       const response = await fetch(this.assignmentContextUrl, {
         method: "GET",
+        headers: { Authorization: `Bearer ${this.opts.apiKey}` },
         signal: AbortSignal.timeout(10_000),
       });
       if (!response.ok) {

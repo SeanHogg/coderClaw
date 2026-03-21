@@ -26,12 +26,16 @@ CoderClaw is modeled after the human brain:
 
 More broadly, **coderclaw.ai** is a **self-healing AI engineering agent and orchestration platform** that manages tasks, workflows, and collaboration across all AI agents. It provides persistent memory, context-aware reasoning, and self-repair — allowing AI systems to detect failures, fix themselves, and adapt over time — while keeping humans in the loop for governance and approval. The result: resilient, self-healing software systems with less engineering toil and better delivery outcomes.
 
-**BuilderForce.ai integration:** CoderClaw can connect to **Builderforce.ai** for centralized project/task/agent management, workflow visibility, auditability, and human-in-the-loop control. Use BuilderForce as the orchestration portal while running agents locally for maximum privacy and control.
+**[Builderforce.ai](https://builderforce.ai) integration:** Connect CoderClaw to Builderforce.ai for the full enterprise experience — fleet visibility, task assignment, human-in-the-loop approval gates, workflow telemetry dashboards, and the Workforce Registry (publish and hire fine-tuned specialist AI agents). Set `CODERCLAW_LINK_API_KEY` and CoderClaw registers automatically; without it, CoderClaw runs fully standalone.
 
-When linked, coderClaw now performs a project-assignment handshake with Builderforce:
-- registration + heartbeat persist machine/network/tunnel metadata,
-- relay fetches `GET /api/claws/:id/assignment-context`,
-- `.coderClaw/context.yaml` is updated with assigned project metadata and context hints (manifest/PRD/tasks/memory paths) so task execution stays in the correct working context.
+When linked, CoderClaw performs a full two-way sync at startup:
+- **Registration + heartbeat** — machine/network/tunnel metadata persisted at `PATCH /api/claws/:id/heartbeat`
+- **Assignment context** — `GET /api/claws/:id/assignment-context` fetched on startup and reconnect; `.coderClaw/context.yaml` updated with project metadata, PRD/task/memory paths
+- **Skill registry** — `GET /api/claws/:id/skills` fetched at startup; portal-assigned marketplace skills are loaded into the local registry and available to agents
+- **Cron scheduler** — `GET /api/claws/:id/cron` fetched at startup; enabled jobs are scheduled locally by their cron expressions and dispatched to the gateway when they fire; `lastRunAt`/`lastStatus` patched back after each run
+- **Approval gate** — `requestApproval()` POSTs to Builderforce and suspends execution until a manager approves or rejects in the portal; decisions arrive via the relay WebSocket (`approval.decision`)
+- **Execution lifecycle** — `task.assign` dispatches report `running` on receipt and `completed`/`failed` on session end via `PATCH /api/claws/:id/executions/:eid/state`
+- **Workflow telemetry** — spans forwarded to `/api/workflows` in real time; portal timeline reflects every task and workflow as it executes
 
 ## � Versioning (Release Process)
 
@@ -225,6 +229,30 @@ The complete software development lifecycle — planning, coding, reviewing, tes
 - Community-extensible agent libraries
 - Project-specific skills in `.coderClaw/skills/`
 - Long-lived memory in `.coderClaw/memory/`
+
+### ⚡ Claw-to-Claw Mesh
+
+CoderClaw instances form a peer-to-peer fleet that distributes work across machines:
+
+- **Fleet discovery**: register with Builderforce.ai → `GET /api/fleet` returns all active Claws for the tenant with their capability manifests
+- **Remote dispatch**: use `remote:<clawId>` as an agent role in any workflow to route a task to a specific peer; `remote:auto[caps]` auto-selects the best match by capability
+- **HMAC-signed payloads**: all inter-Claw dispatch uses `Authorization: Bearer` + `X-Claw-Signature: sha256=<hmac>` on `POST /api/runtime/forward`; the receiving Claw verifies the signature before executing
+- **Relay via Builderforce**: `ClawRelayDO` Durable Object proxies WebSocket connections; Claws behind firewalls or NAT reach each other through the relay without direct network access
+
+### 📊 Workflow Telemetry
+
+Every task and workflow emits structured spans, locally and in the Builderforce.ai portal:
+
+- **JSONL spans**: written to `.coderClaw/telemetry/YYYY-MM-DD.jsonl` — includes `workflowId`, `taskId`, `agentRole`, `durationMs`, `error`, `clawId`, `ts`
+- **Workflow start/end**: `emitWorkflowStart()` / `emitWorkflowEnd()` bracket each `executeWorkflow()` call
+- **Task start/end**: `emitTaskStart()` / `emitTaskEnd()` bracket every `executeTask()` — all exit paths including errors are captured
+- **Real-time portal sync**: when connected to Builderforce, spans are forwarded to `/api/workflows` and `/api/workflows/:id/tasks` automatically — workflows and their task status appear live in the portal timeline without any extra config
+- **Execution lifecycle**: `task.assign` / `task.broadcast` dispatches update the portal `executions` table — `running` on receipt, `completed` or `failed` on chat session end
+
+```bash
+# Query today's telemetry
+cat .coderClaw/telemetry/$(date +%Y-%m-%d).jsonl | jq 'select(.type=="task_end") | {role, durationMs, error}'
+```
 
 ### Distributed Runtime
 

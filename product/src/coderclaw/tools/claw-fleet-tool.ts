@@ -72,8 +72,14 @@ export const clawFleetTool: AgentTool<typeof ClawFleetSchema, string> = {
         }) as AgentToolResult<string>;
       }
 
-      const url = `${baseUrl.replace(/\/$/, "")}/api/claws/fleet?from=${clawId}&key=${encodeURIComponent(apiKey)}`;
-      const res = await fetch(url, { signal: AbortSignal.timeout(15_000) });
+      const url = `${baseUrl.replace(/\/$/, "")}/api/claws/fleet`;
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "X-Claw-From": String(clawId),
+        },
+        signal: AbortSignal.timeout(15_000),
+      });
 
       if (!res.ok) {
         const body = await res.text();
