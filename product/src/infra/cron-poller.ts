@@ -13,8 +13,8 @@
  * cron primitives so it works in any Node.js process without extra dependencies.
  */
 
-import { logDebug, logWarn } from "../logger.js";
 import { GatewayClient } from "../gateway/client.js";
+import { logDebug, logWarn } from "../logger.js";
 
 export type CronJobRecord = {
   id: string;
@@ -40,15 +40,19 @@ type CronPollerOptions = {
  */
 function nextCronDate(expr: string, after: Date): Date | null {
   const parts = expr.trim().split(/\s+/);
-  if (parts.length !== 5) { return null; }
-  const [mE, hE, , , ] = parts; // only minute + hour used for simple scheduling
+  if (parts.length !== 5) {
+    return null;
+  }
+  const [mE, hE, , ,] = parts; // only minute + hour used for simple scheduling
 
   const tryMinute = (base: Date): Date | null => {
     const d = new Date(base);
     d.setSeconds(0, 0);
 
     const matchField = (val: number, field: string): boolean => {
-      if (field === "*") return true;
+      if (field === "*") {
+        return true;
+      }
       if (field.startsWith("*/")) {
         const step = Number(field.slice(2));
         return Number.isFinite(step) && step > 0 && val % step === 0;
@@ -97,7 +101,9 @@ export class CronPollerService {
       clearInterval(this.pollTimer);
       this.pollTimer = null;
     }
-    for (const timer of this.timers.values()) clearTimeout(timer);
+    for (const timer of this.timers.values()) {
+      clearTimeout(timer);
+    }
     this.timers.clear();
     this.gatewayClient.stop();
   }
@@ -126,7 +132,9 @@ export class CronPollerService {
 
   private rescheduleAll(): void {
     // Cancel existing timers — they'll be replaced below.
-    for (const timer of this.timers.values()) clearTimeout(timer);
+    for (const timer of this.timers.values()) {
+      clearTimeout(timer);
+    }
     this.timers.clear();
 
     const now = new Date();
@@ -144,7 +152,9 @@ export class CronPollerService {
   }
 
   private async fireJob(job: CronJobRecord): Promise<void> {
-    if (this.closed) return;
+    if (this.closed) {
+      return;
+    }
     logWarn(`[cron-poller] firing job "${job.name}" (${job.id})`);
 
     let lastStatus: "success" | "error" = "success";
