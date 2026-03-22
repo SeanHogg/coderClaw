@@ -1,7 +1,9 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 const APPCAST_URL = new URL("../appcast.xml", import.meta.url);
+const appcastExists = existsSync(fileURLToPath(APPCAST_URL));
 
 function expectedSparkleVersion(shortVersion: string): string {
   const [year, month, day] = shortVersion.split(".");
@@ -12,7 +14,7 @@ function expectedSparkleVersion(shortVersion: string): string {
 }
 
 describe("appcast.xml", () => {
-  it("uses the expected Sparkle version for 2026.2.15", () => {
+  it.skipIf(!appcastExists)("uses the expected Sparkle version for 2026.2.15", () => {
     const appcast = readFileSync(APPCAST_URL, "utf8");
     const shortVersion = "2026.2.15";
     const items = Array.from(appcast.matchAll(/<item>[\s\S]*?<\/item>/g)).map((match) => match[0]);

@@ -2,6 +2,7 @@ import { EventEmitter } from "node:events";
 import fsSync from "node:fs";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { setInstallIdForTests } from "../config/install-id.js";
 import { resetLogger, setLoggerOverride } from "../logging.js";
 import { baileys, getLastSocket, resetBaileysMocks, resetLoadConfigMock } from "./test-helpers.js";
 
@@ -47,12 +48,16 @@ describe("web session", () => {
     vi.clearAllMocks();
     resetBaileysMocks();
     resetLoadConfigMock();
+    // Ensure resolveDefaultWebAuthDir() uses ~/.coderclaw (no install-id subdir)
+    // so the test's credsSuffix matches the computed path on CI.
+    setInstallIdForTests(() => null);
   });
 
   afterEach(() => {
     resetLogger();
     setLoggerOverride(null);
     vi.useRealTimers();
+    setInstallIdForTests(null);
   });
 
   it("creates WA socket with QR handler", async () => {
