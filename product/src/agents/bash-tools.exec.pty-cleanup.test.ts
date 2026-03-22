@@ -33,7 +33,7 @@ test("exec disposes PTY listeners after normal exit", async () => {
     kill: vi.fn(),
   }));
 
-  const tool = createExecTool({ allowBackground: false });
+  const tool = createExecTool({ allowBackground: false, security: "full" });
   const result = await tool.execute("toolcall", {
     command: "echo ok",
     pty: true,
@@ -64,7 +64,7 @@ test("exec tears down PTY resources on timeout", async () => {
     kill,
   }));
 
-  const tool = createExecTool({ allowBackground: false });
+  const tool = createExecTool({ allowBackground: false, security: "full" });
   await expect(
     tool.execute("toolcall", {
       command: "sleep 5",

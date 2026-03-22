@@ -1,8 +1,18 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { setInstallIdForTests } from "./install-id.js";
 import { createConfigIO } from "./io.js";
+
+// Prevent getInstallId from returning a real hash (paths.ts is loaded by setup file
+// before any vi.mock would apply, so we use the setInstallIdForTests override).
+beforeEach(() => {
+  setInstallIdForTests(() => null);
+});
+afterEach(() => {
+  setInstallIdForTests(null);
+});
 
 async function withTempHome(run: (home: string) => Promise<void>): Promise<void> {
   const home = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-config-"));

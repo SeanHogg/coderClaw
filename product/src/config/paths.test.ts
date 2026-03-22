@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { setInstallIdForTests } from "./install-id.js";
 import {
   resolveDefaultConfigCandidates,
   resolveConfigPathCandidate,
@@ -11,9 +12,15 @@ import {
   resolveStateDir,
 } from "./paths.js";
 
-// So state dir is legacy ~/.coderclaw in most tests (no install-id subdir)
-vi.mock("./install-id.js", () => ({ getInstallId: vi.fn(() => null) }));
-import { getInstallId } from "./install-id.js";
+// Ensure getInstallId returns null by default so state dir is legacy ~/.coderclaw.
+// vi.mock cannot intercept paths.ts's import of install-id (setup file loads paths.ts
+// before the mock is registered), so we use the setInstallIdForTests override instead.
+beforeEach(() => {
+  setInstallIdForTests(() => null);
+});
+afterEach(() => {
+  setInstallIdForTests(null);
+});
 
 describe("oauth paths", () => {
   it("prefers CODERCLAW_OAUTH_DIR over CODERCLAW_STATE_DIR", () => {
@@ -52,13 +59,13 @@ describe("state + config path candidates", () => {
   it("uses profile-based state dir when CODERCLAW_PROFILE is set (multi-instance)", () => {
     const env = { CODERCLAW_PROFILE: "work" } as NodeJS.ProcessEnv;
     expect(resolveStateDir(env, () => "/home/test")).toBe(
-      path.join("/home/test", ".coderclaw-work"),
+      path.resolve("/home/test", ".coderclaw-work"),
     );
   });
 
   it("treats CODERCLAW_PROFILE=default as no profile", () => {
     const env = { CODERCLAW_PROFILE: "default" } as NodeJS.ProcessEnv;
-    expect(resolveStateDir(env, () => "/home/test")).toBe(path.join("/home/test", ".coderclaw"));
+    expect(resolveStateDir(env, () => "/home/test")).toBe(path.resolve("/home/test", ".coderclaw"));
   });
 
   it("prefers CODERCLAW_STATE_DIR over CODERCLAW_PROFILE", () => {
@@ -70,9 +77,9 @@ describe("state + config path candidates", () => {
   });
 
   it("uses install-id subdir when getInstallId returns id and no legacy config", () => {
-    vi.mocked(getInstallId).mockReturnValueOnce("a1b2c3d4");
+    setInstallIdForTests(() => "a1b2c3d4");
     expect(resolveStateDir({} as NodeJS.ProcessEnv, () => "/home/test")).toBe(
-      path.join("/home/test", ".coderclaw", "a1b2c3d4"),
+      path.resolve("/home/test", ".coderclaw", "a1b2c3d4"),
     );
   });
 
@@ -82,7 +89,7 @@ describe("state + config path candidates", () => {
       const legacyDir = path.join(root, ".coderclaw");
       await fs.mkdir(legacyDir, { recursive: true });
       await fs.writeFile(path.join(legacyDir, "coderclaw.json"), "{}", "utf-8");
-      vi.mocked(getInstallId).mockReturnValueOnce("newinstall");
+      setInstallIdForTests(() => "newinstall");
       const result = resolveStateDir({} as NodeJS.ProcessEnv, () => root);
       expect(result).toBe(legacyDir);
     } finally {

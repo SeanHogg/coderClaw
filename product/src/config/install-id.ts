@@ -9,6 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 let cached: string | null | undefined = undefined;
+let _testOverride: ((fromModuleUrl: string) => string | null) | null = null;
 
 /**
  * Find the package root (directory containing package.json with name "coderclaw")
@@ -49,7 +50,17 @@ function findPackageRoot(fromModuleUrl: string): string | null {
  * globals, pnpm vs npm) get different ids so state dirs don't collide.
  * Returns null if package root cannot be determined (e.g. bundled).
  */
+/** For tests: override the value returned by getInstallId. Pass null to remove override. */
+export function setInstallIdForTests(
+  override: ((fromModuleUrl: string) => string | null) | null,
+): void {
+  _testOverride = override;
+}
+
 export function getInstallId(fromModuleUrl: string): string | null {
+  if (_testOverride !== null) {
+    return _testOverride(fromModuleUrl);
+  }
   if (cached !== undefined) {
     return cached;
   }
