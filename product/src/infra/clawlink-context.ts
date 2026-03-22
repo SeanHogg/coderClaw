@@ -77,7 +77,7 @@ export function mergeClawLinkContext(params: {
   assignmentContext: AssignmentContextResponse;
   fallback: { instanceId: string; url: string };
   machineProfile: RelayMachineProfile;
-}): ProjectContext["clawLink"] {
+}): NonNullable<ProjectContext["clawLink"]> {
   const existing = params.existing ?? { instanceId: params.fallback.instanceId };
   const primary = params.assignmentContext.primaryProject;
 

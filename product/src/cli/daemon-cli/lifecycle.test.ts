@@ -12,7 +12,7 @@ const service = {
 
 vi.mock("../../config/config.js", () => ({
   loadConfig: () => loadConfigMock(),
-  resolveGatewayPort: (...args: unknown[]) => resolveGatewayPortMock(...args),
+  resolveGatewayPort: (...args: Parameters<typeof resolveGatewayPortMock>) => resolveGatewayPortMock(...args),
 }));
 
 vi.mock("../../daemon/service.js", () => ({

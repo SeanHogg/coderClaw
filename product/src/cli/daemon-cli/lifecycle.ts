@@ -20,7 +20,8 @@ async function probeGatewayHealth(): Promise<boolean> {
   try {
     const cfg = loadConfig();
     const bindMode = cfg.gateway?.bind ?? "loopback";
-    const customBindHost = typeof cfg.gateway?.host === "string" ? cfg.gateway.host : undefined;
+    const customBindHost =
+      typeof cfg.gateway?.customBindHost === "string" ? cfg.gateway.customBindHost : undefined;
     const probeHost = pickProbeHostForBind(bindMode, pickPrimaryTailnetIPv4(), customBindHost);
     const port = resolveGatewayPort(cfg, process.env);
     const resolvedBindHost = await resolveGatewayBindHost(bindMode, customBindHost);

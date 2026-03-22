@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import { DEFAULT_AGENTS_FILENAME, resolveWorkspaceFilePath } from "../agents/workspace.js";
 import { getDefaultMemoryFilePaths, getDefaultMemoryDirs } from "../memory/internal.js";
 import { shortenHomePath } from "../utils.js";

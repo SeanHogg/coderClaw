@@ -30,14 +30,14 @@ const service = {
   restart: vi.fn(),
 };
 
-const readRecentGatewayLogErrors = vi.fn(async () => []);
+const readRecentGatewayLogErrors = vi.fn(async (): Promise<string[]> => []);
 
 vi.mock("../../config/config.js", () => ({
   loadConfig: () => loadConfig(),
 }));
 
 vi.mock("../../daemon/diagnostics.js", () => ({
-  readRecentGatewayLogErrors: (...args: unknown[]) => readRecentGatewayLogErrors(...args),
+  readRecentGatewayLogErrors: (...args: Parameters<typeof readRecentGatewayLogErrors>) => readRecentGatewayLogErrors(...args),
 }));
 
 vi.mock("../../runtime.js", () => ({
