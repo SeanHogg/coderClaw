@@ -108,7 +108,7 @@ describe("ClawLinkTransportAdapter", () => {
       expect(fetchMock).toHaveBeenCalledWith(`${BASE_URL}/api/tasks/next`, {
         method: "POST",
         headers: expect.any(Object),
-        body: null,
+        signal: expect.any(AbortSignal),
       });
     });
 
@@ -317,7 +317,7 @@ describe("ClawLinkTransportAdapter", () => {
       expect(result[0].version).toBe("1.0.0");
 
       const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
-      expect(url).toContain("/api/skills");
+      expect(url).toContain("/api/claws/42/skills");
     });
   });
 

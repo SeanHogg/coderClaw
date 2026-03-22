@@ -1,4 +1,3 @@
-import path from "node:path";
 import type { AgentToolResult } from "@mariozechner/pi-agent-core";
 import { createEditTool, createReadTool, createWriteTool } from "@mariozechner/pi-coding-agent";
 import { detectMime } from "../media/mime.js";
@@ -617,7 +616,8 @@ export function fixMissingRootSeparator(filePath: string, root: string): string 
     filePath[rootNorm.length] !== "\\" &&
     filePath[rootNorm.length] !== "/"
   ) {
-    return rootNorm + path.sep + filePath.slice(rootNorm.length);
+    const sep = rootNorm.includes("\\") ? "\\" : "/";
+    return rootNorm + sep + filePath.slice(rootNorm.length);
   }
   return filePath;
 }

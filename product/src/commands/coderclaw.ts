@@ -1351,7 +1351,7 @@ function createStatusCommand(): Command {
  *   coderclaw agent remove              — uninstall the Workforce agent
  */
 export function createAgentCommand(): Command {
-  const cmd = new Command("agent").description(
+  const cmd = new Command("workforce").description(
     "Manage Builderforce Workforce agents (custom trained LLMs)",
   );
 

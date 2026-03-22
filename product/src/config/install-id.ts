@@ -24,7 +24,7 @@ function findPackageRoot(fromModuleUrl: string): string | null {
         if (fs.existsSync(pkgPath)) {
           const raw = fs.readFileSync(pkgPath, "utf-8");
           const name = (raw.match(/"name"\s*:\s*"([^"]+)"/) ?? [])[1];
-          if (name === "coderclaw") {
+          if (name === "coderclaw" || name === "@seanhogg/coderclaw") {
             return dir;
           }
         }

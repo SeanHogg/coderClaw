@@ -219,7 +219,7 @@ const coreEntries: CoreCliEntry[] = [
         hasSubcommands: true,
       },
       {
-        name: "agent",
+        name: "workforce",
         description: "Manage Builderforce Workforce agents (custom trained LLMs)",
         hasSubcommands: true,
       },
