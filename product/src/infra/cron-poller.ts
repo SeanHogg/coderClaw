@@ -6,7 +6,7 @@
  * When a job fires, it dispatches the task to the gateway as a chat.send and
  * patches lastRunAt + lastStatus back to Builderforce.
  *
- * Cron expression format: "*/5 * * * *"  (every 5 minutes)
+ * Cron expression format: "0/5 * * * *"  (every 5 minutes)
  *   field order: minute  hour  day-of-month  month  day-of-week
  *
  * This implementation uses a 1-minute polling loop instead of platform-level
@@ -35,12 +35,12 @@ type CronPollerOptions = {
 
 /**
  * Parse a 5-field cron expression and return the next Date after `after`.
- * Supports: `*`, `*/n` (step), and literal numbers. Does not support ranges.
+ * Supports: "*", "STEP/n" (step), and literal numbers. Does not support ranges.
  * Returns null if the expression is malformed.
  */
 function nextCronDate(expr: string, after: Date): Date | null {
   const parts = expr.trim().split(/\s+/);
-  if (parts.length !== 5) return null;
+  if (parts.length !== 5) { return null; }
   const [mE, hE, , , ] = parts; // only minute + hour used for simple scheduling
 
   const tryMinute = (base: Date): Date | null => {
@@ -103,7 +103,9 @@ export class CronPollerService {
   }
 
   private async fetchAndSchedule(): Promise<void> {
-    const url = `${this.opts.baseUrl.replace(/\/$/, "")}/api/claws/${this.opts.clawId}/cron`;
+    const raw = this.opts.baseUrl;
+    const baseUrl = raw.endsWith("/") ? raw.slice(0, -1) : raw;
+    const url = `${baseUrl}/api/claws/${this.opts.clawId}/cron`;
     try {
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${this.opts.apiKey}` },
@@ -170,7 +172,9 @@ export class CronPollerService {
   }
 
   private async patchJobStatus(jobId: string, status: "success" | "error"): Promise<void> {
-    const url = `${this.opts.baseUrl.replace(/\/$/, "")}/api/claws/${this.opts.clawId}/cron/${jobId}`;
+    const raw = this.opts.baseUrl;
+    const baseUrl = raw.endsWith("/") ? raw.slice(0, -1) : raw;
+    const url = `${baseUrl}/api/claws/${this.opts.clawId}/cron/${jobId}`;
     try {
       await fetch(url, {
         method: "PATCH",
