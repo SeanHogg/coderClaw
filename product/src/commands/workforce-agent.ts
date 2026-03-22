@@ -71,7 +71,7 @@ export async function fetchAgentPackage(params: {
     );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    throw new Error(`Network error fetching agent package: ${msg}`);
+    throw new Error(`Network error fetching agent package: ${msg}`, { cause: err });
   }
 
   if (!res.ok) {
@@ -195,7 +195,7 @@ export async function showWorkforceAgentInfo(projectRoot: string): Promise<void>
 
   const a = ctx.customAgent;
   const lines = [
-    `${theme.heading("Workforce Agent")}`,
+    theme.heading("Workforce Agent"),
     `  ID:           ${a.agentId}`,
     `  Name:         ${a.name}${a.title ? ` — ${a.title}` : ""}`,
     `  Base model:   ${a.baseModel}`,

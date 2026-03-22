@@ -37,7 +37,8 @@ vi.mock("../../config/config.js", () => ({
 }));
 
 vi.mock("../../daemon/diagnostics.js", () => ({
-  readRecentGatewayLogErrors: (...args: Parameters<typeof readRecentGatewayLogErrors>) => readRecentGatewayLogErrors(...args),
+  readRecentGatewayLogErrors: (...args: Parameters<typeof readRecentGatewayLogErrors>) =>
+    readRecentGatewayLogErrors(...args),
 }));
 
 vi.mock("../../runtime.js", () => ({
