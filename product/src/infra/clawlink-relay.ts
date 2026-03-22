@@ -11,16 +11,16 @@
 
 import { randomUUID } from "node:crypto";
 import { WebSocket } from "ws";
+import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
 import { GatewayClient, type GatewayClientOptions } from "../gateway/client.js";
 import type { EventFrame } from "../gateway/protocol/index.js";
-import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
+import { logDebug, logWarn } from "../logger.js";
+import { resolveApproval } from "./approval-gate.js";
 import {
   buildLocalMachineProfile,
   mergeClawLinkContext,
   type AssignmentContextResponse,
 } from "./clawlink-context.js";
-import { resolveApproval } from "./approval-gate.js";
-import { logDebug, logWarn } from "../logger.js";
 
 function extractChatText(message: unknown): string {
   if (!message || typeof message !== "object") {

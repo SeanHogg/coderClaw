@@ -78,7 +78,7 @@ function syncSpanToBuilderforce(span: WorkflowSpan): void {
   const base = linkApiUrl.replace(/\/$/, "");
   const headers = {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${linkApiKey}`,
+    Authorization: `Bearer ${linkApiKey}`,
     "X-Claw-Id": knownClawId,
   };
 

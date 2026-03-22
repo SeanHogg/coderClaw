@@ -8,7 +8,7 @@
 
 ## 1. Is Registration Implemented in Both Projects?
 
-| Concern                        | builderforce.ai (server)                                                               | coderClaw (client)                                                                         |
+| Concern                        | builderforce.ai (server)                                                             | coderClaw (client)                                                                         |
 | ------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | **Claw CRUD API**              | ✅ Full — `POST /api/claws`, `GET /api/claws`, `DELETE /api/claws/:id`               | N/A (consumer only)                                                                        |
 | **Registration wizard**        | N/A (receives requests)                                                              | ✅ Full — interactive TUI wizard in `coderclaw init` (`promptClawLink`)                    |
@@ -416,9 +416,9 @@ coderClaw agent                 coderclawLLM                  SPA Dashboard
 
 | Step | What                                             | Where                                                                                                            |
 | ---- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| 1    | Create `/v1/chat/completions` proxy route        | `builderforce.ai/api/src/presentation/routes/llmRoutes.ts`                                                         |
+| 1    | Create `/v1/chat/completions` proxy route        | `builderforce.ai/api/src/presentation/routes/llmRoutes.ts`                                                       |
 | 2    | Add `llm_requests` table (log every call)        | `schema.ts`: clawId, tenantId, model, provider, inputTokens, outputTokens, costUsd, latencyMs, approvalId        |
-| 3    | Build routing engine (aliases, fallback, budget) | `builderforce.ai/api/src/application/llm/RoutingEngine.ts`                                                         |
+| 3    | Build routing engine (aliases, fallback, budget) | `builderforce.ai/api/src/application/llm/RoutingEngine.ts`                                                       |
 | 4    | Add `routing_policies` table                     | schema: tenantId, policy JSON, monthlyBudgetUsd, alertPercent                                                    |
 | 5    | Wire approval workflow                           | Reuse execution approval from Phase 2; add `status: 'awaiting_approval'` to LLM request lifecycle                |
 | 6    | Configure coderClaw to use it                    | New provider in `src/providers/coderclawllm.ts` that points at `CODERCLAW_LINK_URL + /v1` using existing API key |

@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
+import { resolveWorkspaceFilePath } from "../agents/workspace.js";
 import { SILENT_REPLY_TOKEN } from "../auto-reply/tokens.js";
 import type { CliDeps } from "../cli/deps.js";
 import { agentCommand } from "../commands/agent.js";
@@ -13,7 +14,6 @@ import { loadSessionStore, updateSessionStore } from "../config/sessions/store.j
 import type { SessionEntry } from "../config/sessions/types.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { type RuntimeEnv, defaultRuntime } from "../runtime.js";
-import { resolveWorkspaceFilePath } from "../agents/workspace.js";
 
 function generateBootSessionId(): string {
   const now = new Date();

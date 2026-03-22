@@ -1,7 +1,7 @@
 import { confirm, note, password, select, spinner, text } from "@clack/prompts";
 import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
-import { readSharedEnvVar, upsertSharedEnvVar } from "../infra/env-file.js";
 import { buildLocalMachineProfile } from "../infra/clawlink-context.js";
+import { readSharedEnvVar, upsertSharedEnvVar } from "../infra/env-file.js";
 import { authenticateViaBrowser } from "./browser-auth-server.js";
 import { detectBrowserOpenSupport } from "./onboard-helpers.js";
 

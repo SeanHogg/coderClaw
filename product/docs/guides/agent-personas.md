@@ -183,7 +183,7 @@ source wins:
 
 | Priority    | Source              | Location                                       |
 | ----------- | ------------------- | ---------------------------------------------- |
-| 5 (highest) | `clawlink-assigned` | pushed from builderforce.ai portal               |
+| 5 (highest) | `clawlink-assigned` | pushed from builderforce.ai portal             |
 | 4           | `clawhub`           | `~/.coderclaw/personas/` (marketplace install) |
 | 3           | `project-local`     | `.coderClaw/personas/*.yaml`                   |
 | 2           | `user-global`       | `~/.coderclaw/personas/*.yaml`                 |

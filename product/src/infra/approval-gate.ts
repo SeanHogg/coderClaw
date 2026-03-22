@@ -33,11 +33,7 @@ let gatewayApiKey: string | null = null;
  * Configure the approval gate with the Builderforce connection details.
  * Call once at startup when CODERCLAW_LINK_API_KEY is present.
  */
-export function initApprovalGate(opts: {
-  baseUrl: string;
-  clawId: string;
-  apiKey: string;
-}): void {
+export function initApprovalGate(opts: { baseUrl: string; clawId: string; apiKey: string }): void {
   gatewayBaseUrl = opts.baseUrl.replace(/\/$/, "");
   gatewayClawId = opts.clawId;
   gatewayApiKey = opts.apiKey;
@@ -83,23 +79,20 @@ export async function requestApproval(opts: {
 
   let approvalId: string;
   try {
-    const res = await fetch(
-      `${gatewayBaseUrl}/api/claws/${gatewayClawId}/approval-request`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${gatewayApiKey}`,
-        },
-        body: JSON.stringify({
-          actionType: opts.actionType,
-          description: opts.description,
-          metadata: opts.metadata,
-          expiresAt,
-        }),
-        signal: AbortSignal.timeout(10_000),
+    const res = await fetch(`${gatewayBaseUrl}/api/claws/${gatewayClawId}/approval-request`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${gatewayApiKey}`,
       },
-    );
+      body: JSON.stringify({
+        actionType: opts.actionType,
+        description: opts.description,
+        metadata: opts.metadata,
+        expiresAt,
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
     if (!res.ok) {
       logWarn(`[approval-gate] request failed (${res.status}) — auto-approving`);
       return "approved";

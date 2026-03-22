@@ -19,14 +19,14 @@ import {
   triggerInternalHook,
 } from "../hooks/internal-hooks.js";
 import { loadInternalHooks } from "../hooks/loader.js";
+import { initApprovalGate } from "../infra/approval-gate.js";
 import { syncCoderClawDirectoryOnStartup } from "../infra/clawlink-directory-sync.js";
 import { ClawLinkRelayService } from "../infra/clawlink-relay.js";
+import { CronPollerService } from "../infra/cron-poller.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { KnowledgeLoopService } from "../infra/knowledge-loop.js";
-import { initApprovalGate } from "../infra/approval-gate.js";
 import { fetchAndLoadSkills } from "../infra/skill-registry.js";
-import { CronPollerService } from "../infra/cron-poller.js";
 import type { loadCoderClawPlugins } from "../plugins/loader.js";
 import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
 import { startBrowserControlServerIfEnabled } from "./server-browser.js";
@@ -204,7 +204,12 @@ export async function startGatewaySidecars(params: {
       if (clawId) {
         // Re-init telemetry now that the claw ID is known so all subsequent
         // workflow spans are tagged with this claw's identity and forwarded to Builderforce.ai.
-        globalOrchestrator.setProjectRoot(params.defaultWorkspaceDir, String(clawId), baseUrl, apiKey);
+        globalOrchestrator.setProjectRoot(
+          params.defaultWorkspaceDir,
+          String(clawId),
+          baseUrl,
+          apiKey,
+        );
 
         // Approval gate: enables requestApproval() to POST to Builderforce and
         // await manager decisions delivered via the relay WebSocket.

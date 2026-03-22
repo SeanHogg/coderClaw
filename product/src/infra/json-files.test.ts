@@ -39,7 +39,9 @@ describe("writeJsonAtomic", () => {
     err.code = "ENOENT";
     fsMocks.rename.mockRejectedValueOnce(err);
 
-    await expect(writeJsonAtomic("C:\\state\\devices\\pending.json", { ok: true })).rejects.toBe(err);
+    await expect(writeJsonAtomic("C:\\state\\devices\\pending.json", { ok: true })).rejects.toBe(
+      err,
+    );
 
     expect(fsMocks.copyFile).not.toHaveBeenCalled();
     expect(fsMocks.unlink).toHaveBeenCalledTimes(1);
