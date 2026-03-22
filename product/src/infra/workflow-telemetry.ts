@@ -73,7 +73,9 @@ export function initTelemetry(opts: {
  *   task.fail         → PATCH /api/workflows/:wfId/tasks/:tid  (status=failed)
  */
 function syncSpanToBuilderforce(span: WorkflowSpan): void {
-  if (!linkApiUrl || !linkApiKey || !knownClawId) return;
+  if (!linkApiUrl || !linkApiKey || !knownClawId) {
+    return;
+  }
 
   const base = linkApiUrl.replace(/\/$/, "");
   const headers = {

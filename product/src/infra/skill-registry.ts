@@ -54,7 +54,7 @@ export async function fetchAndLoadSkills(opts: {
       skillSlug: s.skill_id,
       name: s.name,
       description: s.description,
-      source: (s.metadata?.source === "claw" ? "claw" : "tenant") as "tenant" | "claw",
+      source: s.metadata?.source === "claw" ? "claw" : "tenant",
     }));
     if (loadedSkills.length > 0) {
       logDebug(

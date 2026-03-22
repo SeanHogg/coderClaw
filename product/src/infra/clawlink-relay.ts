@@ -745,7 +745,9 @@ export class ClawLinkRelayService {
   }
 
   private async syncAssignmentContext(reason: string): Promise<void> {
-    if (!this.opts.workspaceDir) return;
+    if (!this.opts.workspaceDir) {
+      return;
+    }
     try {
       const response = await fetch(this.assignmentContextUrl, {
         method: "GET",
@@ -758,7 +760,9 @@ export class ClawLinkRelayService {
       }
       const assignmentContext = (await response.json()) as AssignmentContextResponse;
       const context = await loadProjectContext(this.opts.workspaceDir);
-      if (!context) return;
+      if (!context) {
+        return;
+      }
 
       const machineProfile = buildLocalMachineProfile({
         workspaceDirectory: this.opts.workspaceDir,
