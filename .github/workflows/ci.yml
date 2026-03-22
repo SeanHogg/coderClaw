@@ -268,6 +268,9 @@ jobs:
           # Default heap limits have been too low on Linux CI (V8 OOM near 4GB).
           echo "CODERCLAW_TEST_WORKERS=2" >> "$GITHUB_ENV"
           echo "CODERCLAW_TEST_MAX_OLD_SPACE_SIZE_MB=6144" >> "$GITHUB_ENV"
+          # vmForks has caused silent orchestrator crashes with Vitest 4.x on Linux CI
+          # (all tests pass, process exits non-zero with no summary). Use plain forks.
+          echo "CODERCLAW_TEST_VM_FORKS=0" >> "$GITHUB_ENV"
 
       - name: Run ${{ matrix.task }} (${{ matrix.runtime }})
         run: ${{ matrix.command }}
