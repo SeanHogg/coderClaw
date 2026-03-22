@@ -12,7 +12,7 @@ if command -v git >/dev/null; then
 fi
 
 echo "==> Run installer (non-root user)"
-curl -fsSL "$INSTALL_URL" | bash
+curl -fsSL "$INSTALL_URL" | tr -d '\r' | bash
 
 # Ensure PATH picks up user npm prefix
 export PATH="$HOME/.npm-global/bin:$PATH"

@@ -48,7 +48,7 @@ else
 fi
 
 echo "==> Run official installer one-liner"
-curl -fsSL "$INSTALL_URL" | bash
+curl -fsSL "$INSTALL_URL" | tr -d '\r' | bash
 
 echo "==> Verify installed version"
 CLI_NAME="$PACKAGE_NAME"

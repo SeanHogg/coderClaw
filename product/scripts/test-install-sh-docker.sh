@@ -69,4 +69,4 @@ docker run --rm -t \
   -e CODERCLAW_INSTALL_CLI_URL="$CLI_INSTALL_URL" \
   -e CODERCLAW_NO_ONBOARD=1 \
   -e DEBIAN_FRONTEND=noninteractive \
-  "$NONROOT_IMAGE" -lc "curl -fsSL \"$CLI_INSTALL_URL\" | bash -s -- --set-npm-prefix --no-onboard"
+  "$NONROOT_IMAGE" -lc "curl -fsSL \"$CLI_INSTALL_URL\" | tr -d '\r' | bash -s -- --set-npm-prefix --no-onboard"
