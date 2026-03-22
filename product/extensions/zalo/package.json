@@ -1,6 +1,6 @@
 {
   "name": "@coderclaw/zalo",
-  "version": "2026.3.11",
+  "version": "2026.3.21",
   "description": "CoderClaw Zalo channel plugin",
   "type": "module",
   "dependencies": {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026.3.21
+
+### Changes
+
+- Version alignment with core CoderClaw release numbers.
+
 ## 2026.3.11
 
 ### Changes
