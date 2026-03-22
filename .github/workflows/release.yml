@@ -23,6 +23,9 @@ env:
 jobs:
   build-and-check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: product
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,6 +36,7 @@ jobs:
         uses: ./.github/actions/setup-node-env
         with:
           install-bun: "false"
+          working-directory: product
 
       - name: Build
         run: pnpm build
@@ -50,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist-build
-          path: dist/
+          path: product/dist/
           retention-days: 1
 
       - name: Check package
@@ -63,6 +67,9 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    defaults:
+      run:
+        working-directory: product
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,6 +80,7 @@ jobs:
         uses: ./.github/actions/setup-node-env
         with:
           install-bun: "false"
+          working-directory: product
 
       - name: Download dist artifact (if available)
         id: download-dist
