@@ -108,17 +108,21 @@ export async function dispatchToRemoteClaw(
   opts: RemoteDispatchOptions,
   targetClawId: string,
   task: string,
+  options?: { correlationId?: string; callbackClawId?: string },
 ): Promise<RemoteDispatchResult> {
   // API key moved to Authorization header; payload is HMAC-signed so the
   // receiving endpoint can verify both the caller's identity and that the
   // task body has not been tampered with in transit.
   const url = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${targetClawId}/forward`;
 
-  const payload = {
+  const payload: Record<string, unknown> = {
     type: "remote.task",
     task,
     fromClawId: opts.myClawId,
     timestamp: new Date().toISOString(),
+    ...(options?.correlationId ? { correlationId: options.correlationId } : {}),
+    ...(options?.callbackClawId ? { callbackClawId: options.callbackClawId } : {}),
+    ...(options?.correlationId ? { callbackBaseUrl: opts.baseUrl } : {}),
   };
   const body = JSON.stringify(payload);
   const signature = signPayload(body, opts.apiKey);
@@ -156,5 +160,45 @@ export async function dispatchToRemoteClaw(
     };
   } catch (err) {
     return { status: "rejected", error: String(err) };
+  }
+}
+
+/**
+ * Send a task result back to the originating claw.
+ * Called by the target claw after completing a remote task.
+ */
+export async function dispatchResultToRemoteClaw(
+  opts: RemoteDispatchOptions,
+  callbackClawId: string,
+  correlationId: string,
+  result: string,
+): Promise<void> {
+  const url = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${callbackClawId}/forward`;
+  const payload = {
+    type: "remote.task.result",
+    correlationId,
+    result,
+    fromClawId: opts.myClawId,
+    timestamp: new Date().toISOString(),
+  };
+  const body = JSON.stringify(payload);
+  const signature = signPayload(body, opts.apiKey);
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${opts.apiKey}`,
+        "X-Claw-From": opts.myClawId,
+        "X-Claw-Signature": `sha256=${signature}`,
+      },
+      body,
+      signal: AbortSignal.timeout(15_000),
+    });
+    logDebug(
+      `[remote-subagent] result dispatched to callback claw ${callbackClawId} (correlation=${correlationId})`,
+    );
+  } catch (err) {
+    logDebug(`[remote-subagent] result dispatch failed: ${String(err)}`);
   }
 }

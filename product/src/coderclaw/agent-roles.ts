@@ -3,7 +3,7 @@
  */
 
 import { globalPersonaRegistry } from "./personas.js";
-import type { AgentRole } from "./types.js";
+import type { AgentRole, PersonaPlugin } from "./types.js";
 
 /**
  * Code Creator Agent - Generates new code, features, and implementations
@@ -317,6 +317,44 @@ export function getBuiltInAgentRoles(): AgentRole[] {
     DOCUMENTATION_AGENT_ROLE,
     ARCHITECTURE_ADVISOR_ROLE,
   ];
+}
+
+/**
+ * Register platform personas fetched from Builderforce as available agent roles.
+ * These are merged with custom roles; built-in roles take precedence.
+ */
+export function registerPlatformPersonasAsRoles(
+  personas: Array<{
+    slug: string;
+    name: string;
+    description: string | null;
+    voice: string | null;
+    perspective: string | null;
+    outputPrefix: string | null;
+  }>,
+): void {
+  for (const p of personas) {
+    const plugin: PersonaPlugin = {
+      name: p.slug,
+      description: p.description ?? "",
+      capabilities: [],
+      tools: [],
+      persona:
+        p.voice || p.perspective
+          ? {
+              voice: p.voice ?? "",
+              perspective: p.perspective ?? "",
+              decisionStyle: "",
+            }
+          : undefined,
+      outputFormat: p.outputPrefix
+        ? { structure: "markdown", outputPrefix: p.outputPrefix }
+        : undefined,
+      source: "clawlink-assigned",
+      active: true,
+    };
+    globalPersonaRegistry.register(plugin);
+  }
 }
 
 /**

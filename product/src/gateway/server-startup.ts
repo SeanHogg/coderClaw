@@ -8,6 +8,7 @@ import {
 import { resolveAgentSessionDirs } from "../agents/session-dirs.js";
 import { cleanStaleLockFiles } from "../agents/session-write-lock.js";
 import type { CliDeps } from "../cli/deps.js";
+import { registerPlatformPersonasAsRoles } from "../coderclaw/agent-roles.js";
 import { globalOrchestrator } from "../coderclaw/orchestrator.js";
 import { loadProjectContext } from "../coderclaw/project-context.js";
 import type { loadConfig } from "../config/config.js";
@@ -26,6 +27,9 @@ import { CronPollerService } from "../infra/cron-poller.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { KnowledgeLoopService } from "../infra/knowledge-loop.js";
+import { fetchPlatformPersonas } from "../infra/platform-persona-sync.js";
+import { pushProjectContextToBuilderforce } from "../infra/project-context-push.js";
+import { checkAndWarnQuota } from "../infra/quota-monitor.js";
 import { fetchAndLoadSkills } from "../infra/skill-registry.js";
 import type { loadCoderClawPlugins } from "../plugins/loader.js";
 import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
@@ -223,6 +227,38 @@ export async function startGatewaySidecars(params: {
         });
         clawLinkRelay.start();
         params.log.warn(`[clawlink] relay started for claw ${clawId}`);
+
+        // Wire the relay's remote dispatch options so result callbacks work.
+        clawLinkRelay.setRemoteDispatchOptions({ baseUrl, myClawId: String(clawId), apiKey });
+
+        // Fetch platform personas and register them as available agent roles.
+        void fetchPlatformPersonas({ baseUrl, clawId: String(clawId), apiKey }).then((personas) => {
+          if (personas.length > 0) {
+            params.log.warn(`[platform-personas] loaded ${personas.length} platform persona(s)`);
+            registerPlatformPersonasAsRoles(personas);
+          }
+        });
+
+        // Check token quota and warn if approaching limits.
+        void checkAndWarnQuota({ baseUrl, clawId: String(clawId), apiKey });
+
+        // Push project context (governance docs) to Builderforce.
+        void (async () => {
+          try {
+            const ctx = await loadProjectContext(params.defaultWorkspaceDir);
+            if (ctx?.clawLink?.projectId && ctx.description) {
+              await pushProjectContextToBuilderforce(
+                { baseUrl, clawId: String(clawId), apiKey },
+                {
+                  projectId: Number(ctx.clawLink.projectId),
+                  governance: ctx.description,
+                },
+              );
+            }
+          } catch (err) {
+            params.log.warn(`[project-context-push] failed: ${String(err)}`);
+          }
+        })();
 
         // Fetch assigned skills from the portal and populate the local registry.
         void fetchAndLoadSkills({ baseUrl, clawId: String(clawId), apiKey });

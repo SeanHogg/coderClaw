@@ -15,12 +15,15 @@ import { loadProjectContext, updateProjectContextFields } from "../coderclaw/pro
 import { GatewayClient, type GatewayClientOptions } from "../gateway/client.js";
 import type { EventFrame } from "../gateway/protocol/index.js";
 import { logDebug, logWarn } from "../logger.js";
+import { onAgentEvent } from "./agent-events.js";
 import { resolveApproval } from "./approval-gate.js";
 import {
   buildLocalMachineProfile,
   mergeClawLinkContext,
   type AssignmentContextResponse,
 } from "./clawlink-context.js";
+import { resolveRemoteResult } from "./remote-result-broker.js";
+import { dispatchResultToRemoteClaw, type RemoteDispatchOptions } from "./remote-subagent.js";
 
 function extractChatText(message: unknown): string {
   if (!message || typeof message !== "object") {
@@ -81,6 +84,13 @@ export class ClawLinkRelayService {
   private gatewayClient: GatewayClient | null = null;
   /** executionId from the last task.assign / task.broadcast dispatch, if any. */
   private pendingExecutionId: number | null = null;
+  /** Tracks pending remote task correlations so results can be sent back. */
+  private pendingRemoteCorrelations = new Map<
+    string,
+    { correlationId: string; callbackClawId: string; callbackBaseUrl: string }
+  >();
+  /** Remote dispatch options, set after construction so result callbacks work. */
+  private remoteDispatchOpts: RemoteDispatchOptions | null = null;
 
   private readonly upstreamWsUrl: string;
   private readonly heartbeatHttpUrl: string;
@@ -179,6 +189,11 @@ export class ClawLinkRelayService {
     this.gatewayWsUrl = opts.gatewayUrl ?? "ws://127.0.0.1:18789";
   }
 
+  /** Set remote dispatch options so result callbacks can be sent back to the originating claw. */
+  setRemoteDispatchOptions(opts: RemoteDispatchOptions): void {
+    this.remoteDispatchOpts = opts;
+  }
+
   /** Start the relay service. Both WS connections retry on their own. */
   start(): void {
     if (this.closed) {
@@ -186,6 +201,7 @@ export class ClawLinkRelayService {
     }
     this.connectUpstream();
     this.connectLocalGateway();
+    this.startRemoteResultTracking();
   }
 
   /** Gracefully shut down both connections. */
@@ -198,6 +214,49 @@ export class ClawLinkRelayService {
     this.ws = null;
     this.gatewayClient?.stop();
     this.gatewayClient = null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Remote result tracking — send task results back to the originating claw
+  // ---------------------------------------------------------------------------
+
+  private startRemoteResultTracking(): void {
+    onAgentEvent((evt) => {
+      if (this.closed) {
+        return;
+      }
+      if (evt.stream !== "lifecycle") {
+        return;
+      }
+      const phase = evt.data["phase"];
+      if (phase !== "end" && phase !== "error") {
+        return;
+      }
+      const sessionKey = evt.sessionKey ?? "";
+      const correlation = this.pendingRemoteCorrelations.get(sessionKey);
+      if (!correlation) {
+        return;
+      }
+      this.pendingRemoteCorrelations.delete(sessionKey);
+      // Capture the last assistant message or a summary from the lifecycle event
+      const errorVal = evt.data["error"];
+      const errorStr = typeof errorVal === "string" ? errorVal : "unknown error";
+      const summary =
+        typeof evt.data["summary"] === "string"
+          ? evt.data["summary"]
+          : phase === "error"
+            ? `Remote task failed: ${errorStr}`
+            : `Remote task completed on claw ${this.opts.clawId}`;
+      // Send the result back to the originating claw
+      if (this.remoteDispatchOpts) {
+        void dispatchResultToRemoteClaw(
+          this.remoteDispatchOpts,
+          correlation.callbackClawId,
+          correlation.correlationId,
+          summary,
+        );
+      }
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -348,19 +407,44 @@ export class ClawLinkRelayService {
         // Peer claw delegated a task to this claw — execute it as a chat message.
         const task = typeof msg.task === "string" ? msg.task : "";
         const fromClawId = typeof msg.fromClawId === "string" ? msg.fromClawId : "unknown";
+        const correlationId = typeof msg.correlationId === "string" ? msg.correlationId : "";
+        const callbackClawId = typeof msg.callbackClawId === "string" ? msg.callbackClawId : "";
+        const callbackBaseUrl = typeof msg.callbackBaseUrl === "string" ? msg.callbackBaseUrl : "";
         if (!task) {
           break;
         }
         logDebug(`[clawlink-relay] remote task from claw ${fromClawId}: ${task.slice(0, 80)}…`);
+        // Track correlation so we can send result back when the session completes.
+        const sessionKey = correlationId ? `remote-${correlationId}` : "main";
+        if (correlationId && callbackClawId) {
+          this.pendingRemoteCorrelations.set(sessionKey, {
+            correlationId,
+            callbackClawId,
+            callbackBaseUrl,
+          });
+        }
         this.gatewayClient
           ?.request("chat.send", {
-            sessionKey: "main",
+            sessionKey,
             message: `[Remote task from claw ${fromClawId}]\n\n${task}`,
-            idempotencyKey: `remote-${fromClawId}-${Date.now()}`,
+            idempotencyKey: `remote-${fromClawId}-${correlationId || Date.now()}`,
           })
           .catch((err: unknown) => {
             logDebug(`[clawlink-relay] remote.task dispatch failed: ${String(err)}`);
           });
+        break;
+      }
+
+      case "remote.task.result": {
+        // A remote claw sent the result of a task we previously dispatched.
+        const correlationId = typeof msg.correlationId === "string" ? msg.correlationId : "";
+        const result = typeof msg.result === "string" ? msg.result : "";
+        if (correlationId) {
+          const resolved = resolveRemoteResult(correlationId, result);
+          logDebug(
+            `[clawlink-relay] remote.task.result ${correlationId}: ${resolved ? "resolved" : "no pending callback"}`,
+          );
+        }
         break;
       }
 

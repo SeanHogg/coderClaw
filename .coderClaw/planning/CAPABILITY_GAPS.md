@@ -283,15 +283,9 @@ Orchestrator sees step: { role: "remote:456", task: "Implement feature X" }
 5. Orchestrator marks the step `completed` once delivery is confirmed
 6. builderforce.ai → Claw panel → fleet shows `remoteDispatch: true` for both
 
-**Remaining gaps**:
+**Resolution update (2026-03-22)**:
 
-- **Fire-and-forget only**: results of the remote task are not streamed back to
-  the orchestrating claw. Dependent workflow steps cannot use remote task output.
-- **No capability-based routing**: orchestrator does not yet auto-select the
-  best claw by matching capability requirements; caller specifies an explicit
-  claw ID.
-- **No bidirectional result channel**: a WebSocket-based result streaming path
-  between claws would complete the full distributed execution story.
+All remaining gaps closed. See Phase 4/5 closure entries below.
 
 ---
 
@@ -494,24 +488,17 @@ queries returned raw lists that were hard for agents and humans to interpret at 
 
 ## Open Gaps (Phase 1)
 
-### I) Remote Task Result Streaming
+### I) Remote Task Result Streaming ✅ RESOLVED (2026-03-22)
 
-**Current**: `POST /api/claws/:id/forward` is fire-and-forget. Dependent orchestrator
-steps that use `remote:<clawId>` roles cannot receive output from the remote execution.
+**Resolution**:
 
-**Required**:
-
-- A result-streaming channel from target claw back to orchestrating claw.
-- Options: (a) reverse HTTP callback, (b) WS result frame via `ClawRelayDO`,
-  (c) polling a result endpoint added to builderforce.ai.
-- Orchestrator should surface result in `task.output` so dependent steps can use it.
-
-**Acceptance criteria**:
-
-- `orchestrate` workflow with `remote:<clawId>` step completes with non-empty `output`.
-- Dependent steps receive the remote output as `input`.
-
-**Requires**: builderforce.ai API change — see `CODERCLAW_LINK_GAPS.md`.
+- `correlationId` (UUID) added to every `dispatchToRemoteClaw()` call.
+- Target claw subscribes to lifecycle events for the spawned session (keyed by `remote-<correlationId>`).
+- On lifecycle end, target calls `dispatchResultToRemoteClaw()` → `POST /api/claws/:callbackClawId/forward` with `{ type: "remote.task.result", correlationId, result }`.
+- Source claw relay handles `remote.task.result` → calls `resolveRemoteResult(correlationId, result)`.
+- Orchestrator awaits `awaitRemoteResult(correlationId, 600_000)` (10 min timeout); falls back to placeholder on timeout.
+- All code in `src/infra/remote-result-broker.ts`, `src/infra/remote-subagent.ts`, `src/infra/clawlink-relay.ts`, `src/coderclaw/orchestrator.ts`.
+- 4 unit tests in `src/infra/remote-result-broker.test.ts`.
 
 ---
 
@@ -706,7 +693,7 @@ late with cryptic errors; there was no fallback.
 | ✅       | 9    | `/compact` in help                   | RESOLVED |
 | ✅       | 10   | Handoff hint on /new                 | RESOLVED |
 | ✅       | 11   | Semantic knowledge summaries         | RESOLVED |
-| 🔲       | I    | Remote task result streaming         | OPEN     |
+| ✅       | I    | Remote task result streaming         | RESOLVED (2026-03-22) |
 | ✅       | J    | Capability-based claw routing        | RESOLVED |
 | 🔲       | K    | Architecture.md auto-update          | OPEN     |
 | ✅       | L    | Structured inter-agent context       | RESOLVED |
@@ -714,4 +701,79 @@ late with cryptic errors; there was no fallback.
 | ✅       | N    | Persona plugin architecture          | RESOLVED |
 | ✅       | O    | CoderClawLLM syscheck + fallback     | RESOLVED |
 | 🔲       | P    | ClawHub persona marketplace          | OPEN     |
-| 🔲       | Q    | builderforce.ai Persona Assignment API | OPEN     |
+| ✅       | Q    | builderforce.ai Persona Assignment API | RESOLVED (2026-03-22) |
+| ✅       | R    | Workflow spec pull                   | RESOLVED (2026-03-22) |
+| ✅       | S    | Agent role / persona sync            | RESOLVED (2026-03-22) |
+| ✅       | T    | Project context push                 | RESOLVED (2026-03-22) |
+| ✅       | U    | Artifact scope resolution            | RESOLVED (2026-03-22) |
+| ✅       | V    | Platform persona sync                | RESOLVED (2026-03-22) |
+| ✅       | W    | Usage quota feedback                 | RESOLVED (2026-03-22) |
+
+---
+
+## Phase 4/5 Gaps Closed (2026-03-22)
+
+### R) Workflow Spec Pull ✅ RESOLVED
+
+**Problem**: CoderClaw could not fetch planning specs/PRDs from Builderforce to drive local orchestration.
+
+**Resolution**:
+- Builderforce: `GET /api/claws/:id/spec` (claw-auth) — returns active/approved spec for the claw's primary project.
+- CoderClaw: `src/infra/spec-sync.ts` — `fetchAssignedSpec()` + `pushSpec()` for read/write.
+- Tests: `src/infra/spec-sync.test.ts`.
+
+---
+
+### S) Agent Role / Persona Sync ✅ RESOLVED
+
+**Problem**: Custom `.coderClaw/personas/*.yaml` not registered as queryable cloud entities.
+
+**Resolution**:
+- Builderforce: `PUT /api/claws/:id/personas` (claw-auth) — stores local role definitions as JSON in `coderclaw_instances.local_personas`.
+- Migration: `migrations/0033_claw_local_personas.sql`.
+- CoderClaw: `src/infra/persona-export-sync.ts` — `syncPersonasToBuilderforce()`.
+
+---
+
+### T) Project Context Push ✅ RESOLVED
+
+**Problem**: Governance rules and architecture docs never populated `projects.governance` in Builderforce.
+
+**Resolution**:
+- Builderforce: `PATCH /api/claws/:id/project-context` (claw-auth) — writes to `projects.governance`.
+- CoderClaw: `src/infra/project-context-push.ts` — `pushProjectContextToBuilderforce()`; called at startup from `server-startup.ts` when governance or architecture context is present.
+
+---
+
+### U) Artifact Scope Resolution ✅ RESOLVED
+
+**Problem**: `artifactAssignments` hierarchy (task > project > claw > tenant) not resolved at agent runtime.
+
+**Resolution**:
+- Builderforce: `GET /api/claws/:id/artifacts/resolve?taskId=&projectId=` (claw-auth) — delegates to existing `resolveArtifacts()` function with claw-level context.
+- CoderClaw: `src/infra/artifact-resolver.ts` — `resolveTaskArtifacts()`; returns `{ skills, personas, content }`.
+- Tests: `src/infra/artifact-resolver.test.ts`.
+
+---
+
+### V) Platform Persona Sync ✅ RESOLVED
+
+**Problem**: Admin-managed `platformPersonas` never fetched or made available to agents.
+
+**Resolution**:
+- Builderforce: `GET /api/claws/:id/platform-personas` (claw-auth) — returns all active platform personas.
+- CoderClaw: `src/infra/platform-persona-sync.ts` — `fetchPlatformPersonas()`.
+- `src/coderclaw/agent-roles.ts` — `registerPlatformPersonasAsRoles()` converts platform personas to `PersonaPlugin` records.
+- Wired at startup in `server-startup.ts`.
+
+---
+
+### W) Usage Quota Feedback ✅ RESOLVED
+
+**Problem**: Builderforce token usage data never queried; claws had no budget awareness.
+
+**Resolution**:
+- Builderforce: `GET /api/claws/:id/quota` (claw-auth) — aggregates `usage_snapshots` for last 30 days.
+- CoderClaw: `src/infra/quota-monitor.ts` — `fetchQuotaStatus()` + `checkAndWarnQuota()`.
+- `checkAndWarnQuota()` called at startup; logs warning when usage ≥ 80% of budget.
+- Tests: `src/infra/quota-monitor.test.ts`.

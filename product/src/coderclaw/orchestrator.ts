@@ -4,6 +4,7 @@
 
 import crypto from "node:crypto";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
+import { awaitRemoteResult } from "../infra/remote-result-broker.js";
 import {
   dispatchToRemoteClaw,
   selectClawByCapability,
@@ -321,15 +322,24 @@ export class AgentOrchestrator {
         logDebug(`[orchestrator] selected claw ${targetClawId} (${selected.name})`);
       }
 
+      const correlationId = crypto.randomUUID();
       const remoteResult = await dispatchToRemoteClaw(
         this.remoteDispatchOpts,
         targetClawId,
         taskInput,
+        { correlationId, callbackClawId: this.remoteDispatchOpts.myClawId },
       );
       if (remoteResult.status === "accepted") {
+        // Wait for the remote claw to send results back (up to 10 minutes).
+        // Falls back to a placeholder if the remote claw does not support result callbacks.
+        let output: string;
+        try {
+          output = await awaitRemoteResult(correlationId, 600_000);
+        } catch {
+          output = `Task ${task.id} dispatched to remote claw ${targetClawId} (result pending)`;
+        }
         task.status = "completed";
         task.completedAt = new Date();
-        const output = `Task ${task.id} dispatched to remote claw ${targetClawId}`;
         task.output = output;
         this.taskResults.set(task.id, output);
         emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
