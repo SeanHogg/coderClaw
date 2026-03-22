@@ -30,8 +30,11 @@ jobs:
         run: bun run build
         working-directory: marketing
 
+      - name: Install wrangler
+        run: npm install -g wrangler
+
       - name: Deploy to Cloudflare Workers
-        run: npx wrangler deploy
+        run: wrangler deploy --no-bundle
         working-directory: marketing
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
