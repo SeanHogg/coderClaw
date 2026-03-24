@@ -24,6 +24,7 @@ import {
 } from "./clawlink-context.js";
 import { resolveRemoteResult } from "./remote-result-broker.js";
 import { dispatchResultToRemoteClaw, type RemoteDispatchOptions } from "./remote-subagent.js";
+import { setRelayHook } from "./workflow-telemetry.js";
 
 function extractChatText(message: unknown): string {
   if (!message || typeof message !== "object") {
@@ -199,6 +200,11 @@ export class ClawLinkRelayService {
     if (this.closed) {
       return;
     }
+    // Register the relay hook so workflow telemetry spans are forwarded as live
+    // WebSocket events to browser clients (workflow.update, task.started, task.completed).
+    setRelayHook((event, payload) => {
+      this.sendToRelay({ type: "event", event, payload });
+    });
     this.connectUpstream();
     this.connectLocalGateway();
     this.startRemoteResultTracking();
@@ -207,6 +213,7 @@ export class ClawLinkRelayService {
   /** Gracefully shut down both connections. */
   stop(): void {
     this.closed = true;
+    setRelayHook(null); // deregister so no dangling sends after stop
     this.clearHeartbeat();
     this.clearLogsPolling();
     this.clearPresencePolling();

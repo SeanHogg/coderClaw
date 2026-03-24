@@ -12,6 +12,7 @@ import {
   initializeCoderClawProject,
   loadProjectContext,
   loadWorkspaceState,
+  saveSessionHandoff,
 } from "../coderclaw/project-context.js";
 import {
   buildStagedSummary,
@@ -86,6 +87,28 @@ type CommandHandlerContext = {
   runLocalCliCommand?: (args: string[]) => Promise<{ ok: boolean; lines: string[] }>;
   config?: CoderClawConfig;
 };
+
+/**
+ * Auto-checkpoint: write a minimal session handoff to .coderClaw/sessions/ so
+ * context is never silently lost when the user resets or exits the TUI.
+ * Called fire-and-forget on /exit and awaited on /new (before reset clears history).
+ */
+async function autoCheckpointSession(chatLog: { hasUserMessages: () => boolean }): Promise<void> {
+  if (!chatLog.hasUserMessages()) return;
+  try {
+    await saveSessionHandoff(process.cwd(), {
+      sessionId: randomUUID(),
+      timestamp: new Date().toISOString(),
+      summary: "Session auto-checkpointed on exit/reset (no agent summary generated).",
+      decisions: [],
+      nextSteps: ["Review session history and run /handoff manually for a richer summary."],
+      openQuestions: [],
+      artifacts: [],
+    });
+  } catch {
+    // Auto-checkpoint is best-effort — never block exit or reset
+  }
+}
 
 async function executeGatewayServiceCommand(
   action: "status" | "start" | "stop" | "restart",
@@ -687,9 +710,10 @@ export function createCommandHandlers(context: CommandHandlerContext) {
       case "new":
       case "reset":
         try {
-          // Hint about saving a handoff when the session has had user activity
+          // Auto-checkpoint if the session has had user activity, then hint about /handoff for a richer summary
           if (state.isConnected && chatLog.hasUserMessages()) {
-            chatLog.addSystem("Tip: Run /handoff first to save session context before resetting.");
+            await autoCheckpointSession(chatLog);
+            chatLog.addSystem("Session auto-checkpointed. Run /handoff for a full AI-generated summary.");
             tui.requestRender();
           }
 
@@ -836,6 +860,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
       }
       case "exit":
       case "quit":
+        await autoCheckpointSession(chatLog);
         client.stop();
         tui.stop();
         process.exit(0);

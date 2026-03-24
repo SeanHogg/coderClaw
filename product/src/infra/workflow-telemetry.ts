@@ -44,6 +44,22 @@ let linkApiUrl: string | null = null;
 let linkApiKey: string | null = null;
 
 /**
+ * Optional relay hook — called fire-and-forget after each span is appended.
+ * Set via setRelayHook() to push real-time workflow/task events to browser clients
+ * through the ClawLink WebSocket relay.
+ */
+let relayHook: ((event: string, payload: unknown) => void) | null = null;
+
+/**
+ * Register (or unregister) a relay hook.
+ * The relay service calls this once connected so spans are forwarded as live
+ * WebSocket frames to browser clients: workflow.update, task.started, task.completed.
+ */
+export function setRelayHook(fn: ((event: string, payload: unknown) => void) | null): void {
+  relayHook = fn;
+}
+
+/**
  * Initialise telemetry. Call once at gateway startup after projectRoot is known.
  * @param opts.projectRoot  Absolute path to the workspace root (.coderClaw parent).
  * @param opts.clawId       Optional claw instance ID to tag all spans with.
@@ -134,12 +150,40 @@ function syncSpanToBuilderforce(span: WorkflowSpan): void {
   }
 }
 
+/** Map internal SpanKind to the relay event name sent to browser clients. */
+function spanToRelayEvent(kind: SpanKind): string | null {
+  switch (kind) {
+    case "workflow.start":
+    case "workflow.complete":
+    case "workflow.fail":
+      return "workflow.update";
+    case "task.start":
+      return "task.started";
+    case "task.complete":
+    case "task.fail":
+      return "task.completed";
+    default:
+      return null;
+  }
+}
+
 async function appendSpan(span: WorkflowSpan): Promise<void> {
   if (!projectRoot) {
     return;
   }
   // Forward to Builderforce.ai timeline (fire-and-forget, never blocks local write).
   syncSpanToBuilderforce(span);
+
+  // Push real-time event to browser clients via the ClawLink WS relay.
+  const relayEvent = spanToRelayEvent(span.kind);
+  if (relayHook && relayEvent) {
+    try {
+      relayHook(relayEvent, span);
+    } catch {
+      // relay hook errors must never block telemetry writes
+    }
+  }
+
   try {
     const dir = path.join(projectRoot, ".coderClaw", "telemetry");
     await fs.mkdir(dir, { recursive: true });
