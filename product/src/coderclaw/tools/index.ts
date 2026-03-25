@@ -10,3 +10,5 @@ export { createOrchestrateTool } from "./orchestrate-tool.js";
 export { workflowStatusTool } from "./workflow-status-tool.js";
 export { gitHistoryTool } from "./git-history-tool.js";
 export { clawFleetTool } from "./claw-fleet-tool.js";
+export { semanticSearchTool } from "./semantic-search-tool.js";
+export { createGithubIssueWorkflowTool } from "./github-issue-workflow-tool.js";

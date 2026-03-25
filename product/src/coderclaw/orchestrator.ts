@@ -674,3 +674,36 @@ export function createRefactorWorkflow(scope: string): WorkflowStep[] {
     },
   ];
 }
+
+/**
+ * Security Audit Workflow
+ *
+ * Four-phase audit:
+ *   1. Threat model — identify attack surface, trust boundaries, data flows
+ *   2. Vulnerability scan — OWASP Top 10, injection, secrets, auth/authz gaps
+ *   3. Fix recommendations — prioritised remediation plan with code examples
+ *   4. Verification report — confirm fixes, residual risk summary, sign-off checklist
+ */
+export function createSecurityAuditWorkflow(target: string): WorkflowStep[] {
+  return [
+    {
+      role: "architecture-advisor",
+      task: `Build a threat model for: ${target}. Identify attack surface, trust boundaries, data flows, and external integrations.`,
+    },
+    {
+      role: "bug-analyzer",
+      task: `Perform a security vulnerability scan of: ${target}. Check for OWASP Top 10 (injection, XSS, CSRF, broken auth, sensitive data exposure, SSRF, etc.), hardcoded secrets, insecure dependencies, and missing input validation.`,
+      dependsOn: ["architecture-advisor"],
+    },
+    {
+      role: "code-creator",
+      task: `Produce prioritised remediation recommendations for all vulnerabilities found in: ${target}. Include concrete code examples or patches for the highest-severity issues.`,
+      dependsOn: ["bug-analyzer"],
+    },
+    {
+      role: "code-reviewer",
+      task: `Review the proposed security fixes for: ${target}. Verify completeness, check for regressions, and produce a final sign-off checklist with residual risk summary.`,
+      dependsOn: ["code-creator"],
+    },
+  ];
+}

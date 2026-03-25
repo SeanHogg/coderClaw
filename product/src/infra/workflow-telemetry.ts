@@ -10,6 +10,7 @@
  *   grep '"kind":"task.fail"' .coderClaw/telemetry/2026-03-21.jsonl | jq .
  */
 
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { logDebug } from "../logger.js";
@@ -36,12 +37,40 @@ export type WorkflowSpan = {
   error?: string;
   /** Claw instance ID, if known. */
   clawId?: string;
+  // ── OTel / cost tracking fields ────────────────────────────────────────
+  /** W3C-compatible trace ID (32 hex chars) shared across all spans in a workflow. */
+  traceId?: string;
+  /** LLM model used in this task (e.g. "claude-sonnet-4-6"). */
+  model?: string;
+  /** Total input (prompt) tokens consumed by this task. */
+  inputTokens?: number;
+  /** Total output (completion) tokens consumed by this task. */
+  outputTokens?: number;
+  /** Estimated cost in USD for this task (input + output tokens at model rates). */
+  estimatedCostUsd?: number;
 };
 
 let projectRoot: string | null = null;
 let knownClawId: string | null = null;
 let linkApiUrl: string | null = null;
 let linkApiKey: string | null = null;
+
+/**
+ * Active trace ID for the current workflow (W3C-compatible, 32 hex chars).
+ * Set automatically when a workflow starts and cleared when it ends.
+ * Exposed via getActiveTraceId() so HTTP layers can forward it as X-Trace-Id.
+ */
+let activeTraceId: string | null = null;
+
+/** Generate a W3C-compatible 128-bit trace ID as 32 lowercase hex chars. */
+function generateTraceId(): string {
+  return crypto.randomBytes(16).toString("hex");
+}
+
+/** Returns the active workflow trace ID, or null if no workflow is running. */
+export function getActiveTraceId(): string | null {
+  return activeTraceId;
+}
 
 /**
  * Optional relay hook — called fire-and-forget after each span is appended.
@@ -94,11 +123,14 @@ function syncSpanToBuilderforce(span: WorkflowSpan): void {
   }
 
   const base = linkApiUrl.replace(/\/$/, "");
-  const headers = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${linkApiKey}`,
     "X-Claw-Id": knownClawId,
   };
+  if (span.traceId) {
+    headers["X-Trace-Id"] = span.traceId;
+  }
 
   const doFetch = (url: string, method: string, body: unknown) =>
     fetch(url, { method, headers, body: JSON.stringify(body) }).catch((err) =>
@@ -150,6 +182,26 @@ function syncSpanToBuilderforce(span: WorkflowSpan): void {
   }
 }
 
+/** Forward span to Builderforce OTel ingest endpoint (fire-and-forget). */
+function forwardSpanToOtelProxy(span: WorkflowSpan): void {
+  if (!linkApiUrl || !linkApiKey || !knownClawId) return;
+  const base = linkApiUrl.replace(/\/$/, "");
+  const clawIdNum = parseInt(knownClawId, 10);
+  if (Number.isNaN(clawIdNum)) return;
+
+  const url = `${base}/api/telemetry/spans?clawId=${clawIdNum}&key=${encodeURIComponent(linkApiKey)}`;
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(span.traceId ? { "X-Trace-Id": span.traceId } : {}),
+    },
+    body: JSON.stringify([span]),
+  }).catch((err) =>
+    logDebug(`[telemetry] otel proxy forward failed: ${String(err)}`),
+  );
+}
+
 /** Map internal SpanKind to the relay event name sent to browser clients. */
 function spanToRelayEvent(kind: SpanKind): string | null {
   switch (kind) {
@@ -171,8 +223,9 @@ async function appendSpan(span: WorkflowSpan): Promise<void> {
   if (!projectRoot) {
     return;
   }
-  // Forward to Builderforce.ai timeline (fire-and-forget, never blocks local write).
+  // Forward to Builderforce.ai timeline + OTel proxy (fire-and-forget).
   syncSpanToBuilderforce(span);
+  forwardSpanToOtelProxy(span);
 
   // Push real-time event to browser clients via the ClawLink WS relay.
   const relayEvent = spanToRelayEvent(span.kind);
@@ -195,12 +248,15 @@ async function appendSpan(span: WorkflowSpan): Promise<void> {
   }
 }
 
-export function emitWorkflowStart(workflowId: string): void {
+export function emitWorkflowStart(workflowId: string, description?: string): void {
+  activeTraceId = generateTraceId();
   void appendSpan({
     kind: "workflow.start",
     workflowId,
+    description,
     ts: new Date().toISOString(),
     clawId: knownClawId ?? undefined,
+    traceId: activeTraceId,
   });
 }
 
@@ -210,7 +266,9 @@ export function emitWorkflowEnd(workflowId: string, failed: boolean): void {
     workflowId,
     ts: new Date().toISOString(),
     clawId: knownClawId ?? undefined,
+    traceId: activeTraceId ?? undefined,
   });
+  activeTraceId = null;
 }
 
 export function emitTaskStart(
@@ -227,6 +285,7 @@ export function emitTaskStart(
     description,
     ts: new Date().toISOString(),
     clawId: knownClawId ?? undefined,
+    traceId: activeTraceId ?? undefined,
   });
 }
 
@@ -236,6 +295,12 @@ export function emitTaskEnd(
   agentRole: string,
   startedAt: Date,
   error?: string,
+  metrics?: {
+    model?: string;
+    inputTokens?: number;
+    outputTokens?: number;
+    estimatedCostUsd?: number;
+  },
 ): void {
   const durationMs = Date.now() - startedAt.getTime();
   void appendSpan({
@@ -247,5 +312,10 @@ export function emitTaskEnd(
     durationMs,
     error,
     clawId: knownClawId ?? undefined,
+    traceId: activeTraceId ?? undefined,
+    model:             metrics?.model,
+    inputTokens:       metrics?.inputTokens,
+    outputTokens:      metrics?.outputTokens,
+    estimatedCostUsd:  metrics?.estimatedCostUsd,
   });
 }
