@@ -130,6 +130,8 @@
     "ui:install": "node scripts/ui.js install"
   },
   "dependencies": {
+    "@seanhogg/ssmjs": "*",
+    "fake-indexeddb": "*",
     "@agentclientprotocol/sdk": "0.14.1",
     "@aws-sdk/client-bedrock": "^3.992.0",
     "@buape/carbon": "^0.14.0",

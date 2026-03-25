@@ -18,6 +18,7 @@ import {
   initTelemetry,
 } from "../infra/workflow-telemetry.js";
 import { logDebug } from "../logger.js";
+import { getSsmMemoryService } from "../infra/ssm-memory-service.js";
 import { findAgentRole } from "./agent-roles.js";
 import {
   saveWorkflowState,
@@ -267,6 +268,29 @@ export class AgentOrchestrator {
   }
 
   /**
+   * Prepends a [Memory Context] block to `prompt` using the SSM semantic memory
+   * layer.  Silently returns the original prompt if the service is unavailable
+   * or if recall fails.
+   */
+  private async injectMemoryContext(taskDescription: string, prompt: string): Promise<string> {
+    const ssmSvc = getSsmMemoryService();
+    if (!ssmSvc) return prompt;
+    try {
+      const entries = await ssmSvc.recallSimilar(taskDescription, 5);
+      if (entries.length === 0) return prompt;
+      const lines = ['[Memory Context]'];
+      for (const entry of entries) {
+        lines.push(`- ${entry.key}: ${entry.content}`);
+      }
+      lines.push('[End Memory Context]', '');
+      return lines.join('\n') + prompt;
+    } catch (err) {
+      logDebug(`[orchestrator] memory injection failed: ${String(err)}`);
+      return prompt;
+    }
+  }
+
+  /**
    * Execute a single task
    */
   private async executeTask(
@@ -280,7 +304,10 @@ export class AgentOrchestrator {
     emitTaskStart(workflow.id, task.id, task.agentRole, task.description);
 
     // Build structured context block for this task
-    const taskInput = this.buildStructuredContext(task, workflow);
+    let taskInput = this.buildStructuredContext(task, workflow);
+
+    // Prepend semantic memory context if the SSM memory layer is available
+    taskInput = await this.injectMemoryContext(task.description, taskInput);
 
     // Remote dispatch: role "remote:<clawId>", "remote:auto", or "remote:auto[cap1,cap2]"
     // delegates the task to a peer claw via CoderClawLink.

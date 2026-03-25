@@ -2,6 +2,7 @@ import { appendKnowledgeMemory } from "../coderclaw/project-context.js";
 import { logDebug } from "../logger.js";
 import { onAgentEvent } from "./agent-events.js";
 import { syncCoderClawDirectory, type SyncCoderClawDirParams } from "./clawlink-directory-sync.js";
+import { getSsmMemoryService } from "./ssm-memory-service.js";
 
 /**
  * Derive a human-readable one-line summary of what happened in an agent run
@@ -217,6 +218,30 @@ export class KnowledgeLoopService {
       await appendKnowledgeMemory(this.opts.workspaceDir, entry);
     } catch (err) {
       logDebug(`[knowledge-loop] failed to write memory entry: ${String(err)}`);
+    }
+
+    // Feed summary into the SSM hippocampus layer — non-fatal
+    const ssmSvc = getSsmMemoryService();
+    if (ssmSvc) {
+      const created = acc ? [...new Set(acc.filesCreated)] : [];
+      const edited  = acc ? [...new Set(acc.filesEdited)]  : [];
+      const tools   = acc ? [...new Set(acc.toolNames)]    : [];
+      const summary = deriveActivitySummary({ created, edited, tools });
+      if (summary) {
+        try {
+          await ssmSvc.remember(runId, summary, {
+            tags      : ['activity'],
+            importance: 0.6,
+          });
+        } catch (err) {
+          logDebug(`[ssm-memory] remember() failed: ${String(err)}`);
+        }
+        try {
+          await ssmSvc.learn(summary);
+        } catch (err) {
+          logDebug(`[ssm-memory] learn() failed: ${String(err)}`);
+        }
+      }
     }
 
     await this.syncIfConfigured();

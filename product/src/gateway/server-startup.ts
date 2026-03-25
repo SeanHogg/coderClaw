@@ -39,6 +39,7 @@ import {
   shouldWakeFromRestartSentinel,
 } from "./server-restart-sentinel.js";
 import { startGatewayMemoryBackend } from "./server-startup-memory.js";
+import { initSsmMemoryService } from "../infra/ssm-memory-service.js";
 
 const SESSION_LOCK_STALE_MS = 30 * 60 * 1000;
 
@@ -185,6 +186,18 @@ export async function startGatewaySidecars(params: {
 
   void startGatewayMemoryBackend({ cfg: params.cfg, log: params.log }).catch((err) => {
     params.log.warn(`qmd memory startup initialization failed: ${String(err)}`);
+  });
+
+  // Initialise SSMjs hippocampus memory layer — non-fatal if unavailable.
+  void initSsmMemoryService({
+    checkpointPath: `${params.defaultWorkspaceDir}/.coderClaw/model.bin`,
+    modelSize     : 'small',
+  }).then((svc) => {
+    if (svc) {
+      params.log.warn(`[ssm-memory] hippocampus layer started (gpu=${svc.gpuAvailable})`);
+    }
+  }).catch((err) => {
+    params.log.warn(`[ssm-memory] startup failed: ${String(err)}`);
   });
 
   if (shouldWakeFromRestartSentinel()) {
