@@ -141,11 +141,12 @@ export function parseRoutingRules(raw: unknown): RoutingRule[] {
 
     // Compile RegExp patterns from JSON string notation "/pattern/flags"
     if (condition["type"] === "role" && typeof condition["matches"] === "string") {
-      const matchesStr = condition["matches"] as string;
+      const matchesStr = condition["matches"];
       const m = /^\/(.+)\/([gimsuy]*)$/.exec(matchesStr);
       if (m) {
         try {
-          condition["matches"] = new RegExp(m[1]!, m[2] !== "" ? m[2] : undefined);
+          const flags = m[2] !== "" ? m[2] : undefined;
+          condition["matches"] = new RegExp(m[1], flags);
         } catch {
           // invalid regex — keep as string
         }

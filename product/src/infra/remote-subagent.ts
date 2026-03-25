@@ -146,7 +146,9 @@ function emitRetrySpan(
       });
     return; // first call: span is skipped; future calls will use the cached fn
   }
-  if (!_emitSpan) { return; }
+  if (!_emitSpan) {
+    return;
+  }
   try {
     _emitSpan({
       kind: "task.retry",
@@ -237,7 +239,9 @@ export async function dispatchToRemoteClaw(
         const decoder = new TextDecoder();
         while (true) {
           const { done, value } = await reader.read();
-          if (done) { break; }
+          if (done) {
+            break;
+          }
           extOpts.onChunk(decoder.decode(value, { stream: true }));
         }
         return { status: "accepted" };

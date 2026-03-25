@@ -190,7 +190,9 @@ export class SsmMemoryService {
    * No-op when GPU is not available.
    */
   async learn(text: string): Promise<void> {
-    if (!this.gpuAvailable) { return; }
+    if (!this.gpuAvailable) {
+      return;
+    }
     try {
       await this.agent.learn(text);
     } catch (err) {
@@ -214,7 +216,9 @@ export class SsmMemoryService {
    * Runs distillation on a batch of inputs (if available) and saves weights.
    */
   async distillAndSave(inputs: string[]): Promise<void> {
-    if (!this.gpuAvailable || inputs.length === 0) { return; }
+    if (!this.gpuAvailable || inputs.length === 0) {
+      return;
+    }
     try {
       for (const input of inputs) {
         await this.agent.learn(input);
@@ -255,7 +259,9 @@ export class SsmMemoryService {
     }
     try {
       const entries = await knowledgeLoop.pullTeamMemory(5);
-      if (!entries || entries.length === 0) return "";
+      if (!entries || entries.length === 0) {
+        return "";
+      }
       const lines = ["[Team Memory Context]"];
       for (const entry of entries) {
         const who = entry.clawId ? `claw:${entry.clawId}` : "unknown";
