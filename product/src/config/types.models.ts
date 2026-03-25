@@ -6,6 +6,7 @@ export type ModelApi =
   | "github-copilot"
   | "bedrock-converse-stream"
   | "ollama"
+  | "llama"
   | "transformers";
 
 export type ModelCompatConfig = {

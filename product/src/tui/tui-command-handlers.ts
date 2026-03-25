@@ -713,7 +713,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           // Auto-checkpoint if the session has had user activity, then hint about /handoff for a richer summary
           if (state.isConnected && chatLog.hasUserMessages()) {
             await autoCheckpointSession(chatLog);
-            chatLog.addSystem("Session auto-checkpointed. Run /handoff for a full AI-generated summary.");
+            chatLog.addSystem(
+              "Session auto-checkpointed. Run /handoff for a full AI-generated summary.",
+            );
             tui.requestRender();
           }
 

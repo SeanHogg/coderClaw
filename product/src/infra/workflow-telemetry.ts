@@ -197,9 +197,7 @@ function forwardSpanToOtelProxy(span: WorkflowSpan): void {
       ...(span.traceId ? { "X-Trace-Id": span.traceId } : {}),
     },
     body: JSON.stringify([span]),
-  }).catch((err) =>
-    logDebug(`[telemetry] otel proxy forward failed: ${String(err)}`),
-  );
+  }).catch((err) => logDebug(`[telemetry] otel proxy forward failed: ${String(err)}`));
 }
 
 /** Map internal SpanKind to the relay event name sent to browser clients. */
@@ -313,9 +311,9 @@ export function emitTaskEnd(
     error,
     clawId: knownClawId ?? undefined,
     traceId: activeTraceId ?? undefined,
-    model:             metrics?.model,
-    inputTokens:       metrics?.inputTokens,
-    outputTokens:      metrics?.outputTokens,
-    estimatedCostUsd:  metrics?.estimatedCostUsd,
+    model: metrics?.model,
+    inputTokens: metrics?.inputTokens,
+    outputTokens: metrics?.outputTokens,
+    estimatedCostUsd: metrics?.estimatedCostUsd,
   });
 }

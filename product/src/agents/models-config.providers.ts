@@ -713,6 +713,39 @@ export function buildNvidiaProvider(): ProviderConfig {
   };
 }
 
+// ---------------------------------------------------------------------------
+// llama — local GGUF inference via node-llama-cpp (P3-1)
+// ---------------------------------------------------------------------------
+
+const LLAMA_DEFAULT_CONTEXT_WINDOW = 4096;
+const LLAMA_DEFAULT_MAX_TOKENS = 2048;
+const LLAMA_DEFAULT_COST = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+
+/**
+ * Build a llama provider config for a locally-loaded GGUF model.
+ * The modelPath is stored as the baseUrl so the model-catalog can surface it.
+ * Actual inference is routed through the 'llama' api type via createLlamaStreamFn.
+ */
+export function buildLlamaProvider(modelPath: string): ProviderConfig {
+  const modelName = modelPath.split(/[/\\]/).pop() ?? modelPath;
+  return {
+    // baseUrl carries the GGUF file path so callers can extract it
+    baseUrl: modelPath,
+    api: "llama",
+    models: [
+      {
+        id: modelName,
+        name: modelName,
+        reasoning: false,
+        input: ["text"],
+        cost: LLAMA_DEFAULT_COST,
+        contextWindow: LLAMA_DEFAULT_CONTEXT_WINDOW,
+        maxTokens: LLAMA_DEFAULT_MAX_TOKENS,
+      },
+    ],
+  };
+}
+
 export async function resolveImplicitProviders(params: {
   agentDir: string;
   explicitProviders?: Record<string, ProviderConfig> | null;
@@ -870,6 +903,16 @@ export async function resolveImplicitProviders(params: {
     ...buildCoderclawllmProvider(),
     apiKey: "coderclawllm-proxy",
   };
+
+  // llama — local GGUF model via node-llama-cpp.
+  // Opt-in: configure models.providers.llama.modelPath in .coderClaw/config.yaml,
+  // or set CODERCLAW_LLAMA_MODEL_PATH env var.
+  if (!params.explicitProviders?.llama) {
+    const llamaModelPath = (process.env.CODERCLAW_LLAMA_MODEL_PATH ?? "").trim();
+    if (llamaModelPath) {
+      providers.llama = buildLlamaProvider(llamaModelPath);
+    }
+  }
 
   return providers;
 }

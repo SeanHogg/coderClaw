@@ -130,8 +130,6 @@
     "ui:install": "node scripts/ui.js install"
   },
   "dependencies": {
-    "@seanhogg/ssmjs": "*",
-    "fake-indexeddb": "*",
     "@agentclientprotocol/sdk": "0.14.1",
     "@aws-sdk/client-bedrock": "^3.992.0",
     "@buape/carbon": "^0.14.0",
@@ -147,6 +145,7 @@
     "@mariozechner/pi-coding-agent": "0.54.0",
     "@mariozechner/pi-tui": "0.54.0",
     "@mozilla/readability": "^0.6.0",
+    "@seanhogg/ssmjs": "*",
     "@sinclair/typebox": "0.34.48",
     "@slack/bolt": "^4.6.0",
     "@slack/web-api": "^7.14.1",
@@ -160,6 +159,7 @@
     "discord-api-types": "^0.38.39",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "fake-indexeddb": "*",
     "file-type": "^21.3.0",
     "grammy": "^1.40.0",
     "https-proxy-agent": "^7.0.6",

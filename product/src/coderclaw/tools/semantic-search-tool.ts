@@ -16,8 +16,8 @@
  * The index is stored at <projectRoot>/.coderClaw/search-index.json.
  */
 
-import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
@@ -35,19 +35,45 @@ const CONTEXT_LINES = 5;
 const INDEX_STALENESS_MS = 5 * 60 * 1_000; // 5 min
 
 const IGNORED_DIRS = new Set([
-  "node_modules", ".git", "dist", "build", ".next", ".nuxt",
-  "coverage", ".cache", "__pycache__", ".venv", "vendor",
+  "node_modules",
+  ".git",
+  "dist",
+  "build",
+  ".next",
+  ".nuxt",
+  "coverage",
+  ".cache",
+  "__pycache__",
+  ".venv",
+  "vendor",
 ]);
 
 const SOURCE_EXTENSIONS = new Set([
-  "ts", "tsx", "js", "jsx", "mjs", "cjs",
-  "py", "go", "rs", "java", "kt", "swift",
-  "rb", "php", "cs", "cpp", "c", "h", "vue", "svelte",
+  "ts",
+  "tsx",
+  "js",
+  "jsx",
+  "mjs",
+  "cjs",
+  "py",
+  "go",
+  "rs",
+  "java",
+  "kt",
+  "swift",
+  "rb",
+  "php",
+  "cs",
+  "cpp",
+  "c",
+  "h",
+  "vue",
+  "svelte",
 ]);
 
 /** BM25 tuning constants */
 const BM25_K1 = 1.5;
-const BM25_B  = 0.75;
+const BM25_B = 0.75;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -121,25 +147,99 @@ function extractSymbols(text: string): string[] {
 }
 
 const STOP_WORDS = new Set([
-  "a","an","the","in","on","at","to","for","of","and","or","is","are","was",
-  "were","be","been","being","have","has","had","do","does","did","will","would",
-  "could","should","may","might","can","that","this","these","those","it","its",
-  "with","by","from","how","what","where","when","which","who","all","any","each",
-  "find","get","show","list","related","about","code","file","files","new","return",
-  "const","let","var","function","class","type","interface","import","export",
-  "null","undefined","true","false","if","else","for","while","switch","case",
+  "a",
+  "an",
+  "the",
+  "in",
+  "on",
+  "at",
+  "to",
+  "for",
+  "of",
+  "and",
+  "or",
+  "is",
+  "are",
+  "was",
+  "were",
+  "be",
+  "been",
+  "being",
+  "have",
+  "has",
+  "had",
+  "do",
+  "does",
+  "did",
+  "will",
+  "would",
+  "could",
+  "should",
+  "may",
+  "might",
+  "can",
+  "that",
+  "this",
+  "these",
+  "those",
+  "it",
+  "its",
+  "with",
+  "by",
+  "from",
+  "how",
+  "what",
+  "where",
+  "when",
+  "which",
+  "who",
+  "all",
+  "any",
+  "each",
+  "find",
+  "get",
+  "show",
+  "list",
+  "related",
+  "about",
+  "code",
+  "file",
+  "files",
+  "new",
+  "return",
+  "const",
+  "let",
+  "var",
+  "function",
+  "class",
+  "type",
+  "interface",
+  "import",
+  "export",
+  "null",
+  "undefined",
+  "true",
+  "false",
+  "if",
+  "else",
+  "for",
+  "while",
+  "switch",
+  "case",
 ]);
 
 /** Tokenise a string into significant lowercase tokens. */
 function tokenise(text: string): string[] {
-  return text
-    // split camelCase/PascalCase into words
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
-    .toLowerCase()
-    .replace(/[^a-z0-9_\s]/g, " ")
-    .split(/\s+/)
-    .filter((t) => t.length >= 2 && !STOP_WORDS.has(t));
+  return (
+    text
+      // split camelCase/PascalCase into words
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+      .toLowerCase()
+      .replace(/[^a-z0-9_\s]/g, " ")
+      .split(/\s+/)
+      .filter((t) => t.length >= 2 && !STOP_WORDS.has(t))
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -281,11 +381,7 @@ async function loadOrBuildIndex(projectRoot: string): Promise<SearchIndex> {
 // BM25 scoring
 // ---------------------------------------------------------------------------
 
-function bm25Score(
-  queryTokens: string[],
-  fileEntry: FileEntry,
-  index: SearchIndex,
-): number {
+function bm25Score(queryTokens: string[], fileEntry: FileEntry, index: SearchIndex): number {
   const N = index.files.length;
   const dl = fileEntry.tokenCount;
   const avgdl = index.avgDocLength;
@@ -351,7 +447,9 @@ const SemanticSearchSchema = Type.Object({
     Type.String({ description: "Limit to files of this extension, e.g. 'ts', 'py'" }),
   ),
   rebuild: Type.Optional(
-    Type.Boolean({ description: "Force rebuild the search index. Use when files have changed significantly." }),
+    Type.Boolean({
+      description: "Force rebuild the search index. Use when files have changed significantly.",
+    }),
   ),
 });
 
@@ -381,7 +479,9 @@ export const semanticSearchTool: AgentTool<typeof SemanticSearchSchema, string> 
     try {
       await fs.access(projectRoot);
     } catch {
-      return jsonResult({ error: `Project root does not exist: ${projectRoot}` }) as AgentToolResult<string>;
+      return jsonResult({
+        error: `Project root does not exist: ${projectRoot}`,
+      }) as AgentToolResult<string>;
     }
 
     // Load or build index
@@ -405,11 +505,16 @@ export const semanticSearchTool: AgentTool<typeof SemanticSearchSchema, string> 
     const queryTokens = [
       ...tokenise(query),
       // Include raw camelCase/PascalCase terms without splitting (for symbol lookups)
-      ...query.split(/\s+/).filter((t) => /^[A-Z]/.test(t) && t.length >= 3).map((t) => t.toLowerCase()),
+      ...query
+        .split(/\s+/)
+        .filter((t) => /^[A-Z]/.test(t) && t.length >= 3)
+        .map((t) => t.toLowerCase()),
     ];
 
     if (queryTokens.length === 0) {
-      return jsonResult({ error: "Query produced no searchable tokens." }) as AgentToolResult<string>;
+      return jsonResult({
+        error: "Query produced no searchable tokens.",
+      }) as AgentToolResult<string>;
     }
 
     // Filter by language extension if requested
@@ -425,14 +530,12 @@ export const semanticSearchTool: AgentTool<typeof SemanticSearchSchema, string> 
 
         // Symbol exact-match bonus (high signal — the file exports what was asked)
         const symbolMatches = f.symbols.filter((s) =>
-          queryTokens.some((q) => s.toLowerCase().includes(q))
+          queryTokens.some((q) => s.toLowerCase().includes(q)),
         ).length;
         score += symbolMatches * 4;
 
         // Path bonus
-        const pathScore = queryTokens.filter((q) =>
-          f.relPath.toLowerCase().includes(q)
-        ).length * 3;
+        const pathScore = queryTokens.filter((q) => f.relPath.toLowerCase().includes(q)).length * 3;
         score += pathScore;
 
         // Recency bonus (files modified in last 7 days)
@@ -446,11 +549,11 @@ export const semanticSearchTool: AgentTool<typeof SemanticSearchSchema, string> 
       .slice(0, Math.min(topK, MAX_RESULTS));
 
     const results = scored.map((r) => ({
-      filePath:      r.file.relPath,
-      score:         Math.round(r.score * 100) / 100,
-      symbols:       r.file.symbols.slice(0, 8),
+      filePath: r.file.relPath,
+      score: Math.round(r.score * 100) / 100,
+      symbols: r.file.symbols.slice(0, 8),
       symbolMatches: r.symbolMatches,
-      snippet:       extractSnippet(projectRoot, r.file.relPath, queryTokens),
+      snippet: extractSnippet(projectRoot, r.file.relPath, queryTokens),
     }));
 
     return jsonResult({

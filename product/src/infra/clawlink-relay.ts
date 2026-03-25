@@ -9,7 +9,10 @@
  * Also sends periodic HTTP heartbeats to keep lastSeenAt fresh in the DB.
  */
 
+import { createHash } from "node:crypto";
 import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { WebSocket } from "ws";
 import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
 import { GatewayClient, type GatewayClientOptions } from "../gateway/client.js";
@@ -193,6 +196,82 @@ export class ClawLinkRelayService {
   /** Set remote dispatch options so result callbacks can be sent back to the originating claw. */
   setRemoteDispatchOptions(opts: RemoteDispatchOptions): void {
     this.remoteDispatchOpts = opts;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Remote context fetching (P4-2)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Fetch the last-synced .coderClaw/ files from a remote claw via Builderforce and
+   * write them to `.coderClaw/remote-context/<remoteClawId>/` in the local workspace.
+   * Only writes files whose SHA-256 content hash has changed since the last fetch.
+   */
+  async fetchRemoteContext(remoteClawId: string): Promise<void> {
+    if (!this.opts.workspaceDir) {
+      return;
+    }
+    const base = this.opts.baseUrl.replace(/\/+$/, "");
+    const url = `${base}/api/claws/${encodeURIComponent(remoteClawId)}/context-bundle`;
+    let bundle: { files: Array<{ path: string; content: string; sha256: string }> };
+    try {
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${this.opts.apiKey}` },
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (!res.ok) {
+        logDebug(`[clawlink-relay] context-bundle for claw ${remoteClawId} failed: ${res.status}`);
+        return;
+      }
+      bundle = (await res.json()) as typeof bundle;
+    } catch (err) {
+      logDebug(`[clawlink-relay] fetchRemoteContext error: ${String(err)}`);
+      return;
+    }
+
+    if (!Array.isArray(bundle.files) || bundle.files.length === 0) {
+      return;
+    }
+
+    const targetDir = path.join(
+      this.opts.workspaceDir,
+      ".coderClaw",
+      "remote-context",
+      remoteClawId,
+    );
+
+    for (const file of bundle.files) {
+      if (typeof file.path !== "string" || typeof file.content !== "string") {
+        continue;
+      }
+      // Sanitize path: strip leading slashes and resolve relative dots
+      const safeName = file.path
+        .replace(/\\/g, "/")
+        .replace(/^[./]+/, "")
+        .replace(/\.\.\//g, "");
+      if (!safeName) {
+        continue;
+      }
+      const destPath = path.join(targetDir, safeName);
+
+      // Check existing SHA-256 before writing
+      let existingSha: string | null = null;
+      try {
+        const existing = await fs.readFile(destPath, "utf-8");
+        const digest = createHash("sha256").update(existing, "utf-8").digest("hex");
+        existingSha = digest;
+      } catch {
+        // File doesn't exist yet
+      }
+
+      if (existingSha === file.sha256) {
+        continue; // unchanged
+      }
+
+      await fs.mkdir(path.dirname(destPath), { recursive: true });
+      await fs.writeFile(destPath, file.content, "utf-8");
+      logDebug(`[clawlink-relay] wrote remote context file: ${safeName}`);
+    }
   }
 
   /** Start the relay service. Both WS connections retry on their own. */

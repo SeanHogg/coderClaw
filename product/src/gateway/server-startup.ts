@@ -26,11 +26,12 @@ import { ClawLinkRelayService } from "../infra/clawlink-relay.js";
 import { CronPollerService } from "../infra/cron-poller.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
-import { KnowledgeLoopService } from "../infra/knowledge-loop.js";
+import { KnowledgeLoopService, setKnowledgeLoopService } from "../infra/knowledge-loop.js";
 import { fetchPlatformPersonas } from "../infra/platform-persona-sync.js";
 import { pushProjectContextToBuilderforce } from "../infra/project-context-push.js";
 import { checkAndWarnQuota } from "../infra/quota-monitor.js";
 import { fetchAndLoadSkills } from "../infra/skill-registry.js";
+import { initSsmMemoryService } from "../infra/ssm-memory-service.js";
 import type { loadCoderClawPlugins } from "../plugins/loader.js";
 import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
 import { startBrowserControlServerIfEnabled } from "./server-browser.js";
@@ -39,7 +40,6 @@ import {
   shouldWakeFromRestartSentinel,
 } from "./server-restart-sentinel.js";
 import { startGatewayMemoryBackend } from "./server-startup-memory.js";
-import { initSsmMemoryService } from "../infra/ssm-memory-service.js";
 
 const SESSION_LOCK_STALE_MS = 30 * 60 * 1000;
 
@@ -191,14 +191,16 @@ export async function startGatewaySidecars(params: {
   // Initialise SSMjs hippocampus memory layer — non-fatal if unavailable.
   void initSsmMemoryService({
     checkpointPath: `${params.defaultWorkspaceDir}/.coderClaw/model.bin`,
-    modelSize     : 'small',
-  }).then((svc) => {
-    if (svc) {
-      params.log.warn(`[ssm-memory] hippocampus layer started (gpu=${svc.gpuAvailable})`);
-    }
-  }).catch((err) => {
-    params.log.warn(`[ssm-memory] startup failed: ${String(err)}`);
-  });
+    modelSize: "small",
+  })
+    .then((svc) => {
+      if (svc) {
+        params.log.warn(`[ssm-memory] hippocampus layer started (gpu=${svc.gpuAvailable})`);
+      }
+    })
+    .catch((err) => {
+      params.log.warn(`[ssm-memory] startup failed: ${String(err)}`);
+    });
 
   if (shouldWakeFromRestartSentinel()) {
     setTimeout(() => {
@@ -291,6 +293,10 @@ export async function startGatewaySidecars(params: {
           myClawId: String(clawId),
           apiKey,
         });
+        // Wire relay service for cross-claw context fetching (P4-2)
+        if (clawLinkRelay) {
+          globalOrchestrator.setRelayService(clawLinkRelay);
+        }
       }
 
       // Knowledge loop runs whenever an API key is present; sync is skipped internally
@@ -303,6 +309,7 @@ export async function startGatewaySidecars(params: {
         projectId,
       });
       knowledgeLoop.start();
+      setKnowledgeLoopService(knowledgeLoop);
       params.log.warn("[knowledge-loop] started");
     } else {
       params.log.warn(

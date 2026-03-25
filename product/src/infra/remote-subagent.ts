@@ -38,6 +38,16 @@ export type RemoteDispatchOptions = {
 
 export type RemoteDispatchResult = { status: "accepted" } | { status: "rejected"; error: string };
 
+/** Options for dispatchToRemoteClaw. */
+export interface RemoteDispatchExtendedOptions {
+  correlationId?: string;
+  callbackClawId?: string;
+  /** Called with partial result chunks if the remote claw streams (X-Stream: true header). */
+  onChunk?: (chunk: string) => void;
+  /** Timeout in milliseconds. Default: 600000 (10 min). */
+  timeoutMs?: number;
+}
+
 export type FleetEntry = {
   id: number;
   name: string;
@@ -100,16 +110,73 @@ export async function selectClawByCapability(
   }
 }
 
+// ── Retry helper ──────────────────────────────────────────────────────────────
+
+const RETRY_DELAYS_MS = [500, 1000, 2000] as const;
+const MAX_ATTEMPTS = 3;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ── Telemetry span helper (fire-and-forget) ──────────────────────────────────
+
+/** Lazily imported telemetry emitter to avoid circular deps. */
+let _emitSpan: ((span: Record<string, unknown>) => void) | null | undefined = undefined;
+
+function emitRetrySpan(
+  workflowId: string | undefined,
+  taskId: string | undefined,
+  attempt: number,
+  reason: string,
+): void {
+  // Emit a task.retry span using the workflow-telemetry module if available.
+  // We import lazily and cache to avoid circular dependencies.
+  if (_emitSpan === undefined) {
+    _emitSpan = null; // prevent re-entry during resolution
+    import("./workflow-telemetry.js")
+      .then((mod) => {
+        const m = mod as { emitSpan?: (span: Record<string, unknown>) => void };
+        if (typeof m.emitSpan === "function") {
+          _emitSpan = m.emitSpan;
+        }
+      })
+      .catch(() => {
+        // telemetry module unavailable
+      });
+    return; // first call: span is skipped; future calls will use the cached fn
+  }
+  if (!_emitSpan) { return; }
+  try {
+    _emitSpan({
+      kind: "task.retry",
+      workflowId,
+      taskId,
+      ts: new Date().toISOString(),
+      error: reason,
+      durationMs: attempt * 500,
+      agentRole: `retry-attempt-${attempt}`,
+    });
+  } catch {
+    // telemetry is best-effort
+  }
+}
+
 /**
  * Dispatch a task payload to a remote claw.
  * Authenticates as the source claw and forwards to the target claw.
+ *
+ * Retries up to 3 times with exponential backoff (500ms, 1000ms, 2000ms)
+ * on network errors or 5xx responses. Supports optional chunk streaming
+ * via the onChunk callback when the remote claw responds with X-Stream: true.
  */
 export async function dispatchToRemoteClaw(
   opts: RemoteDispatchOptions,
   targetClawId: string,
   task: string,
-  options?: { correlationId?: string; callbackClawId?: string },
+  options?: RemoteDispatchExtendedOptions | { correlationId?: string; callbackClawId?: string },
 ): Promise<RemoteDispatchResult> {
+  const extOpts = options as RemoteDispatchExtendedOptions | undefined;
   // API key moved to Authorization header; payload is HMAC-signed so the
   // receiving endpoint can verify both the caller's identity and that the
   // task body has not been tampered with in transit.
@@ -120,47 +187,82 @@ export async function dispatchToRemoteClaw(
     task,
     fromClawId: opts.myClawId,
     timestamp: new Date().toISOString(),
-    ...(options?.correlationId ? { correlationId: options.correlationId } : {}),
-    ...(options?.callbackClawId ? { callbackClawId: options.callbackClawId } : {}),
-    ...(options?.correlationId ? { callbackBaseUrl: opts.baseUrl } : {}),
+    ...(extOpts?.correlationId ? { correlationId: extOpts.correlationId } : {}),
+    ...(extOpts?.callbackClawId ? { callbackClawId: extOpts.callbackClawId } : {}),
+    ...(extOpts?.correlationId ? { callbackBaseUrl: opts.baseUrl } : {}),
   };
   const body = JSON.stringify(payload);
   const signature = signPayload(body, opts.apiKey);
 
-  try {
-    logDebug(`[remote-subagent] dispatching to claw ${targetClawId}: ${task.slice(0, 80)}…`);
+  logDebug(`[remote-subagent] dispatching to claw ${targetClawId}: ${task.slice(0, 80)}…`);
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${opts.apiKey}`,
-        "X-Claw-From": opts.myClawId,
-        // SHA-256 HMAC of the exact body bytes — receiver should verify before accepting
-        "X-Claw-Signature": `sha256=${signature}`,
-      },
-      body,
-      signal: AbortSignal.timeout(30_000),
-    });
+  let lastError: string = "unknown error";
 
-    if (!res.ok) {
-      const body = await res.text();
-      return { status: "rejected", error: `HTTP ${res.status}: ${body}` };
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (attempt > 0) {
+      const delayMs = RETRY_DELAYS_MS[attempt - 1] ?? 2000;
+      logDebug(`[remote-subagent] retry attempt ${attempt + 1}/${MAX_ATTEMPTS} after ${delayMs}ms`);
+      emitRetrySpan(undefined, undefined, attempt, lastError);
+      await sleep(delayMs);
     }
 
-    const data = (await res.json()) as { ok?: boolean; delivered?: boolean; error?: string };
-    if (data.ok && data.delivered) {
-      logDebug(`[remote-subagent] task delivered to claw ${targetClawId}`);
-      return { status: "accepted" };
-    }
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${opts.apiKey}`,
+          "X-Claw-From": opts.myClawId,
+          // SHA-256 HMAC of the exact body bytes — receiver should verify before accepting
+          "X-Claw-Signature": `sha256=${signature}`,
+        },
+        body,
+        signal: AbortSignal.timeout(extOpts?.timeoutMs ?? 30_000),
+      });
 
-    return {
-      status: "rejected",
-      error: data.error ?? "target claw reported delivery failure",
-    };
-  } catch (err) {
-    return { status: "rejected", error: String(err) };
+      // Retry on 5xx server errors
+      if (res.status >= 500) {
+        lastError = `HTTP ${res.status}`;
+        continue;
+      }
+
+      if (!res.ok) {
+        const errBody = await res.text();
+        return { status: "rejected", error: `HTTP ${res.status}: ${errBody}` };
+      }
+
+      // Streaming support: if X-Stream header present, pipe chunks to onChunk callback
+      if (res.headers.get("X-Stream") === "true" && extOpts?.onChunk && res.body) {
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) { break; }
+          extOpts.onChunk(decoder.decode(value, { stream: true }));
+        }
+        return { status: "accepted" };
+      }
+
+      const data = (await res.json()) as { ok?: boolean; delivered?: boolean; error?: string };
+      if (data.ok && data.delivered) {
+        logDebug(`[remote-subagent] task delivered to claw ${targetClawId}`);
+        return { status: "accepted" };
+      }
+
+      return {
+        status: "rejected",
+        error: data.error ?? "target claw reported delivery failure",
+      };
+    } catch (err) {
+      lastError = String(err);
+      // Network errors are retryable
+      if (attempt < MAX_ATTEMPTS - 1) {
+        continue;
+      }
+    }
   }
+
+  return { status: "rejected", error: lastError };
 }
 
 /**

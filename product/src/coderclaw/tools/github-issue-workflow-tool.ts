@@ -95,9 +95,9 @@ async function fetchIssue(ref: ParsedIssueRef, token: string): Promise<GitHubIss
   const url = `https://api.github.com/repos/${ref.owner}/${ref.repo}/issues/${ref.number}`;
   const res = await fetch(url, {
     headers: {
-      Accept:        "application/vnd.github+json",
+      Accept: "application/vnd.github+json",
       Authorization: `Bearer ${token}`,
-      "User-Agent":  "CoderClaw/1.0",
+      "User-Agent": "CoderClaw/1.0",
       "X-GitHub-Api-Version": "2022-11-28",
     },
   });
@@ -136,8 +136,8 @@ async function createGitHubPR(opts: {
   owner: string;
   repo: string;
   token: string;
-  head: string;        // branch name
-  base: string;        // target branch (e.g. "main")
+  head: string; // branch name
+  base: string; // target branch (e.g. "main")
   title: string;
   body: string;
 }): Promise<string | null> {
@@ -146,22 +146,22 @@ async function createGitHubPR(opts: {
     const res = await fetch(url, {
       method: "POST",
       headers: {
-        Accept:          "application/vnd.github+json",
-        Authorization:   `Bearer ${opts.token}`,
-        "Content-Type":  "application/json",
-        "User-Agent":    "CoderClaw/1.0",
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${opts.token}`,
+        "Content-Type": "application/json",
+        "User-Agent": "CoderClaw/1.0",
         "X-GitHub-Api-Version": "2022-11-28",
       },
       body: JSON.stringify({
         title: opts.title,
-        body:  opts.body,
-        head:  opts.head,
-        base:  opts.base,
+        body: opts.body,
+        head: opts.head,
+        base: opts.base,
         draft: true,
       }),
     });
     if (!res.ok) return null;
-    const pr = await res.json() as { html_url: string };
+    const pr = (await res.json()) as { html_url: string };
     return pr.html_url;
   } catch {
     return null;
@@ -180,7 +180,7 @@ async function getDefaultBranch(owner: string, repo: string, token: string): Pro
       },
     });
     if (res.ok) {
-      const data = await res.json() as { default_branch: string };
+      const data = (await res.json()) as { default_branch: string };
       return data.default_branch ?? "main";
     }
   } catch {
@@ -211,17 +211,14 @@ export function createGithubIssueWorkflowTool(
       _toolCallId: string,
       params: GithubIssueWorkflowParams,
     ): Promise<AgentToolResult<string>> {
-      const {
-        issue: issueRef,
-        branchPrefix = "claw/issue-",
-        createPr = true,
-      } = params;
+      const { issue: issueRef, branchPrefix = "claw/issue-", createPr = true } = params;
 
       // Resolve GitHub token
       const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN ?? "";
       if (!token) {
         return jsonResult({
-          error: "GITHUB_TOKEN is not set. Export it in your environment or set it in .coderClaw config env.vars.",
+          error:
+            "GITHUB_TOKEN is not set. Export it in your environment or set it in .coderClaw config env.vars.",
         }) as AgentToolResult<string>;
       }
 
@@ -238,7 +235,9 @@ export function createGithubIssueWorkflowTool(
       try {
         issue = await fetchIssue(ref, token);
       } catch (err) {
-        return jsonResult({ error: `Failed to fetch issue: ${String(err)}` }) as AgentToolResult<string>;
+        return jsonResult({
+          error: `Failed to fetch issue: ${String(err)}`,
+        }) as AgentToolResult<string>;
       }
 
       if (issue.state === "closed") {
@@ -251,12 +250,12 @@ export function createGithubIssueWorkflowTool(
       // Classify + build workflow steps
       const kind = classifyIssue(issue);
       const issueDescription =
-        `${issue.title}\n\n${issue.body ?? ""}`.trim() +
-        `\n\nFixes: ${issue.html_url}`;
+        `${issue.title}\n\n${issue.body ?? ""}`.trim() + `\n\nFixes: ${issue.html_url}`;
 
-      const steps = kind === "feature"
-        ? createFeatureWorkflow(issueDescription)
-        : createBugFixWorkflow(issueDescription);
+      const steps =
+        kind === "feature"
+          ? createFeatureWorkflow(issueDescription)
+          : createBugFixWorkflow(issueDescription);
 
       // Create and register the branch name before workflow starts
       const branchSlug = toBranchSlug(issue.title);
@@ -289,27 +288,27 @@ export function createGithubIssueWorkflowTool(
           `Closes #${ref.number}`;
 
         prUrl = await createGitHubPR({
-          owner:  ref.owner,
-          repo:   ref.repo,
+          owner: ref.owner,
+          repo: ref.repo,
           token,
-          head:   branchName,
-          base:   defaultBranch,
-          title:  prTitle,
-          body:   prBody,
+          head: branchName,
+          base: defaultBranch,
+          title: prTitle,
+          body: prBody,
         });
       }
 
       return jsonResult({
         issue: {
           number: issue.number,
-          title:  issue.title,
-          url:    issue.html_url,
+          title: issue.title,
+          url: issue.html_url,
           kind,
         },
         workflow: {
-          id:     workflow.id,
+          id: workflow.id,
           status: workflow.status,
-          tasks:  resultsMap.size,
+          tasks: resultsMap.size,
         },
         branch: branchName,
         pr: prUrl ? { url: prUrl, draft: true } : null,

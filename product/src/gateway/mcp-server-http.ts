@@ -18,9 +18,9 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { clawFleetTool } from "../coderclaw/tools/claw-fleet-tool.js";
 import { codebaseSearchTool } from "../coderclaw/tools/codebase-search-tool.js";
-import { semanticSearchTool } from "../coderclaw/tools/semantic-search-tool.js";
 import { gitHistoryTool } from "../coderclaw/tools/git-history-tool.js";
 import { projectKnowledgeTool } from "../coderclaw/tools/project-knowledge-tool.js";
+import { semanticSearchTool } from "../coderclaw/tools/semantic-search-tool.js";
 import { workflowStatusTool } from "../coderclaw/tools/workflow-status-tool.js";
 import { loadConfig } from "../config/config.js";
 import type { AuthRateLimiter } from "./auth-rate-limit.js";
@@ -39,8 +39,8 @@ const SERVER_VERSION = "1.0.0";
 
 /** The CoderClaw tools exposed via MCP. */
 const MCP_TOOLS = [
-  semanticSearchTool,   // vector+ranked semantic search (preferred)
-  codebaseSearchTool,   // keyword grep fallback
+  semanticSearchTool, // vector+ranked semantic search (preferred)
+  codebaseSearchTool, // keyword grep fallback
   projectKnowledgeTool,
   gitHistoryTool,
   workflowStatusTool,

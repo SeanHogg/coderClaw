@@ -1,6 +1,9 @@
+import fs from "node:fs/promises";
+import path from "node:path";
 import { appendKnowledgeMemory } from "../coderclaw/project-context.js";
 import { logDebug } from "../logger.js";
 import { onAgentEvent } from "./agent-events.js";
+import type { TeamMemoryEntry } from "./api-contract.js";
 import { syncCoderClawDirectory, type SyncCoderClawDirParams } from "./clawlink-directory-sync.js";
 import { getSsmMemoryService } from "./ssm-memory-service.js";
 
@@ -224,13 +227,13 @@ export class KnowledgeLoopService {
     const ssmSvc = getSsmMemoryService();
     if (ssmSvc) {
       const created = acc ? [...new Set(acc.filesCreated)] : [];
-      const edited  = acc ? [...new Set(acc.filesEdited)]  : [];
-      const tools   = acc ? [...new Set(acc.toolNames)]    : [];
+      const edited = acc ? [...new Set(acc.filesEdited)] : [];
+      const tools = acc ? [...new Set(acc.toolNames)] : [];
       const summary = deriveActivitySummary({ created, edited, tools });
       if (summary) {
         try {
           await ssmSvc.remember(runId, summary, {
-            tags      : ['activity'],
+            tags: ["activity"],
             importance: 0.6,
           });
         } catch (err) {
@@ -241,6 +244,8 @@ export class KnowledgeLoopService {
         } catch (err) {
           logDebug(`[ssm-memory] learn() failed: ${String(err)}`);
         }
+        // Push to team mesh (P4-5) — fire-and-forget
+        void this.pushMemoryToMesh(runId, summary, ["activity"]);
       }
     }
 
@@ -266,4 +271,108 @@ export class KnowledgeLoopService {
       logDebug(`[knowledge-loop] sync failed: ${String(err)}`);
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // P4-5: Cross-claw memory mesh
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Push an activity summary to the Builderforce team memory mesh.
+   * Fire-and-forget — errors are logged but never surfaced to the caller.
+   */
+  async pushMemoryToMesh(runId: string, summary: string, tags?: string[]): Promise<void> {
+    const { apiKey, baseUrl, clawId } = this.opts;
+    if (!apiKey || !clawId) {
+      return;
+    }
+    const url = `${(baseUrl ?? "https://api.builderforce.ai").replace(/\/+$/, "")}/api/teams/memory`;
+    const payload = {
+      clawId,
+      runId,
+      summary,
+      tags: tags ?? [],
+      timestamp: new Date().toISOString(),
+    };
+    try {
+      await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+          "X-Claw-Id": String(clawId),
+        },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(10_000),
+      });
+      logDebug(`[knowledge-loop] pushed memory to mesh: ${summary.slice(0, 60)}`);
+    } catch (err) {
+      logDebug(`[knowledge-loop] pushMemoryToMesh failed: ${String(err)}`);
+    }
+  }
+
+  /**
+   * Pull recent team memory entries from Builderforce.
+   * Caches results in `.coderClaw/memory/team-memory.json` (TTL: 5 minutes).
+   * Returns an empty array on error.
+   */
+  async pullTeamMemory(limit = 20): Promise<TeamMemoryEntry[]> {
+    const { apiKey, baseUrl, workspaceDir } = this.opts;
+    const cacheFile = path.join(workspaceDir, ".coderClaw", "memory", "team-memory.json");
+    const TTL_MS = 5 * 60 * 1000;
+
+    // Check cache first
+    try {
+      const raw = await fs.readFile(cacheFile, "utf-8");
+      const cached = JSON.parse(raw) as { ts: number; entries: TeamMemoryEntry[] };
+      if (Date.now() - cached.ts < TTL_MS) {
+        return cached.entries;
+      }
+    } catch {
+      // cache miss or parse error — proceed to fetch
+    }
+
+    if (!apiKey) {
+      return [];
+    }
+    const url = `${(baseUrl ?? "https://api.builderforce.ai").replace(/\/+$/, "")}/api/teams/memory?limit=${limit}`;
+    try {
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!res.ok) {
+        logDebug(`[knowledge-loop] pullTeamMemory HTTP ${res.status}`);
+        return [];
+      }
+      const data = (await res.json()) as { entries: TeamMemoryEntry[] };
+      const entries = Array.isArray(data.entries) ? data.entries : [];
+
+      // Write cache
+      try {
+        await fs.mkdir(path.dirname(cacheFile), { recursive: true });
+        await fs.writeFile(cacheFile, JSON.stringify({ ts: Date.now(), entries }), "utf-8");
+      } catch {
+        // cache write failure is non-fatal
+      }
+
+      return entries;
+    } catch (err) {
+      logDebug(`[knowledge-loop] pullTeamMemory failed: ${String(err)}`);
+      return [];
+    }
+  }
+}
+
+// ── Gateway-level singleton accessor (used by SsmMemoryService for P4-5) ──────
+
+let _knowledgeLoopInstance: KnowledgeLoopService | null = null;
+
+/** Called by the gateway startup to register the singleton. */
+export function setKnowledgeLoopService(svc: KnowledgeLoopService): void {
+  _knowledgeLoopInstance = svc;
+}
+
+/** Returns the gateway-level KnowledgeLoopService singleton, or null. */
+export function getKnowledgeLoopService(): KnowledgeLoopService | null {
+  return _knowledgeLoopInstance;
 }

@@ -3,13 +3,17 @@
  */
 
 import crypto from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
+import type { ClawLinkRelayService } from "../infra/clawlink-relay.js";
 import { awaitRemoteResult } from "../infra/remote-result-broker.js";
 import {
   dispatchToRemoteClaw,
   selectClawByCapability,
   type RemoteDispatchOptions,
 } from "../infra/remote-subagent.js";
+import { getSsmMemoryService } from "../infra/ssm-memory-service.js";
 import {
   emitTaskEnd,
   emitTaskStart,
@@ -18,7 +22,6 @@ import {
   initTelemetry,
 } from "../infra/workflow-telemetry.js";
 import { logDebug } from "../logger.js";
-import { getSsmMemoryService } from "../infra/ssm-memory-service.js";
 import { findAgentRole } from "./agent-roles.js";
 import {
   saveWorkflowState,
@@ -27,6 +30,12 @@ import {
   type PersistedWorkflow,
   type PersistedTask,
 } from "./project-context.js";
+import {
+  DEFAULT_ROUTING_RULES,
+  parseRoutingRules,
+  resolveRouting,
+  type RoutingRule,
+} from "./routing-rules.js";
 
 export type { SpawnSubagentContext } from "../agents/subagent-spawn.js";
 
@@ -70,6 +79,10 @@ export class AgentOrchestrator {
   private taskResults = new Map<string, string>();
   private projectRoot: string | null = null;
   private remoteDispatchOpts: RemoteDispatchOptions | null = null;
+  /** Merged routing rules (defaults + user-defined from .coderClaw/routing-rules.json). */
+  private routingRules: RoutingRule[] = DEFAULT_ROUTING_RULES;
+  /** Relay service reference for cross-claw context fetching (P4-2). */
+  private relayService: ClawLinkRelayService | null = null;
 
   /** Enable disk persistence for workflows and workflow telemetry. Call at gateway startup. */
   setProjectRoot(
@@ -80,6 +93,27 @@ export class AgentOrchestrator {
   ): void {
     this.projectRoot = root;
     initTelemetry({ projectRoot: root, clawId, linkApiUrl, linkApiKey });
+    // Load user-defined routing rules asynchronously — non-fatal if absent
+    void this.loadRoutingRules(root);
+  }
+
+  /**
+   * Load routing rules from `.coderClaw/routing-rules.json` and merge with defaults.
+   * User-defined rules are prepended (higher effective priority) over the built-in defaults.
+   */
+  private async loadRoutingRules(projectRoot: string): Promise<void> {
+    const filePath = path.join(projectRoot, ".coderClaw", "routing-rules.json");
+    try {
+      const raw = await fs.readFile(filePath, "utf-8");
+      const parsed = parseRoutingRules(JSON.parse(raw));
+      if (parsed.length > 0) {
+        // User rules come first (higher priority); then defaults as fallback
+        this.routingRules = [...parsed, ...DEFAULT_ROUTING_RULES];
+        logDebug(`[orchestrator] loaded ${parsed.length} routing rule(s) from ${filePath}`);
+      }
+    } catch {
+      // File absent or invalid JSON — use defaults silently
+    }
   }
 
   /**
@@ -89,6 +123,14 @@ export class AgentOrchestrator {
    */
   setRemoteDispatchOptions(opts: RemoteDispatchOptions): void {
     this.remoteDispatchOpts = opts;
+  }
+
+  /**
+   * Register the ClawLinkRelayService so the orchestrator can fetch remote
+   * context bundles (P4-2) before dispatching to a remote claw.
+   */
+  setRelayService(relay: ClawLinkRelayService): void {
+    this.relayService = relay;
   }
 
   /**
@@ -269,25 +311,41 @@ export class AgentOrchestrator {
 
   /**
    * Prepends a [Memory Context] block to `prompt` using the SSM semantic memory
-   * layer.  Silently returns the original prompt if the service is unavailable
-   * or if recall fails.
+   * layer.  Also injects top-5 team memory entries if available (P4-5).
+   * Silently returns the original prompt if the service is unavailable or if
+   * recall fails.
    */
   private async injectMemoryContext(taskDescription: string, prompt: string): Promise<string> {
+    let prefix = "";
+
     const ssmSvc = getSsmMemoryService();
-    if (!ssmSvc) return prompt;
-    try {
-      const entries = await ssmSvc.recallSimilar(taskDescription, 5);
-      if (entries.length === 0) return prompt;
-      const lines = ['[Memory Context]'];
-      for (const entry of entries) {
-        lines.push(`- ${entry.key}: ${entry.content}`);
+    if (ssmSvc) {
+      try {
+        // Team memory context (P4-5)
+        const teamMemCtx = await ssmSvc.buildTeamMemoryContext();
+        if (teamMemCtx) {
+          prefix += teamMemCtx;
+        }
+      } catch (err) {
+        logDebug(`[orchestrator] team memory injection failed: ${String(err)}`);
       }
-      lines.push('[End Memory Context]', '');
-      return lines.join('\n') + prompt;
-    } catch (err) {
-      logDebug(`[orchestrator] memory injection failed: ${String(err)}`);
-      return prompt;
+
+      try {
+        const entries = await ssmSvc.recallSimilar(taskDescription, 5);
+        if (entries.length > 0) {
+          const lines = ["[Memory Context]"];
+          for (const entry of entries) {
+            lines.push(`- ${entry.key}: ${entry.content}`);
+          }
+          lines.push("[End Memory Context]", "");
+          prefix += lines.join("\n");
+        }
+      } catch (err) {
+        logDebug(`[orchestrator] memory injection failed: ${String(err)}`);
+      }
     }
+
+    return prefix ? prefix + prompt : prompt;
   }
 
   /**
@@ -308,6 +366,27 @@ export class AgentOrchestrator {
 
     // Prepend semantic memory context if the SSM memory layer is available
     taskInput = await this.injectMemoryContext(task.description, taskInput);
+
+    // Resolve routing target for this task based on configured rules.
+    // Routing only applies to local dispatch — remote roles bypass this.
+    if (!task.agentRole.startsWith("remote:")) {
+      const routingTarget = resolveRouting(task, this.routingRules);
+      logDebug(
+        `[orchestrator] routing task ${task.id} (role=${task.agentRole}) → ${JSON.stringify(routingTarget)}`,
+      );
+      // When routing points to a remote target, rewrite the agentRole so the
+      // existing remote dispatch path below handles it.
+      if (routingTarget.type === "remote") {
+        const remoteId = routingTarget.clawId ?? "auto";
+        const caps = routingTarget.capabilities?.length
+          ? `[${routingTarget.capabilities.join(",")}]`
+          : "";
+        task.agentRole = `remote:${remoteId}${caps}`;
+      }
+      // local/cloud routing is informational at this layer — the embedded runner
+      // respects the model configured per-agent; a future enhancement can pass
+      // the resolved provider directly to spawnSubagentDirect.
+    }
 
     // Remote dispatch: role "remote:<clawId>", "remote:auto", or "remote:auto[cap1,cap2]"
     // delegates the task to a peer claw via CoderClawLink.
@@ -347,6 +426,30 @@ export class AgentOrchestrator {
         }
         targetClawId = String(selected.id);
         logDebug(`[orchestrator] selected claw ${targetClawId} (${selected.name})`);
+      }
+
+      // Fetch remote context bundle before dispatch so the remote claw has
+      // up-to-date context from this claw's .coderClaw/ directory (P4-2).
+      if (this.relayService) {
+        try {
+          await this.relayService.fetchRemoteContext(targetClawId);
+          // Inject a summary of available remote context files into the task input
+          const remoteCtxDir = this.projectRoot
+            ? path.join(this.projectRoot, ".coderClaw", "remote-context", targetClawId)
+            : null;
+          if (remoteCtxDir) {
+            const ctxFiles = await fs.readdir(remoteCtxDir, { recursive: true }).catch(() => []);
+            if (ctxFiles.length > 0) {
+              taskInput =
+                `[Remote Context for claw ${targetClawId}]\n` +
+                `Available context files: ${ctxFiles.slice(0, 20).join(", ")}\n` +
+                `[End Remote Context]\n\n` +
+                taskInput;
+            }
+          }
+        } catch (err) {
+          logDebug(`[orchestrator] fetchRemoteContext failed: ${String(err)}`);
+        }
       }
 
       const correlationId = crypto.randomUUID();
