@@ -72,12 +72,12 @@ export function buildLocalMachineProfile(params: {
   };
 }
 
-export function mergeClawLinkContext(params: {
-  existing: ProjectContext["clawLink"] | undefined;
+export function mergeBuilderforceContext(params: {
+  existing: ProjectContext["builderforce"] | undefined;
   assignmentContext: AssignmentContextResponse;
   fallback: { instanceId: string; url: string };
   machineProfile: RelayMachineProfile;
-}): NonNullable<ProjectContext["clawLink"]> {
+}): NonNullable<ProjectContext["builderforce"]> {
   const existing = params.existing ?? { instanceId: params.fallback.instanceId };
   const primary = params.assignmentContext.primaryProject;
 

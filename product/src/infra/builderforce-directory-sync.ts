@@ -91,7 +91,7 @@ export type SyncCoderClawDirParams = {
 };
 
 /**
- * Sync the .coderClaw/ directory to the CoderClawLink API.
+ * Sync the .coderClaw/ directory to the Builderforce API.
  * Callable at any time — not just on startup.
  * Returns the number of files synced.
  */
@@ -160,8 +160,8 @@ export async function syncCoderClawDirectoryOnStartup(params: {
   workspaceDir: string;
   log: SyncLog;
 }): Promise<void> {
-  const apiKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
-  const baseUrl = (readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai").replace(
+  const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
+  const baseUrl = (readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.coderclaw.ai").replace(
     /\/+$/,
     "",
   );
@@ -170,12 +170,12 @@ export async function syncCoderClawDirectoryOnStartup(params: {
   }
 
   const ctx = await loadProjectContext(params.workspaceDir).catch(() => null);
-  const clawId = ctx?.clawLink?.instanceId?.trim();
+  const clawId = ctx?.builderforce?.instanceId?.trim();
   if (!clawId) {
     return;
   }
 
-  const projectId = ctx?.clawLink?.projectId ? Number(ctx.clawLink.projectId) : undefined;
+  const projectId = ctx?.builderforce?.projectId ? Number(ctx.builderforce.projectId) : undefined;
 
   try {
     await syncCoderClawDirectoryWithMetaUpdate({
@@ -186,6 +186,6 @@ export async function syncCoderClawDirectoryOnStartup(params: {
       projectId,
     });
   } catch (err) {
-    params.log.warn(`[clawlink] startup .coderClaw sync failed: ${String(err)}`);
+    params.log.warn(`[builderforce] startup .coderClaw sync failed: ${String(err)}`);
   }
 }

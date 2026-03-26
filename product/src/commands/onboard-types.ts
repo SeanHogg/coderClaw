@@ -53,7 +53,7 @@ export type AuthChoice =
   | "skip";
 export type AuthChoiceGroupId =
   | "local"
-  | "coderclawlink"
+  | "builderforce"
   | "coderclawllm"
   | "openai"
   | "anthropic"

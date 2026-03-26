@@ -324,10 +324,10 @@ describe("tui command handlers", () => {
 
   it("launches setup when switching to coderclawllm without registration", async () => {
     const previousStateDir = process.env.CODERCLAW_STATE_DIR;
-    const previousLinkKey = process.env.CODERCLAW_LINK_API_KEY;
+    const previousLinkKey = process.env.BUILDERFORCE_API_KEY;
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-tui-setup-"));
     process.env.CODERCLAW_STATE_DIR = tempDir;
-    delete process.env.CODERCLAW_LINK_API_KEY;
+    delete process.env.BUILDERFORCE_API_KEY;
 
     const addSystem = vi.fn();
     const runLocalCliCommand = vi.fn().mockResolvedValue({ ok: true, lines: [] });
@@ -376,9 +376,9 @@ describe("tui command handlers", () => {
         process.env.CODERCLAW_STATE_DIR = previousStateDir;
       }
       if (previousLinkKey === undefined) {
-        delete process.env.CODERCLAW_LINK_API_KEY;
+        delete process.env.BUILDERFORCE_API_KEY;
       } else {
-        process.env.CODERCLAW_LINK_API_KEY = previousLinkKey;
+        process.env.BUILDERFORCE_API_KEY = previousLinkKey;
       }
       await fs.rm(tempDir, { recursive: true, force: true });
     }

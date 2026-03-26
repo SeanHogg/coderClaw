@@ -136,7 +136,7 @@ export type ProjectContext = {
    * used by default instead of the standard provider set in `llm`.
    */
   customAgent?: InstalledWorkforceAgent;
-  clawLink?: {
+  builderforce?: {
     /** Numeric claw ID returned by POST /api/claws */
     instanceId: string;
     /** URL-safe slug returned by POST /api/claws */
@@ -147,7 +147,7 @@ export type ProjectContext = {
     projectId?: string;
     /** Tenant this claw belongs to */
     tenantId?: number;
-    /** CoderClawLink server URL */
+    /** Builderforce server URL */
     url?: string;
     /** Runtime machine and tunnel profile persisted from registration/heartbeat. */
     machineProfile?: {
@@ -415,11 +415,11 @@ export type PersonaSource =
   | "user-global" // ~/.coderclaw/personas/ (user-installed, all projects)
   | "project-local" // .coderClaw/personas/ (project-scoped)
   | "clawhub" // Installed from ClawHub marketplace
-  | "clawlink-assigned"; // Pushed to this claw from Builderforce
+  | "builderforce-assigned"; // Pushed to this claw from Builderforce
 
 /**
  * Marketplace and versioning metadata for a persona plugin.
- * Present when a persona was installed from ClawHub or assigned via Builderforce.
+ * Present when a persona was installed from ClawHub or assigned via builderforce.ai.
  */
 export type PersonaPluginMetadata = {
   /** ClawHub marketplace identifier, e.g. "acme/senior-security-reviewer" */
@@ -446,12 +446,12 @@ export type PersonaPluginMetadata = {
 
 /**
  * A persona plugin — an `AgentRole` enriched with plugin lifecycle metadata.
- * Installed from the ClawHub marketplace or assigned to a claw via coderClawLink.
+ * Installed from the ClawHub marketplace or assigned to a claw via builderforce.ai.
  */
 export type PersonaPlugin = AgentRole & {
   /** Where this persona was loaded from */
   source: PersonaSource;
-  /** Marketplace metadata (present for clawhub / clawlink-assigned personas) */
+  /** Marketplace metadata (present for clawhub / builderforce-assigned personas) */
   pluginMetadata?: PersonaPluginMetadata;
   /** Absolute path to the PERSONA.yaml file on disk; undefined for built-ins */
   filePath?: string;
@@ -470,7 +470,7 @@ export type PersonaAssignment = {
   /** ClawHub ID — used for license verification on activation */
   clawhubId?: string;
   /** True when this assignment was pushed from Builderforce (not manually set) */
-  assignedByClawLink?: boolean;
+  assignedByBuilderforce?: boolean;
   /** ISO 8601 timestamp of when the assignment was created */
   assignedAt?: string;
 };

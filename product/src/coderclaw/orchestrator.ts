@@ -6,7 +6,7 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
-import type { ClawLinkRelayService } from "../infra/clawlink-relay.js";
+import type { BuilderforceRelayService } from "../infra/builderforce-relay.js";
 import { awaitRemoteResult } from "../infra/remote-result-broker.js";
 import {
   dispatchToRemoteClaw,
@@ -82,7 +82,7 @@ export class AgentOrchestrator {
   /** Merged routing rules (defaults + user-defined from .coderClaw/routing-rules.json). */
   private routingRules: RoutingRule[] = DEFAULT_ROUTING_RULES;
   /** Relay service reference for cross-claw context fetching (P4-2). */
-  private relayService: ClawLinkRelayService | null = null;
+  private relayService: BuilderforceRelayService | null = null;
 
   /** Enable disk persistence for workflows and workflow telemetry. Call at gateway startup. */
   setProjectRoot(
@@ -118,18 +118,18 @@ export class AgentOrchestrator {
 
   /**
    * Configure remote dispatch credentials so "remote:<clawId>" workflow steps
-   * can delegate tasks to peer claws via CoderClawLink.
-   * Call once at gateway startup when CODERCLAW_LINK_API_KEY is present.
+   * can delegate tasks to peer claws via Builderforce.
+   * Call once at gateway startup when BUILDERFORCE_API_KEY is present.
    */
   setRemoteDispatchOptions(opts: RemoteDispatchOptions): void {
     this.remoteDispatchOpts = opts;
   }
 
   /**
-   * Register the ClawLinkRelayService so the orchestrator can fetch remote
+   * Register the BuilderforceRelayService so the orchestrator can fetch remote
    * context bundles (P4-2) before dispatching to a remote claw.
    */
-  setRelayService(relay: ClawLinkRelayService): void {
+  setRelayService(relay: BuilderforceRelayService): void {
     this.relayService = relay;
   }
 
@@ -389,12 +389,12 @@ export class AgentOrchestrator {
     }
 
     // Remote dispatch: role "remote:<clawId>", "remote:auto", or "remote:auto[cap1,cap2]"
-    // delegates the task to a peer claw via CoderClawLink.
+    // delegates the task to a peer claw via Builderforce.
     if (task.agentRole.startsWith("remote:")) {
       if (!this.remoteDispatchOpts) {
         task.status = "failed";
         task.error =
-          "Remote dispatch not configured — set CODERCLAW_LINK_API_KEY and clawLink.instanceId";
+          "Remote dispatch not configured — set BUILDERFORCE_API_KEY and builderforce.instanceId";
         task.completedAt = new Date();
         emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
         this.persistWorkflow(workflow);

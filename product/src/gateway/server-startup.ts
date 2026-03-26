@@ -21,8 +21,8 @@ import {
 } from "../hooks/internal-hooks.js";
 import { loadInternalHooks } from "../hooks/loader.js";
 import { initApprovalGate } from "../infra/approval-gate.js";
-import { syncCoderClawDirectoryOnStartup } from "../infra/clawlink-directory-sync.js";
-import { ClawLinkRelayService } from "../infra/clawlink-relay.js";
+import { syncCoderClawDirectoryOnStartup } from "../infra/builderforce-directory-sync.js";
+import { BuilderforceRelayService } from "../infra/builderforce-relay.js";
 import { CronPollerService } from "../infra/cron-poller.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
@@ -208,17 +208,17 @@ export async function startGatewaySidecars(params: {
     }, 750);
   }
 
-  // Start the ClawLink upstream relay and knowledge loop if credentials are configured.
+  // Start the Builderforce upstream relay and knowledge loop if credentials are configured.
   // Both the upstream WS and local gateway bridge retry independently on failure.
-  let clawLinkRelay: ClawLinkRelayService | null = null;
+  let builderforceRelay: BuilderforceRelayService | null = null;
   let knowledgeLoop: KnowledgeLoopService | null = null;
   try {
-    const apiKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
-    const baseUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai";
+    const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY");
+    const baseUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.coderclaw.ai";
     if (apiKey) {
       const ctx = await loadProjectContext(params.defaultWorkspaceDir);
-      const clawId = ctx?.clawLink?.instanceId;
-      const projectId = ctx?.clawLink?.projectId ? Number(ctx.clawLink.projectId) : undefined;
+      const clawId = ctx?.builderforce?.instanceId;
+      const projectId = ctx?.builderforce?.projectId ? Number(ctx.builderforce.projectId) : undefined;
 
       if (clawId) {
         // Re-init telemetry now that the claw ID is known so all subsequent
@@ -234,17 +234,17 @@ export async function startGatewaySidecars(params: {
         // await manager decisions delivered via the relay WebSocket.
         initApprovalGate({ baseUrl, clawId: String(clawId), apiKey });
 
-        clawLinkRelay = new ClawLinkRelayService({
+        builderforceRelay = new BuilderforceRelayService({
           baseUrl,
           clawId: String(clawId),
           apiKey,
           workspaceDir: params.defaultWorkspaceDir,
         });
-        clawLinkRelay.start();
-        params.log.warn(`[clawlink] relay started for claw ${clawId}`);
+        builderforceRelay.start();
+        params.log.warn(`[builderforce] relay started for claw ${clawId}`);
 
         // Wire the relay's remote dispatch options so result callbacks work.
-        clawLinkRelay.setRemoteDispatchOptions({ baseUrl, myClawId: String(clawId), apiKey });
+        builderforceRelay.setRemoteDispatchOptions({ baseUrl, myClawId: String(clawId), apiKey });
 
         // Fetch platform personas and register them as available agent roles.
         void fetchPlatformPersonas({ baseUrl, clawId: String(clawId), apiKey }).then((personas) => {
@@ -261,11 +261,11 @@ export async function startGatewaySidecars(params: {
         void (async () => {
           try {
             const ctx = await loadProjectContext(params.defaultWorkspaceDir);
-            if (ctx?.clawLink?.projectId && ctx.description) {
+            if (ctx?.builderforce?.projectId && ctx.description) {
               await pushProjectContextToBuilderforce(
                 { baseUrl, clawId: String(clawId), apiKey },
                 {
-                  projectId: Number(ctx.clawLink.projectId),
+                  projectId: Number(ctx.builderforce.projectId),
                   governance: ctx.description,
                 },
               );
@@ -294,8 +294,8 @@ export async function startGatewaySidecars(params: {
           apiKey,
         });
         // Wire relay service for cross-claw context fetching (P4-2)
-        if (clawLinkRelay) {
-          globalOrchestrator.setRelayService(clawLinkRelay);
+        if (builderforceRelay) {
+          globalOrchestrator.setRelayService(builderforceRelay);
         }
       }
 
@@ -313,14 +313,14 @@ export async function startGatewaySidecars(params: {
       params.log.warn("[knowledge-loop] started");
     } else {
       params.log.warn(
-        "[clawlink] standalone mode — CODERCLAW_LINK_API_KEY not set; " +
+        "[builderforce] standalone mode — BUILDERFORCE_API_KEY not set; " +
           "Builderforce connection and claw-to-claw dispatch are disabled. " +
-          "Set CODERCLAW_LINK_API_KEY in ~/.coderclaw/.env to enable them.",
+          "Set BUILDERFORCE_API_KEY in ~/.coderclaw/.env to enable them.",
       );
     }
   } catch (err) {
-    params.log.warn(`[clawlink/knowledge-loop] startup failed: ${String(err)}`);
+    params.log.warn(`[builderforce/knowledge-loop] startup failed: ${String(err)}`);
   }
 
-  return { browserControl, pluginServices, clawLinkRelay, knowledgeLoop };
+  return { browserControl, pluginServices, builderforceRelay, knowledgeLoop };
 }

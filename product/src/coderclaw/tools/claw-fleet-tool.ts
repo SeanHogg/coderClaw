@@ -44,31 +44,31 @@ export const clawFleetTool: AgentTool<typeof ClawFleetSchema, string> = {
   name: "claw_fleet",
   label: "Claw Fleet",
   description:
-    "List peer CoderClaw instances in the same tenant. Returns each claw's ID, name, connection status, and capabilities. Use the claw ID with 'remote:<clawId>' to delegate tasks, 'remote:auto' to auto-select the best online claw, or 'remote:auto[cap1,cap2]' to require specific capabilities. Requires CODERCLAW_LINK_API_KEY and clawLink.instanceId to be configured.",
+    "List peer CoderClaw instances in the same tenant. Returns each claw's ID, name, connection status, and capabilities. Use the claw ID with 'remote:<clawId>' to delegate tasks, 'remote:auto' to auto-select the best online claw, or 'remote:auto[cap1,cap2]' to require specific capabilities. Requires BUILDERFORCE_API_KEY and builderforce.instanceId to be configured.",
   parameters: ClawFleetSchema,
   async execute(_toolCallId: string, params: ClawFleetParams) {
     const { projectRoot, onlineOnly = false, requireCapabilities } = params;
 
     try {
-      const apiKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
-      const baseUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.coderclaw.ai";
+      const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY");
+      const baseUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.coderclaw.ai";
 
       if (!apiKey) {
         return jsonResult({
           ok: false,
           error:
-            "CODERCLAW_LINK_API_KEY not configured. Set it in ~/.coderclaw/.env to enable fleet discovery.",
+            "BUILDERFORCE_API_KEY not configured. Set it in ~/.coderclaw/.env to enable fleet discovery.",
         }) as AgentToolResult<string>;
       }
 
       const ctx = await loadProjectContext(projectRoot);
-      const clawId = ctx?.clawLink?.instanceId;
+      const clawId = ctx?.builderforce?.instanceId;
 
       if (!clawId) {
         return jsonResult({
           ok: false,
           error:
-            "clawLink.instanceId not found in .coderClaw/context.yaml. Run 'coderclaw init' and register this claw first.",
+            "builderforce.instanceId not found in .coderClaw/context.yaml. Run 'coderclaw init' and register this claw first.",
         }) as AgentToolResult<string>;
       }
 

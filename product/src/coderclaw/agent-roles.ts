@@ -350,7 +350,7 @@ export function registerPlatformPersonasAsRoles(
       outputFormat: p.outputPrefix
         ? { structure: "markdown", outputPrefix: p.outputPrefix }
         : undefined,
-      source: "clawlink-assigned",
+      source: "builderforce-assigned",
       active: true,
     };
     globalPersonaRegistry.register(plugin);
@@ -363,7 +363,7 @@ export function registerPlatformPersonasAsRoles(
  * Resolution order (first match wins):
  *  1. Built-in roles (always available)
  *  2. Persona plugins from the `globalPersonaRegistry` (project .coderclaw/personas/,
- *     user ~/.coderclaw/personas/, marketplace, ClawLink)
+ *     user ~/.coderclaw/personas/, marketplace, Builderforce)
  *
  * Built-ins cannot be overridden; personas extend the set with new names.
  */
@@ -374,6 +374,6 @@ export function findAgentRole(name: string): AgentRole | null {
     return builtin;
   }
 
-  // 2. Delegate to PersonaRegistry (project-local, user-global, marketplace, ClawLink)
+  // 2. Delegate to PersonaRegistry (project-local, user-global, marketplace, Builderforce)
   return globalPersonaRegistry.resolve(name);
 }

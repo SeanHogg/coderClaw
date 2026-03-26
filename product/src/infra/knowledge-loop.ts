@@ -4,7 +4,7 @@ import { appendKnowledgeMemory } from "../coderclaw/project-context.js";
 import { logDebug } from "../logger.js";
 import { onAgentEvent } from "./agent-events.js";
 import type { TeamMemoryEntry } from "./api-contract.js";
-import { syncCoderClawDirectory, type SyncCoderClawDirParams } from "./clawlink-directory-sync.js";
+import { syncCoderClawDirectory, type SyncCoderClawDirParams } from "./builderforce-directory-sync.js";
 import { getSsmMemoryService } from "./ssm-memory-service.js";
 
 /**

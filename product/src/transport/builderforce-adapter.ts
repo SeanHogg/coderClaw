@@ -1,10 +1,10 @@
 /**
- * ClawLink transport adapter
+ * Builderforce transport adapter
  *
  * Connects CoderClaw's orchestration engine to Builderforce (api.builderforce.ai)
  * over its HTTP runtime API. Both sides share the same transport abstraction
  * contract, so CoderClaw can delegate task execution to Builderforce.
- * seamlessly — local agents and remote ClawLink agents are interchangeable.
+ * seamlessly — local agents and remote Builderforce agents are interchangeable.
  *
  * Builderforce API surface used here:
  *   POST   /api/runtime/executions
@@ -16,7 +16,7 @@
 
 import type {
   AgentInfo,
-  ClawLinkConfig,
+  BuilderforceConfig,
   SkillInfo,
   TaskState,
   TaskSubmitRequest,
@@ -29,7 +29,7 @@ import type {
 // Builderforce API response shapes (runtime executions)
 // ---------------------------------------------------------------------------
 
-type ClawLinkExecutionStatus =
+type BuilderforceExecutionStatus =
   | "pending"
   | "submitted"
   | "running"
@@ -37,7 +37,7 @@ type ClawLinkExecutionStatus =
   | "failed"
   | "cancelled";
 
-type ClawLinkExecutionResponse = {
+type BuilderforceExecutionResponse = {
   id: number;
   taskId: number;
   agentId: number | null;
@@ -45,7 +45,7 @@ type ClawLinkExecutionResponse = {
   tenantId: number;
   submittedBy: string;
   sessionId: string | null;
-  status: ClawLinkExecutionStatus;
+  status: BuilderforceExecutionStatus;
   payload: string | null;
   result: string | null;
   errorMessage: string | null;
@@ -55,7 +55,7 @@ type ClawLinkExecutionResponse = {
   updatedAt: string;
 };
 
-type ClawLinkAgentResponse = {
+type BuilderforceAgentResponse = {
   agent_type: string;
   name: string;
   description?: string | null;
@@ -64,7 +64,7 @@ type ClawLinkAgentResponse = {
   metadata?: Record<string, unknown> | null;
 };
 
-type ClawLinkSkillResponse = {
+type BuilderforceSkillResponse = {
   skill_id: string;
   name: string;
   description?: string | null;
@@ -72,8 +72,8 @@ type ClawLinkSkillResponse = {
   metadata?: Record<string, unknown> | null;
 };
 
-type ClawLinkSkillsEnvelope = {
-  skills: ClawLinkSkillResponse[];
+type BuilderforceSkillsEnvelope = {
+  skills: BuilderforceSkillResponse[];
 };
 
 // ---------------------------------------------------------------------------
@@ -81,19 +81,19 @@ type ClawLinkSkillsEnvelope = {
 // ---------------------------------------------------------------------------
 
 /**
- * Transport adapter that delegates execution to a CoderClawLink node.
+ * Transport adapter that delegates execution to a Builderforce node.
  *
  * Usage:
  * ```ts
- * import { ClawLinkTransportAdapter } from "./transport/clawlink-adapter.js";
+ * import { BuilderforceTransportAdapter } from "./transport/builderforce-adapter.js";
  * import { CoderClawRuntime } from "./transport/runtime.js";
  *
- * const adapter = new ClawLinkTransportAdapter({ baseUrl: "http://localhost:8000" });
- * await adapter.connect();               // creates a session on the ClawLink node
+ * const adapter = new BuilderforceTransportAdapter({ baseUrl: "http://localhost:8000" });
+ * await adapter.connect();               // creates a session on the Builderforce node
  * const runtime = new CoderClawRuntime(adapter, "remote-enabled");
  * ```
  */
-export class ClawLinkTransportAdapter implements TransportAdapter {
+export class BuilderforceTransportAdapter implements TransportAdapter {
   private readonly baseUrl: string;
   private readonly pollIntervalMs: number;
   private readonly timeoutMs: number;
@@ -102,7 +102,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
   private readonly userId: string | undefined;
   private readonly deviceId: string | undefined;
 
-  constructor(config: ClawLinkConfig) {
+  constructor(config: BuilderforceConfig) {
     this.baseUrl = config.baseUrl.replace(/\/$/, "");
     this.pollIntervalMs = config.pollIntervalMs ?? 1000;
     this.timeoutMs = config.timeoutMs ?? 30_000;
@@ -134,7 +134,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
       payload: request.input,
     };
 
-    const raw = await this.post<ClawLinkExecutionResponse>(
+    const raw = await this.post<BuilderforceExecutionResponse>(
       `${this.baseUrl}/api/runtime/executions`,
       body,
     );
@@ -150,7 +150,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
     while (true) {
       await sleep(this.pollIntervalMs);
 
-      const raw = await this.post<ClawLinkExecutionResponse>(
+      const raw = await this.post<BuilderforceExecutionResponse>(
         `${this.baseUrl}/api/runtime/executions/${encodeURIComponent(taskId)}`,
         null,
         "GET",
@@ -176,7 +176,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
 
   async queryTaskState(taskId: string): Promise<TaskState | null> {
     try {
-      const raw = await this.post<ClawLinkExecutionResponse>(
+      const raw = await this.post<BuilderforceExecutionResponse>(
         `${this.baseUrl}/api/runtime/executions/${encodeURIComponent(taskId)}`,
         null,
         "GET",
@@ -217,7 +217,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
 
   async cancelTask(taskId: string): Promise<boolean> {
     try {
-      const result = await this.post<ClawLinkExecutionResponse>(
+      const result = await this.post<BuilderforceExecutionResponse>(
         `${this.baseUrl}/api/runtime/executions/${encodeURIComponent(taskId)}/cancel`,
         {},
       );
@@ -235,7 +235,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
     if (this.deviceId) {
       params.set("device_id", this.deviceId);
     }
-    const agents = await this.post<ClawLinkAgentResponse[]>(
+    const agents = await this.post<BuilderforceAgentResponse[]>(
       `${this.baseUrl}/api/agents${params.size > 0 ? `?${params}` : ""}`,
       null,
       "GET",
@@ -265,7 +265,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
         ? `${this.baseUrl}/api/claws/${this.clawId}/skills`
         : `${this.baseUrl}/api/skills`;
 
-    const response = await this.post<ClawLinkSkillResponse[] | ClawLinkSkillsEnvelope>(
+    const response = await this.post<BuilderforceSkillResponse[] | BuilderforceSkillsEnvelope>(
       `${endpoint}${params.size > 0 ? `?${params}` : ""}`,
       null,
       "GET",
@@ -315,13 +315,13 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
 
     if (!response.ok) {
       const text = await response.text().catch(() => response.statusText);
-      throw new Error(`ClawLink ${method} ${url} → ${response.status}: ${text}`);
+      throw new Error(`Builderforce ${method} ${url} → ${response.status}: ${text}`);
     }
 
     return response.json() as Promise<T>;
   }
 
-  private mapExecutionStatus(status: ClawLinkExecutionStatus): TaskStatus {
+  private mapExecutionStatus(status: BuilderforceExecutionStatus): TaskStatus {
     switch (status) {
       case "submitted":
         return "pending";
@@ -341,7 +341,7 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
 
     if (!Number.isFinite(value) || value <= 0) {
       throw new Error(
-        "ClawLinkTransportAdapter requires metadata.taskId (numeric) for /api/runtime/executions",
+        "BuilderforceTransportAdapter requires metadata.taskId (numeric) for /api/runtime/executions",
       );
     }
     return value;
@@ -355,9 +355,9 @@ export class ClawLinkTransportAdapter implements TransportAdapter {
     return Number.isFinite(numeric) ? numeric : undefined;
   }
 
-  /** Map a ClawLink execution response to CoderClaw's TaskState. */
+  /** Map a Builderforce execution response to CoderClaw's TaskState. */
   private toTaskStateFromExecution(
-    raw: ClawLinkExecutionResponse,
+    raw: BuilderforceExecutionResponse,
     req?: TaskSubmitRequest,
   ): TaskState {
     const mappedStatus = this.mapExecutionStatus(raw.status);

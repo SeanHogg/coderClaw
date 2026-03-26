@@ -75,7 +75,7 @@ export function getActiveTraceId(): string | null {
 /**
  * Optional relay hook — called fire-and-forget after each span is appended.
  * Set via setRelayHook() to push real-time workflow/task events to browser clients
- * through the ClawLink WebSocket relay.
+ * through the Builderforce WebSocket relay.
  */
 let relayHook: ((event: string, payload: unknown) => void) | null = null;
 
@@ -225,7 +225,7 @@ async function appendSpan(span: WorkflowSpan): Promise<void> {
   syncSpanToBuilderforce(span);
   forwardSpanToOtelProxy(span);
 
-  // Push real-time event to browser clients via the ClawLink WS relay.
+  // Push real-time event to browser clients via the Builderforce WS relay.
   const relayEvent = spanToRelayEvent(span.kind);
   if (relayHook && relayEvent) {
     try {

@@ -29,8 +29,8 @@ const AUTH_CHOICE_GROUP_DEFS: {
     choices: ["local"],
   },
   {
-    value: "coderclawlink",
-    label: "BuilderForce.AI (formerly coderClawLink)",
+    value: "builderforce",
+    label: "Builderforce.AI",
     hint: "All cloud; no local — cloud based LLM",
     choices: ["coderclawllm", "custom-api-key"],
   },
@@ -194,7 +194,7 @@ const BASE_AUTH_CHOICE_OPTIONS: ReadonlyArray<AuthChoiceOption> = [
   {
     value: "coderclawllm",
     label: "CoderClawLLM (recommended)",
-    hint: "Uses BuilderForce.AI (formerly coderClawLink) — api.builderforce.ai/llm, automatic model failover (no local key needed)",
+    hint: "Uses Builderforce.AI — api.builderforce.ai/llm, automatic model failover (no local key needed)",
   },
   {
     value: "token",

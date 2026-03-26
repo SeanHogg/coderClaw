@@ -1,5 +1,5 @@
 /**
- * ClawLinkRelayService
+ * BuilderforceRelayService
  *
  * Persistent upstream WebSocket connection from coderClaw → Builderforce relay.
  * Bridges bidirectional chat:
@@ -22,9 +22,9 @@ import { onAgentEvent } from "./agent-events.js";
 import { resolveApproval } from "./approval-gate.js";
 import {
   buildLocalMachineProfile,
-  mergeClawLinkContext,
+  mergeBuilderforceContext,
   type AssignmentContextResponse,
-} from "./clawlink-context.js";
+} from "./builderforce-context.js";
 import { resolveRemoteResult } from "./remote-result-broker.js";
 import { dispatchResultToRemoteClaw, type RemoteDispatchOptions } from "./remote-subagent.js";
 import { setRelayHook } from "./workflow-telemetry.js";
@@ -64,12 +64,12 @@ function extractChatRole(message: unknown): "user" | "assistant" {
   return "assistant";
 }
 
-export type ClawLinkRelayOptions = {
+export type BuilderforceRelayOptions = {
   /** Base HTTP(S) URL of Builderforce, e.g. "https://api.builderforce.ai" */
   baseUrl: string;
-  /** Numeric claw instance id (as string), from context.clawLink.instanceId */
+  /** Numeric claw instance id (as string), from context.builderforce.instanceId */
   clawId: string;
-  /** Plaintext API key from CODERCLAW_LINK_API_KEY */
+  /** Plaintext API key from BUILDERFORCE_API_KEY */
   apiKey: string;
   /** Local coderClaw gateway WebSocket URL. Defaults to ws://127.0.0.1:18789 */
   gatewayUrl?: string;
@@ -77,7 +77,7 @@ export type ClawLinkRelayOptions = {
   workspaceDir?: string;
 };
 
-export class ClawLinkRelayService {
+export class BuilderforceRelayService {
   private ws: WebSocket | null = null;
   private closed = false;
   private backoffMs = 1000;
@@ -110,7 +110,7 @@ export class ClawLinkRelayService {
     artifacts?: { skills?: string[]; personas?: string[]; content?: string[] };
   }): void {
     const lines = [
-      `[ClawLink ${payload.sourceType}] ${payload.title}`,
+      `[Builderforce ${payload.sourceType}] ${payload.title}`,
       payload.description ? "" : undefined,
       payload.description,
       payload.executionId != null ? "" : undefined,
@@ -132,7 +132,7 @@ export class ClawLinkRelayService {
           taskId: payload.taskId,
         })
         .catch((err: unknown) => {
-          logWarn(`[clawlink] artifacts.sync failed: ${String(err)}`);
+          logWarn(`[builderforce] artifacts.sync failed: ${String(err)}`);
         });
     }
 
@@ -149,7 +149,7 @@ export class ClawLinkRelayService {
         idempotencyKey: `task-${payload.sourceType}-${payload.taskId ?? "na"}-${payload.executionId ?? Date.now()}`,
       })
       .catch((err: unknown) => {
-        logWarn(`[clawlink] ${payload.sourceType} dispatch failed: ${String(err)}`);
+        logWarn(`[builderforce] ${payload.sourceType} dispatch failed: ${String(err)}`);
       });
   }
 
@@ -174,13 +174,13 @@ export class ClawLinkRelayService {
         body: JSON.stringify({ status, ...extra }),
         signal: AbortSignal.timeout(10_000),
       });
-      logDebug(`[clawlink-relay] execution ${executionId} → ${status}`);
+      logDebug(`[builderforce-relay] execution ${executionId} → ${status}`);
     } catch (err) {
-      logDebug(`[clawlink-relay] execution state report failed: ${String(err)}`);
+      logDebug(`[builderforce-relay] execution state report failed: ${String(err)}`);
     }
   }
 
-  constructor(private readonly opts: ClawLinkRelayOptions) {
+  constructor(private readonly opts: BuilderforceRelayOptions) {
     const base = opts.baseUrl
       .replace(/^https:/, "wss:")
       .replace(/^http:/, "ws:")
@@ -220,12 +220,12 @@ export class ClawLinkRelayService {
         signal: AbortSignal.timeout(15_000),
       });
       if (!res.ok) {
-        logDebug(`[clawlink-relay] context-bundle for claw ${remoteClawId} failed: ${res.status}`);
+        logDebug(`[builderforce-relay] context-bundle for claw ${remoteClawId} failed: ${res.status}`);
         return;
       }
       bundle = (await res.json()) as typeof bundle;
     } catch (err) {
-      logDebug(`[clawlink-relay] fetchRemoteContext error: ${String(err)}`);
+      logDebug(`[builderforce-relay] fetchRemoteContext error: ${String(err)}`);
       return;
     }
 
@@ -270,7 +270,7 @@ export class ClawLinkRelayService {
 
       await fs.mkdir(path.dirname(destPath), { recursive: true });
       await fs.writeFile(destPath, file.content, "utf-8");
-      logDebug(`[clawlink-relay] wrote remote context file: ${safeName}`);
+      logDebug(`[builderforce-relay] wrote remote context file: ${safeName}`);
     }
   }
 
@@ -360,7 +360,7 @@ export class ClawLinkRelayService {
     this.ws = ws;
 
     ws.on("open", () => {
-      logWarn("[clawlink-relay] upstream connected");
+      logWarn("[builderforce-relay] upstream connected");
       this.backoffMs = 1000;
       this.scheduleHeartbeat();
       void this.syncAssignmentContext("ws-open");
@@ -389,27 +389,27 @@ export class ClawLinkRelayService {
       if (this.ws === ws) {
         this.ws = null;
         this.clearHeartbeat();
-        logWarn("[clawlink-relay] upstream disconnected — reconnecting…");
+        logWarn("[builderforce-relay] upstream disconnected — reconnecting…");
         this.scheduleReconnect();
       }
     });
 
     ws.on("error", (err) => {
-      logWarn(`[clawlink-relay] upstream error: ${String(err)}`);
+      logWarn(`[builderforce-relay] upstream error: ${String(err)}`);
       // "close" follows automatically
     });
   }
 
   /**
    * Handle messages forwarded from browser clients through ClawRelayDO.
-   * Translates ClawLink wire protocol → local gateway method calls.
+   * Translates Builderforce wire protocol → local gateway method calls.
    */
   private handleRelayMessage(msg: Record<string, unknown>): void {
     const type = typeof msg.type === "string" ? msg.type : "";
 
     switch (type) {
       case "relay_connected":
-        logDebug("[clawlink-relay] relay acknowledged connection");
+        logDebug("[builderforce-relay] relay acknowledged connection");
         break;
 
       case "ping":
@@ -426,7 +426,7 @@ export class ClawLinkRelayService {
             idempotencyKey: randomUUID(),
           })
           .catch((err: unknown) => {
-            logDebug(`[clawlink-relay] chat.send failed: ${String(err)}`);
+            logDebug(`[builderforce-relay] chat.send failed: ${String(err)}`);
           });
         break;
       }
@@ -499,7 +499,7 @@ export class ClawLinkRelayService {
         if (!task) {
           break;
         }
-        logDebug(`[clawlink-relay] remote task from claw ${fromClawId}: ${task.slice(0, 80)}…`);
+        logDebug(`[builderforce-relay] remote task from claw ${fromClawId}: ${task.slice(0, 80)}…`);
         // Track correlation so we can send result back when the session completes.
         const sessionKey = correlationId ? `remote-${correlationId}` : "main";
         if (correlationId && callbackClawId) {
@@ -516,7 +516,7 @@ export class ClawLinkRelayService {
             idempotencyKey: `remote-${fromClawId}-${correlationId || Date.now()}`,
           })
           .catch((err: unknown) => {
-            logDebug(`[clawlink-relay] remote.task dispatch failed: ${String(err)}`);
+            logDebug(`[builderforce-relay] remote.task dispatch failed: ${String(err)}`);
           });
         break;
       }
@@ -528,7 +528,7 @@ export class ClawLinkRelayService {
         if (correlationId) {
           const resolved = resolveRemoteResult(correlationId, result);
           logDebug(
-            `[clawlink-relay] remote.task.result ${correlationId}: ${resolved ? "resolved" : "no pending callback"}`,
+            `[builderforce-relay] remote.task.result ${correlationId}: ${resolved ? "resolved" : "no pending callback"}`,
           );
         }
         break;
@@ -568,12 +568,12 @@ export class ClawLinkRelayService {
           : undefined;
 
         if (!title && !description) {
-          logWarn(`[clawlink] received ${type} without task content`);
+          logWarn(`[builderforce] received ${type} without task content`);
           break;
         }
 
         logWarn(
-          `[clawlink] received ${type}${taskId != null ? ` task=${taskId}` : ""}${executionId != null ? ` execution=${executionId}` : ""}`,
+          `[builderforce] received ${type}${taskId != null ? ` task=${taskId}` : ""}${executionId != null ? ` execution=${executionId}` : ""}`,
         );
 
         this.dispatchTaskFromRelay({
@@ -593,7 +593,7 @@ export class ClawLinkRelayService {
         const approvalId = typeof msg.approvalId === "string" ? msg.approvalId : "";
         const decision = typeof msg.status === "string" ? msg.status : "";
         if (approvalId && (decision === "approved" || decision === "rejected")) {
-          logWarn(`[clawlink-relay] approval.decision ${approvalId}: ${decision}`);
+          logWarn(`[builderforce-relay] approval.decision ${approvalId}: ${decision}`);
           resolveApproval(approvalId, decision);
         }
         break;
@@ -670,7 +670,7 @@ export class ClawLinkRelayService {
         });
       }
     } catch (err) {
-      logDebug(`[clawlink-relay] logs.tail failed: ${String(err)}`);
+      logDebug(`[builderforce-relay] logs.tail failed: ${String(err)}`);
     }
   }
 
@@ -703,7 +703,7 @@ export class ClawLinkRelayService {
       const entries = Array.isArray(res) ? res : [];
       this.sendToRelay({ type: "presence.snapshot", entries });
     } catch (err) {
-      logDebug(`[clawlink-relay] system-presence failed: ${String(err)}`);
+      logDebug(`[builderforce-relay] system-presence failed: ${String(err)}`);
     }
   }
 
@@ -742,7 +742,7 @@ export class ClawLinkRelayService {
       url: this.gatewayWsUrl,
       onEvent: (evt) => this.handleGatewayEvent(evt),
       onConnectError: (err) => {
-        logDebug(`[clawlink-relay] local gateway connect error: ${String(err)}`);
+        logDebug(`[builderforce-relay] local gateway connect error: ${String(err)}`);
       },
     };
     const gw = new GatewayClient(opts);
@@ -752,7 +752,7 @@ export class ClawLinkRelayService {
   }
 
   /**
-   * Translate local gateway "chat" EventFrames → ClawLink browser protocol,
+   * Translate local gateway "chat" EventFrames → Builderforce browser protocol,
    * then broadcast to all connected browser clients via the upstream WS.
    */
   private handleGatewayEvent(evt: EventFrame): void {
@@ -910,7 +910,7 @@ export class ClawLinkRelayService {
         signal: AbortSignal.timeout(10_000),
       });
     } catch (err) {
-      logDebug(`[clawlink-relay] heartbeat failed: ${String(err)}`);
+      logDebug(`[builderforce-relay] heartbeat failed: ${String(err)}`);
     }
   }
 
@@ -925,7 +925,7 @@ export class ClawLinkRelayService {
         signal: AbortSignal.timeout(10_000),
       });
       if (!response.ok) {
-        logDebug(`[clawlink-relay] assignment-context ${reason} failed: ${response.status}`);
+        logDebug(`[builderforce-relay] assignment-context ${reason} failed: ${response.status}`);
         return;
       }
       const assignmentContext = (await response.json()) as AssignmentContextResponse;
@@ -942,16 +942,16 @@ export class ClawLinkRelayService {
         tunnelStatus: process.env.CODERCLAW_PUBLIC_TUNNEL_URL ? "connected" : "none",
       });
 
-      const clawLink = mergeClawLinkContext({
-        existing: context.clawLink,
+      const builderforce = mergeBuilderforceContext({
+        existing: context.builderforce,
         assignmentContext,
         fallback: { instanceId: this.opts.clawId, url: this.opts.baseUrl },
         machineProfile,
       });
 
-      await updateProjectContextFields(this.opts.workspaceDir, { clawLink });
+      await updateProjectContextFields(this.opts.workspaceDir, { builderforce });
     } catch (err) {
-      logDebug(`[clawlink-relay] assignment-context ${reason} failed: ${String(err)}`);
+      logDebug(`[builderforce-relay] assignment-context ${reason} failed: ${String(err)}`);
     }
   }
 }

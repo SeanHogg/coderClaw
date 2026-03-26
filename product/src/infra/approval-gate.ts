@@ -31,7 +31,7 @@ let gatewayApiKey: string | null = null;
 
 /**
  * Configure the approval gate with the Builderforce connection details.
- * Call once at startup when CODERCLAW_LINK_API_KEY is present.
+ * Call once at startup when BUILDERFORCE_API_KEY is present.
  */
 export function initApprovalGate(opts: { baseUrl: string; clawId: string; apiKey: string }): void {
   gatewayBaseUrl = opts.baseUrl.replace(/\/$/, "");

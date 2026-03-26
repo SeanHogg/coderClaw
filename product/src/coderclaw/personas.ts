@@ -9,7 +9,7 @@
  *  - Defined globally in `~/.coderclaw/personas/*.yaml` (user-global)
  *
  * Loading precedence (highest wins):
- *   clawlink-assigned > clawhub > project-local > user-global > builtin
+ *   builderforce-assigned > clawhub > project-local > user-global > builtin
  */
 
 import fs from "node:fs/promises";
@@ -52,7 +52,7 @@ export class PersonaRegistry {
     "user-global",
     "project-local",
     "clawhub",
-    "clawlink-assigned",
+    "builderforce-assigned",
   ];
 
   private static priority(source: PersonaSource): number {

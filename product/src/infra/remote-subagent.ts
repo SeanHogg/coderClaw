@@ -1,6 +1,6 @@
 /**
  * RemoteSubagentAdapter — dispatches a task to a remote CoderClaw instance
- * via the CoderClawLink /api/claws/:targetId/forward endpoint.
+ * via the Builderforce /api/claws/:targetId/forward endpoint.
  *
  * This is fire-and-forget: the forward endpoint delivers the payload to the
  * target claw's upstream WebSocket. The target claw executes the task
@@ -28,11 +28,11 @@ function signPayload(body: string, secret: string): string {
 }
 
 export type RemoteDispatchOptions = {
-  /** Base HTTP URL of CoderClawLink, e.g. "https://api.coderclaw.ai" */
+  /** Base HTTP URL of Builderforce, e.g. "https://api.builderforce.ai" */
   baseUrl: string;
-  /** This claw's numeric ID (from clawLink.instanceId in context.yaml) */
+  /** This claw's numeric ID (from builderforce.instanceId in context.yaml) */
   myClawId: string;
-  /** Plaintext API key for this claw (CODERCLAW_LINK_API_KEY) */
+  /** Plaintext API key for this claw (BUILDERFORCE_API_KEY) */
   apiKey: string;
 };
 

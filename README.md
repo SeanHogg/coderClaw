@@ -700,6 +700,23 @@ Run **complex multi-agent pipelines** at scale: parallel execution across hundre
 - [Nix mode](https://docs.coderclaw.ai/install/nix) for declarative config; [Docker](https://docs.coderclaw.ai/install/docker)-based installs.
 - [Doctor](https://docs.coderclaw.ai/gateway/doctor) migrations, [logging](https://docs.coderclaw.ai/logging).
 
+### CoderClaw Orchestration Engine
+
+- **Workflow execution** — `orchestrate` tool runs feature/bugfix/refactor/planning/adversarial/custom workflows synchronously via a dependency-aware task DAG; all workflow types execute end-to-end with real task results.
+- **Agent roles** — 7 built-in roles + custom roles loaded from `.coderClaw/personas/`; role persona, constraints, output format, and tool sets enforced at spawn time. Unknown roles fail fast with a descriptive error.
+- **Structured inter-agent context** — `buildStructuredContext()` passes prior-agent results to downstream agents with labelled role headers (`REVIEW:`, `ARCH:`, etc.) so each agent knows which role produced which output.
+- **Persona → brain injection** — `buildPersonaSystemBlock()` encodes role persona, output format, and constraints into the brain system prompt on all execution paths (direct spawn and DELEGATE).
+- **Persona plugin architecture** — `PersonaRegistry` with source precedence (builtin < user-global < project-local < clawhub < clawlink-assigned); PERSONA.yaml format with marketplace metadata; Builderforce assignment via `context.yaml`.
+- **Session handoff** — `save_session_handoff` tool + `/handoff` command + auto-load on session start injects summary/decisions/next-steps into context; `/new` shows a handoff hint when active work is present.
+- **Workflow persistence** — checkpoints written to `.coderClaw/sessions/workflow-<id>.yaml` after every task state change; incomplete workflows restored at gateway restart; `resumeWorkflow()` skips already-completed tasks.
+- **Knowledge loop** — `KnowledgeLoopService` appends timestamped entries (files created/edited, tools used, semantic activity summary) to `.coderClaw/memory/YYYY-MM-DD.md` after every run; synced to Builderforce automatically when API key + clawId are present.
+- **Claw-to-claw mesh** — fleet discovery (`GET /api/claws/fleet`); `remote:<id>` and `remote:auto[caps]` orchestrator routing; `dispatchToRemoteClaw()` via `/forward`; result streaming back to orchestrating claw via `correlationId` callback with 10-minute timeout.
+- **TUI commands** — `/spec <goal>` (planning workflow), `/workflow [id]` (status), `/compact` (context compression), `/handoff` (session save), `/new`/`/reset` (with handoff hint).
+- **CoderClawLLM syscheck** — pre-flight RAM (< 2 GB) and disk (< 1.5 GB) check before attempting local model download; falls back transparently to configured external LLM with full persona/memory/RAG grounding.
+- **Builderforce sync** — workflow spec pull, persona export sync, project context push, artifact scope resolution, platform persona sync, usage quota monitoring with ≥ 80% budget warning.
+
+**Open items**: Architecture.md auto-update after structural edits threshold · ClawHub persona marketplace (download/install CLI flow).
+
 ## How it works (short)
 
 ```

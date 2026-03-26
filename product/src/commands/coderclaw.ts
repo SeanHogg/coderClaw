@@ -50,9 +50,9 @@ export async function runCoderClawSession(
   if (context?.llm) {
     lines.push(theme.muted(`  ${context.llm.provider} \u00b7 ${context.llm.model}`));
   }
-  if (context?.clawLink) {
+  if (context?.builderforce) {
     const label =
-      context.clawLink.instanceSlug ?? context.clawLink.instanceName ?? context.clawLink.instanceId;
+      context.builderforce.instanceSlug ?? context.builderforce.instanceName ?? context.builderforce.instanceId;
     lines.push(theme.muted(`  \u{1F517} Builderforce \u00b7 ${label}`));
   }
   lines.push(theme.muted(`  ${cwd}`));
@@ -435,7 +435,7 @@ interface ProviderMeta {
 const PROVIDERS: ProviderMeta[] = [
   {
     id: "coderclawllm",
-    label: "CoderClawLLM (recommended) — BuilderForce.AI (formerly coderClawLink)",
+    label: "CoderClawLLM (recommended) — Builderforce.AI",
     defaultModel: "coderclawllm/auto",
   },
   {
@@ -587,18 +587,18 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
       // CoderClawLLM routes through Builderforce's managed proxy, so it
       // requires a Link API key. If the user doesn't have one yet, offer
       // inline registration (mirrors the gateway onboarding wizard flow).
-      const existingKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+      const existingKey = readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
       if (!existingKey) {
-        const { promptCoderClawLinkOnboarding } = await import("./coderclaw-link-onboarding.js");
+        const { promptBuilderforceOnboarding } = await import("./builderforce-onboarding.js");
         const defaultInstanceName = path.basename(projectRoot) || "coderclaw";
-        await promptCoderClawLinkOnboarding({
+        await promptBuilderforceOnboarding({
           projectRoot,
           defaultInstanceName,
           forcePrompt: true,
         });
 
         // Re-check after the registration wizard — user may have skipped.
-        const keyAfter = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+        const keyAfter = readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
         if (!keyAfter) {
           note(
             [
@@ -767,7 +767,7 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
 // ---------------------------------------------------------------------------
 
 /** Thin fetch wrapper — throws a descriptive error on non-2xx. */
-async function clawLinkFetch<T>(
+async function builderforceApiFetch<T>(
   url: string,
   opts: RequestInit & { token?: string } = {},
 ): Promise<T> {
@@ -794,7 +794,7 @@ async function ensureProjectMapping(params: {
   clawId: string;
 }): Promise<{ projectId: string; action: "created" | "updated" } | null> {
   try {
-    const upsert = await clawLinkFetch<{
+    const upsert = await builderforceApiFetch<{
       action: "created" | "updated";
       project: { id: string; name: string };
     }>(`${params.serverUrl}/api/projects/upsert`, {
@@ -806,7 +806,7 @@ async function ensureProjectMapping(params: {
       }),
     });
 
-    await clawLinkFetch(
+    await builderforceApiFetch(
       `${params.serverUrl}/api/claws/${params.clawId}/projects/${upsert.project.id}`,
       {
         method: "PUT",
@@ -825,9 +825,9 @@ async function ensureProjectMappingFromStoredCreds(params: {
   projectName: string;
   description?: string;
 }): Promise<void> {
-  const serverUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai";
-  const webToken = readSharedEnvVar("CODERCLAW_LINK_WEB_TOKEN");
-  const tenantIdRaw = readSharedEnvVar("CODERCLAW_LINK_TENANT_ID");
+  const serverUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai";
+  const webToken = readSharedEnvVar("BUILDERFORCE_WEB_TOKEN");
+  const tenantIdRaw = readSharedEnvVar("BUILDERFORCE_TENANT_ID");
   if (!webToken || !tenantIdRaw) {
     return;
   }
@@ -838,12 +838,12 @@ async function ensureProjectMappingFromStoredCreds(params: {
   }
 
   const ctx = await loadProjectContext(params.projectRoot).catch(() => null);
-  const clawId = ctx?.clawLink?.instanceId?.trim();
+  const clawId = ctx?.builderforce?.instanceId?.trim();
   if (!clawId) {
     return;
   }
 
-  const tenantJwtRes = await clawLinkFetch<{ token: string }>(
+  const tenantJwtRes = await builderforceApiFetch<{ token: string }>(
     `${serverUrl}/api/auth/tenant-token`,
     {
       method: "POST",
@@ -866,9 +866,9 @@ async function ensureProjectMappingFromStoredCreds(params: {
 
   if (mapped) {
     await updateProjectContextFields(params.projectRoot, {
-      clawLink: {
+      builderforce: {
         instanceId: clawId,
-        ...ctx?.clawLink,
+        ...ctx?.builderforce,
         projectId: mapped.projectId,
       },
     }).catch(() => undefined);
@@ -886,21 +886,21 @@ async function ensureProjectMappingFromStoredCreds(params: {
  *   5. Register new claw       → claw.id, claw.slug, one-time apiKey
  *   6. Persist everything globally + to project context.yaml
  */
-async function promptClawLink(
+async function promptBuilderforceSetup(
   projectRoot: string,
   defaultInstanceName: string,
 ): Promise<string | null> {
   // ── Already connected? Check global ~/.coderclaw/.env first ──────────────
-  const existingKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
+  const existingKey = readSharedEnvVar("BUILDERFORCE_API_KEY");
   if (existingKey) {
-    const existingUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai";
-    const existingTenantId = readSharedEnvVar("CODERCLAW_LINK_TENANT_ID");
+    const existingUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai";
+    const existingTenantId = readSharedEnvVar("BUILDERFORCE_TENANT_ID");
     // Also check project context for the claw slug
     const existingCtx = await loadProjectContext(projectRoot).catch(() => null);
     const clawLabel =
-      existingCtx?.clawLink?.instanceSlug ??
-      existingCtx?.clawLink?.instanceName ??
-      existingCtx?.clawLink?.instanceId ??
+      existingCtx?.builderforce?.instanceSlug ??
+      existingCtx?.builderforce?.instanceName ??
+      existingCtx?.builderforce?.instanceId ??
       "(registered)";
     note(
       [
@@ -916,7 +916,7 @@ async function promptClawLink(
   }
 
   // ── Previously declined? Skip silently ───────────────────────────────────
-  const skipped = readSharedEnvVar("CODERCLAW_LINK_SKIPPED");
+  const skipped = readSharedEnvVar("BUILDERFORCE_SKIPPED");
   if (skipped === "1") {
     return null;
   }
@@ -929,7 +929,7 @@ async function promptClawLink(
   if (typeof connect === "symbol" || !connect) {
     // Remember the choice so we never ask again during init.
     // The user can connect later: coderclaw init --reconnect
-    upsertSharedEnvVar({ key: "CODERCLAW_LINK_SKIPPED", value: "1" });
+    upsertSharedEnvVar({ key: "BUILDERFORCE_SKIPPED", value: "1" });
     note("You can connect to Builderforce anytime with: coderclaw init --reconnect", "Skipped");
     return null;
   }
@@ -986,7 +986,7 @@ async function promptClawLink(
   try {
     if (authMode === "register") {
       authSpin.start("Creating account…");
-      const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/register`, {
+      const res = await builderforceApiFetch<{ token: string }>(`${serverUrl}/api/auth/web/register`, {
         method: "POST",
         body: JSON.stringify({ email, username: usernameForReg, password: pwd }),
       });
@@ -994,7 +994,7 @@ async function promptClawLink(
       authSpin.stop("Account created");
     } else {
       authSpin.start("Authenticating…");
-      const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/login`, {
+      const res = await builderforceApiFetch<{ token: string }>(`${serverUrl}/api/auth/web/login`, {
         method: "POST",
         body: JSON.stringify({ email, password: pwd }),
       });
@@ -1013,7 +1013,7 @@ async function promptClawLink(
   tenantSpin.start("Loading workspaces…");
   let tenants: Array<{ id: number; name: string; slug: string }> = [];
   try {
-    const res = await clawLinkFetch<{ tenants: Array<{ id: number; name: string; slug: string }> }>(
+    const res = await builderforceApiFetch<{ tenants: Array<{ id: number; name: string; slug: string }> }>(
       `${serverUrl}/api/auth/my-tenants`,
       { token: webToken },
     );
@@ -1037,7 +1037,7 @@ async function promptClawLink(
     const wsSpin = spinner();
     wsSpin.start("Creating workspace…");
     try {
-      const created = await clawLinkFetch<{ id: number; name: string }>(
+      const created = await builderforceApiFetch<{ id: number; name: string }>(
         `${serverUrl}/api/tenants/create`,
         { method: "POST", token: webToken, body: JSON.stringify({ name: wsNameInput.trim() }) },
       );
@@ -1065,7 +1065,7 @@ async function promptClawLink(
   // ── 5. Get tenant-scoped JWT ──────────────────────────────────────────────
   let tenantJwt = "";
   try {
-    const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/tenant-token`, {
+    const res = await builderforceApiFetch<{ token: string }>(`${serverUrl}/api/auth/tenant-token`, {
       method: "POST",
       token: webToken,
       body: JSON.stringify({ tenantId }),
@@ -1094,7 +1094,7 @@ async function promptClawLink(
   let projectId = "";
   let projectAction: "created" | "updated" | "unknown" = "unknown";
   try {
-    const res = await clawLinkFetch<{
+    const res = await builderforceApiFetch<{
       claw: { id: number; name: string; slug: string };
       apiKey: string;
     }>(`${serverUrl}/api/claws`, {
@@ -1127,14 +1127,14 @@ async function promptClawLink(
   }
 
   // ── 7. Persist globally + locally ────────────────────────────────────────
-  upsertSharedEnvVar({ key: "CODERCLAW_LINK_URL", value: serverUrl });
-  upsertSharedEnvVar({ key: "CODERCLAW_LINK_WEB_TOKEN", value: webToken });
-  upsertSharedEnvVar({ key: "CODERCLAW_LINK_TENANT_ID", value: String(tenantId) });
-  upsertSharedEnvVar({ key: "CODERCLAW_LINK_API_KEY", value: apiKey });
+  upsertSharedEnvVar({ key: "BUILDERFORCE_URL", value: serverUrl });
+  upsertSharedEnvVar({ key: "BUILDERFORCE_WEB_TOKEN", value: webToken });
+  upsertSharedEnvVar({ key: "BUILDERFORCE_TENANT_ID", value: String(tenantId) });
+  upsertSharedEnvVar({ key: "BUILDERFORCE_API_KEY", value: apiKey });
 
   try {
     await updateProjectContextFields(projectRoot, {
-      clawLink: {
+      builderforce: {
         instanceId: clawId,
         instanceSlug: clawSlug,
         instanceName: clawName,
@@ -1292,7 +1292,7 @@ export function createInitCommand(): Command {
         await promptLlmProvider(projectRoot);
 
         // Builderforce connection
-        await promptClawLink(projectRoot, projectNameInput || detected.projectName);
+        await promptBuilderforceSetup(projectRoot, projectNameInput || detected.projectName);
         await ensureProjectMappingFromStoredCreds({
           projectRoot,
           projectName: projectNameInput || detected.projectName,

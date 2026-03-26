@@ -57,6 +57,7 @@ import {
   getOrCreatePipeline,
   loadCoderClawMemory,
 } from "./transformers-stream.js";
+import { loadMambaState, mambaStateToContextLine } from "./mamba-state-engine.js";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -772,13 +773,23 @@ async function loadRoutingContext(request: CoderClawLlmLocalRunRequest): Promise
   ragContext: string;
   queryText: string;
 }> {
-  const memoryBlock = request.workspaceDir
+  let memoryBlock = request.workspaceDir
     ? await loadCoderClawMemory(request.workspaceDir, {
         isSharedContext: request.isSharedContext,
       })
     : "";
   if (memoryBlock) {
     log.info(`loaded .coderclaw memory (${memoryBlock.length} chars)`);
+  }
+
+  // Inject Mamba state context line when a workforce agent is installed (v1 format — no WebGPU)
+  if (request.workspaceDir) {
+    const mambaState = await loadMambaState(request.workspaceDir);
+    if (mambaState) {
+      const contextLine = mambaStateToContextLine(mambaState);
+      memoryBlock = memoryBlock ? `${contextLine}\n\n${memoryBlock}` : contextLine;
+      log.debug(`injected mamba memory context: ${contextLine}`);
+    }
   }
 
   const lastUserMsg = [...request.rawMessages].toReversed().find((m) => m.role === "user");

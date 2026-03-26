@@ -38,7 +38,7 @@ export const artifactsHandlers: GatewayRequestHandlers = {
       for (const slug of artifacts.personas) {
         const assignment: PersonaAssignment = {
           name: slug,
-          assignedByClawLink: true,
+          assignedByBuilderforce: true,
           assignedAt: new Date().toISOString(),
         };
         await savePersonaAssignment(projectRoot, assignment);

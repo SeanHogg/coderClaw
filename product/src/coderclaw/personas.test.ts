@@ -56,10 +56,10 @@ describe("PersonaRegistry", () => {
     expect(registry.resolve("my-role")?.source).toBe("clawhub");
   });
 
-  it("clawlink-assigned is the highest-precedence source", () => {
+  it("builderforce-assigned is the highest-precedence source", () => {
     registry.register(makePlugin("my-role", "clawhub"));
-    registry.register(makePlugin("my-role", "clawlink-assigned"));
-    expect(registry.resolve("my-role")?.source).toBe("clawlink-assigned");
+    registry.register(makePlugin("my-role", "builderforce-assigned"));
+    expect(registry.resolve("my-role")?.source).toBe("builderforce-assigned");
   });
 
   it("listAll returns all registered personas sorted by name", () => {

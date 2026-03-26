@@ -14,6 +14,7 @@ import type { AgentPackage, AgentPackageV2, InstalledWorkforceAgent } from "../c
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { theme } from "../terminal/theme.js";
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
+import { saveMambaState } from "../agents/mamba-state-engine.js";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -165,6 +166,11 @@ export async function installWorkforceAgent(params: {
     // Also set the default LLM so all inference paths route to this agent
     llm: { provider: "coderclawllm", model: modelRef },
   });
+
+  // Persist the v2 mamba state snapshot to disk so inference can inject it as memory context
+  if (hasMambaState && isV2Package(pkg) && pkg.mamba_state) {
+    await saveMambaState(params.projectRoot, pkg.mamba_state);
+  }
 
   return [
     `Workforce agent installed: ${pkg.name} (${params.agentId})`,

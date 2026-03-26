@@ -1,11 +1,11 @@
 import { confirm, note, password, select, spinner, text } from "@clack/prompts";
 import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
-import { buildLocalMachineProfile } from "../infra/clawlink-context.js";
+import { buildLocalMachineProfile } from "../infra/builderforce-context.js";
 import { readSharedEnvVar, upsertSharedEnvVar } from "../infra/env-file.js";
 import { authenticateViaBrowser } from "./browser-auth-server.js";
 import { detectBrowserOpenSupport } from "./onboard-helpers.js";
 
-async function clawLinkFetch<T>(
+async function builderforceApiFetch<T>(
   url: string,
   opts: RequestInit & { token?: string } = {},
 ): Promise<T> {
@@ -32,7 +32,7 @@ async function ensureProjectMapping(params: {
   clawId: string;
 }): Promise<{ projectId: string; action: "created" | "updated" } | null> {
   try {
-    const upsert = await clawLinkFetch<{
+    const upsert = await builderforceApiFetch<{
       action: "created" | "updated";
       project: { id: string; name: string };
     }>(`${params.serverUrl}/api/projects/upsert`, {
@@ -44,7 +44,7 @@ async function ensureProjectMapping(params: {
       }),
     });
 
-    await clawLinkFetch(
+    await builderforceApiFetch(
       `${params.serverUrl}/api/claws/${params.clawId}/projects/${upsert.project.id}`,
       {
         method: "PUT",
@@ -58,20 +58,20 @@ async function ensureProjectMapping(params: {
   }
 }
 
-export async function promptCoderClawLinkOnboarding(params: {
+export async function promptBuilderforceOnboarding(params: {
   projectRoot: string;
   defaultInstanceName: string;
   forcePrompt?: boolean;
 }): Promise<string | null> {
-  const existingKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY");
+  const existingKey = readSharedEnvVar("BUILDERFORCE_API_KEY");
   if (existingKey) {
-    const existingUrl = readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai";
-    const existingTenantId = readSharedEnvVar("CODERCLAW_LINK_TENANT_ID");
+    const existingUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai";
+    const existingTenantId = readSharedEnvVar("BUILDERFORCE_TENANT_ID");
     const existingCtx = await loadProjectContext(params.projectRoot).catch(() => null);
     const clawLabel =
-      existingCtx?.clawLink?.instanceSlug ??
-      existingCtx?.clawLink?.instanceName ??
-      existingCtx?.clawLink?.instanceId ??
+      existingCtx?.builderforce?.instanceSlug ??
+      existingCtx?.builderforce?.instanceName ??
+      existingCtx?.builderforce?.instanceId ??
       "(registered)";
     note(
       [
@@ -87,7 +87,7 @@ export async function promptCoderClawLinkOnboarding(params: {
   }
 
   if (!params.forcePrompt) {
-    const skipped = readSharedEnvVar("CODERCLAW_LINK_SKIPPED");
+    const skipped = readSharedEnvVar("BUILDERFORCE_SKIPPED");
     if (skipped === "1") {
       return null;
     }
@@ -99,7 +99,7 @@ export async function promptCoderClawLinkOnboarding(params: {
     initialValue: true,
   });
   if (typeof connect === "symbol" || !connect) {
-    upsertSharedEnvVar({ key: "CODERCLAW_LINK_SKIPPED", value: "1" });
+    upsertSharedEnvVar({ key: "BUILDERFORCE_SKIPPED", value: "1" });
     return null;
   }
 
@@ -199,22 +199,28 @@ export async function promptCoderClawLinkOnboarding(params: {
     try {
       if (authMode === "register") {
         authSpin.start("Creating account…");
-        const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/register`, {
-          method: "POST",
-          body: JSON.stringify({
-            email,
-            username: usernameForReg,
-            password: rawPassword,
-          }),
-        });
+        const res = await builderforceApiFetch<{ token: string }>(
+          `${serverUrl}/api/auth/web/register`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              email,
+              username: usernameForReg,
+              password: rawPassword,
+            }),
+          },
+        );
         webToken = res.token;
         authSpin.stop("Account created");
       } else {
         authSpin.start("Authenticating…");
-        const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/web/login`, {
-          method: "POST",
-          body: JSON.stringify({ email, password: rawPassword }),
-        });
+        const res = await builderforceApiFetch<{ token: string }>(
+          `${serverUrl}/api/auth/web/login`,
+          {
+            method: "POST",
+            body: JSON.stringify({ email, password: rawPassword }),
+          },
+        );
         webToken = res.token;
         authSpin.stop("Authenticated");
       }
@@ -230,10 +236,9 @@ export async function promptCoderClawLinkOnboarding(params: {
   tenantSpin.start("Loading workspaces…");
   let tenants: Array<{ id: number; name: string; slug: string }> = [];
   try {
-    const res = await clawLinkFetch<{ tenants: Array<{ id: number; name: string; slug: string }> }>(
-      `${serverUrl}/api/auth/my-tenants`,
-      { token: webToken },
-    );
+    const res = await builderforceApiFetch<{
+      tenants: Array<{ id: number; name: string; slug: string }>;
+    }>(`${serverUrl}/api/auth/my-tenants`, { token: webToken });
     tenants = res.tenants;
     tenantSpin.stop(`${tenants.length} workspace(s) found`);
   } catch (err) {
@@ -253,7 +258,7 @@ export async function promptCoderClawLinkOnboarding(params: {
     const wsSpin = spinner();
     wsSpin.start("Creating workspace…");
     try {
-      const created = await clawLinkFetch<{ id: number; name: string }>(
+      const created = await builderforceApiFetch<{ id: number; name: string }>(
         `${serverUrl}/api/tenants/create`,
         {
           method: "POST",
@@ -288,11 +293,14 @@ export async function promptCoderClawLinkOnboarding(params: {
 
   let tenantJwt = "";
   try {
-    const res = await clawLinkFetch<{ token: string }>(`${serverUrl}/api/auth/tenant-token`, {
-      method: "POST",
-      token: webToken,
-      body: JSON.stringify({ tenantId }),
-    });
+    const res = await builderforceApiFetch<{ token: string }>(
+      `${serverUrl}/api/auth/tenant-token`,
+      {
+        method: "POST",
+        token: webToken,
+        body: JSON.stringify({ tenantId }),
+      },
+    );
     tenantJwt = res.token;
   } catch (err) {
     note(String(err instanceof Error ? err.message : err), "Could not get workspace token");
@@ -323,7 +331,7 @@ export async function promptCoderClawLinkOnboarding(params: {
     tunnelStatus: process.env.CODERCLAW_PUBLIC_TUNNEL_URL ? "connected" : "none",
   });
   try {
-    const res = await clawLinkFetch<{
+    const res = await builderforceApiFetch<{
       claw: { id: number; name: string; slug: string };
       apiKey: string;
     }>(`${serverUrl}/api/claws`, {
@@ -355,15 +363,15 @@ export async function promptCoderClawLinkOnboarding(params: {
     return null;
   }
 
-  upsertSharedEnvVar({ key: "CODERCLAW_LINK_URL", value: serverUrl });
-  upsertSharedEnvVar({ key: "CODERCLAW_LINK_WEB_TOKEN", value: webToken });
-  upsertSharedEnvVar({ key: "CODERCLAW_LINK_TENANT_ID", value: String(tenantId) });
-  upsertSharedEnvVar({ key: "CODERCLAW_LINK_API_KEY", value: apiKey });
-  upsertSharedEnvVar({ key: "CODERCLAW_LINK_SKIPPED", value: "0" });
+  upsertSharedEnvVar({ key: "BUILDERFORCE_URL", value: serverUrl });
+  upsertSharedEnvVar({ key: "BUILDERFORCE_WEB_TOKEN", value: webToken });
+  upsertSharedEnvVar({ key: "BUILDERFORCE_TENANT_ID", value: String(tenantId) });
+  upsertSharedEnvVar({ key: "BUILDERFORCE_API_KEY", value: apiKey });
+  upsertSharedEnvVar({ key: "BUILDERFORCE_SKIPPED", value: "0" });
 
   try {
     await updateProjectContextFields(params.projectRoot, {
-      clawLink: {
+      builderforce: {
         instanceId: clawId,
         instanceSlug: clawSlug,
         instanceName: clawName,

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { mergeClawLinkContext } from "./clawlink-context.js";
+import { mergeBuilderforceContext } from "./builderforce-context.js";
 
-describe("mergeClawLinkContext", () => {
+describe("mergeBuilderforceContext", () => {
   it("merges assignment snapshot, machine profile, and existing claw context", () => {
-    const merged = mergeClawLinkContext({
+    const merged = mergeBuilderforceContext({
       existing: {
         instanceId: "12",
         instanceSlug: "dev-laptop",

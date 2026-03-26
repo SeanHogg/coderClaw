@@ -93,11 +93,11 @@ describe("buildAuthChoiceOptions", () => {
       store: EMPTY_STORE,
       includeSkip: false,
     });
-    const coderClawLinkGroup = groups.find((group) => group.value === "coderclawlink");
+    const builderforceGroup = groups.find((group) => group.value === "builderforce");
 
-    expect(coderClawLinkGroup).toBeDefined();
-    expect(coderClawLinkGroup?.label).toBe("BuilderForce.AI (formerly coderClawLink)");
-    expect(coderClawLinkGroup?.options.some((opt) => opt.value === "custom-api-key")).toBe(true);
+    expect(builderforceGroup).toBeDefined();
+    expect(builderforceGroup?.label).toBe("Builderforce.AI");
+    expect(builderforceGroup?.options.some((opt) => opt.value === "custom-api-key")).toBe(true);
   });
 
   it("shows Local Models in grouped provider selection", () => {

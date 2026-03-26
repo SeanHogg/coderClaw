@@ -461,8 +461,8 @@ export async function runOnboardingWizard(
       primaryModel === "coderclawllm" || primaryModel.startsWith("coderclawllm/");
     if (usesCoderClawLlm) {
       const sharedKey =
-        process.env.CODERCLAW_LINK_API_KEY?.trim() ??
-        readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+        process.env.BUILDERFORCE_API_KEY?.trim() ??
+        readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
       if (!sharedKey) {
         await prompter.note(
           [
@@ -472,10 +472,10 @@ export async function runOnboardingWizard(
           ].join("\n"),
           "CoderClawLLM",
         );
-        const { promptCoderClawLinkOnboarding } =
-          await import("../commands/coderclaw-link-onboarding.js");
+        const { promptBuilderforceOnboarding } =
+          await import("../commands/builderforce-onboarding.js");
         const defaultInstanceName = path.basename(workspaceDir) || "coderclaw";
-        await promptCoderClawLinkOnboarding({
+        await promptBuilderforceOnboarding({
           projectRoot: workspaceDir,
           defaultInstanceName,
           forcePrompt: true,
@@ -484,8 +484,8 @@ export async function runOnboardingWizard(
         // If still no key after the wizard, warn but don't block — the user
         // can switch models or connect later.
         const keyAfterWizard =
-          process.env.CODERCLAW_LINK_API_KEY?.trim() ??
-          readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+          process.env.BUILDERFORCE_API_KEY?.trim() ??
+          readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
         if (!keyAfterWizard) {
           await prompter.note(
             [

@@ -104,7 +104,7 @@ export async function initializeCoderClawProject(
     customRules: context?.customRules || [],
     metadata: context?.metadata || {},
     ...(context?.llm ? { llm: context.llm } : {}),
-    ...(context?.clawLink ? { clawLink: context.clawLink } : {}),
+    ...(context?.builderforce ? { builderforce: context.builderforce } : {}),
   };
 
   await fs.writeFile(dir.contextPath, stringifyYaml(defaultContext), "utf-8");

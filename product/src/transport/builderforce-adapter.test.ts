@@ -1,5 +1,5 @@
 /**
- * Tests for ClawLink transport adapter
+ * Tests for Builderforce transport adapter
  *
  * Uses fetch mocking (no real network calls) to verify:
  *  - execution submission maps fields correctly
@@ -10,8 +10,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { ClawLinkTransportAdapter } from "./clawlink-adapter.js";
-import type { ClawLinkConfig } from "./types.js";
+import { BuilderforceTransportAdapter } from "./builderforce-adapter.js";
+import type { BuilderforceConfig } from "./types.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -20,7 +20,7 @@ import type { ClawLinkConfig } from "./types.js";
 const BASE_URL = "http://localhost:8000";
 const EXECUTION_ID = 101;
 
-const config: ClawLinkConfig = {
+const config: BuilderforceConfig = {
   baseUrl: BASE_URL,
   authToken: "tenant-jwt",
   clawId: 42,
@@ -69,7 +69,7 @@ function mockFetchSequence(bodies: unknown[]) {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe("ClawLinkTransportAdapter", () => {
+describe("BuilderforceTransportAdapter", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -84,13 +84,13 @@ describe("ClawLinkTransportAdapter", () => {
   // -------------------------------------------------------------------------
   describe("connect", () => {
     it("is a no-op for stateless runtime API", async () => {
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       await adapter.connect();
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
     it("remains idempotent on repeated calls", async () => {
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       await adapter.connect();
       await adapter.connect();
       expect(fetchMock).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe("ClawLinkTransportAdapter", () => {
       fetchMock = mockFetchSequence([{ task: null }]);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       const result = await adapter.fetchNextQueuedTask?.();
       expect(result).toBeNull();
       expect(fetchMock).toHaveBeenCalledWith(`${BASE_URL}/api/tasks/next`, {
@@ -117,7 +117,7 @@ describe("ClawLinkTransportAdapter", () => {
       fetchMock = mockFetchSequence([{ task: fakeTask }]);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       const state = await adapter.fetchNextQueuedTask?.();
       expect(state).not.toBeNull();
       expect(state?.id).toBe("123");
@@ -131,7 +131,7 @@ describe("ClawLinkTransportAdapter", () => {
       fetchMock = mockFetchSequence([makeExecutionResponse("submitted")]);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       const state = await adapter.submitTask({
         agentId: "5",
         description: "Build login feature",
@@ -164,7 +164,7 @@ describe("ClawLinkTransportAdapter", () => {
       fetchMock = mockFetchSequence([makeExecutionResponse("running")]);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       await expect(
         adapter.submitTask({
           description: "test",
@@ -178,11 +178,11 @@ describe("ClawLinkTransportAdapter", () => {
 
   // -------------------------------------------------------------------------
   describe("queryTaskState", () => {
-    it("returns task state from ClawLink", async () => {
+    it("returns task state from Builderforce", async () => {
       fetchMock = mockFetchSequence([makeExecutionResponse("completed")]);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       const state = await adapter.queryTaskState(String(EXECUTION_ID));
 
       expect(state).not.toBeNull();
@@ -191,7 +191,7 @@ describe("ClawLinkTransportAdapter", () => {
       expect(state!.output).toBe("done");
     });
 
-    it("returns null when ClawLink responds with an error", async () => {
+    it("returns null when Builderforce responds with an error", async () => {
       fetchMock = vi.fn().mockImplementation(() => {
         return Promise.resolve({
           ok: false,
@@ -201,7 +201,7 @@ describe("ClawLinkTransportAdapter", () => {
       });
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       const state = await adapter.queryTaskState("nonexistent-task");
       expect(state).toBeNull();
     });
@@ -218,7 +218,7 @@ describe("ClawLinkTransportAdapter", () => {
       fetchMock = mockFetchSequence(responses);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
 
       const events = [];
       for await (const event of adapter.streamTaskUpdates(String(EXECUTION_ID))) {
@@ -235,11 +235,11 @@ describe("ClawLinkTransportAdapter", () => {
 
   // -------------------------------------------------------------------------
   describe("cancelTask", () => {
-    it("returns true when ClawLink confirms cancellation", async () => {
+    it("returns true when Builderforce confirms cancellation", async () => {
       fetchMock = mockFetchSequence([makeExecutionResponse("cancelled")]);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       const result = await adapter.cancelTask(String(EXECUTION_ID));
 
       expect(result).toBe(true);
@@ -253,7 +253,7 @@ describe("ClawLinkTransportAdapter", () => {
       });
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       const result = await adapter.cancelTask(String(EXECUTION_ID));
       expect(result).toBe(false);
     });
@@ -261,7 +261,7 @@ describe("ClawLinkTransportAdapter", () => {
 
   // -------------------------------------------------------------------------
   describe("listAgents", () => {
-    it("maps ClawLink agent_type to CoderClaw AgentInfo id", async () => {
+    it("maps Builderforce agent_type to CoderClaw AgentInfo id", async () => {
       const agents = [
         {
           agent_type: "claude",
@@ -281,7 +281,7 @@ describe("ClawLinkTransportAdapter", () => {
       fetchMock = mockFetchSequence([agents]);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       const result = await adapter.listAgents();
 
       expect(result).toHaveLength(2);
@@ -296,7 +296,7 @@ describe("ClawLinkTransportAdapter", () => {
 
   // -------------------------------------------------------------------------
   describe("listSkills", () => {
-    it("maps ClawLink skill_id to CoderClaw SkillInfo id", async () => {
+    it("maps Builderforce skill_id to CoderClaw SkillInfo id", async () => {
       const skills = [
         {
           skill_id: "github-pr",
@@ -308,7 +308,7 @@ describe("ClawLinkTransportAdapter", () => {
       fetchMock = mockFetchSequence([skills]);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       const result = await adapter.listSkills();
 
       expect(result).toHaveLength(1);
@@ -327,7 +327,7 @@ describe("ClawLinkTransportAdapter", () => {
       fetchMock = mockFetchSequence([makeExecutionResponse("pending")]);
       vi.stubGlobal("fetch", fetchMock);
 
-      const adapter = new ClawLinkTransportAdapter(config);
+      const adapter = new BuilderforceTransportAdapter(config);
       await adapter.close();
       expect(fetchMock).not.toHaveBeenCalled();
     });

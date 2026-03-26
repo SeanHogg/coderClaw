@@ -194,10 +194,10 @@ export type TransportConfig = {
 };
 
 /**
- * Configuration for the ClawLink transport adapter.
+ * Configuration for the Builderforce transport adapter.
  * Points CoderClaw at the Builderforce orchestration API (api.builderforce.ai).
  */
-export type ClawLinkConfig = {
+export type BuilderforceConfig = {
   /** Base URL of the Builderforce API, e.g. "https://api.builderforce.ai" */
   baseUrl: string;
   /** Optional tenant JWT used for authenticated API routes */

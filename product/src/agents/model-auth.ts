@@ -210,11 +210,11 @@ export async function resolveApiKeyForProvider(params: {
 
   const normalized = normalizeProviderId(provider);
   if (normalized === "coderclawllm") {
-    const sharedKey = normalizeOptionalSecretInput(readSharedEnvVar("CODERCLAW_LINK_API_KEY"));
+    const sharedKey = normalizeOptionalSecretInput(readSharedEnvVar("BUILDERFORCE_API_KEY"));
     if (sharedKey) {
       return {
         apiKey: sharedKey,
-        source: "shared env: CODERCLAW_LINK_API_KEY",
+        source: "shared env: BUILDERFORCE_API_KEY",
         mode: "api-key",
       };
     }
@@ -326,7 +326,7 @@ export function resolveEnvApiKey(provider: string): EnvApiKeyResult | null {
     venice: "VENICE_API_KEY",
     mistral: "MISTRAL_API_KEY",
     opencode: "OPENCODE_API_KEY",
-    coderclawllm: "CODERCLAW_LINK_API_KEY",
+    coderclawllm: "BUILDERFORCE_API_KEY",
     together: "TOGETHER_API_KEY",
     qianfan: "QIANFAN_API_KEY",
     ollama: "OLLAMA_API_KEY",
@@ -394,7 +394,7 @@ export function resolveModelAuthMode(
 
   if (
     normalizeProviderId(resolved) === "coderclawllm" &&
-    normalizeOptionalSecretInput(readSharedEnvVar("CODERCLAW_LINK_API_KEY"))
+    normalizeOptionalSecretInput(readSharedEnvVar("BUILDERFORCE_API_KEY"))
   ) {
     return "api-key";
   }

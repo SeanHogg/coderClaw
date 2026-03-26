@@ -86,7 +86,7 @@ const isSystemdUserServiceAvailable = vi.hoisted(() => vi.fn(async () => true));
 const ensureControlUiAssetsBuilt = vi.hoisted(() => vi.fn(async () => ({ ok: true })));
 const runTui = vi.hoisted(() => vi.fn(async (_options: unknown) => {}));
 const setupOnboardingShellCompletion = vi.hoisted(() => vi.fn(async () => {}));
-const promptCoderClawLinkOnboarding = vi.hoisted(() => vi.fn(async () => "connected"));
+const promptBuilderforceOnboarding = vi.hoisted(() => vi.fn(async () => "connected"));
 
 vi.mock("../commands/onboard-channels.js", () => ({
   setupChannels,
@@ -195,8 +195,8 @@ vi.mock("./onboarding.completion.js", () => ({
   setupOnboardingShellCompletion,
 }));
 
-vi.mock("../commands/coderclaw-link-onboarding.js", () => ({
-  promptCoderClawLinkOnboarding,
+vi.mock("../commands/builderforce-onboarding.js", () => ({
+  promptBuilderforceOnboarding,
 }));
 
 function createWizardPrompter(overrides?: Partial<WizardPrompter>): WizardPrompter {
@@ -487,14 +487,14 @@ describe("runOnboardingWizard", () => {
   });
 
   it("runs Builderforce registration wizard when coderclawllm is selected without key", async () => {
-    promptCoderClawLinkOnboarding.mockClear();
+    promptBuilderforceOnboarding.mockClear();
     const prevStateDir = process.env.CODERCLAW_STATE_DIR;
-    const prevLinkKey = process.env.CODERCLAW_LINK_API_KEY;
+    const prevLinkKey = process.env.BUILDERFORCE_API_KEY;
     const stateDir = await makeCaseDir("state-");
     const workspaceDir = await makeCaseDir("workspace-link-");
 
     process.env.CODERCLAW_STATE_DIR = stateDir;
-    delete process.env.CODERCLAW_LINK_API_KEY;
+    delete process.env.BUILDERFORCE_API_KEY;
 
     applyAuthChoice.mockImplementationOnce(async (args) => ({
       config: {
@@ -533,8 +533,8 @@ describe("runOnboardingWizard", () => {
         prompter,
       );
 
-      expect(promptCoderClawLinkOnboarding).toHaveBeenCalledTimes(1);
-      expect(promptCoderClawLinkOnboarding).toHaveBeenCalledWith(
+      expect(promptBuilderforceOnboarding).toHaveBeenCalledTimes(1);
+      expect(promptBuilderforceOnboarding).toHaveBeenCalledWith(
         expect.objectContaining({
           projectRoot: workspaceDir,
           forcePrompt: true,
@@ -547,9 +547,9 @@ describe("runOnboardingWizard", () => {
         process.env.CODERCLAW_STATE_DIR = prevStateDir;
       }
       if (prevLinkKey === undefined) {
-        delete process.env.CODERCLAW_LINK_API_KEY;
+        delete process.env.BUILDERFORCE_API_KEY;
       } else {
-        process.env.CODERCLAW_LINK_API_KEY = prevLinkKey;
+        process.env.BUILDERFORCE_API_KEY = prevLinkKey;
       }
     }
   });

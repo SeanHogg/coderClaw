@@ -37,7 +37,7 @@ import {
 import { loadConfig, writeConfigFile } from "../config/config.js";
 import type { CoderClawConfig } from "../config/types.js";
 import type { SessionsPatchResult } from "../gateway/protocol/index.js";
-import { syncCoderClawDirectoryWithMetaUpdate } from "../infra/clawlink-directory-sync.js";
+import { syncCoderClawDirectoryWithMetaUpdate } from "../infra/builderforce-directory-sync.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
 import { logDebug, logWarn } from "../logger.js";
@@ -230,8 +230,8 @@ export function createCommandHandlers(context: CommandHandlerContext) {
     const isCoderClawLlm = normalized === "coderclawllm" || normalized.startsWith("coderclawllm/");
     if (isCoderClawLlm) {
       const registrationKey =
-        process.env.CODERCLAW_LINK_API_KEY?.trim() ||
-        readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+        process.env.BUILDERFORCE_API_KEY?.trim() ||
+        readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
       if (!registrationKey) {
         chatLog.addSystem(
           "coderclawllm requires Builderforce registration. Launching setup wizard...",
@@ -947,9 +947,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           ...(ctx.languages?.length ? [`Languages: ${ctx.languages.join(", ")}`] : []),
           ...(ctx.frameworks?.length ? [`Frameworks: ${ctx.frameworks.join(", ")}`] : []),
         ];
-        if (ctx.clawLink) {
+        if (ctx.builderforce) {
           lines.push(
-            `Builderforce: instance ${ctx.clawLink.instanceId ?? "?"} (${ctx.clawLink.instanceSlug ?? "?"}) · tenant ${ctx.clawLink.tenantId ?? "?"}`,
+            `Builderforce: instance ${ctx.builderforce.instanceId ?? "?"} (${ctx.builderforce.instanceSlug ?? "?"}) · tenant ${ctx.builderforce.tenantId ?? "?"}`,
           );
         }
         if (ws?.lastSyncedAt) {
@@ -964,28 +964,28 @@ export function createCommandHandlers(context: CommandHandlerContext) {
       }
       case "sync": {
         const projectRoot = process.cwd();
-        const apiKey = readSharedEnvVar("CODERCLAW_LINK_API_KEY")?.trim();
+        const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
         const baseUrl = (
-          readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai"
+          readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai"
         ).replace(/\/+$/, "");
         if (!apiKey) {
           chatLog.addSystem(
-            "Not linked to Builderforce (CODERCLAW_LINK_API_KEY not set). Run /setup to configure.",
+            "Not linked to Builderforce (BUILDERFORCE_API_KEY not set). Run /setup to configure.",
           );
           break;
         }
         const ctx = await loadProjectContext(projectRoot).catch(() => null);
-        const clawId = ctx?.clawLink?.instanceId?.trim();
+        const clawId = ctx?.builderforce?.instanceId?.trim();
         if (!clawId) {
           chatLog.addSystem(
-            "No clawLink.instanceId in .coderClaw/context.yaml. Run /init or configure Builderforce first.",
+            "No builderforce.instanceId in .coderClaw/context.yaml. Run /init or configure Builderforce first.",
           );
           break;
         }
         chatLog.addSystem("Syncing .coderClaw directory to Builderforce…");
         tui.requestRender();
         try {
-          const projectId = ctx?.clawLink?.projectId ? Number(ctx.clawLink.projectId) : undefined;
+          const projectId = ctx?.builderforce?.projectId ? Number(ctx.builderforce.projectId) : undefined;
           const { fileCount } = await syncCoderClawDirectoryWithMetaUpdate({
             workspaceDir: projectRoot,
             apiKey,

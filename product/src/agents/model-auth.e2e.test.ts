@@ -278,16 +278,16 @@ describe("getApiKeyForModel", () => {
   });
 
   it("resolves coderclawllm API key from shared env registration", async () => {
-    const envSnapshot = captureEnv(["CODERCLAW_STATE_DIR", "CODERCLAW_LINK_API_KEY"]);
-    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-link-auth-"));
+    const envSnapshot = captureEnv(["CODERCLAW_STATE_DIR", "BUILDERFORCE_API_KEY"]);
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "builderforce-auth-"));
 
     try {
       process.env.CODERCLAW_STATE_DIR = tempDir;
-      delete process.env.CODERCLAW_LINK_API_KEY;
+      delete process.env.BUILDERFORCE_API_KEY;
 
       await fs.writeFile(
         path.join(tempDir, ".env"),
-        "CODERCLAW_LINK_API_KEY=shared-link-key\n",
+        "BUILDERFORCE_API_KEY=shared-link-key\n",
         "utf8",
       );
 
@@ -297,7 +297,7 @@ describe("getApiKeyForModel", () => {
       });
 
       expect(resolved.apiKey).toBe("shared-link-key");
-      expect(resolved.source).toContain("shared env: CODERCLAW_LINK_API_KEY");
+      expect(resolved.source).toContain("shared env: BUILDERFORCE_API_KEY");
     } finally {
       envSnapshot.restore();
       await fs.rm(tempDir, { recursive: true, force: true });
@@ -305,12 +305,12 @@ describe("getApiKeyForModel", () => {
   });
 
   it("provides onboarding guidance when coderclawllm is not registered", async () => {
-    const envSnapshot = captureEnv(["CODERCLAW_STATE_DIR", "CODERCLAW_LINK_API_KEY"]);
-    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "coderclaw-link-missing-"));
+    const envSnapshot = captureEnv(["CODERCLAW_STATE_DIR", "BUILDERFORCE_API_KEY"]);
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "builderforce-missing-"));
 
     try {
       process.env.CODERCLAW_STATE_DIR = tempDir;
-      delete process.env.CODERCLAW_LINK_API_KEY;
+      delete process.env.BUILDERFORCE_API_KEY;
 
       let error: unknown = null;
       try {
