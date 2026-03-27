@@ -4,6 +4,7 @@ import {
 } from "../agents/api-key-rotation.js";
 import { requireApiKey, resolveApiKeyForProvider } from "../agents/model-auth.js";
 import { parseGeminiAuth } from "../infra/gemini-auth.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { debugEmbeddingsLog } from "./embeddings-debug.js";
 import type { EmbeddingProvider, EmbeddingProviderOptions } from "./embeddings.js";
 
@@ -47,7 +48,7 @@ function normalizeGeminiModel(model: string): string {
 }
 
 function normalizeGeminiBaseUrl(raw: string): string {
-  const trimmed = raw.replace(/\/+$/, "");
+  const trimmed = normalizeBaseUrl(raw);
   const openAiIndex = trimmed.indexOf("/openai");
   if (openAiIndex > -1) {
     return trimmed.slice(0, openAiIndex);

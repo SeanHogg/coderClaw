@@ -14,6 +14,7 @@ import type { AgentPackage, AgentPackageV2, InstalledWorkforceAgent } from "../c
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { theme } from "../terminal/theme.js";
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { saveMambaState } from "../agents/mamba-state-engine.js";
 
 // ---------------------------------------------------------------------------
@@ -28,7 +29,7 @@ const FETCH_TIMEOUT_MS = 30_000;
 // ---------------------------------------------------------------------------
 
 function resolveRegistryUrl(): string {
-  return (readSharedEnvVar("CODERCLAW_LINK_URL") ?? DEFAULT_REGISTRY_URL).replace(/\/+$/, "");
+  return normalizeBaseUrl(readSharedEnvVar("CODERCLAW_LINK_URL") ?? DEFAULT_REGISTRY_URL);
 }
 
 function resolveAuthHeaders(): Record<string, string> {
@@ -55,7 +56,7 @@ export async function fetchAgentPackage(params: {
   agentId: string;
   registryUrl?: string;
 }): Promise<AgentPackage> {
-  const base = (params.registryUrl ?? resolveRegistryUrl()).replace(/\/+$/, "");
+  const base = normalizeBaseUrl(params.registryUrl ?? resolveRegistryUrl());
   const url = `${base}/api/agents/${encodeURIComponent(params.agentId)}/package`;
   let res: Response;
   try {

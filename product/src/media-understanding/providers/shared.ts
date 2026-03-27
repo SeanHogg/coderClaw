@@ -1,13 +1,14 @@
 import type { GuardedFetchResult } from "../../infra/net/fetch-guard.js";
 import { fetchWithSsrFGuard } from "../../infra/net/fetch-guard.js";
 import type { LookupFn, SsrFPolicy } from "../../infra/net/ssrf.js";
+import { normalizeBaseUrl as stripTrailingSlashes } from "../../utils/normalize-base-url.js";
 export { fetchWithTimeout } from "../../utils/fetch-timeout.js";
 
 const MAX_ERROR_CHARS = 300;
 
 export function normalizeBaseUrl(baseUrl: string | undefined, fallback: string): string {
   const raw = baseUrl?.trim() || fallback;
-  return raw.replace(/\/+$/, "");
+  return stripTrailingSlashes(raw);
 }
 
 export async function fetchWithTimeoutGuarded(

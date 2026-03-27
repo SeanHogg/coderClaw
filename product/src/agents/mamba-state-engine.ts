@@ -19,6 +19,7 @@ import { resolveCoderClawDir } from "../coderclaw/project-context.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 const log = createSubsystemLogger("mamba-state");
 
@@ -162,7 +163,7 @@ export async function syncMambaStateToRegistry(params: {
     log.debug("No CODERCLAW_LINK_API_KEY — skipping mamba state sync");
     return;
   }
-  const base = (params.registryUrl ?? readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai").replace(/\/+$/, "");
+  const base = normalizeBaseUrl(params.registryUrl ?? readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai");
   const url = `${base}/api/ide/agents/${encodeURIComponent(params.agentId)}/mamba-state`;
   try {
     const res = await fetchWithTimeout(

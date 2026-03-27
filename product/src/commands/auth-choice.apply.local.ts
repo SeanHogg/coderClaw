@@ -2,6 +2,7 @@ import { upsertAuthProfileWithLock } from "../agents/auth-profiles.js";
 import { resolveOllamaApiBase } from "../agents/models-config.providers.js";
 import type { CoderClawConfig } from "../config/config.js";
 import { upsertSharedEnvVar } from "../infra/env-file.js";
+import { normalizeBaseUrl as stripTrailingSlashes } from "../utils/normalize-base-url.js";
 import type { ApplyAuthChoiceParams, ApplyAuthChoiceResult } from "./auth-choice.apply.js";
 import { applyPrimaryModel } from "./model-picker.js";
 
@@ -37,7 +38,7 @@ type OpenAiModelsResponse = {
 };
 
 function normalizeBaseUrl(value: string): string {
-  return value.trim().replace(/\/+$/, "");
+  return stripTrailingSlashes(value.trim());
 }
 
 function toModelKey(provider: string, modelId: string): string {

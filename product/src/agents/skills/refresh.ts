@@ -4,6 +4,7 @@ import chokidar, { type FSWatcher } from "chokidar";
 import type { CoderClawConfig } from "../../config/config.js";
 import { createSubsystemLogger } from "../../logging/subsystem.js";
 import { CONFIG_DIR, resolveUserPath } from "../../utils.js";
+import { normalizeBaseUrl } from "../../utils/normalize-base-url.js";
 import { resolvePluginSkillDirs } from "./plugin-skills.js";
 
 type SkillsChangeEvent = {
@@ -78,7 +79,7 @@ function resolveWatchPaths(workspaceDir: string, config?: CoderClawConfig): stri
 function toWatchGlobRoot(raw: string): string {
   // Chokidar treats globs as POSIX-ish patterns. Normalize Windows separators
   // so `*` works consistently across platforms.
-  return raw.replaceAll("\\", "/").replace(/\/+$/, "");
+  return normalizeBaseUrl(raw.replaceAll("\\", "/"));
 }
 
 function resolveWatchTargets(workspaceDir: string, config?: CoderClawConfig): string[] {

@@ -272,17 +272,17 @@ export function createFeatureWorkflow(featureDescription: string): WorkflowStep[
     {
       role: "code-creator",
       task: `Implement the feature: ${featureDescription}`,
-      dependsOn: ["architecture-advisor"],
+      dependsOn: [`Analyze the architecture for implementing: ${featureDescription}`],
     },
     {
       role: "test-generator",
       task: `Generate tests for: ${featureDescription}`,
-      dependsOn: ["code-creator"],
+      dependsOn: [`Implement the feature: ${featureDescription}`],
     },
     {
       role: "code-reviewer",
       task: `Review the implementation of: ${featureDescription}`,
-      dependsOn: ["test-generator"],
+      dependsOn: [`Generate tests for: ${featureDescription}`],
     },
   ];
 }
@@ -299,17 +299,17 @@ export function createBugFixWorkflow(bugDescription: string): WorkflowStep[] {
     {
       role: "code-creator",
       task: `Implement the fix for: ${bugDescription}`,
-      dependsOn: ["bug-analyzer"],
+      dependsOn: [`Diagnose and propose fix for: ${bugDescription}`],
     },
     {
       role: "test-generator",
       task: `Generate regression tests for: ${bugDescription}`,
-      dependsOn: ["code-creator"],
+      dependsOn: [`Implement the fix for: ${bugDescription}`],
     },
     {
       role: "code-reviewer",
       task: `Review the bug fix for: ${bugDescription}`,
-      dependsOn: ["test-generator"],
+      dependsOn: [`Generate regression tests for: ${bugDescription}`],
     },
   ];
 }
@@ -326,12 +326,12 @@ export function createRefactorWorkflow(scope: string): WorkflowStep[] {
     {
       role: "refactor-agent",
       task: `Refactor code in: ${scope}`,
-      dependsOn: ["code-reviewer"],
+      dependsOn: [`Identify refactoring opportunities in: ${scope}`],
     },
     {
       role: "test-generator",
       task: `Ensure test coverage for refactored code in: ${scope}`,
-      dependsOn: ["refactor-agent"],
+      dependsOn: [`Refactor code in: ${scope}`],
     },
   ];
 }

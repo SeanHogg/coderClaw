@@ -5,6 +5,7 @@ import {
   type HooksGmailTailscaleMode,
   resolveGatewayPort,
 } from "../config/config.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 export const DEFAULT_GMAIL_LABEL = "INBOX";
 export const DEFAULT_GMAIL_TOPIC = "gog-gmail-watch";
@@ -74,7 +75,7 @@ export function normalizeHooksPath(raw?: string): string {
     return DEFAULT_HOOKS_PATH;
   }
   const withSlash = base.startsWith("/") ? base : `/${base}`;
-  return withSlash.replace(/\/+$/, "");
+  return normalizeBaseUrl(withSlash);
 }
 
 export function normalizeServePath(raw?: string): string {
@@ -85,7 +86,7 @@ export function normalizeServePath(raw?: string): string {
     return "/";
   }
   const withSlash = base.startsWith("/") ? base : `/${base}`;
-  return withSlash.replace(/\/+$/, "");
+  return normalizeBaseUrl(withSlash);
 }
 
 export function buildDefaultHookUrl(
@@ -264,7 +265,7 @@ export function parseTopicPath(topic: string): { projectId: string; topicName: s
 
 function joinUrl(base: string, path: string): string {
   const url = new URL(base);
-  const basePath = url.pathname.replace(/\/+$/, "");
+  const basePath = normalizeBaseUrl(url.pathname);
   const extra = path.startsWith("/") ? path : `/${path}`;
   url.pathname = `${basePath}${extra}`;
   return url.toString();

@@ -16,6 +16,7 @@ import type {
   TtsDirectiveOverrides,
   TtsDirectiveParseResult,
 } from "./tts.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 const DEFAULT_ELEVENLABS_BASE_URL = "https://api.elevenlabs.io";
 const TEMP_FILE_CLEANUP_DELAY_MS = 5 * 60 * 1000; // 5 minutes
@@ -29,7 +30,7 @@ function normalizeElevenLabsBaseUrl(baseUrl: string): string {
   if (!trimmed) {
     return DEFAULT_ELEVENLABS_BASE_URL;
   }
-  return trimmed.replace(/\/+$/, "");
+  return normalizeBaseUrl(trimmed);
 }
 
 function requireInRange(value: number, min: number, max: number, label: string): void {

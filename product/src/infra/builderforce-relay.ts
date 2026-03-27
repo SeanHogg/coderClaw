@@ -11,10 +11,12 @@
 
 import { createHash } from "node:crypto";
 import { randomUUID } from "node:crypto";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { WebSocket } from "ws";
 import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
+import type { IRelayService } from "../coderclaw/relay-service.js";
 import { GatewayClient, type GatewayClientOptions } from "../gateway/client.js";
 import type { EventFrame } from "../gateway/protocol/index.js";
 import { logDebug, logWarn } from "../logger.js";
@@ -77,7 +79,7 @@ export type BuilderforceRelayOptions = {
   workspaceDir?: string;
 };
 
-export class BuilderforceRelayService {
+export class BuilderforceRelayService implements IRelayService {
   private ws: WebSocket | null = null;
   private closed = false;
   private backoffMs = 1000;
@@ -211,7 +213,7 @@ export class BuilderforceRelayService {
     if (!this.opts.workspaceDir) {
       return;
     }
-    const base = this.opts.baseUrl.replace(/\/+$/, "");
+    const base = normalizeBaseUrl(this.opts.baseUrl);
     const url = `${base}/api/claws/${encodeURIComponent(remoteClawId)}/context-bundle`;
     let bundle: { files: Array<{ path: string; content: string; sha256: string }> };
     try {

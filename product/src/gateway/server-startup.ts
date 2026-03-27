@@ -214,7 +214,7 @@ export async function startGatewaySidecars(params: {
   let knowledgeLoop: KnowledgeLoopService | null = null;
   try {
     const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY");
-    const baseUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.coderclaw.ai";
+    const baseUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai";
     if (apiKey) {
       const ctx = await loadProjectContext(params.defaultWorkspaceDir);
       const clawId = ctx?.builderforce?.instanceId;
@@ -257,10 +257,9 @@ export async function startGatewaySidecars(params: {
         // Check token quota and warn if approaching limits.
         void checkAndWarnQuota({ baseUrl, clawId: String(clawId), apiKey });
 
-        // Push project context (governance docs) to Builderforce.
+        // Push project context (governance docs) to Builderforce — reuse ctx already loaded above.
         void (async () => {
           try {
-            const ctx = await loadProjectContext(params.defaultWorkspaceDir);
             if (ctx?.builderforce?.projectId && ctx.description) {
               await pushProjectContextToBuilderforce(
                 { baseUrl, clawId: String(clawId), apiKey },

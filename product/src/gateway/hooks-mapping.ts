@@ -1,6 +1,7 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { CONFIG_PATH, type HookMappingConfig, type HooksConfig } from "../config/config.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import type { HookMessageChannel } from "./hooks.js";
 
 export type HookMappingResolved = {
@@ -385,7 +386,7 @@ function normalizeMatchPath(raw?: string): string | undefined {
   if (!trimmed) {
     return undefined;
   }
-  return trimmed.replace(/^\/+/, "").replace(/\/+$/, "");
+  return normalizeBaseUrl(trimmed.replace(/^\/+/, ""));
 }
 
 function renderOptional(value: string | undefined, ctx: HookMappingContext) {

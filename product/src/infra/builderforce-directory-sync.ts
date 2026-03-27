@@ -7,6 +7,7 @@ import {
   updateWorkspaceState,
 } from "../coderclaw/project-context.js";
 import { readSharedEnvVar } from "./env-file.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 type SyncLog = { warn: (msg: string) => void };
 
@@ -98,7 +99,7 @@ export type SyncCoderClawDirParams = {
 export async function syncCoderClawDirectory(
   params: SyncCoderClawDirParams,
 ): Promise<{ fileCount: number }> {
-  const baseUrl = params.baseUrl.replace(/\/+$/, "");
+  const baseUrl = normalizeBaseUrl(params.baseUrl);
   const coderClawDir = resolveCoderClawDir(params.workspaceDir);
   const exists = await fs
     .stat(coderClawDir.root)
@@ -161,10 +162,7 @@ export async function syncCoderClawDirectoryOnStartup(params: {
   log: SyncLog;
 }): Promise<void> {
   const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
-  const baseUrl = (readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.coderclaw.ai").replace(
-    /\/+$/,
-    "",
-  );
+  const baseUrl = normalizeBaseUrl(readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.coderclaw.ai");
   if (!apiKey) {
     return;
   }

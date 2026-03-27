@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { appendKnowledgeMemory } from "../coderclaw/project-context.js";
 import { logDebug } from "../logger.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { onAgentEvent } from "./agent-events.js";
 import type { TeamMemoryEntry } from "./api-contract.js";
 import { syncCoderClawDirectory, type SyncCoderClawDirParams } from "./builderforce-directory-sync.js";
@@ -211,6 +212,12 @@ export class KnowledgeLoopService {
     const acc = this.runs.get(runId);
     this.runs.delete(runId);
 
+    // Compute once; reused for both the memory file (via buildKnowledgeMemoryEntry) and the SSM layer.
+    const created = acc ? [...new Set(acc.filesCreated)] : [];
+    const edited = acc ? [...new Set(acc.filesEdited)] : [];
+    const tools = acc ? [...new Set(acc.toolNames)] : [];
+    const summary = deriveActivitySummary({ created, edited, tools });
+
     const ts = new Date().toISOString();
     const entry = buildKnowledgeMemoryEntry({ ts, sessionKey, acc });
     if (!entry) {
@@ -226,10 +233,6 @@ export class KnowledgeLoopService {
     // Feed summary into the SSM hippocampus layer — non-fatal
     const ssmSvc = getSsmMemoryService();
     if (ssmSvc) {
-      const created = acc ? [...new Set(acc.filesCreated)] : [];
-      const edited = acc ? [...new Set(acc.filesEdited)] : [];
-      const tools = acc ? [...new Set(acc.toolNames)] : [];
-      const summary = deriveActivitySummary({ created, edited, tools });
       if (summary) {
         try {
           await ssmSvc.remember(runId, summary, {
@@ -285,7 +288,7 @@ export class KnowledgeLoopService {
     if (!apiKey || !clawId) {
       return;
     }
-    const url = `${(baseUrl ?? "https://api.builderforce.ai").replace(/\/+$/, "")}/api/teams/memory`;
+    const url = `${normalizeBaseUrl(baseUrl ?? "https://api.builderforce.ai")}/api/teams/memory`;
     const payload = {
       clawId,
       runId,
@@ -334,7 +337,7 @@ export class KnowledgeLoopService {
     if (!apiKey) {
       return [];
     }
-    const url = `${(baseUrl ?? "https://api.builderforce.ai").replace(/\/+$/, "")}/api/teams/memory?limit=${limit}`;
+    const url = `${normalizeBaseUrl(baseUrl ?? "https://api.builderforce.ai")}/api/teams/memory?limit=${limit}`;
     try {
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${apiKey}` },

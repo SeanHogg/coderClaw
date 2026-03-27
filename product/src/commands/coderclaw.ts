@@ -28,6 +28,7 @@ import {
   removeWorkforceAgent,
   DEFAULT_REGISTRY_URL,
 } from "./workforce-agent.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 // ---------------------------------------------------------------------------
 // Persistent session
@@ -526,7 +527,7 @@ async function promptWorkforceAgentProvider(projectRoot: string): Promise<string
     return await installWorkforceAgent({
       agentId,
       projectRoot,
-      registryUrl: registryUrl.trim().replace(/\/+$/, "") || DEFAULT_REGISTRY_URL,
+      registryUrl: normalizeBaseUrl(registryUrl.trim()) || DEFAULT_REGISTRY_URL,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -671,7 +672,7 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
     upsertSharedEnvVar({ key: "OLLAMA_API_KEY", value: "ollama-local" });
 
     // Write provider config if using a non-default URL, then set default model
-    const normalizedUrl = ollamaUrl.trim().replace(/\/+$/, "");
+    const normalizedUrl = normalizeBaseUrl(ollamaUrl.trim());
     if (normalizedUrl !== "http://127.0.0.1:11434") {
       try {
         const snapshot = await readConfigFileSnapshot();
@@ -734,7 +735,7 @@ async function promptLlmProvider(projectRoot: string): Promise<string | null> {
           providers: {
             ...existing.models?.providers,
             vllm: {
-              baseUrl: vllmUrl.trim().replace(/\/+$/, ""),
+              baseUrl: normalizeBaseUrl(vllmUrl.trim()),
               api: "openai-completions" as const,
               apiKey: "VLLM_API_KEY",
               models: [
@@ -942,7 +943,7 @@ async function promptBuilderforceSetup(
   if (typeof urlInput === "symbol") {
     return null;
   }
-  const serverUrl = urlInput.trim().replace(/\/+$/, "") || "https://api.builderforce.ai";
+  const serverUrl = normalizeBaseUrl(urlInput.trim()) || "https://api.builderforce.ai";
 
   // ── 2. Login or register ──────────────────────────────────────────────────
   const authMode = await select({

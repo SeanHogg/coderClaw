@@ -14,6 +14,7 @@ import {
 } from "./huggingface-models.js";
 import { resolveAwsSdkEnvVarName, resolveEnvApiKey } from "./model-auth.js";
 import { OLLAMA_NATIVE_BASE_URL } from "./ollama-stream.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import {
   buildSyntheticModelDefinition,
   SYNTHETIC_BASE_URL,
@@ -180,7 +181,7 @@ export function resolveOllamaApiBase(configuredBaseUrl?: string): string {
     return OLLAMA_API_BASE_URL;
   }
   // Strip trailing slash, then strip /v1 suffix if present
-  const trimmed = configuredBaseUrl.replace(/\/+$/, "");
+  const trimmed = normalizeBaseUrl(configuredBaseUrl);
   return trimmed.replace(/\/v1$/i, "");
 }
 
@@ -232,7 +233,7 @@ async function discoverVllmModels(
     return [];
   }
 
-  const trimmedBaseUrl = baseUrl.trim().replace(/\/+$/, "");
+  const trimmedBaseUrl = normalizeBaseUrl(baseUrl.trim());
   const url = `${trimmedBaseUrl}/models`;
 
   try {
@@ -590,7 +591,7 @@ async function buildVllmProvider(params?: {
   baseUrl?: string;
   apiKey?: string;
 }): Promise<ProviderConfig> {
-  const baseUrl = (params?.baseUrl?.trim() || VLLM_BASE_URL).replace(/\/+$/, "");
+  const baseUrl = normalizeBaseUrl(params?.baseUrl?.trim() || VLLM_BASE_URL);
   const models = await discoverVllmModels(baseUrl, params?.apiKey);
   return {
     baseUrl,

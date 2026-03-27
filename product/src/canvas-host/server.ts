@@ -18,6 +18,7 @@ import {
   injectCanvasLiveReload,
 } from "./a2ui.js";
 import { normalizeUrlPath, resolveFileWithinRoot } from "./file-resolver.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 export type CanvasHostOpts = {
   runtime: RuntimeEnv;
@@ -171,7 +172,7 @@ function normalizeBasePath(rawPath: string | undefined) {
   if (normalized === "/") {
     return "/";
   }
-  return normalized.replace(/\/+$/, "");
+  return normalizeBaseUrl(normalized);
 }
 
 async function prepareCanvasRoot(rootDir: string) {

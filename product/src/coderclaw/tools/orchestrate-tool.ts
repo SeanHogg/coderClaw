@@ -8,18 +8,29 @@ import { jsonResult } from "../../agents/tools/common.js";
 import { readSharedEnvVar } from "../../infra/env-file.js";
 import { pushSpec } from "../../infra/spec-sync.js";
 import {
-  createPlanningWorkflow,
-  createAdversarialReviewWorkflow,
-} from "../orchestrator-enhanced.js";
-import {
   globalOrchestrator,
   createFeatureWorkflow,
   createBugFixWorkflow,
   createRefactorWorkflow,
   createSecurityAuditWorkflow,
+  createPlanningWorkflow,
+  createAdversarialReviewWorkflow,
   type WorkflowStep,
   type SpawnSubagentContext,
 } from "../orchestrator.js";
+
+/**
+ * Registry of named workflow factory functions.
+ * To add a new workflow type: register it here — orchestrate-tool.ts needs no further changes.
+ */
+const WORKFLOW_REGISTRY: Record<string, (description: string) => WorkflowStep[]> = {
+  feature: createFeatureWorkflow,
+  bugfix: createBugFixWorkflow,
+  refactor: createRefactorWorkflow,
+  security_audit: createSecurityAuditWorkflow,
+  planning: createPlanningWorkflow,
+  adversarial: createAdversarialReviewWorkflow,
+};
 
 const OrchestrateSchema = Type.Object({
   workflow: Type.String({
@@ -94,37 +105,22 @@ export function createOrchestrateTool(options?: {
       try {
         let steps: WorkflowStep[];
 
-        switch (workflow) {
-          case "feature":
-            steps = createFeatureWorkflow(description);
-            break;
-          case "bugfix":
-            steps = createBugFixWorkflow(description);
-            break;
-          case "refactor":
-            steps = createRefactorWorkflow(description);
-            break;
-          case "security_audit":
-            steps = createSecurityAuditWorkflow(description);
-            break;
-          case "planning":
-            steps = createPlanningWorkflow(description);
-            break;
-          case "adversarial":
-            steps = createAdversarialReviewWorkflow(description);
-            break;
-          case "custom":
-            if (!customSteps || customSteps.length === 0) {
-              return jsonResult({
-                error: "Custom workflow requires customSteps to be provided",
-              }) as AgentToolResult<string>;
-            }
-            steps = customSteps;
-            break;
-          default:
+        if (workflow === "custom") {
+          if (!customSteps || customSteps.length === 0) {
             return jsonResult({
-              error: `Unknown workflow type: ${workflow}. Use 'feature', 'bugfix', 'refactor', 'security_audit', 'planning', 'adversarial', or 'custom'.`,
+              error: "Custom workflow requires customSteps to be provided",
             }) as AgentToolResult<string>;
+          }
+          steps = customSteps;
+        } else {
+          const factory = WORKFLOW_REGISTRY[workflow];
+          if (!factory) {
+            const known = [...Object.keys(WORKFLOW_REGISTRY), "custom"].join("', '");
+            return jsonResult({
+              error: `Unknown workflow type: ${workflow}. Use '${known}'.`,
+            }) as AgentToolResult<string>;
+          }
+          steps = factory(description);
         }
 
         // Create workflow

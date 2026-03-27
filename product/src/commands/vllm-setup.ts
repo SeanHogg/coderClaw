@@ -1,5 +1,6 @@
 import { upsertAuthProfileWithLock } from "../agents/auth-profiles.js";
 import type { CoderClawConfig } from "../config/config.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
 
 export const VLLM_DEFAULT_BASE_URL = "http://127.0.0.1:8000/v1";
@@ -34,9 +35,7 @@ export async function promptAndConfigureVllm(params: {
     validate: (value) => (value?.trim() ? undefined : "Required"),
   });
 
-  const baseUrl = String(baseUrlRaw ?? "")
-    .trim()
-    .replace(/\/+$/, "");
+  const baseUrl = normalizeBaseUrl(String(baseUrlRaw ?? "").trim());
   const apiKey = String(apiKeyRaw ?? "").trim();
   const modelId = String(modelIdRaw ?? "").trim();
   const modelRef = `vllm/${modelId}`;

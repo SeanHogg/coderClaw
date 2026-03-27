@@ -8,6 +8,7 @@ import type {
 } from "playwright-core";
 import { chromium } from "playwright-core";
 import { formatErrorMessage } from "../infra/errors.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { appendCdpPath, fetchJson, getHeadersWithAuth, withCdpSocket } from "./cdp.helpers.js";
 import { normalizeCdpWsUrl } from "./cdp.js";
 import { getChromeWebSocketUrl } from "./chrome.js";
@@ -407,8 +408,7 @@ async function findPageByTargetId(
   // fall back to URL-based matching using the /json/list endpoint
   if (cdpUrl) {
     try {
-      const baseUrl = cdpUrl
-        .replace(/\/+$/, "")
+      const baseUrl = normalizeBaseUrl(cdpUrl)
         .replace(/^ws:/, "http:")
         .replace(/\/cdp$/, "");
       const listUrl = `${baseUrl}/json/list`;

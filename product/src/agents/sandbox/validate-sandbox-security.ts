@@ -7,6 +7,7 @@
 
 import { existsSync, realpathSync } from "node:fs";
 import { posix } from "node:path";
+import { normalizeBaseUrl } from "../../utils/normalize-base-url.js";
 
 // Targeted denylist: host paths that should never be exposed inside sandbox containers.
 // Exported for reuse in security audit collectors.
@@ -55,7 +56,7 @@ export function parseBindSourcePath(bind: string): string {
  */
 export function normalizeHostPath(raw: string): string {
   const trimmed = raw.trim();
-  return posix.normalize(trimmed).replace(/\/+$/, "") || "/";
+  return normalizeBaseUrl(posix.normalize(trimmed)) || "/";
 }
 
 /**

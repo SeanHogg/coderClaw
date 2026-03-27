@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { StreamFn } from "@mariozechner/pi-agent-core";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import type {
   AssistantMessage,
   StopReason,
@@ -281,7 +282,7 @@ export async function* parseNdjsonStream(
 // ── Main StreamFn factory ───────────────────────────────────────────────────
 
 function resolveOllamaChatUrl(baseUrl: string): string {
-  const trimmed = baseUrl.trim().replace(/\/+$/, "");
+  const trimmed = normalizeBaseUrl(baseUrl.trim());
   const normalizedBase = trimmed.replace(/\/v1$/i, "");
   const apiBase = normalizedBase || OLLAMA_NATIVE_BASE_URL;
   return `${apiBase}/api/chat`;

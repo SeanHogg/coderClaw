@@ -1,4 +1,5 @@
 import type { MarkdownTableMode } from "../config/types.base.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import {
   chunkMarkdownIR,
   markdownToIR,
@@ -41,7 +42,7 @@ function normalizeUrlForComparison(url: string): string {
   // Strip www. prefix
   normalized = normalized.replace(/^www\./, "");
   // Strip trailing slashes
-  normalized = normalized.replace(/\/+$/, "");
+  normalized = normalizeBaseUrl(normalized);
   return normalized;
 }
 

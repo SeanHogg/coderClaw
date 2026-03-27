@@ -6,7 +6,7 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
-import type { BuilderforceRelayService } from "../infra/builderforce-relay.js";
+import type { IRelayService } from "./relay-service.js";
 import { awaitLocalSubagentResult } from "../infra/local-result-broker.js";
 import { awaitRemoteResult } from "../infra/remote-result-broker.js";
 import {
@@ -83,7 +83,7 @@ export class AgentOrchestrator {
   /** Merged routing rules (defaults + user-defined from .coderClaw/routing-rules.json). */
   private routingRules: RoutingRule[] = DEFAULT_ROUTING_RULES;
   /** Relay service reference for cross-claw context fetching (P4-2). */
-  private relayService: BuilderforceRelayService | null = null;
+  private relayService: IRelayService | null = null;
 
   /** Enable disk persistence for workflows and workflow telemetry. Call at gateway startup. */
   setProjectRoot(
@@ -130,7 +130,7 @@ export class AgentOrchestrator {
    * Register the BuilderforceRelayService so the orchestrator can fetch remote
    * context bundles (P4-2) before dispatching to a remote claw.
    */
-  setRelayService(relay: BuilderforceRelayService): void {
+  setRelayService(relay: IRelayService): void {
     this.relayService = relay;
   }
 
@@ -752,17 +752,17 @@ export function createFeatureWorkflow(featureDescription: string): WorkflowStep[
     {
       role: "code-creator",
       task: `Implement the feature: ${featureDescription}`,
-      dependsOn: ["architecture-advisor"],
+      dependsOn: [`Analyze the architecture for implementing: ${featureDescription}`],
     },
     {
       role: "test-generator",
       task: `Generate tests for: ${featureDescription}`,
-      dependsOn: ["code-creator"],
+      dependsOn: [`Implement the feature: ${featureDescription}`],
     },
     {
       role: "code-reviewer",
       task: `Review the implementation of: ${featureDescription}`,
-      dependsOn: ["test-generator"],
+      dependsOn: [`Generate tests for: ${featureDescription}`],
     },
   ];
 }
@@ -779,17 +779,17 @@ export function createBugFixWorkflow(bugDescription: string): WorkflowStep[] {
     {
       role: "code-creator",
       task: `Implement the fix for: ${bugDescription}`,
-      dependsOn: ["bug-analyzer"],
+      dependsOn: [`Diagnose and propose fix for: ${bugDescription}`],
     },
     {
       role: "test-generator",
       task: `Generate regression tests for: ${bugDescription}`,
-      dependsOn: ["code-creator"],
+      dependsOn: [`Implement the fix for: ${bugDescription}`],
     },
     {
       role: "code-reviewer",
       task: `Review the bug fix for: ${bugDescription}`,
-      dependsOn: ["test-generator"],
+      dependsOn: [`Generate regression tests for: ${bugDescription}`],
     },
   ];
 }
@@ -806,12 +806,12 @@ export function createRefactorWorkflow(scope: string): WorkflowStep[] {
     {
       role: "refactor-agent",
       task: `Refactor code in: ${scope}`,
-      dependsOn: ["code-reviewer"],
+      dependsOn: [`Identify refactoring opportunities in: ${scope}`],
     },
     {
       role: "test-generator",
       task: `Ensure test coverage for refactored code in: ${scope}`,
-      dependsOn: ["refactor-agent"],
+      dependsOn: [`Refactor code in: ${scope}`],
     },
   ];
 }
@@ -834,17 +834,68 @@ export function createSecurityAuditWorkflow(target: string): WorkflowStep[] {
     {
       role: "bug-analyzer",
       task: `Perform a security vulnerability scan of: ${target}. Check for OWASP Top 10 (injection, XSS, CSRF, broken auth, sensitive data exposure, SSRF, etc.), hardcoded secrets, insecure dependencies, and missing input validation.`,
-      dependsOn: ["architecture-advisor"],
+      dependsOn: [`Build a threat model for: ${target}. Identify attack surface, trust boundaries, data flows, and external integrations.`],
     },
     {
       role: "code-creator",
       task: `Produce prioritised remediation recommendations for all vulnerabilities found in: ${target}. Include concrete code examples or patches for the highest-severity issues.`,
-      dependsOn: ["bug-analyzer"],
+      dependsOn: [`Perform a security vulnerability scan of: ${target}. Check for OWASP Top 10 (injection, XSS, CSRF, broken auth, sensitive data exposure, SSRF, etc.), hardcoded secrets, insecure dependencies, and missing input validation.`],
     },
     {
       role: "code-reviewer",
       task: `Review the proposed security fixes for: ${target}. Verify completeness, check for regressions, and produce a final sign-off checklist with residual risk summary.`,
-      dependsOn: ["code-creator"],
+      dependsOn: [`Produce prioritised remediation recommendations for all vulnerabilities found in: ${target}. Include concrete code examples or patches for the highest-severity issues.`],
+    },
+  ];
+}
+
+/**
+ * Planning Workflow
+ *
+ * Architecture Advisor builds a PRD and architecture spec, then decomposes it
+ * into an actionable task list.
+ */
+export function createPlanningWorkflow(goal: string): WorkflowStep[] {
+  return [
+    {
+      role: "architecture-advisor",
+      task: `Write a Product Requirements Document (PRD) for: ${goal}`,
+    },
+    {
+      role: "architecture-advisor",
+      task: `Write a detailed architecture specification for: ${goal}`,
+      dependsOn: [`Write a Product Requirements Document (PRD) for: ${goal}`],
+    },
+    {
+      role: "architecture-advisor",
+      task: `Decompose into an ordered task list with dependencies for: ${goal}`,
+      dependsOn: [`Write a detailed architecture specification for: ${goal}`],
+    },
+  ];
+}
+
+/**
+ * Adversarial Review Workflow
+ *
+ * One agent produces output, a second critiques it, a third synthesizes the final result.
+ */
+export function createAdversarialReviewWorkflow(subject: string): WorkflowStep[] {
+  return [
+    {
+      role: "architecture-advisor",
+      task: `Produce a detailed proposal for: ${subject}`,
+    },
+    {
+      role: "code-reviewer",
+      task: `Critically review the proposal for gaps, errors, and blind spots in: ${subject}`,
+      dependsOn: [`Produce a detailed proposal for: ${subject}`],
+    },
+    {
+      role: "architecture-advisor",
+      task: `Synthesize the critique into a revised, final proposal for: ${subject}`,
+      dependsOn: [
+        `Critically review the proposal for gaps, errors, and blind spots in: ${subject}`,
+      ],
     },
   ];
 }

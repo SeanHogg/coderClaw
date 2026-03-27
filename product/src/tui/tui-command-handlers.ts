@@ -39,6 +39,7 @@ import type { CoderClawConfig } from "../config/types.js";
 import type { SessionsPatchResult } from "../gateway/protocol/index.js";
 import { syncCoderClawDirectoryWithMetaUpdate } from "../infra/builderforce-directory-sync.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
 import { logDebug, logWarn } from "../logger.js";
 import { normalizeAgentId } from "../routing/session-key.js";
@@ -965,9 +966,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
       case "sync": {
         const projectRoot = process.cwd();
         const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
-        const baseUrl = (
+        const baseUrl = normalizeBaseUrl(
           readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai"
-        ).replace(/\/+$/, "");
+        );
         if (!apiKey) {
           chatLog.addSystem(
             "Not linked to Builderforce (BUILDERFORCE_API_KEY not set). Run /setup to configure.",

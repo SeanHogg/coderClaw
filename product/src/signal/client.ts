@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { resolveFetch } from "../infra/fetch.js";
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
+import { normalizeBaseUrl as stripTrailingSlashes } from "../utils/normalize-base-url.js";
 
 export type SignalRpcOptions = {
   baseUrl: string;
@@ -34,9 +35,9 @@ function normalizeBaseUrl(url: string): string {
     throw new Error("Signal base URL is required");
   }
   if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed.replace(/\/+$/, "");
+    return stripTrailingSlashes(trimmed);
   }
-  return `http://${trimmed}`.replace(/\/+$/, "");
+  return stripTrailingSlashes(`http://${trimmed}`);
 }
 
 function getRequiredFetch(): typeof fetch {

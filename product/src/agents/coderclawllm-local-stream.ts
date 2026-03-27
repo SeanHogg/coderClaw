@@ -58,6 +58,7 @@ import {
   loadCoderClawMemory,
 } from "./transformers-stream.js";
 import { loadMambaState, mambaStateToContextLine } from "./mamba-state-engine.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -189,7 +190,7 @@ async function callOllama(opts: {
   signal?: AbortSignal;
 }): Promise<string | null> {
   const base =
-    opts.baseUrl.replace(/\/v1\/?$/i, "").replace(/\/+$/, "") || "http://127.0.0.1:11434";
+    normalizeBaseUrl(opts.baseUrl.replace(/\/v1\/?$/i, "")) || "http://127.0.0.1:11434";
   try {
     const res = await fetch(`${base}/api/chat`, {
       method: "POST",
@@ -224,7 +225,7 @@ async function callOpenAiCompletions(opts: {
   signal?: AbortSignal;
 }): Promise<string | null> {
   try {
-    const res = await fetch(`${opts.baseUrl.replace(/\/+$/, "")}/chat/completions`, {
+    const res = await fetch(`${normalizeBaseUrl(opts.baseUrl)}/chat/completions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${opts.apiKey}` },
       body: JSON.stringify({
@@ -266,7 +267,7 @@ async function callOpenAiResponses(opts: {
     }>;
   };
   try {
-    const res = await fetch(`${opts.baseUrl.replace(/\/+$/, "")}/responses`, {
+    const res = await fetch(`${normalizeBaseUrl(opts.baseUrl)}/responses`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${opts.apiKey}` },
       body: JSON.stringify({

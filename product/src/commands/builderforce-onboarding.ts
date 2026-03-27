@@ -2,6 +2,7 @@ import { confirm, note, password, select, spinner, text } from "@clack/prompts";
 import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
 import { buildLocalMachineProfile } from "../infra/builderforce-context.js";
 import { readSharedEnvVar, upsertSharedEnvVar } from "../infra/env-file.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { authenticateViaBrowser } from "./browser-auth-server.js";
 import { detectBrowserOpenSupport } from "./onboard-helpers.js";
 
@@ -110,7 +111,7 @@ export async function promptBuilderforceOnboarding(params: {
   if (typeof urlInput === "symbol") {
     return null;
   }
-  const serverUrl = urlInput.trim().replace(/\/+$/, "") || "https://api.builderforce.ai";
+  const serverUrl = normalizeBaseUrl(urlInput.trim()) || "https://api.builderforce.ai";
 
   // ── Authentication ─────────────────────────────────────────────────────
   // Prefer browser-based auth when a display is available.
