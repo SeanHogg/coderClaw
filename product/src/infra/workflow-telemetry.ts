@@ -246,6 +246,15 @@ async function appendSpan(span: WorkflowSpan): Promise<void> {
   }
 }
 
+/**
+ * Generic span emitter for callers that construct spans directly (e.g. remote-subagent
+ * retry telemetry). Accepts a plain record so callers that import dynamically do not
+ * need to depend on the WorkflowSpan type.
+ */
+export function emitSpan(span: Record<string, unknown>): void {
+  void appendSpan(span as WorkflowSpan);
+}
+
 export function emitWorkflowStart(workflowId: string, description?: string): void {
   activeTraceId = generateTraceId();
   void appendSpan({

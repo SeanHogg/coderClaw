@@ -5,6 +5,8 @@
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import { jsonResult } from "../../agents/tools/common.js";
+import { readSharedEnvVar } from "../../infra/env-file.js";
+import { pushSpec } from "../../infra/spec-sync.js";
 import {
   createPlanningWorkflow,
   createAdversarialReviewWorkflow,
@@ -131,6 +133,27 @@ export function createOrchestrateTool(options?: {
         // Execute workflow and await completion so we can return proper status
         try {
           const results = await globalOrchestrator.executeWorkflow(wf.id, context);
+
+          // Push planning workflow outputs to Builderforce spec storage (P1-1).
+          // Fire-and-forget: push failures don't affect the workflow result.
+          if (workflow === "planning") {
+            const resultValues = Array.from(results.values());
+            const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY");
+            const clawId = readSharedEnvVar("BUILDERFORCE_CLAW_ID");
+            const baseUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai";
+            if (apiKey && clawId) {
+              void pushSpec(
+                { baseUrl, clawId, apiKey },
+                {
+                  goal: description,
+                  status: "draft",
+                  prd: resultValues[0] ?? undefined,
+                  archSpec: resultValues[1] ?? undefined,
+                  taskList: resultValues[2] ?? undefined,
+                },
+              );
+            }
+          }
 
           return jsonResult({
             workflowId: wf.id,

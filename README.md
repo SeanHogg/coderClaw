@@ -26,7 +26,7 @@ CoderClaw is modeled after the human brain:
 
 More broadly, **coderclaw.ai** is a **self-healing AI engineering agent and orchestration platform** that manages tasks, workflows, and collaboration across all AI agents. It provides persistent memory, context-aware reasoning, and self-repair — allowing AI systems to detect failures, fix themselves, and adapt over time — while keeping humans in the loop for governance and approval. The result: resilient, self-healing software systems with less engineering toil and better delivery outcomes.
 
-**[Builderforce.ai](https://builderforce.ai) integration:** Connect CoderClaw to Builderforce.ai for the full enterprise experience — fleet visibility, task assignment, human-in-the-loop approval gates, workflow telemetry dashboards, and the Workforce Registry (publish and hire fine-tuned specialist AI agents). Set `CODERCLAW_LINK_API_KEY` and CoderClaw registers automatically; without it, CoderClaw runs fully standalone.
+**[Builderforce.ai](https://builderforce.ai) integration:** Connect CoderClaw to Builderforce.ai for the full enterprise experience — fleet visibility, task assignment, human-in-the-loop approval gates, workflow telemetry dashboards, and the Workforce Registry (publish and hire fine-tuned specialist AI agents). Set `BUILDERFORCE_API_KEY` and CoderClaw registers automatically; without it, CoderClaw runs fully standalone.
 
 When linked, CoderClaw performs a full two-way sync at startup:
 - **Registration + heartbeat** — machine/network/tunnel metadata persisted at `PATCH /api/claws/:id/heartbeat`
@@ -124,7 +124,7 @@ CODERCLAW_STAGED=true coderclaw gateway
 | **Session handoffs**                       | ✅ `/handoff` cmd + auto-load            | ❌                          | ❌                 | ❌                 | ❌                |
 | **Workflow persistence across restarts**   | ✅ YAML checkpoint + resume              | ❌                          | ❌                 | ❌                 | ❌                |
 | **Post-task knowledge loop**               | ✅ `.coderClaw/memory/` auto-updated     | ❌                          | ❌                 | ❌                 | ❌                |
-| **Claw-to-claw distributed delegation**    | ✅ `remote:<id>` / `remote:auto[caps]`   | ❌                          | ❌                 | ❌                 | ❌                |
+| **Claw-to-claw distributed delegation**    | ✅ `remote:<id>` / `remote:auto[caps]` ¹ | ❌                          | ❌                 | ❌                 | ❌                |
 | **Deep AST + git-history analysis**        | ✅                                       | ❌                          | ⚠️ Basic RAG       | ⚠️ Basic RAG       | ⚠️ Basic RAG      |
 | **Persistent project knowledge**           | ✅ `.coderClaw/`                         | ❌                          | ⚠️ In-session only | ⚠️ In-session only | ❌                |
 | **Works in WhatsApp / Telegram / Slack**   | ✅                                       | ❌                          | ❌                 | ❌                 | ❌                |
@@ -132,6 +132,8 @@ CODERCLAW_STAGED=true coderclaw gateway
 | **Open source (MIT)**                      | ✅                                       | ❌                          | ❌                 | ❌                 | ✅                |
 
 CoderClaw is not a plugin or an IDE extension. It is a **full orchestration runtime** that understands your codebase, coordinates specialized agents, and works wherever you do — in your terminal, your chat apps, or your CI pipeline.
+
+> ¹ Claw dispatch and fleet discovery are fully implemented. Remote task **result streaming** (returning output from the target claw back to the orchestrating claw) is on the P0 roadmap — see [Roadmap](#️-roadmap) for status.
 
 ## 📁 Repository structure
 
@@ -183,6 +185,18 @@ You can run and install **two or more CoderClaw instances** on the same machine 
 | Daemon name | “CoderClaw Gateway”       | “CoderClaw Gateway (work)” / `coderclaw-gateway-work` |
 
 So: **two terminals, two versions** — run the right `coderclaw` in each and give each gateway a different port. They can't share one gateway; each gets its own state and port by install path (or by profile / `CODERCLAW_STATE_DIR` if you set them).
+
+## 🐾 CoderClaw Builds Itself
+
+CoderClaw is developed using CoderClaw. The self-improvement loop is active:
+
+1. Run `/spec <goal>` inside a CoderClaw session pointed at this repo.
+2. The planning workflow (Architecture Advisor → PRD → Arch Spec → Task Breakdown) produces a structured spec in `.coderClaw/planning/`.
+3. A multi-agent feature workflow (Code Creator → Test Generator + Code Reviewer in parallel) implements and tests the change.
+4. The knowledge loop records what changed, what was learned, and what gaps were found in `.coderClaw/memory/`.
+5. Session handoffs let any future session pick up exactly where the last one left off.
+
+This creates a compounding feedback loop: every improvement to CoderClaw makes the next improvement faster. The `.coderClaw/planning/` directory in this repo contains the active specs and roadmap that the agents are working from.
 
 ## 🎯 Core Mission
 
@@ -484,7 +498,7 @@ Run `coderclaw doctor` to surface risky/misconfigured DM policies.
 
 - **Protocol-agnostic runtime interface** for submitting tasks locally or remotely
 - **Pluggable adapter system** — swap local, HTTP, WebSocket, or gRPC adapters without changing application code
-- **ClawLink HTTP adapter** included for zero-boilerplate remote execution
+- **Builderforce HTTP adapter** included for zero-boilerplate remote execution
 - **Runtime status monitoring** with agent and skill discovery
 
 ### 📊 Distributed Task Lifecycle
@@ -517,16 +531,16 @@ See [examples/phase2/](examples/phase2/) for distributed runtime usage examples.
 
 ## 🔗 builderforce.ai
 
-**[Builderforce.ai](https://builderforce.ai)** is the orchestration portal (API: api.builderforce.ai). CoderClaw connects to it via the built-in **ClawLink transport adapter** — your multi-agent workflows run seamlessly on Builderforce with zero protocol boilerplate:
+**[Builderforce.ai](https://builderforce.ai)** is the orchestration portal (API: api.builderforce.ai). CoderClaw connects to it via the built-in **Builderforce transport adapter** — your multi-agent workflows run seamlessly on Builderforce with zero protocol boilerplate:
 
 ```typescript
-import { ClawLinkTransportAdapter, CoderClawRuntime } from "coderclaw/transport";
+import { BuilderforceTransportAdapter, CoderClawRuntime } from "coderclaw/transport";
 
-const adapter = new ClawLinkTransportAdapter({ baseUrl: "http://localhost:8000" });
+const adapter = new BuilderforceTransportAdapter({ baseUrl: "http://localhost:8000" });
 await adapter.connect();
 const runtime = new CoderClawRuntime(adapter, "remote-enabled");
 
-// Planning, feature, adversarial-review workflows all run on the ClawLink node
+// Planning, feature, adversarial-review workflows all run on the Builderforce node
 const state = await runtime.submitTask({
   agentId: "claude",
   description: "Plan auth feature",
@@ -612,21 +626,58 @@ The entire platform can run on Cloudflare Workers (zero cold-start, globally dis
 
 ### Builderforce API Reference (Summary)
 
-All protected routes require `Authorization: Bearer <jwt>`.
+Web-auth routes use `Authorization: Bearer <jwt>`; claw-to-claw routes use an API key.
 
-| Route                                     | Description                                |
-| ----------------------------------------- | ------------------------------------------ |
-| `POST /api/auth/register`                 | Create user + receive one-time API key     |
-| `POST /api/auth/token`                    | Exchange API key for JWT                   |
-| `GET/POST /api/projects`                  | List or create projects                    |
-| `GET/POST /api/tasks`                     | List or create tasks                       |
-| `POST /api/runtime/executions`            | Submit task for agent execution            |
-| `PATCH /api/runtime/executions/:id/state` | Agent callback: update execution state     |
-| `GET /api/audit/events`                   | Tenant-wide immutable event log (MANAGER+) |
-| `GET /api/agents`                         | Discover registered agents and skills      |
-| `POST /llm/v1/chat/completions`           | coderClawLLM proxy (free/pro model pools)  |
+**Auth & Identity**
 
-RBAC roles (ascending authority): `viewer` -> `developer` -> `manager` -> `owner`
+| Route | Auth | Description |
+| ----- | ---- | ----------- |
+| `POST /api/auth/web/register` | None | Create account |
+| `POST /api/auth/web/login` | None | Login, receive JWT |
+| `GET /api/auth/my-tenants` | JWT (web) | List user workspaces |
+| `POST /api/auth/tenant-token` | JWT (web) | Exchange for workspace token |
+| `POST /api/tenants/create` | JWT (web) | Create workspace |
+
+**Claw Fleet**
+
+| Route | Auth | Description |
+| ----- | ---- | ----------- |
+| `POST /api/claws` | JWT (tenant) | Register claw instance |
+| `GET /api/claws/fleet` | API Key | List peer claws with capabilities |
+| `WS /api/claws/:id/upstream` | API Key | Bidirectional relay (heartbeat + relay frames) |
+| `PATCH /api/claws/:id/heartbeat` | API Key | Keep-alive + capability update |
+| `POST /api/claws/:id/forward` | API Key | Dispatch task to peer claw |
+| `PUT /api/claws/:id/projects/:pid` | JWT (tenant) | Link project to claw |
+| `PUT /api/claws/:id/directories/sync` | API Key | Upload `.coderClaw/` files |
+
+**Runtime Execution**
+
+| Route | Auth | Description |
+| ----- | ---- | ----------- |
+| `POST /api/runtime/executions` | Bearer | Submit execution |
+| `GET /api/runtime/executions/:id` | Bearer | Poll execution status |
+| `POST /api/runtime/executions/:id/cancel` | Bearer | Cancel execution |
+| `PATCH /api/claws/:id/executions/:eid/state` | API Key | Agent lifecycle callback (running / completed / failed) |
+| `GET /api/agents` | Bearer | List agents |
+| `GET /api/skills` | Bearer | List skills |
+
+**Projects & Audit**
+
+| Route | Auth | Description |
+| ----- | ---- | ----------- |
+| `POST /api/projects/upsert` | JWT (tenant) | Create/update project |
+| `GET /api/audit/events` | JWT (MANAGER+) | Tenant-wide immutable event log |
+| `GET /api/runtime/executions?sessionId=` | Bearer | Executions for a session |
+| `GET /api/runtime/sessions/:sessionId/executions` | Bearer | All executions in a session |
+
+**coderClawLLM**
+
+| Route | Auth | Description |
+| ----- | ---- | ----------- |
+| `POST /llm/v1/chat/completions` | Bearer | OpenAI-compatible proxy (free/pro model pools) |
+| `GET /llm/v1/usage` | Bearer | Per-tenant token usage |
+
+RBAC roles (ascending authority): `viewer` → `developer` → `manager` → `owner`
 
 ## coderClawLLM — AI Agent Compute API
 
@@ -641,6 +692,18 @@ coderClawLLM is the **pay-per-use API layer** for AI agent compute, built into B
 | Automatic failover    | Model routing handles provider outages transparently                        |
 
 Agents authenticate with the same JWT issued by `POST /api/auth/token` — no separate credential management needed. The default model is `coderclawllm/auto` for a managed free-model pool with automatic failover.
+
+## 💳 Pricing
+
+CoderClaw (the gateway + CLI) is **MIT-licensed and free forever**. You pay only for the AI model tokens you consume — either through your own API keys (Anthropic, OpenAI, Ollama, Bedrock, etc.) or via the coderClawLLM compute pool.
+
+| Tier | What's included | Cost |
+| ---- | --------------- | ---- |
+| **Self-hosted (free)** | Full gateway, multi-agent orchestration, memory, workflows, claw-to-claw mesh. Bring your own model API keys. | Free (MIT) |
+| **coderClawLLM Free** | Shared model pool with rate limiting — great for development and low-volume workloads. | Free (usage-limited) |
+| **coderClawLLM Pro** | Dedicated higher-capacity model pool, priority routing, automatic failover across providers. | Usage-based — see [coderclaw.ai/pricing](https://coderclaw.ai/pricing) |
+| **Builderforce.ai** | Cloud portal: fleet visibility, workflow telemetry dashboard, human-in-the-loop approval gates, audit trails, persona registry, spec review UI. | See [builderforce.ai](https://builderforce.ai) |
+| **Enterprise** | Self-hosted Builderforce, SSO, SAML, SCIM, dedicated support, SLA, air-gapped deployment. | Contact [hello@coderclaw.ai](mailto:hello@coderclaw.ai) |
 
 ## Who Uses coderClaw.ai?
 
@@ -706,7 +769,7 @@ Run **complex multi-agent pipelines** at scale: parallel execution across hundre
 - **Agent roles** — 7 built-in roles + custom roles loaded from `.coderClaw/personas/`; role persona, constraints, output format, and tool sets enforced at spawn time. Unknown roles fail fast with a descriptive error.
 - **Structured inter-agent context** — `buildStructuredContext()` passes prior-agent results to downstream agents with labelled role headers (`REVIEW:`, `ARCH:`, etc.) so each agent knows which role produced which output.
 - **Persona → brain injection** — `buildPersonaSystemBlock()` encodes role persona, output format, and constraints into the brain system prompt on all execution paths (direct spawn and DELEGATE).
-- **Persona plugin architecture** — `PersonaRegistry` with source precedence (builtin < user-global < project-local < clawhub < clawlink-assigned); PERSONA.yaml format with marketplace metadata; Builderforce assignment via `context.yaml`.
+- **Persona plugin architecture** — `PersonaRegistry` with source precedence (builtin < user-global < project-local < clawhub < builderforce-assigned); PERSONA.yaml format with marketplace metadata; Builderforce assignment via `context.yaml`.
 - **Session handoff** — `save_session_handoff` tool + `/handoff` command + auto-load on session start injects summary/decisions/next-steps into context; `/new` shows a handoff hint when active work is present.
 - **Workflow persistence** — checkpoints written to `.coderClaw/sessions/workflow-<id>.yaml` after every task state change; incomplete workflows restored at gateway restart; `resumeWorkflow()` skips already-completed tasks.
 - **Knowledge loop** — `KnowledgeLoopService` appends timestamped entries (files created/edited, tools used, semantic activity summary) to `.coderClaw/memory/YYYY-MM-DD.md` after every run; synced to Builderforce automatically when API key + clawId are present.
@@ -716,6 +779,45 @@ Run **complex multi-agent pipelines** at scale: parallel execution across hundre
 - **Builderforce sync** — workflow spec pull, persona export sync, project context push, artifact scope resolution, platform persona sync, usage quota monitoring with ≥ 80% budget warning.
 
 **Open items**: Architecture.md auto-update after structural edits threshold · ClawHub persona marketplace (download/install CLI flow).
+
+## 🗺️ Roadmap
+
+The items below are the next high-impact milestones, ordered by business priority. Items marked **P0** are blocking shipped features; **P1** are required for full enterprise readiness.
+
+### P0 — Blocking Today
+
+| Item | What it unlocks |
+| ---- | --------------- |
+| **Remote task result streaming** | Multi-claw orchestration actually returns results. Today `remote:<id>` steps complete but return empty output, making dependent workflow steps non-functional. Fix: `correlationId` round-trip on `ClawRelayDO` so the originating claw awaits the `remote.result` frame. |
+| **Execution WebSocket streaming** | Replaces 2-second polling loop in `clawlink-adapter.ts` with a server-push stream; cuts execution latency and load on the Builderforce relay. |
+| **Live Orchestration Workspace** (Builderforce SPA) | Real-time DAG view of running agents — task status, role, model, streaming output. Required to demo and sell the multi-agent story; Devin and Windsurf Cascade both ship this. |
+| **CoderClaw as MCP Provider** | Exposes `project_knowledge`, `codebase_search`, `git_history`, and `workflow_status` via the `/mcp` endpoint on the local gateway. Cursor and Continue.dev users can call CoderClaw tools without switching to the CoderClaw TUI — this is a distribution multiplier. |
+
+### P1 — Enterprise Readiness
+
+| Item | What it unlocks |
+| ---- | --------------- |
+| **Diff staging & inline approval API** | Agent file edits buffered for human review before landing on disk. Risk-averse teams (the highest-value buyer segment) require this. `/diff`, `/accept`, `/reject` commands are already in the TUI; the Builderforce-side `pending_diffs` table and relay frame complete the loop. |
+| **Spec & workflow storage API** | `/spec` workflow outputs (PRD, arch spec, task list) pushed to Builderforce and queryable by goal/status/project. Turns ephemeral planning runs into auditable, reviewable artifacts with a lifecycle. |
+| **Spec review + workflow portal SPA** | Web UI for product owners to view, review, and approve agent-generated specs, then trigger implementation workflows. |
+
+### P2 — Observability & Unit Economics
+
+| Item | What it unlocks |
+| ---- | --------------- |
+| **Token usage dashboard** | Historical context pressure, token spend, and compaction events per session. Required before any usage-based pricing model can be built. |
+| **Agent run audit trail** | Immutable, queryable log of every tool call (name, args, result, duration) per run. Required for SOC 2 / compliance-sensitive buyers. |
+| **Fleet capability management SPA** | Per-claw online status, reported capabilities, and declared capabilities — UI for the `remote:auto[caps]` routing already implemented in the orchestrator. |
+| **Persona registry API** | Team-shared agent personas synced from Builderforce to all claws via heartbeat response; no more manual YAML file distribution. |
+
+### P3 — Future Moat
+
+| Item | What it unlocks |
+| ---- | --------------- |
+| **Model cost tracking** | Per-session cost estimate, monthly budget alerts, per-project breakdown. Foundation for COGS control and chargeback. |
+| **Approval workflow API** | Agent requests human approval before destructive operations (`rm`, force-push, deploy). Relay frame triggers browser notification; execution is suspended until approved/rejected. |
+| **Spec import (GitHub Issues / Linear / Jira)** | `/spec import <url>` converts an issue tracker ticket into a Builderforce spec and starts the planning workflow. |
+| **Cross-claw memory sharing** | Opt-in memory sync between claws with tenant-scoped access control, deduplication by content hash, and `#private` tag filtering. |
 
 ## How it works (short)
 

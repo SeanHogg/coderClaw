@@ -5,6 +5,10 @@
 
 import type { SpawnSubagentContext } from "../agents/subagent-spawn.js";
 import { spawnSubagentDirect } from "../agents/subagent-spawn.js";
+import { loadConfig } from "../config/config.js";
+import { listAgentsForGateway } from "../gateway/session-utils.js";
+import { awaitLocalSubagentResult } from "../infra/local-result-broker.js";
+import { getLoadedSkills } from "../infra/skill-registry.js";
 import { globalTaskEngine } from "./task-engine.js";
 import type {
   AgentInfo,
@@ -65,8 +69,12 @@ export class LocalTransportAdapter implements TransportAdapter {
       );
 
       if (result.status === "accepted") {
-        // Task completed successfully
-        await globalTaskEngine.setTaskOutput(task.id, "Task completed successfully");
+        const output = await awaitLocalSubagentResult(
+          result.runId ?? "",
+          result.childSessionKey ?? "",
+          600_000,
+        );
+        await globalTaskEngine.setTaskOutput(task.id, output || "Task completed");
         await globalTaskEngine.updateTaskStatus(task.id, "completed");
       } else {
         // Task failed
@@ -102,59 +110,30 @@ export class LocalTransportAdapter implements TransportAdapter {
   }
 
   /**
-   * List available agents
+   * List available agents from the local config registry.
    */
   async listAgents(): Promise<AgentInfo[]> {
-    // TODO: Integrate with actual agent registry
-    return [
-      {
-        id: "general-purpose",
-        name: "General Purpose Agent",
-        description: "Full-capability agent for complex tasks",
-        capabilities: ["code", "analysis", "orchestration"],
-        model: "anthropic/claude-sonnet-4-20250514",
-        thinking: "medium",
-      },
-      {
-        id: "explore",
-        name: "Explore Agent",
-        description: "Fast agent for codebase exploration",
-        capabilities: ["grep", "glob", "view"],
-        model: "anthropic/claude-3-5-haiku-20241022",
-        thinking: "low",
-      },
-      {
-        id: "task",
-        name: "Task Agent",
-        description: "Agent for executing commands",
-        capabilities: ["bash", "test", "build"],
-        model: "anthropic/claude-3-5-haiku-20241022",
-        thinking: "low",
-      },
-    ];
+    const cfg = loadConfig();
+    const { agents } = listAgentsForGateway(cfg);
+    return agents.map((a) => ({
+      id: a.id,
+      name: a.identity?.name ?? a.name ?? a.id,
+      description: "",
+      capabilities: [],
+    }));
   }
 
   /**
-   * List available skills
+   * List skills loaded from the Builderforce skill registry at startup.
    */
   async listSkills(): Promise<SkillInfo[]> {
-    // TODO: Integrate with actual skill registry
-    return [
-      {
-        id: "coding-agent",
-        name: "Coding Agent",
-        description: "Interactive coding assistance",
-        version: "1.0.0",
-        enabled: true,
-      },
-      {
-        id: "github-integration",
-        name: "GitHub Integration",
-        description: "GitHub repository operations",
-        version: "1.0.0",
-        enabled: true,
-      },
-    ];
+    return getLoadedSkills().map((s) => ({
+      id: s.skillSlug,
+      name: s.name,
+      description: s.description ?? "",
+      version: "1.0.0",
+      enabled: true,
+    }));
   }
 
   /**

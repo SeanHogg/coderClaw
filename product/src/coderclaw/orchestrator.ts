@@ -7,6 +7,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
 import type { BuilderforceRelayService } from "../infra/builderforce-relay.js";
+import { awaitLocalSubagentResult } from "../infra/local-result-broker.js";
 import { awaitRemoteResult } from "../infra/remote-result-broker.js";
 import {
   dispatchToRemoteClaw,
@@ -504,10 +505,20 @@ export class AgentOrchestrator {
 
     if (result.status === "accepted") {
       task.childSessionKey = result.childSessionKey;
+
+      // Await the subagent's actual output so dependent tasks receive real context
+      // rather than a placeholder. spawnSubagentDirect is fire-and-forget; the
+      // local-result-broker subscribes to the lifecycle end event and fetches the
+      // session history to extract the last assistant message.
+      const rawOutput = await awaitLocalSubagentResult(
+        result.runId ?? "",
+        result.childSessionKey ?? "",
+        600_000,
+      );
+
       task.status = "completed";
       task.completedAt = new Date();
-
-      const output = `Task ${task.id} completed successfully`;
+      const output = rawOutput || `Task ${task.id} completed`;
       task.output = output;
       this.taskResults.set(task.id, output);
       emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
