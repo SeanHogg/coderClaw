@@ -164,7 +164,7 @@ export class BuilderforceRelayService implements IRelayService {
     status: "running" | "completed" | "failed" | "cancelled",
     extra?: { result?: string; errorMessage?: string },
   ): Promise<void> {
-    const base = this.opts.baseUrl.replace(/\/$/, "");
+    const base = normalizeBaseUrl(this.opts.baseUrl);
     const url = `${base}/api/claws/${this.opts.clawId}/executions/${executionId}/state`;
     try {
       await fetch(url, {
@@ -183,15 +183,14 @@ export class BuilderforceRelayService implements IRelayService {
   }
 
   constructor(private readonly opts: BuilderforceRelayOptions) {
-    const base = opts.baseUrl
+    const base = normalizeBaseUrl(opts.baseUrl)
       .replace(/^https:/, "wss:")
-      .replace(/^http:/, "ws:")
-      .replace(/\/$/, "");
+      .replace(/^http:/, "ws:");
     // API key is passed via Authorization header, not as a query param.
     // Query params appear in server access logs and CDN caches — headers are safer.
     this.upstreamWsUrl = `${base}/api/claws/${opts.clawId}/upstream`;
-    this.heartbeatHttpUrl = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${opts.clawId}/heartbeat`;
-    this.assignmentContextUrl = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${opts.clawId}/assignment-context`;
+    this.heartbeatHttpUrl = `${normalizeBaseUrl(opts.baseUrl)}/api/claws/${opts.clawId}/heartbeat`;
+    this.assignmentContextUrl = `${normalizeBaseUrl(opts.baseUrl)}/api/claws/${opts.clawId}/assignment-context`;
     this.gatewayWsUrl = opts.gatewayUrl ?? "ws://127.0.0.1:18789";
   }
 

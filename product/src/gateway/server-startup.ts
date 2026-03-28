@@ -27,6 +27,12 @@ import { CronPollerService } from "../infra/cron-poller.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { KnowledgeLoopService, setKnowledgeLoopService } from "../infra/knowledge-loop.js";
+import {
+  LocalResultBrokerAdapter,
+  RemoteAgentDispatcherAdapter,
+  SsmMemoryAdapter,
+  WorkflowTelemetryAdapter,
+} from "../infra/orchestrator-ports-adapter.js";
 import { fetchPlatformPersonas } from "../infra/platform-persona-sync.js";
 import { pushProjectContextToBuilderforce } from "../infra/project-context-push.js";
 import { checkAndWarnQuota } from "../infra/quota-monitor.js";
@@ -77,6 +83,9 @@ export async function startGatewaySidecars(params: {
   // re-hydrates any incomplete workflows that survived a prior crash/restart.
   // clawId is populated later (after credentials are loaded) via a second call.
   globalOrchestrator.setProjectRoot(params.defaultWorkspaceDir);
+  // Wire domain ports early — telemetry and local result broker are always needed.
+  globalOrchestrator.setTelemetryService(new WorkflowTelemetryAdapter());
+  globalOrchestrator.setLocalResultBroker(new LocalResultBrokerAdapter());
   const incompleteWorkflows = await globalOrchestrator.loadPersistedWorkflows();
   if (incompleteWorkflows.length > 0) {
     params.log.warn(
@@ -163,14 +172,12 @@ export async function startGatewaySidecars(params: {
   }
 
   if (params.cfg.hooks?.internal?.enabled) {
-    setTimeout(() => {
-      const hookEvent = createInternalHookEvent("gateway", "startup", "gateway:startup", {
-        cfg: params.cfg,
-        deps: params.deps,
-        workspaceDir: params.defaultWorkspaceDir,
-      });
-      void triggerInternalHook(hookEvent);
-    }, 250);
+    const hookEvent = createInternalHookEvent("gateway", "startup", "gateway:startup", {
+      cfg: params.cfg,
+      deps: params.deps,
+      workspaceDir: params.defaultWorkspaceDir,
+    });
+    void triggerInternalHook(hookEvent);
   }
 
   let pluginServices: PluginServicesHandle | null = null;
@@ -196,6 +203,8 @@ export async function startGatewaySidecars(params: {
     .then((svc) => {
       if (svc) {
         params.log.warn(`[ssm-memory] hippocampus layer started (gpu=${svc.gpuAvailable})`);
+        // Wire memory port now that the SSM service is initialised.
+        globalOrchestrator.setMemoryService(new SsmMemoryAdapter());
       }
     })
     .catch((err) => {
@@ -203,9 +212,7 @@ export async function startGatewaySidecars(params: {
     });
 
   if (shouldWakeFromRestartSentinel()) {
-    setTimeout(() => {
-      void scheduleRestartSentinelWake({ deps: params.deps });
-    }, 750);
+    void scheduleRestartSentinelWake({ deps: params.deps });
   }
 
   // Start the Builderforce upstream relay and knowledge loop if credentials are configured.
@@ -286,12 +293,10 @@ export async function startGatewaySidecars(params: {
           workspaceDir: params.defaultWorkspaceDir,
           log: params.log,
         });
-        // Enable remote claw-to-claw dispatch in the orchestrator
-        globalOrchestrator.setRemoteDispatchOptions({
-          baseUrl,
-          myClawId: String(clawId),
-          apiKey,
-        });
+        // Enable remote claw-to-claw dispatch in the orchestrator via the port interface.
+        globalOrchestrator.setRemoteDispatcher(
+          new RemoteAgentDispatcherAdapter({ baseUrl, myClawId: String(clawId), apiKey }),
+        );
         // Wire relay service for cross-claw context fetching (P4-2)
         if (builderforceRelay) {
           globalOrchestrator.setRelayService(builderforceRelay);

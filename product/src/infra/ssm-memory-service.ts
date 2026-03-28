@@ -8,6 +8,7 @@
  */
 
 import { logDebug } from "../logger.js";
+import { buildTeamMemoryContext as bridgeBuildTeamMemoryContext } from "./memory-bridge.js";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -236,43 +237,7 @@ export class SsmMemoryService {
    * (P4-5)
    */
   async buildTeamMemoryContext(): Promise<string> {
-    // Lazy import to avoid circular dependencies
-    let knowledgeLoop:
-      | {
-          pullTeamMemory?: (
-            limit?: number,
-          ) => Promise<Array<{ summary?: string; clawId?: string; timestamp?: string }>>;
-        }
-      | undefined;
-    try {
-      const mod = await import("./knowledge-loop.js");
-      // The KnowledgeLoopService singleton is managed externally; access via a
-      // module-level getter if exposed.  If not exposed, return empty string.
-      if (typeof mod.getKnowledgeLoopService === "function") {
-        knowledgeLoop = mod.getKnowledgeLoopService() as typeof knowledgeLoop;
-      }
-    } catch {
-      return "";
-    }
-    if (!knowledgeLoop?.pullTeamMemory) {
-      return "";
-    }
-    try {
-      const entries = await knowledgeLoop.pullTeamMemory(5);
-      if (!entries || entries.length === 0) {
-        return "";
-      }
-      const lines = ["[Team Memory Context]"];
-      for (const entry of entries) {
-        const who = entry.clawId ? `claw:${entry.clawId}` : "unknown";
-        const when = entry.timestamp ? ` (${entry.timestamp.slice(0, 10)})` : "";
-        lines.push(`- [${who}${when}] ${entry.summary ?? ""}`);
-      }
-      lines.push("[End Team Memory Context]");
-      return lines.join("\n") + "\n";
-    } catch {
-      return "";
-    }
+    return bridgeBuildTeamMemoryContext();
   }
 
   /**

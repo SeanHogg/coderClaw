@@ -51,7 +51,7 @@ export const clawFleetTool: AgentTool<typeof ClawFleetSchema, string> = {
 
     try {
       const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY");
-      const baseUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.coderclaw.ai";
+      const baseUrl = readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai";
 
       if (!apiKey) {
         return jsonResult({

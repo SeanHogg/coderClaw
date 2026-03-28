@@ -1,11 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+
+const DEFAULT_BUILDERFORCE_URL = "https://api.builderforce.ai";
 import { appendKnowledgeMemory } from "../coderclaw/project-context.js";
 import { logDebug } from "../logger.js";
 import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { onAgentEvent } from "./agent-events.js";
 import type { TeamMemoryEntry } from "./api-contract.js";
 import { syncCoderClawDirectory, type SyncCoderClawDirParams } from "./builderforce-directory-sync.js";
+import { registerKnowledgeLoop, registerTeamMemoryContextBuilder } from "./memory-bridge.js";
 import { getSsmMemoryService } from "./ssm-memory-service.js";
 
 /**
@@ -152,6 +155,24 @@ export class KnowledgeLoopService {
     if (this.unsub) {
       return;
     }
+    // Register with the memory bridge mediator so SsmMemoryService can access
+    // team memory without creating a circular dependency.
+    registerKnowledgeLoop(this);
+    registerTeamMemoryContextBuilder(async () => {
+      const entries = await this.pullTeamMemory(5);
+      const typed = entries as Array<{ summary?: string; clawId?: string; timestamp?: string }>;
+      if (!typed || typed.length === 0) {
+        return "";
+      }
+      const lines = ["[Team Memory Context]"];
+      for (const entry of typed) {
+        const who = entry.clawId ? `claw:${entry.clawId}` : "unknown";
+        const when = entry.timestamp ? ` (${entry.timestamp.slice(0, 10)})` : "";
+        lines.push(`- [${who}${when}] ${entry.summary ?? ""}`);
+      }
+      lines.push("[End Team Memory Context]");
+      return lines.join("\n") + "\n";
+    });
     this.unsub = onAgentEvent((evt) => {
       if (!this.unsub) {
         return; // stopped
@@ -263,7 +284,7 @@ export class KnowledgeLoopService {
     const syncParams: SyncCoderClawDirParams = {
       workspaceDir,
       apiKey,
-      baseUrl: baseUrl ?? "https://api.builderforce.ai",
+      baseUrl: baseUrl ?? DEFAULT_BUILDERFORCE_URL,
       clawId,
       projectId,
     };
@@ -288,7 +309,7 @@ export class KnowledgeLoopService {
     if (!apiKey || !clawId) {
       return;
     }
-    const url = `${normalizeBaseUrl(baseUrl ?? "https://api.builderforce.ai")}/api/teams/memory`;
+    const url = `${normalizeBaseUrl(baseUrl ?? DEFAULT_BUILDERFORCE_URL)}/api/teams/memory`;
     const payload = {
       clawId,
       runId,
@@ -337,7 +358,7 @@ export class KnowledgeLoopService {
     if (!apiKey) {
       return [];
     }
-    const url = `${normalizeBaseUrl(baseUrl ?? "https://api.builderforce.ai")}/api/teams/memory?limit=${limit}`;
+    const url = `${normalizeBaseUrl(baseUrl ?? DEFAULT_BUILDERFORCE_URL)}/api/teams/memory?limit=${limit}`;
     try {
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${apiKey}` },

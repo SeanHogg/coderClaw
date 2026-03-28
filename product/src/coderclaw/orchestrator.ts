@@ -7,21 +7,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
 import type { IRelayService } from "./relay-service.js";
-import { awaitLocalSubagentResult } from "../infra/local-result-broker.js";
-import { awaitRemoteResult } from "../infra/remote-result-broker.js";
-import {
-  dispatchToRemoteClaw,
-  selectClawByCapability,
-  type RemoteDispatchOptions,
-} from "../infra/remote-subagent.js";
-import { getSsmMemoryService } from "../infra/ssm-memory-service.js";
-import {
-  emitTaskEnd,
-  emitTaskStart,
-  emitWorkflowEnd,
-  emitWorkflowStart,
-  initTelemetry,
-} from "../infra/workflow-telemetry.js";
+import type {
+  IAgentMemoryService,
+  ILocalResultBroker,
+  IRemoteAgentDispatcher,
+  ITelemetryService,
+} from "./ports.js";
 import { logDebug } from "../logger.js";
 import { findAgentRole } from "./agent-roles.js";
 import {
@@ -79,11 +70,18 @@ export class AgentOrchestrator {
   private workflows = new Map<string, Workflow>();
   private taskResults = new Map<string, string>();
   private projectRoot: string | null = null;
-  private remoteDispatchOpts: RemoteDispatchOptions | null = null;
   /** Merged routing rules (defaults + user-defined from .coderClaw/routing-rules.json). */
   private routingRules: RoutingRule[] = DEFAULT_ROUTING_RULES;
   /** Relay service reference for cross-claw context fetching (P4-2). */
   private relayService: IRelayService | null = null;
+  /** Domain port: telemetry — injected by server-startup after credentials are known. */
+  private telemetry: ITelemetryService | null = null;
+  /** Domain port: memory recall — injected after SSM initialisation. */
+  private memoryService: IAgentMemoryService | null = null;
+  /** Domain port: remote claw dispatch — injected when BUILDERFORCE_API_KEY is present. */
+  private remoteDispatcher: IRemoteAgentDispatcher | null = null;
+  /** Domain port: local subagent result awaiting. */
+  private localResultBroker: ILocalResultBroker | null = null;
 
   /** Enable disk persistence for workflows and workflow telemetry. Call at gateway startup. */
   setProjectRoot(
@@ -93,7 +91,7 @@ export class AgentOrchestrator {
     linkApiKey?: string | null,
   ): void {
     this.projectRoot = root;
-    initTelemetry({ projectRoot: root, clawId, linkApiUrl, linkApiKey });
+    this.telemetry?.init({ projectRoot: root, clawId, linkApiUrl, linkApiKey });
     // Load user-defined routing rules asynchronously — non-fatal if absent
     void this.loadRoutingRules(root);
   }
@@ -117,13 +115,24 @@ export class AgentOrchestrator {
     }
   }
 
-  /**
-   * Configure remote dispatch credentials so "remote:<clawId>" workflow steps
-   * can delegate tasks to peer claws via Builderforce.
-   * Call once at gateway startup when BUILDERFORCE_API_KEY is present.
-   */
-  setRemoteDispatchOptions(opts: RemoteDispatchOptions): void {
-    this.remoteDispatchOpts = opts;
+  /** Inject the telemetry port. Call after credentials are known so spans are forwarded. */
+  setTelemetryService(svc: ITelemetryService): void {
+    this.telemetry = svc;
+  }
+
+  /** Inject the memory port. Call after SSM initialisation completes. */
+  setMemoryService(svc: IAgentMemoryService | null): void {
+    this.memoryService = svc;
+  }
+
+  /** Inject the remote dispatch port. Call when BUILDERFORCE_API_KEY is present. */
+  setRemoteDispatcher(dispatcher: IRemoteAgentDispatcher): void {
+    this.remoteDispatcher = dispatcher;
+  }
+
+  /** Inject the local result broker port. Call at gateway startup. */
+  setLocalResultBroker(broker: ILocalResultBroker): void {
+    this.localResultBroker = broker;
   }
 
   /**
@@ -216,7 +225,7 @@ export class AgentOrchestrator {
     }
 
     workflow.status = "running";
-    emitWorkflowStart(workflowId);
+    this.telemetry?.emitWorkflowStart(workflowId);
     const results = new Map<string, string>();
 
     // Execute tasks in dependency order
@@ -267,7 +276,7 @@ export class AgentOrchestrator {
     } else {
       workflow.status = "completed";
     }
-    emitWorkflowEnd(workflowId, workflow.status === "failed");
+    this.telemetry?.emitWorkflowEnd(workflowId, workflow.status === "failed");
     this.persistWorkflow(workflow);
 
     return results;
@@ -319,11 +328,10 @@ export class AgentOrchestrator {
   private async injectMemoryContext(taskDescription: string, prompt: string): Promise<string> {
     let prefix = "";
 
-    const ssmSvc = getSsmMemoryService();
-    if (ssmSvc) {
+    if (this.memoryService) {
       try {
         // Team memory context (P4-5)
-        const teamMemCtx = await ssmSvc.buildTeamMemoryContext();
+        const teamMemCtx = await this.memoryService.buildTeamMemoryContext();
         if (teamMemCtx) {
           prefix += teamMemCtx;
         }
@@ -332,7 +340,7 @@ export class AgentOrchestrator {
       }
 
       try {
-        const entries = await ssmSvc.recallSimilar(taskDescription, 5);
+        const entries = await this.memoryService.recallSimilar(taskDescription, 5);
         if (entries.length > 0) {
           const lines = ["[Memory Context]"];
           for (const entry of entries) {
@@ -360,7 +368,7 @@ export class AgentOrchestrator {
     task.status = "running";
     task.startedAt = new Date();
     this.persistWorkflow(workflow);
-    emitTaskStart(workflow.id, task.id, task.agentRole, task.description);
+    this.telemetry?.emitTaskStart(workflow.id, task.id, task.agentRole, task.description);
 
     // Build structured context block for this task
     let taskInput = this.buildStructuredContext(task, workflow);
@@ -392,12 +400,12 @@ export class AgentOrchestrator {
     // Remote dispatch: role "remote:<clawId>", "remote:auto", or "remote:auto[cap1,cap2]"
     // delegates the task to a peer claw via Builderforce.
     if (task.agentRole.startsWith("remote:")) {
-      if (!this.remoteDispatchOpts) {
+      if (!this.remoteDispatcher) {
         task.status = "failed";
         task.error =
           "Remote dispatch not configured — set BUILDERFORCE_API_KEY and builderforce.instanceId";
         task.completedAt = new Date();
-        emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
+        this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
         this.persistWorkflow(workflow);
         throw new Error(task.error);
       }
@@ -414,14 +422,14 @@ export class AgentOrchestrator {
               .filter(Boolean)
           : [];
         logDebug(`[orchestrator] capability routing — required: [${requiredCaps.join(", ")}]`);
-        const selected = await selectClawByCapability(this.remoteDispatchOpts, requiredCaps);
+        const selected = await this.remoteDispatcher.selectByCapability(requiredCaps);
         if (!selected) {
           task.status = "failed";
           task.error = requiredCaps.length
             ? `No online claw satisfies required capabilities: ${requiredCaps.join(", ")}`
             : "No online peer claws available for automatic routing";
           task.completedAt = new Date();
-          emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
+          this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
           this.persistWorkflow(workflow);
           throw new Error(task.error);
         }
@@ -454,18 +462,16 @@ export class AgentOrchestrator {
       }
 
       const correlationId = crypto.randomUUID();
-      const remoteResult = await dispatchToRemoteClaw(
-        this.remoteDispatchOpts,
-        targetClawId,
-        taskInput,
-        { correlationId, callbackClawId: this.remoteDispatchOpts.myClawId },
-      );
+      const remoteResult = await this.remoteDispatcher.dispatch(targetClawId, taskInput, {
+        correlationId,
+        callbackClawId: this.remoteDispatcher.myClawId ?? "",
+      });
       if (remoteResult.status === "accepted") {
         // Wait for the remote claw to send results back (up to 10 minutes).
         // Falls back to a placeholder if the remote claw does not support result callbacks.
         let output: string;
         try {
-          output = await awaitRemoteResult(correlationId, 600_000);
+          output = await this.remoteDispatcher.awaitResult(correlationId, 600_000);
         } catch {
           output = `Task ${task.id} dispatched to remote claw ${targetClawId} (result pending)`;
         }
@@ -473,14 +479,14 @@ export class AgentOrchestrator {
         task.completedAt = new Date();
         task.output = output;
         this.taskResults.set(task.id, output);
-        emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
+        this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
         this.persistWorkflow(workflow);
         return output;
       } else {
         task.status = "failed";
         task.error = remoteResult.error;
         task.completedAt = new Date();
-        emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
+        this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
         this.persistWorkflow(workflow);
         throw new Error(task.error);
       }
@@ -490,7 +496,7 @@ export class AgentOrchestrator {
     const roleConfig = findAgentRole(task.agentRole);
     if (!roleConfig) {
       const err = `Unknown agent role: ${task.agentRole}. Define it in .coderclaw/personas/ or use a built-in role.`;
-      emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, err);
+      this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, err);
       throw new Error(err);
     }
     const result = await spawnSubagentDirect(
@@ -510,18 +516,16 @@ export class AgentOrchestrator {
       // rather than a placeholder. spawnSubagentDirect is fire-and-forget; the
       // local-result-broker subscribes to the lifecycle end event and fetches the
       // session history to extract the last assistant message.
-      const rawOutput = await awaitLocalSubagentResult(
-        result.runId ?? "",
-        result.childSessionKey ?? "",
-        600_000,
-      );
+      const rawOutput = this.localResultBroker
+        ? await this.localResultBroker.awaitResult(result.runId ?? "", result.childSessionKey ?? "", 600_000)
+        : "";
 
       task.status = "completed";
       task.completedAt = new Date();
       const output = rawOutput || `Task ${task.id} completed`;
       task.output = output;
       this.taskResults.set(task.id, output);
-      emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
+      this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
       this.persistWorkflow(workflow);
 
       return output;
@@ -529,7 +533,7 @@ export class AgentOrchestrator {
       task.status = "failed";
       task.error = result.error || "Failed to spawn subagent";
       task.completedAt = new Date();
-      emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
+      this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
       this.persistWorkflow(workflow);
       throw new Error(task.error);
     }

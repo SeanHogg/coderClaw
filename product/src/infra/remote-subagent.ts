@@ -14,6 +14,7 @@
 
 import { createHmac } from "node:crypto";
 import { logDebug } from "../logger.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 /**
  * HMAC-SHA256 signature of the serialised payload using the claw's API key
@@ -68,7 +69,7 @@ export async function selectClawByCapability(
 ): Promise<FleetEntry | null> {
   // API key moved to Authorization header — never embed secrets in URLs
   // (query params appear in server access logs, browser history, and CDN caches).
-  const url = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/fleet`;
+  const url = `${normalizeBaseUrl(opts.baseUrl)}/api/claws/fleet`;
 
   try {
     const res = await fetch(url, {
@@ -182,7 +183,7 @@ export async function dispatchToRemoteClaw(
   // API key moved to Authorization header; payload is HMAC-signed so the
   // receiving endpoint can verify both the caller's identity and that the
   // task body has not been tampered with in transit.
-  const url = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${targetClawId}/forward`;
+  const url = `${normalizeBaseUrl(opts.baseUrl)}/api/claws/${targetClawId}/forward`;
 
   const payload: Record<string, unknown> = {
     type: "remote.task",
@@ -279,7 +280,7 @@ export async function dispatchResultToRemoteClaw(
   correlationId: string,
   result: string,
 ): Promise<void> {
-  const url = `${opts.baseUrl.replace(/\/$/, "")}/api/claws/${callbackClawId}/forward`;
+  const url = `${normalizeBaseUrl(opts.baseUrl)}/api/claws/${callbackClawId}/forward`;
   const payload = {
     type: "remote.task.result",
     correlationId,

@@ -15,6 +15,7 @@
 
 import { GatewayClient } from "../gateway/client.js";
 import { logDebug, logWarn } from "../logger.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 export type CronJobRecord = {
   id: string;
@@ -109,9 +110,7 @@ export class CronPollerService {
   }
 
   private async fetchAndSchedule(): Promise<void> {
-    const raw = this.opts.baseUrl;
-    const baseUrl = raw.endsWith("/") ? raw.slice(0, -1) : raw;
-    const url = `${baseUrl}/api/claws/${this.opts.clawId}/cron`;
+    const url = `${normalizeBaseUrl(this.opts.baseUrl)}/api/claws/${this.opts.clawId}/cron`;
     try {
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${this.opts.apiKey}` },
@@ -182,9 +181,7 @@ export class CronPollerService {
   }
 
   private async patchJobStatus(jobId: string, status: "success" | "error"): Promise<void> {
-    const raw = this.opts.baseUrl;
-    const baseUrl = raw.endsWith("/") ? raw.slice(0, -1) : raw;
-    const url = `${baseUrl}/api/claws/${this.opts.clawId}/cron/${jobId}`;
+    const url = `${normalizeBaseUrl(this.opts.baseUrl)}/api/claws/${this.opts.clawId}/cron/${jobId}`;
     try {
       await fetch(url, {
         method: "PATCH",

@@ -780,6 +780,43 @@ Run **complex multi-agent pipelines** at scale: parallel execution across hundre
 
 **Open items**: Architecture.md auto-update after structural edits threshold · ClawHub persona marketplace (download/install CLI flow).
 
+## 🏗️ Architecture Gaps
+
+This section tracks known architectural anti-patterns and layer violations. Items are categorised by severity and ordered by impact on maintainability.
+
+### Resolved (as of 2026.3.x)
+
+| Violation | Fix applied |
+| --------- | ----------- |
+| `orchestrator.ts` imported directly from `infra/` (domain→infra N-layer violation) | Port interfaces (`ITelemetryService`, `IAgentMemoryService`, `IRemoteAgentDispatcher`, `ILocalResultBroker`) extracted to `coderclaw/ports.ts`; concrete adapters in `infra/orchestrator-ports-adapter.ts`; injected at gateway startup |
+| `orchestrator-enhanced.ts` + `orchestrator-legacy.ts` — dead parallel implementations with `@deprecated` comment | Both files deleted; planning/adversarial workflow factories merged into `orchestrator.ts` |
+| `orchestrate-tool.ts` — `switch(workflow)` closed to extension (OCP violation) | Replaced with `WORKFLOW_REGISTRY` map; new workflow types added without modifying the tool |
+| `IRelayService` missing — orchestrator depended directly on `BuilderforceRelayService` (DIP violation) | `IRelayService` interface added in `coderclaw/relay-service.ts`; orchestrator now depends on abstraction |
+| 25+ inline `.replace(/\/+$/, "")` URL normalisation calls (DRY violation) | Extracted to `utils/normalize-base-url.ts`; all call sites updated |
+| `workflow-telemetry.ts` passed API key as URL query param (security) | Moved to `Authorization: Bearer` header |
+| `knowledge-loop.ts` ↔ `ssm-memory-service.ts` circular dependency | Broken via `infra/memory-bridge.ts` mediator; neither service imports the other |
+| `knowledge-loop.ts` computed `deriveActivitySummary()` twice per run (DRY) | Result cached in a local variable before use |
+| `server-startup.ts` called `loadProjectContext()` twice on the same path (DRY) | Reused the `ctx` value from the first call |
+| `AppShell.tsx` called `setState` inside a `useEffect` body (`react-hooks/set-state-in-effect`) | Refactored to derived state pattern; `localStorage.setItem` moved to a side-effect-only effect |
+| `PermissionDebuggerPanel.tsx` — `useMemo` called after early return (`rules-of-hooks`) | Moved `useMemo` before the guard clause |
+| `ClawProjectsContent.tsx` — `load` not in `useEffect` deps (`exhaustive-deps`) | Wrapped in `useCallback([clawId])` |
+| `content-manager/[id]/page.tsx` — bare `<img>` (Next.js `next/image` warning) | Replaced with `<Image fill>` |
+| `layout.tsx` — GTM `<script>` without `next/script` strategy; Google Fonts `<link>` instead of `next/font/google` | Replaced with `<Script strategy="afterInteractive">` and `JetBrains_Mono` from `next/font/google` |
+| Wrong default URL `api.coderclaw.ai` in `claw-fleet-tool.ts` and `builderforce-directory-sync.ts` | Corrected to `api.builderforce.ai` |
+| `dependsOn` arrays in workflow factories used role names instead of task description strings (silent DAG failure) | Corrected to match full task description strings as used by `steps.findIndex()` |
+
+### Remaining Architectural Gaps
+
+| Gap | Location | Severity | Notes |
+| --- | -------- | -------- | ----- |
+| **Two-phase `globalOrchestrator` construction** | `coderclaw/orchestrator.ts:737`, `gateway/server-startup.ts` | Medium | `AgentOrchestrator` is exported as a module-level singleton and configured incrementally via 5+ setter calls. Proper fix: constructor injection with a factory function, but requires splitting the module. Acceptable given the constraint that credentials are only available after config loading. |
+| **`project-context.ts` — 600-line God Object** | `coderclaw/project-context.ts` | Medium | File owns 7 concerns: workflow persistence, knowledge memory, workspace state, `.coderClaw/` directory resolution, spec I/O, project YAML loading, and Builderforce field updates. Each concern should be a dedicated module. |
+| **`startGatewaySidecars()` — 14-responsibility function** | `gateway/server-startup.ts` | Medium | Single function sets up: session lock cleanup, orchestrator, browser control, Gmail watcher, model validation, hooks, channels, internal hooks, plugin services, memory backend, SSM memory, Builderforce relay, knowledge loop, and cron poller. Violates SRP. Each subsystem warrants its own `startXxx()` function. |
+| **`BuilderforceRelayService` — 11-responsibility class** | `infra/builderforce-relay.ts` | Medium | One class handles: WS connection, heartbeat, ping/pong, reconnect, assignment context fetch, remote dispatch, execution lifecycle, spec sync, approval gate, channel routing, and peer-result callbacks. Should be decomposed into focused adapters. |
+| **ISP violation in `CoderClawToolsOptions`** | `agents/coderclaw-tools.ts` | Low | The options interface has 22 fields. Callers passing `{}` implicitly depend on all of them as optional. Group into sub-interfaces by concern (session, workflow, channels, credentials). |
+| **Anemic `Task`/`Workflow` domain entities** | `coderclaw/orchestrator.ts` | Low | `Task` and `Workflow` are plain data structs with no behaviour. Business rules (e.g. "a completed task cannot transition to running") live in the orchestrator service rather than on the entity. Wrapping with proper aggregate roots would enforce invariants. |
+| **Module-level mutable singletons** | `infra/workflow-telemetry.ts`, `infra/ssm-memory-service.ts`, `infra/approval-gate.ts` | Low | Module-level `let` variables act as global mutable state; makes unit testing require import-level mocking. Prefer class-based service objects with explicit lifecycle (as already done for `BuilderforceRelayService`, `KnowledgeLoopService`). |
+
 ## 🗺️ Roadmap
 
 The items below are the next high-impact milestones, ordered by business priority. Items marked **P0** are blocking shipped features; **P1** are required for full enterprise readiness.

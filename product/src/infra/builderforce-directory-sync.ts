@@ -162,7 +162,7 @@ export async function syncCoderClawDirectoryOnStartup(params: {
   log: SyncLog;
 }): Promise<void> {
   const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
-  const baseUrl = normalizeBaseUrl(readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.coderclaw.ai");
+  const baseUrl = normalizeBaseUrl(readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai");
   if (!apiKey) {
     return;
   }

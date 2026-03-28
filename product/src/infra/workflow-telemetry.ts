@@ -14,6 +14,7 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { logDebug } from "../logger.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 export type SpanKind =
   | "workflow.start"
@@ -122,7 +123,7 @@ function syncSpanToBuilderforce(span: WorkflowSpan): void {
     return;
   }
 
-  const base = linkApiUrl.replace(/\/$/, "");
+  const base = normalizeBaseUrl(linkApiUrl);
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${linkApiKey}`,
@@ -185,15 +186,16 @@ function syncSpanToBuilderforce(span: WorkflowSpan): void {
 /** Forward span to Builderforce OTel ingest endpoint (fire-and-forget). */
 function forwardSpanToOtelProxy(span: WorkflowSpan): void {
   if (!linkApiUrl || !linkApiKey || !knownClawId) return;
-  const base = linkApiUrl.replace(/\/$/, "");
+  const base = normalizeBaseUrl(linkApiUrl);
   const clawIdNum = parseInt(knownClawId, 10);
   if (Number.isNaN(clawIdNum)) return;
 
-  const url = `${base}/api/telemetry/spans?clawId=${clawIdNum}&key=${encodeURIComponent(linkApiKey)}`;
+  const url = `${base}/api/telemetry/spans?clawId=${clawIdNum}`;
   fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${linkApiKey}`,
       ...(span.traceId ? { "X-Trace-Id": span.traceId } : {}),
     },
     body: JSON.stringify([span]),
