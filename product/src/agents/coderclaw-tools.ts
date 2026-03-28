@@ -34,9 +34,17 @@ import { createTtsTool } from "./tools/tts-tool.js";
 import { createWebFetchTool, createWebSearchTool } from "./tools/web-tools.js";
 import { resolveWorkspaceRoot } from "./workspace-dir.js";
 
-export function createCoderClawTools(options?: {
+/** Sandbox and filesystem configuration. */
+export type CoderClawToolsSandboxOptions = {
   sandboxBrowserBridgeUrl?: string;
   allowHostBrowserControl?: boolean;
+  sandboxRoot?: string;
+  sandboxFsBridge?: SandboxFsBridge;
+  sandboxed?: boolean;
+};
+
+/** Agent identity and channel routing. */
+export type CoderClawToolsAgentOptions = {
   agentSessionKey?: string;
   agentChannel?: GatewayMessageChannel;
   agentAccountId?: string;
@@ -51,29 +59,43 @@ export function createCoderClawTools(options?: {
   /** Group space label for channel-level tool policy inheritance. */
   agentGroupSpace?: string | null;
   agentDir?: string;
-  sandboxRoot?: string;
-  sandboxFsBridge?: SandboxFsBridge;
-  workspaceDir?: string;
-  sandboxed?: boolean;
-  config?: CoderClawConfig;
-  pluginToolAllowlist?: string[];
-  /** Current channel ID for auto-threading (Slack). */
-  currentChannelId?: string;
-  /** Current thread timestamp for auto-threading (Slack). */
-  currentThreadTs?: string;
-  /** Reply-to mode for Slack auto-threading. */
-  replyToMode?: "off" | "first" | "all";
-  /** Mutable ref to track if a reply was sent (for "first" mode). */
-  hasRepliedRef?: { value: boolean };
-  /** If true, the model has native vision capability */
+  /** If true, the model has native vision capability. */
   modelHasVision?: boolean;
   /** Explicit agent ID override for cron/hook sessions. */
   requesterAgentIdOverride?: string;
+};
+
+/** Slack-specific auto-threading options. */
+export type CoderClawToolsSlackOptions = {
+  /** Current channel ID for auto-threading. */
+  currentChannelId?: string;
+  /** Current thread timestamp for auto-threading. */
+  currentThreadTs?: string;
+  /** Reply-to mode for auto-threading. */
+  replyToMode?: "off" | "first" | "all";
+  /** Mutable ref to track if a reply was sent (for "first" mode). */
+  hasRepliedRef?: { value: boolean };
+};
+
+/** Message tool and feature-flag options. */
+export type CoderClawToolsFeatureOptions = {
   /** Require explicit message targets (no implicit last-route sends). */
   requireExplicitMessageTarget?: boolean;
   /** If true, omit the message tool from the tool list. */
   disableMessageTool?: boolean;
-}): AnyAgentTool[] {
+  pluginToolAllowlist?: string[];
+};
+
+/** All options for createCoderClawTools, composed from focused sub-interfaces. */
+export type CoderClawToolsOptions = {
+  workspaceDir?: string;
+  config?: CoderClawConfig;
+} & CoderClawToolsSandboxOptions &
+  CoderClawToolsAgentOptions &
+  CoderClawToolsSlackOptions &
+  CoderClawToolsFeatureOptions;
+
+export function createCoderClawTools(options?: CoderClawToolsOptions): AnyAgentTool[] {
   const workspaceDir = resolveWorkspaceRoot(options?.workspaceDir);
   const imageTool = options?.agentDir?.trim()
     ? createImageTool({

@@ -30,6 +30,7 @@ import {
 import { resolveRemoteResult } from "./remote-result-broker.js";
 import { dispatchResultToRemoteClaw, type RemoteDispatchOptions } from "./remote-subagent.js";
 import { setRelayHook } from "./workflow-telemetry.js";
+import { RelayHeartbeat, RelayLogPoller, RelayPresencePoller } from "./builderforce-relay-helpers.js";
 
 function extractChatText(message: unknown): string {
   if (!message || typeof message !== "object") {
@@ -83,10 +84,9 @@ export class BuilderforceRelayService implements IRelayService {
   private ws: WebSocket | null = null;
   private closed = false;
   private backoffMs = 1000;
-  private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
-  private logsTimer: ReturnType<typeof setInterval> | null = null;
-  private logsCursor: number | undefined;
-  private presenceTimer: ReturnType<typeof setInterval> | null = null;
+  private readonly heartbeat: RelayHeartbeat;
+  private readonly logPoller: RelayLogPoller;
+  private readonly presencePoller: RelayPresencePoller;
   private gatewayClient: GatewayClient | null = null;
   /** executionId from the last task.assign / task.broadcast dispatch, if any. */
   private pendingExecutionId: number | null = null;
@@ -192,6 +192,20 @@ export class BuilderforceRelayService implements IRelayService {
     this.heartbeatHttpUrl = `${normalizeBaseUrl(opts.baseUrl)}/api/claws/${opts.clawId}/heartbeat`;
     this.assignmentContextUrl = `${normalizeBaseUrl(opts.baseUrl)}/api/claws/${opts.clawId}/assignment-context`;
     this.gatewayWsUrl = opts.gatewayUrl ?? "ws://127.0.0.1:18789";
+
+    this.heartbeat = new RelayHeartbeat({
+      heartbeatUrl: this.heartbeatHttpUrl,
+      apiKey: opts.apiKey,
+      workspaceDir: opts.workspaceDir,
+    });
+    this.logPoller = new RelayLogPoller(
+      () => this.gatewayClient,
+      (msg) => this.sendToRelay(msg),
+    );
+    this.presencePoller = new RelayPresencePoller(
+      () => this.gatewayClient,
+      (msg) => this.sendToRelay(msg),
+    );
   }
 
   /** Set remote dispatch options so result callbacks can be sent back to the originating claw. */
@@ -294,9 +308,9 @@ export class BuilderforceRelayService implements IRelayService {
   stop(): void {
     this.closed = true;
     setRelayHook(null); // deregister so no dangling sends after stop
-    this.clearHeartbeat();
-    this.clearLogsPolling();
-    this.clearPresencePolling();
+    this.heartbeat.clear();
+    this.logPoller.clear();
+    this.presencePoller.clear();
     this.ws?.close(1000, "stopped");
     this.ws = null;
     this.gatewayClient?.stop();
@@ -363,7 +377,7 @@ export class BuilderforceRelayService implements IRelayService {
     ws.on("open", () => {
       logWarn("[builderforce-relay] upstream connected");
       this.backoffMs = 1000;
-      this.scheduleHeartbeat();
+      this.heartbeat.schedule();
       void this.syncAssignmentContext("ws-open");
     });
 
@@ -389,7 +403,7 @@ export class BuilderforceRelayService implements IRelayService {
     ws.on("close", () => {
       if (this.ws === ws) {
         this.ws = null;
-        this.clearHeartbeat();
+        this.heartbeat.clear();
         logWarn("[builderforce-relay] upstream disconnected — reconnecting…");
         this.scheduleReconnect();
       }
@@ -441,11 +455,11 @@ export class BuilderforceRelayService implements IRelayService {
         break;
 
       case "logs.subscribe":
-        this.startLogsPolling(true);
+        this.logPoller.start(true);
         break;
 
       case "presence.subscribe":
-        this.startPresencePolling();
+        this.presencePoller.start();
         break;
 
       case "rpc.call": {
@@ -612,118 +626,8 @@ export class BuilderforceRelayService implements IRelayService {
     }
   }
 
-  private mapLogLine(line: string): { ts: string; level: string; message: string } {
-    const fallback = { ts: new Date().toISOString(), level: "info", message: line };
-    try {
-      const parsed = JSON.parse(line) as {
-        time?: string;
-        _meta?: { logLevelName?: string };
-        1?: unknown;
-        message?: unknown;
-        0?: unknown;
-      };
-      const level =
-        typeof parsed?._meta?.logLevelName === "string"
-          ? parsed._meta.logLevelName.toLowerCase()
-          : "info";
-      const message =
-        typeof parsed?.[1] === "string"
-          ? parsed[1]
-          : typeof parsed?.message === "string"
-            ? parsed.message
-            : typeof parsed?.[0] === "string"
-              ? parsed[0]
-              : line;
-      return {
-        ts: typeof parsed?.time === "string" ? parsed.time : fallback.ts,
-        level,
-        message,
-      };
-    } catch {
-      return fallback;
-    }
-  }
-
-  private async pollLogsOnce(): Promise<void> {
-    if (!this.gatewayClient) {
-      return;
-    }
-    try {
-      const res = await this.gatewayClient.request("logs.tail", {
-        cursor: this.logsCursor,
-        limit: 500,
-        maxBytes: 250_000,
-      });
-
-      if (typeof res.cursor === "number" && Number.isFinite(res.cursor)) {
-        this.logsCursor = res.cursor;
-      }
-      const lines = Array.isArray(res.lines)
-        ? res.lines.filter((line): line is string => typeof line === "string")
-        : [];
-      for (const line of lines) {
-        const mapped = this.mapLogLine(line);
-        this.sendToRelay({
-          type: "log",
-          level: mapped.level,
-          message: mapped.message,
-          ts: mapped.ts,
-        });
-      }
-    } catch (err) {
-      logDebug(`[builderforce-relay] logs.tail failed: ${String(err)}`);
-    }
-  }
-
-  private startLogsPolling(resetCursor: boolean): void {
-    if (resetCursor) {
-      this.logsCursor = undefined;
-    }
-    if (this.logsTimer !== null) {
-      return;
-    }
-    void this.pollLogsOnce();
-    this.logsTimer = setInterval(() => {
-      void this.pollLogsOnce();
-    }, 2_000);
-  }
-
-  private clearLogsPolling(): void {
-    if (this.logsTimer !== null) {
-      clearInterval(this.logsTimer);
-      this.logsTimer = null;
-    }
-  }
-
-  private async pollPresenceOnce(): Promise<void> {
-    if (!this.gatewayClient) {
-      return;
-    }
-    try {
-      const res = await this.gatewayClient.request("system-presence", {});
-      const entries = Array.isArray(res) ? res : [];
-      this.sendToRelay({ type: "presence.snapshot", entries });
-    } catch (err) {
-      logDebug(`[builderforce-relay] system-presence failed: ${String(err)}`);
-    }
-  }
-
-  private startPresencePolling(): void {
-    if (this.presenceTimer !== null) {
-      return;
-    }
-    void this.pollPresenceOnce();
-    this.presenceTimer = setInterval(() => {
-      void this.pollPresenceOnce();
-    }, 5_000);
-  }
-
-  private clearPresencePolling(): void {
-    if (this.presenceTimer !== null) {
-      clearInterval(this.presenceTimer);
-      this.presenceTimer = null;
-    }
-  }
+  // Heartbeat, log polling, and presence polling are handled by focused helpers:
+  // RelayHeartbeat, RelayLogPoller, RelayPresencePoller (builderforce-relay-helpers.ts)
 
   private scheduleReconnect(): void {
     if (this.closed) {
@@ -872,48 +776,7 @@ export class BuilderforceRelayService implements IRelayService {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Heartbeat — HTTP PATCH to keep lastSeenAt fresh between WS reconnects
-  // ---------------------------------------------------------------------------
-
-  private scheduleHeartbeat(): void {
-    this.clearHeartbeat();
-    void this.sendHeartbeat(); // immediate on connect
-    this.heartbeatTimer = setInterval(() => void this.sendHeartbeat(), 5 * 60 * 1000);
-  }
-
-  private clearHeartbeat(): void {
-    if (this.heartbeatTimer !== null) {
-      clearInterval(this.heartbeatTimer);
-      this.heartbeatTimer = null;
-    }
-  }
-
-  private async sendHeartbeat(): Promise<void> {
-    try {
-      const machineProfile = buildLocalMachineProfile({
-        workspaceDirectory: this.opts.workspaceDir,
-        rootInstallDirectory: process.cwd(),
-        gatewayPort: 18789,
-        tunnelUrl: process.env.CODERCLAW_PUBLIC_TUNNEL_URL,
-        tunnelStatus: process.env.CODERCLAW_PUBLIC_TUNNEL_URL ? "connected" : "none",
-      });
-      await fetch(this.heartbeatHttpUrl, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.opts.apiKey}`,
-        },
-        body: JSON.stringify({
-          capabilities: ["chat", "tasks", "relay", "remote-dispatch"],
-          machineProfile,
-        }),
-        signal: AbortSignal.timeout(10_000),
-      });
-    } catch (err) {
-      logDebug(`[builderforce-relay] heartbeat failed: ${String(err)}`);
-    }
-  }
+  // Heartbeat → delegated to this.heartbeat (RelayHeartbeat in builderforce-relay-helpers.ts)
 
   private async syncAssignmentContext(reason: string): Promise<void> {
     if (!this.opts.workspaceDir) {

@@ -33,6 +33,20 @@ export type { SpawnSubagentContext } from "../agents/subagent-spawn.js";
 
 export type TaskStatus = "pending" | "running" | "completed" | "failed" | "cancelled";
 
+/** Valid status transitions for a Task. Encodes the domain invariant in one place. */
+const VALID_TASK_TRANSITIONS: Record<TaskStatus, readonly TaskStatus[]> = {
+  pending: ["running", "cancelled"],
+  running: ["completed", "failed", "cancelled"],
+  completed: [],
+  failed: ["pending"], // allow retry
+  cancelled: [],
+};
+
+/** Returns true when transitioning `current → next` is a valid domain state change. */
+export function canTransitionTaskTo(current: TaskStatus, next: TaskStatus): boolean {
+  return (VALID_TASK_TRANSITIONS[current] as readonly string[]).includes(next);
+}
+
 export type Task = {
   id: string;
   description: string;
@@ -61,6 +75,15 @@ export type Workflow = {
   tasks: Map<string, Task>;
   status: TaskStatus;
   createdAt: Date;
+};
+
+/** Partial port injection bag — pass to `globalOrchestrator.configure()` at startup. */
+export type OrchestratorConfig = {
+  telemetry?: ITelemetryService;
+  memoryService?: IAgentMemoryService | null;
+  remoteDispatcher?: IRemoteAgentDispatcher;
+  localResultBroker?: ILocalResultBroker;
+  relayService?: IRelayService;
 };
 
 /**
@@ -115,30 +138,42 @@ export class AgentOrchestrator {
     }
   }
 
-  /** Inject the telemetry port. Call after credentials are known so spans are forwarded. */
+  /**
+   * Inject one or more domain ports in a single call.
+   * Preferred over the individual setter shims below.
+   * Any field left undefined is left unchanged.
+   */
+  configure(config: OrchestratorConfig): void {
+    if (config.telemetry !== undefined) this.telemetry = config.telemetry;
+    if (config.memoryService !== undefined) this.memoryService = config.memoryService;
+    if (config.remoteDispatcher !== undefined) this.remoteDispatcher = config.remoteDispatcher;
+    if (config.localResultBroker !== undefined) this.localResultBroker = config.localResultBroker;
+    if (config.relayService !== undefined) this.relayService = config.relayService;
+  }
+
+  // ── Single-port shims (kept for backward compatibility) ──────────────────────
+
+  /** @deprecated Use configure({ telemetry }) instead. */
   setTelemetryService(svc: ITelemetryService): void {
     this.telemetry = svc;
   }
 
-  /** Inject the memory port. Call after SSM initialisation completes. */
+  /** @deprecated Use configure({ memoryService }) instead. */
   setMemoryService(svc: IAgentMemoryService | null): void {
     this.memoryService = svc;
   }
 
-  /** Inject the remote dispatch port. Call when BUILDERFORCE_API_KEY is present. */
+  /** @deprecated Use configure({ remoteDispatcher }) instead. */
   setRemoteDispatcher(dispatcher: IRemoteAgentDispatcher): void {
     this.remoteDispatcher = dispatcher;
   }
 
-  /** Inject the local result broker port. Call at gateway startup. */
+  /** @deprecated Use configure({ localResultBroker }) instead. */
   setLocalResultBroker(broker: ILocalResultBroker): void {
     this.localResultBroker = broker;
   }
 
-  /**
-   * Register the BuilderforceRelayService so the orchestrator can fetch remote
-   * context bundles (P4-2) before dispatching to a remote claw.
-   */
+  /** @deprecated Use configure({ relayService }) instead. */
   setRelayService(relay: IRelayService): void {
     this.relayService = relay;
   }

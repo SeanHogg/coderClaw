@@ -3,13 +3,13 @@
  *
  * Personas are agent roles that can be:
  *  - Shipped as built-ins in coderClaw core
- *  - Installed from the ClawHub marketplace (`clawhub install <persona>`)
+ *  - Installed from the Builderforce.ai Marketplace (synced via Builderforce)
  *  - Assigned to a specific claw instance via Builderforce
  *  - Defined locally in `.coderClaw/personas/*.yaml` (project-scoped)
  *  - Defined globally in `~/.coderclaw/personas/*.yaml` (user-global)
  *
  * Loading precedence (highest wins):
- *   builderforce-assigned > clawhub > project-local > user-global > builtin
+ *   builderforce-assigned > marketplace > project-local > user-global > builtin
  */
 
 import fs from "node:fs/promises";
@@ -51,7 +51,7 @@ export class PersonaRegistry {
     "builtin",
     "user-global",
     "project-local",
-    "clawhub",
+    "marketplace",
     "builderforce-assigned",
   ];
 
@@ -216,9 +216,10 @@ export async function loadPersonaFromFile(
     // Extract plugin-specific metadata (nested under `pluginMetadata:` or top-level)
     const pluginMeta = raw.pluginMetadata as PersonaPlugin["pluginMetadata"] | undefined;
 
-    // Top-level shortcuts for common marketplace fields (PERSONA.yaml may use either form)
+    // Top-level shortcuts for common marketplace fields (PERSONA.yaml may use either form).
+    // "clawhubId" is accepted as a legacy alias for "marketplaceId".
     const mergedMeta: PersonaPlugin["pluginMetadata"] = {
-      clawhubId: metaStr(pluginMeta, raw, "clawhubId"),
+      marketplaceId: metaStr(pluginMeta, raw, "marketplaceId") ?? metaStr(pluginMeta, raw, "clawhubId"),
       version: metaStr(pluginMeta, raw, "version"),
       author: metaStr(pluginMeta, raw, "author"),
       authorUrl: metaStr(pluginMeta, raw, "authorUrl"),

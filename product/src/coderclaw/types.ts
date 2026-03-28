@@ -414,19 +414,19 @@ export type PersonaSource =
   | "builtin" // Shipped with coderClaw core
   | "user-global" // ~/.coderclaw/personas/ (user-installed, all projects)
   | "project-local" // .coderClaw/personas/ (project-scoped)
-  | "clawhub" // Installed from ClawHub marketplace
+  | "marketplace" // Installed from Builderforce.ai Marketplace
   | "builderforce-assigned"; // Pushed to this claw from Builderforce
 
 /**
  * Marketplace and versioning metadata for a persona plugin.
- * Present when a persona was installed from ClawHub or assigned via builderforce.ai.
+ * Present when a persona was installed from the Builderforce.ai Marketplace or assigned via builderforce.ai.
  */
 export type PersonaPluginMetadata = {
-  /** ClawHub marketplace identifier, e.g. "acme/senior-security-reviewer" */
-  clawhubId?: string;
+  /** Builderforce.ai Marketplace identifier, e.g. "acme/senior-security-reviewer" */
+  marketplaceId?: string;
   /** Semver version string, e.g. "1.2.0" */
   version?: string;
-  /** Publisher name on ClawHub */
+  /** Publisher name on Builderforce.ai Marketplace */
   author?: string;
   /** Author homepage or profile URL */
   authorUrl?: string;
@@ -434,7 +434,7 @@ export type PersonaPluginMetadata = {
   license?: string;
   /** Whether activating this persona requires a valid paid license */
   requiresLicense?: boolean;
-  /** ClawHub marketplace listing URL */
+  /** Builderforce.ai Marketplace listing URL */
   marketplaceUrl?: string;
   /** Minimum coderClaw version required (semver range) */
   coderClawVersion?: string;
@@ -446,12 +446,12 @@ export type PersonaPluginMetadata = {
 
 /**
  * A persona plugin — an `AgentRole` enriched with plugin lifecycle metadata.
- * Installed from the ClawHub marketplace or assigned to a claw via builderforce.ai.
+ * Installed from the Builderforce.ai Marketplace or assigned to a claw via builderforce.ai.
  */
 export type PersonaPlugin = AgentRole & {
   /** Where this persona was loaded from */
   source: PersonaSource;
-  /** Marketplace metadata (present for clawhub / builderforce-assigned personas) */
+  /** Marketplace metadata (present for marketplace / builderforce-assigned personas) */
   pluginMetadata?: PersonaPluginMetadata;
   /** Absolute path to the PERSONA.yaml file on disk; undefined for built-ins */
   filePath?: string;
@@ -467,8 +467,8 @@ export type PersonaPlugin = AgentRole & {
 export type PersonaAssignment = {
   /** Name of the persona to activate (must match a loaded PersonaPlugin) */
   name: string;
-  /** ClawHub ID — used for license verification on activation */
-  clawhubId?: string;
+  /** Builderforce.ai Marketplace ID — used for license verification on activation */
+  marketplaceId?: string;
   /** True when this assignment was pushed from Builderforce (not manually set) */
   assignedByBuilderforce?: boolean;
   /** ISO 8601 timestamp of when the assignment was created */

@@ -23,10 +23,13 @@ export type SkillsCheckOptions = {
   config?: CoderClawConfig;
 };
 
-// compute the tip text based on configuration (or default to ClawHub)
+// compute the tip text based on configuration (or default to Builderforce.ai Marketplace)
 function getSkillsHint(config?: CoderClawConfig): string {
-  const cli = config?.skills?.registry?.cli ?? "npx clawhub";
-  return `Tip: use \`${cli}\` to search, install, and sync skills.`;
+  const cli = config?.skills?.registry?.cli;
+  if (cli) {
+    return `Tip: use \`${cli}\` to search, install, and sync skills.`;
+  }
+  return `Tip: visit builderforce.ai/marketplace to browse and install skills.`;
 }
 
 function appendSkillsHint(output: string, json?: boolean, config?: CoderClawConfig): string {

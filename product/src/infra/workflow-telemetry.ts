@@ -51,233 +51,314 @@ export type WorkflowSpan = {
   estimatedCostUsd?: number;
 };
 
-let projectRoot: string | null = null;
-let knownClawId: string | null = null;
-let linkApiUrl: string | null = null;
-let linkApiKey: string | null = null;
-
 /**
- * Active trace ID for the current workflow (W3C-compatible, 32 hex chars).
- * Set automatically when a workflow starts and cleared when it ends.
- * Exposed via getActiveTraceId() so HTTP layers can forward it as X-Trace-Id.
+ * WorkflowTelemetryService encapsulates all mutable telemetry state.
+ * A single instance (exported as `telemetryService`) is shared across the process.
+ * Using a class rather than module-level `let` variables makes the state
+ * explicit, prevents accidental mutation from other modules, and allows the
+ * service to be replaced with a test double in unit tests.
  */
-let activeTraceId: string | null = null;
+export class WorkflowTelemetryService {
+  private projectRoot: string | null = null;
+  private clawId: string | null = null;
+  private apiUrl: string | null = null;
+  private apiKey: string | null = null;
+  /**
+   * Active trace ID for the current workflow (W3C-compatible, 32 hex chars).
+   * Set when a workflow starts, cleared when it ends.
+   * Exposed via getActiveTraceId() so HTTP layers can forward it as X-Trace-Id.
+   */
+  private activeTraceId: string | null = null;
+  /**
+   * Optional relay hook — called fire-and-forget after each span is appended.
+   * Set via setRelayHook() to push real-time workflow/task events to browser
+   * clients through the Builderforce WebSocket relay.
+   */
+  private relayHook: ((event: string, payload: unknown) => void) | null = null;
 
-/** Generate a W3C-compatible 128-bit trace ID as 32 lowercase hex chars. */
-function generateTraceId(): string {
-  return crypto.randomBytes(16).toString("hex");
+  /** Returns the active workflow trace ID, or null if no workflow is running. */
+  getActiveTraceId(): string | null {
+    return this.activeTraceId;
+  }
+
+  /**
+   * Register (or unregister) a relay hook.
+   * The relay service calls this once connected so spans are forwarded as live
+   * WebSocket frames to browser clients: workflow.update, task.started, task.completed.
+   */
+  setRelayHook(fn: ((event: string, payload: unknown) => void) | null): void {
+    this.relayHook = fn;
+  }
+
+  /**
+   * Initialise telemetry. Call once at gateway startup after projectRoot is known.
+   * @param opts.projectRoot  Absolute path to the workspace root (.coderClaw parent).
+   * @param opts.clawId       Optional claw instance ID to tag all spans with.
+   * @param opts.linkApiUrl   Builderforce.ai base URL for forwarding spans.
+   * @param opts.linkApiKey   Builderforce.ai API key for Bearer auth.
+   */
+  init(opts: {
+    projectRoot: string;
+    clawId?: string | null;
+    linkApiUrl?: string | null;
+    linkApiKey?: string | null;
+  }): void {
+    this.projectRoot = opts.projectRoot;
+    this.clawId = opts.clawId ?? null;
+    this.apiUrl = opts.linkApiUrl ?? null;
+    this.apiKey = opts.linkApiKey ?? null;
+  }
+
+  /**
+   * Generic span emitter for callers that construct spans directly (e.g. remote-subagent
+   * retry telemetry). Accepts a plain record so callers that import dynamically do not
+   * need to depend on the WorkflowSpan type.
+   */
+  emitSpan(span: Record<string, unknown>): void {
+    void this.appendSpan(span as WorkflowSpan);
+  }
+
+  emitWorkflowStart(workflowId: string, description?: string): void {
+    this.activeTraceId = crypto.randomBytes(16).toString("hex");
+    void this.appendSpan({
+      kind: "workflow.start",
+      workflowId,
+      description,
+      ts: new Date().toISOString(),
+      clawId: this.clawId ?? undefined,
+      traceId: this.activeTraceId,
+    });
+  }
+
+  emitWorkflowEnd(workflowId: string, failed: boolean): void {
+    void this.appendSpan({
+      kind: failed ? "workflow.fail" : "workflow.complete",
+      workflowId,
+      ts: new Date().toISOString(),
+      clawId: this.clawId ?? undefined,
+      traceId: this.activeTraceId ?? undefined,
+    });
+    this.activeTraceId = null;
+  }
+
+  emitTaskStart(
+    workflowId: string,
+    taskId: string,
+    agentRole: string,
+    description: string,
+  ): void {
+    void this.appendSpan({
+      kind: "task.start",
+      workflowId,
+      taskId,
+      agentRole,
+      description,
+      ts: new Date().toISOString(),
+      clawId: this.clawId ?? undefined,
+      traceId: this.activeTraceId ?? undefined,
+    });
+  }
+
+  emitTaskEnd(
+    workflowId: string,
+    taskId: string,
+    agentRole: string,
+    startedAt: Date,
+    error?: string,
+    metrics?: {
+      model?: string;
+      inputTokens?: number;
+      outputTokens?: number;
+      estimatedCostUsd?: number;
+    },
+  ): void {
+    const durationMs = Date.now() - startedAt.getTime();
+    void this.appendSpan({
+      kind: error !== undefined ? "task.fail" : "task.complete",
+      workflowId,
+      taskId,
+      agentRole,
+      ts: new Date().toISOString(),
+      durationMs,
+      error,
+      clawId: this.clawId ?? undefined,
+      traceId: this.activeTraceId ?? undefined,
+      model: metrics?.model,
+      inputTokens: metrics?.inputTokens,
+      outputTokens: metrics?.outputTokens,
+      estimatedCostUsd: metrics?.estimatedCostUsd,
+    });
+  }
+
+  // ── Private helpers ───────────────────────────────────────────────────────
+
+  private async appendSpan(span: WorkflowSpan): Promise<void> {
+    if (!this.projectRoot) return;
+
+    this.syncToBuilderforce(span);
+    this.forwardToOtelProxy(span);
+
+    const relayEvent = this.spanToRelayEvent(span.kind);
+    if (this.relayHook && relayEvent) {
+      try {
+        this.relayHook(relayEvent, span);
+      } catch {
+        // relay hook errors must never block telemetry writes
+      }
+    }
+
+    try {
+      const dir = path.join(this.projectRoot, ".coderClaw", "telemetry");
+      await fs.mkdir(dir, { recursive: true });
+      const date = new Date().toISOString().slice(0, 10);
+      const file = path.join(dir, `${date}.jsonl`);
+      await fs.appendFile(file, JSON.stringify(span) + "\n", "utf8");
+    } catch (err) {
+      logDebug(`[telemetry] failed to write span: ${String(err)}`);
+    }
+  }
+
+  /**
+   * Fire-and-forget: forward a span to Builderforce.ai workflow API.
+   * Maps WorkflowSpan kinds to the appropriate REST calls:
+   *   workflow.start    → POST  /api/workflows          (upsert; status=running)
+   *   workflow.complete → POST  /api/workflows          (upsert; status=completed)
+   *   workflow.fail     → POST  /api/workflows          (upsert; status=failed)
+   *   task.start        → POST  /api/workflows/:wfId/tasks  (create with status=running)
+   *   task.complete     → PATCH /api/workflows/:wfId/tasks/:tid  (status=completed)
+   *   task.fail         → PATCH /api/workflows/:wfId/tasks/:tid  (status=failed)
+   */
+  private syncToBuilderforce(span: WorkflowSpan): void {
+    if (!this.apiUrl || !this.apiKey || !this.clawId) return;
+
+    const base = normalizeBaseUrl(this.apiUrl);
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${this.apiKey}`,
+      "X-Claw-Id": this.clawId,
+    };
+    if (span.traceId) headers["X-Trace-Id"] = span.traceId;
+
+    const doFetch = (url: string, method: string, body: unknown) =>
+      fetch(url, { method, headers, body: JSON.stringify(body) }).catch((err) =>
+        logDebug(`[telemetry] builderforce sync failed (${span.kind}): ${String(err)}`),
+      );
+
+    switch (span.kind) {
+      case "workflow.start":
+        void doFetch(`${base}/api/workflows`, "POST", {
+          id: span.workflowId,
+          status: "running",
+          description: span.description,
+        });
+        break;
+      case "workflow.complete":
+        void doFetch(`${base}/api/workflows`, "POST", {
+          id: span.workflowId,
+          status: "completed",
+        });
+        break;
+      case "workflow.fail":
+        void doFetch(`${base}/api/workflows`, "POST", {
+          id: span.workflowId,
+          status: "failed",
+        });
+        break;
+      case "task.start":
+        void doFetch(`${base}/api/workflows/${span.workflowId}/tasks`, "POST", {
+          id: span.taskId,
+          agentRole: span.agentRole ?? "agent",
+          description: span.description ?? "",
+          status: "running",
+          startedAt: span.ts,
+        });
+        break;
+      case "task.complete":
+        void doFetch(
+          `${base}/api/workflows/${span.workflowId}/tasks/${span.taskId}`,
+          "PATCH",
+          { status: "completed", completedAt: span.ts },
+        );
+        break;
+      case "task.fail":
+        void doFetch(
+          `${base}/api/workflows/${span.workflowId}/tasks/${span.taskId}`,
+          "PATCH",
+          { status: "failed", error: span.error, completedAt: span.ts },
+        );
+        break;
+    }
+  }
+
+  /** Forward span to Builderforce OTel ingest endpoint (fire-and-forget). */
+  private forwardToOtelProxy(span: WorkflowSpan): void {
+    if (!this.apiUrl || !this.apiKey || !this.clawId) return;
+    const clawIdNum = parseInt(this.clawId, 10);
+    if (Number.isNaN(clawIdNum)) return;
+
+    const base = normalizeBaseUrl(this.apiUrl);
+    fetch(`${base}/api/telemetry/spans?clawId=${clawIdNum}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+        ...(span.traceId ? { "X-Trace-Id": span.traceId } : {}),
+      },
+      body: JSON.stringify([span]),
+    }).catch((err) => logDebug(`[telemetry] otel proxy forward failed: ${String(err)}`));
+  }
+
+  private spanToRelayEvent(kind: SpanKind): string | null {
+    switch (kind) {
+      case "workflow.start":
+      case "workflow.complete":
+      case "workflow.fail":
+        return "workflow.update";
+      case "task.start":
+        return "task.started";
+      case "task.complete":
+      case "task.fail":
+        return "task.completed";
+      default:
+        return null;
+    }
+  }
 }
 
-/** Returns the active workflow trace ID, or null if no workflow is running. */
+/** Process-wide singleton. Use the module-level shims below to interact with it. */
+export const telemetryService = new WorkflowTelemetryService();
+
+// ── Module-level shims (backward-compatible API) ──────────────────────────────
+// These delegate to the singleton so existing callers (builderforce-relay.ts,
+// orchestrator-ports-adapter.ts, remote-subagent.ts) need no changes.
+
 export function getActiveTraceId(): string | null {
-  return activeTraceId;
+  return telemetryService.getActiveTraceId();
 }
 
-/**
- * Optional relay hook — called fire-and-forget after each span is appended.
- * Set via setRelayHook() to push real-time workflow/task events to browser clients
- * through the Builderforce WebSocket relay.
- */
-let relayHook: ((event: string, payload: unknown) => void) | null = null;
-
-/**
- * Register (or unregister) a relay hook.
- * The relay service calls this once connected so spans are forwarded as live
- * WebSocket frames to browser clients: workflow.update, task.started, task.completed.
- */
 export function setRelayHook(fn: ((event: string, payload: unknown) => void) | null): void {
-  relayHook = fn;
+  telemetryService.setRelayHook(fn);
 }
 
-/**
- * Initialise telemetry. Call once at gateway startup after projectRoot is known.
- * @param opts.projectRoot  Absolute path to the workspace root (.coderClaw parent).
- * @param opts.clawId       Optional claw instance ID to tag all spans with.
- * @param opts.linkApiUrl   Builderforce.ai base URL for forwarding spans (e.g. https://api.coderclaw.ai).
- * @param opts.linkApiKey   Builderforce.ai API key for Bearer auth.
- */
 export function initTelemetry(opts: {
   projectRoot: string;
   clawId?: string | null;
   linkApiUrl?: string | null;
   linkApiKey?: string | null;
 }): void {
-  projectRoot = opts.projectRoot;
-  knownClawId = opts.clawId ?? null;
-  linkApiUrl = opts.linkApiUrl ?? null;
-  linkApiKey = opts.linkApiKey ?? null;
+  telemetryService.init(opts);
 }
 
-/**
- * Fire-and-forget: forward a span to Builderforce.ai workflow API.
- * Maps WorkflowSpan kinds to the appropriate REST calls:
- *   workflow.start    → POST  /api/workflows          (upsert; status=running)
- *   workflow.complete → POST  /api/workflows          (upsert; status=completed)
- *   workflow.fail     → POST  /api/workflows          (upsert; status=failed)
- *   task.start        → POST  /api/workflows/:wfId/tasks  (create with status=running)
- *   task.complete     → PATCH /api/workflows/:wfId/tasks/:tid  (status=completed)
- *   task.fail         → PATCH /api/workflows/:wfId/tasks/:tid  (status=failed)
- */
-function syncSpanToBuilderforce(span: WorkflowSpan): void {
-  if (!linkApiUrl || !linkApiKey || !knownClawId) {
-    return;
-  }
-
-  const base = normalizeBaseUrl(linkApiUrl);
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${linkApiKey}`,
-    "X-Claw-Id": knownClawId,
-  };
-  if (span.traceId) {
-    headers["X-Trace-Id"] = span.traceId;
-  }
-
-  const doFetch = (url: string, method: string, body: unknown) =>
-    fetch(url, { method, headers, body: JSON.stringify(body) }).catch((err) =>
-      logDebug(`[telemetry] builderforce sync failed (${span.kind}): ${String(err)}`),
-    );
-
-  switch (span.kind) {
-    case "workflow.start":
-      void doFetch(`${base}/api/workflows`, "POST", {
-        id: span.workflowId,
-        status: "running",
-        description: span.description,
-      });
-      break;
-    case "workflow.complete":
-      void doFetch(`${base}/api/workflows`, "POST", {
-        id: span.workflowId,
-        status: "completed",
-      });
-      break;
-    case "workflow.fail":
-      void doFetch(`${base}/api/workflows`, "POST", {
-        id: span.workflowId,
-        status: "failed",
-      });
-      break;
-    case "task.start":
-      void doFetch(`${base}/api/workflows/${span.workflowId}/tasks`, "POST", {
-        id: span.taskId,
-        agentRole: span.agentRole ?? "agent",
-        description: span.description ?? "",
-        status: "running",
-        startedAt: span.ts,
-      });
-      break;
-    case "task.complete":
-      void doFetch(`${base}/api/workflows/${span.workflowId}/tasks/${span.taskId}`, "PATCH", {
-        status: "completed",
-        completedAt: span.ts,
-      });
-      break;
-    case "task.fail":
-      void doFetch(`${base}/api/workflows/${span.workflowId}/tasks/${span.taskId}`, "PATCH", {
-        status: "failed",
-        error: span.error,
-        completedAt: span.ts,
-      });
-      break;
-  }
-}
-
-/** Forward span to Builderforce OTel ingest endpoint (fire-and-forget). */
-function forwardSpanToOtelProxy(span: WorkflowSpan): void {
-  if (!linkApiUrl || !linkApiKey || !knownClawId) return;
-  const base = normalizeBaseUrl(linkApiUrl);
-  const clawIdNum = parseInt(knownClawId, 10);
-  if (Number.isNaN(clawIdNum)) return;
-
-  const url = `${base}/api/telemetry/spans?clawId=${clawIdNum}`;
-  fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${linkApiKey}`,
-      ...(span.traceId ? { "X-Trace-Id": span.traceId } : {}),
-    },
-    body: JSON.stringify([span]),
-  }).catch((err) => logDebug(`[telemetry] otel proxy forward failed: ${String(err)}`));
-}
-
-/** Map internal SpanKind to the relay event name sent to browser clients. */
-function spanToRelayEvent(kind: SpanKind): string | null {
-  switch (kind) {
-    case "workflow.start":
-    case "workflow.complete":
-    case "workflow.fail":
-      return "workflow.update";
-    case "task.start":
-      return "task.started";
-    case "task.complete":
-    case "task.fail":
-      return "task.completed";
-    default:
-      return null;
-  }
-}
-
-async function appendSpan(span: WorkflowSpan): Promise<void> {
-  if (!projectRoot) {
-    return;
-  }
-  // Forward to Builderforce.ai timeline + OTel proxy (fire-and-forget).
-  syncSpanToBuilderforce(span);
-  forwardSpanToOtelProxy(span);
-
-  // Push real-time event to browser clients via the Builderforce WS relay.
-  const relayEvent = spanToRelayEvent(span.kind);
-  if (relayHook && relayEvent) {
-    try {
-      relayHook(relayEvent, span);
-    } catch {
-      // relay hook errors must never block telemetry writes
-    }
-  }
-
-  try {
-    const dir = path.join(projectRoot, ".coderClaw", "telemetry");
-    await fs.mkdir(dir, { recursive: true });
-    const date = new Date().toISOString().slice(0, 10);
-    const file = path.join(dir, `${date}.jsonl`);
-    await fs.appendFile(file, JSON.stringify(span) + "\n", "utf8");
-  } catch (err) {
-    logDebug(`[telemetry] failed to write span: ${String(err)}`);
-  }
-}
-
-/**
- * Generic span emitter for callers that construct spans directly (e.g. remote-subagent
- * retry telemetry). Accepts a plain record so callers that import dynamically do not
- * need to depend on the WorkflowSpan type.
- */
 export function emitSpan(span: Record<string, unknown>): void {
-  void appendSpan(span as WorkflowSpan);
+  telemetryService.emitSpan(span);
 }
 
 export function emitWorkflowStart(workflowId: string, description?: string): void {
-  activeTraceId = generateTraceId();
-  void appendSpan({
-    kind: "workflow.start",
-    workflowId,
-    description,
-    ts: new Date().toISOString(),
-    clawId: knownClawId ?? undefined,
-    traceId: activeTraceId,
-  });
+  telemetryService.emitWorkflowStart(workflowId, description);
 }
 
 export function emitWorkflowEnd(workflowId: string, failed: boolean): void {
-  void appendSpan({
-    kind: failed ? "workflow.fail" : "workflow.complete",
-    workflowId,
-    ts: new Date().toISOString(),
-    clawId: knownClawId ?? undefined,
-    traceId: activeTraceId ?? undefined,
-  });
-  activeTraceId = null;
+  telemetryService.emitWorkflowEnd(workflowId, failed);
 }
 
 export function emitTaskStart(
@@ -286,16 +367,7 @@ export function emitTaskStart(
   agentRole: string,
   description: string,
 ): void {
-  void appendSpan({
-    kind: "task.start",
-    workflowId,
-    taskId,
-    agentRole,
-    description,
-    ts: new Date().toISOString(),
-    clawId: knownClawId ?? undefined,
-    traceId: activeTraceId ?? undefined,
-  });
+  telemetryService.emitTaskStart(workflowId, taskId, agentRole, description);
 }
 
 export function emitTaskEnd(
@@ -311,20 +383,5 @@ export function emitTaskEnd(
     estimatedCostUsd?: number;
   },
 ): void {
-  const durationMs = Date.now() - startedAt.getTime();
-  void appendSpan({
-    kind: error !== undefined ? "task.fail" : "task.complete",
-    workflowId,
-    taskId,
-    agentRole,
-    ts: new Date().toISOString(),
-    durationMs,
-    error,
-    clawId: knownClawId ?? undefined,
-    traceId: activeTraceId ?? undefined,
-    model: metrics?.model,
-    inputTokens: metrics?.inputTokens,
-    outputTokens: metrics?.outputTokens,
-    estimatedCostUsd: metrics?.estimatedCostUsd,
-  });
+  telemetryService.emitTaskEnd(workflowId, taskId, agentRole, startedAt, error, metrics);
 }

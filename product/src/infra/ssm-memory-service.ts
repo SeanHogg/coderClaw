@@ -256,27 +256,49 @@ export class SsmMemoryService {
   }
 }
 
-// ── Singleton accessor ────────────────────────────────────────────────────────
+// ── Singleton registry ────────────────────────────────────────────────────────
 
-let _instance: SsmMemoryService | null = null;
+/**
+ * SsmMemoryRegistry encapsulates the process-wide SSM memory service instance.
+ * Using a class rather than a module-level `let` variable makes the state
+ * explicit and allows the instance to be replaced with a test double.
+ */
+export class SsmMemoryRegistry {
+  private instance: SsmMemoryService | null = null;
+
+  /** Returns the current SSM memory service instance, or null if not initialised. */
+  get(): SsmMemoryService | null {
+    return this.instance;
+  }
+
+  /** Called once at gateway startup to initialise the SSM memory service. */
+  async init(opts?: SsmMemoryServiceOptions): Promise<SsmMemoryService | null> {
+    try {
+      this.instance = await SsmMemoryService.create(opts ?? {});
+      if (this.instance) {
+        logDebug(`[ssm-memory] initialised (gpu=${this.instance.gpuAvailable})`);
+      }
+    } catch (err) {
+      logDebug(`[ssm-memory] init failed: ${String(err)}`);
+      this.instance = null;
+    }
+    return this.instance;
+  }
+}
+
+/** Process-wide singleton registry. */
+export const ssmMemoryRegistry = new SsmMemoryRegistry();
+
+// ── Module-level shims (backward-compatible API) ───────────────────────────────
 
 /** Returns the gateway-level SSM memory service singleton, or null if not initialised. */
 export function getSsmMemoryService(): SsmMemoryService | null {
-  return _instance;
+  return ssmMemoryRegistry.get();
 }
 
 /** Called once at gateway startup to initialise the SSM memory service. */
 export async function initSsmMemoryService(
   opts?: SsmMemoryServiceOptions,
 ): Promise<SsmMemoryService | null> {
-  try {
-    _instance = await SsmMemoryService.create(opts ?? {});
-    if (_instance) {
-      logDebug(`[ssm-memory] initialised (gpu=${_instance.gpuAvailable})`);
-    }
-  } catch (err) {
-    logDebug(`[ssm-memory] init failed: ${String(err)}`);
-    _instance = null;
-  }
-  return _instance;
+  return ssmMemoryRegistry.init(opts);
 }

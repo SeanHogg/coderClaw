@@ -36,7 +36,7 @@ export type SkillsLimitsConfig = {
 };
 
 export type SkillsRegistryConfig = {
-  /** Base URL for a remote skill registry (e.g. ClawHub or self‑hosted). */
+  /** Base URL for a remote skill registry (e.g. Builderforce.ai Marketplace or self‑hosted). */
   url?: string;
   /** CLI command users should run to interact with the registry. */
   cli?: string;

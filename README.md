@@ -393,7 +393,7 @@ This persistent context enables deep codebase understanding and intelligent agen
 - **[Anthropic](https://www.anthropic.com/)** (Claude Pro/Max)
 - **[OpenAI](https://openai.com/)** (ChatGPT/Codex)
 
-Model note: while any model is supported, the default is **CoderClawLLM (`coderclawllm/auto`)** for a managed free-model pool with automatic failover. See [Onboarding](https://docs.coderclaw.ai/start/onboarding).
+Model note: while any model is supported, the default is **BuilderForceLLM (`builderforcellm/auto`)** for a managed free-model pool with automatic failover. See [Onboarding](https://docs.coderclaw.ai/start/onboarding).
 
 ## Models (selection + auth)
 
@@ -569,7 +569,7 @@ CoderClaw **leverages [Builderforce.ai](https://builderforce.ai)** as the **cent
 |           |            +--------------+---------------+    |
 |           |                           |                     |
 |  +--------+--------------------------+---------------+     |
-|  |              coderClawLLM                         |     |
+|  |              BuilderForceLLM                       |     |
 |  |  Pay-per-use AI agent compute API                 |     |
 |  |  Free model pool, Pro model pool, Usage metrics   |     |
 |  +---------------------------------------------------+     |
@@ -670,7 +670,7 @@ Web-auth routes use `Authorization: Bearer <jwt>`; claw-to-claw routes use an AP
 | `GET /api/runtime/executions?sessionId=` | Bearer | Executions for a session |
 | `GET /api/runtime/sessions/:sessionId/executions` | Bearer | All executions in a session |
 
-**coderClawLLM**
+**BuilderForceLLM**
 
 | Route | Auth | Description |
 | ----- | ---- | ----------- |
@@ -679,9 +679,9 @@ Web-auth routes use `Authorization: Bearer <jwt>`; claw-to-claw routes use an AP
 
 RBAC roles (ascending authority): `viewer` → `developer` → `manager` → `owner`
 
-## coderClawLLM — AI Agent Compute API
+## BuilderForceLLM — AI Agent Compute API
 
-coderClawLLM is the **pay-per-use API layer** for AI agent compute, built into Builderforce:
+BuilderForceLLM is the **pay-per-use API layer** for AI agent compute, built into Builderforce:
 
 | Feature               | Detail                                                                      |
 | --------------------- | --------------------------------------------------------------------------- |
@@ -691,25 +691,25 @@ coderClawLLM is the **pay-per-use API layer** for AI agent compute, built into B
 | Tenant-aware billing  | Usage tracked per tenant and per user (`GET /llm/v1/usage`)                 |
 | Automatic failover    | Model routing handles provider outages transparently                        |
 
-Agents authenticate with the same JWT issued by `POST /api/auth/token` — no separate credential management needed. The default model is `coderclawllm/auto` for a managed free-model pool with automatic failover.
+Agents authenticate with the same JWT issued by `POST /api/auth/token` — no separate credential management needed. The default model is `builderforcellm/auto` for a managed free-model pool with automatic failover.
 
 ## 💳 Pricing
 
-CoderClaw (the gateway + CLI) is **MIT-licensed and free forever**. You pay only for the AI model tokens you consume — either through your own API keys (Anthropic, OpenAI, Ollama, Bedrock, etc.) or via the coderClawLLM compute pool.
+CoderClaw (the gateway + CLI) is **MIT-licensed and free forever**. You pay only for the AI model tokens you consume — either through your own API keys (Anthropic, OpenAI, Ollama, Bedrock, etc.) or via the BuilderForceLLM compute pool.
 
 | Tier | What's included | Cost |
 | ---- | --------------- | ---- |
 | **Self-hosted (free)** | Full gateway, multi-agent orchestration, memory, workflows, claw-to-claw mesh. Bring your own model API keys. | Free (MIT) |
-| **coderClawLLM Free** | Shared model pool with rate limiting — great for development and low-volume workloads. | Free (usage-limited) |
-| **coderClawLLM Pro** | Dedicated higher-capacity model pool, priority routing, automatic failover across providers. | Usage-based — see [coderclaw.ai/pricing](https://coderclaw.ai/pricing) |
+| **BuilderForceLLM Free** | Shared model pool with rate limiting — great for development and low-volume workloads. | Free (usage-limited) |
+| **BuilderForceLLM Pro** | Dedicated higher-capacity model pool, priority routing, automatic failover across providers. | Usage-based — see [builderforce.ai/pricing](https://builderforce.ai/pricing) |
 | **Builderforce.ai** | Cloud portal: fleet visibility, workflow telemetry dashboard, human-in-the-loop approval gates, audit trails, persona registry, spec review UI. | See [builderforce.ai](https://builderforce.ai) |
-| **Enterprise** | Self-hosted Builderforce, SSO, SAML, SCIM, dedicated support, SLA, air-gapped deployment. | Contact [hello@coderclaw.ai](mailto:hello@coderclaw.ai) |
+| **Enterprise** | Self-hosted Builderforce, SSO, SAML, SCIM, dedicated support, SLA, air-gapped deployment. | Contact [hello@builderforce.ai](mailto:hello@builderforce.ai) |
 
 ## Who Uses coderClaw.ai?
 
 ### Startups (5–50 developers)
 
-Use coderClaw.ai as a **virtual AI workforce**: a small human team coordinates a fleet of AI agents that handle code generation, review, testing, and documentation — with Builderforce as the task board and audit trail. A free tier is available; see [coderclaw.ai](https://coderclaw.ai) for pricing.
+Use [BuilderForce.ai](https://builderforce.ai) as a **virtual AI workforce**: a small human team coordinates a fleet of AI agents that handle code generation, review, testing, and documentation — with Builderforce as the task board and audit trail. A free tier is available; see [builderforce.ai/pricing](https://builderforce.ai/pricing) for pricing.
 
 ### Enterprises (100–1,000+ developers)
 
@@ -769,53 +769,17 @@ Run **complex multi-agent pipelines** at scale: parallel execution across hundre
 - **Agent roles** — 7 built-in roles + custom roles loaded from `.coderClaw/personas/`; role persona, constraints, output format, and tool sets enforced at spawn time. Unknown roles fail fast with a descriptive error.
 - **Structured inter-agent context** — `buildStructuredContext()` passes prior-agent results to downstream agents with labelled role headers (`REVIEW:`, `ARCH:`, etc.) so each agent knows which role produced which output.
 - **Persona → brain injection** — `buildPersonaSystemBlock()` encodes role persona, output format, and constraints into the brain system prompt on all execution paths (direct spawn and DELEGATE).
-- **Persona plugin architecture** — `PersonaRegistry` with source precedence (builtin < user-global < project-local < clawhub < builderforce-assigned); PERSONA.yaml format with marketplace metadata; Builderforce assignment via `context.yaml`.
+- **Persona plugin architecture** — `PersonaRegistry` with source precedence (builtin < user-global < project-local < marketplace < builderforce-assigned); PERSONA.yaml format with marketplace metadata; Builderforce assignment via `context.yaml`.
 - **Session handoff** — `save_session_handoff` tool + `/handoff` command + auto-load on session start injects summary/decisions/next-steps into context; `/new` shows a handoff hint when active work is present.
 - **Workflow persistence** — checkpoints written to `.coderClaw/sessions/workflow-<id>.yaml` after every task state change; incomplete workflows restored at gateway restart; `resumeWorkflow()` skips already-completed tasks.
 - **Knowledge loop** — `KnowledgeLoopService` appends timestamped entries (files created/edited, tools used, semantic activity summary) to `.coderClaw/memory/YYYY-MM-DD.md` after every run; synced to Builderforce automatically when API key + clawId are present.
 - **Claw-to-claw mesh** — fleet discovery (`GET /api/claws/fleet`); `remote:<id>` and `remote:auto[caps]` orchestrator routing; `dispatchToRemoteClaw()` via `/forward`; result streaming back to orchestrating claw via `correlationId` callback with 10-minute timeout.
 - **TUI commands** — `/spec <goal>` (planning workflow), `/workflow [id]` (status), `/compact` (context compression), `/handoff` (session save), `/new`/`/reset` (with handoff hint).
-- **CoderClawLLM syscheck** — pre-flight RAM (< 2 GB) and disk (< 1.5 GB) check before attempting local model download; falls back transparently to configured external LLM with full persona/memory/RAG grounding.
+- **BuilderForceLLM syscheck** — pre-flight RAM (< 2 GB) and disk (< 1.5 GB) check before attempting local model download; falls back transparently to configured external LLM with full persona/memory/RAG grounding.
 - **Builderforce sync** — workflow spec pull, persona export sync, project context push, artifact scope resolution, platform persona sync, usage quota monitoring with ≥ 80% budget warning.
 
-**Open items**: Architecture.md auto-update after structural edits threshold · ClawHub persona marketplace (download/install CLI flow).
+**Open items**: Architecture.md auto-update after structural edits threshold · Builderforce.ai Marketplace persona install CLI flow.
 
-## 🏗️ Architecture Gaps
-
-This section tracks known architectural anti-patterns and layer violations. Items are categorised by severity and ordered by impact on maintainability.
-
-### Resolved (as of 2026.3.x)
-
-| Violation | Fix applied |
-| --------- | ----------- |
-| `orchestrator.ts` imported directly from `infra/` (domain→infra N-layer violation) | Port interfaces (`ITelemetryService`, `IAgentMemoryService`, `IRemoteAgentDispatcher`, `ILocalResultBroker`) extracted to `coderclaw/ports.ts`; concrete adapters in `infra/orchestrator-ports-adapter.ts`; injected at gateway startup |
-| `orchestrator-enhanced.ts` + `orchestrator-legacy.ts` — dead parallel implementations with `@deprecated` comment | Both files deleted; planning/adversarial workflow factories merged into `orchestrator.ts` |
-| `orchestrate-tool.ts` — `switch(workflow)` closed to extension (OCP violation) | Replaced with `WORKFLOW_REGISTRY` map; new workflow types added without modifying the tool |
-| `IRelayService` missing — orchestrator depended directly on `BuilderforceRelayService` (DIP violation) | `IRelayService` interface added in `coderclaw/relay-service.ts`; orchestrator now depends on abstraction |
-| 25+ inline `.replace(/\/+$/, "")` URL normalisation calls (DRY violation) | Extracted to `utils/normalize-base-url.ts`; all call sites updated |
-| `workflow-telemetry.ts` passed API key as URL query param (security) | Moved to `Authorization: Bearer` header |
-| `knowledge-loop.ts` ↔ `ssm-memory-service.ts` circular dependency | Broken via `infra/memory-bridge.ts` mediator; neither service imports the other |
-| `knowledge-loop.ts` computed `deriveActivitySummary()` twice per run (DRY) | Result cached in a local variable before use |
-| `server-startup.ts` called `loadProjectContext()` twice on the same path (DRY) | Reused the `ctx` value from the first call |
-| `AppShell.tsx` called `setState` inside a `useEffect` body (`react-hooks/set-state-in-effect`) | Refactored to derived state pattern; `localStorage.setItem` moved to a side-effect-only effect |
-| `PermissionDebuggerPanel.tsx` — `useMemo` called after early return (`rules-of-hooks`) | Moved `useMemo` before the guard clause |
-| `ClawProjectsContent.tsx` — `load` not in `useEffect` deps (`exhaustive-deps`) | Wrapped in `useCallback([clawId])` |
-| `content-manager/[id]/page.tsx` — bare `<img>` (Next.js `next/image` warning) | Replaced with `<Image fill>` |
-| `layout.tsx` — GTM `<script>` without `next/script` strategy; Google Fonts `<link>` instead of `next/font/google` | Replaced with `<Script strategy="afterInteractive">` and `JetBrains_Mono` from `next/font/google` |
-| Wrong default URL `api.coderclaw.ai` in `claw-fleet-tool.ts` and `builderforce-directory-sync.ts` | Corrected to `api.builderforce.ai` |
-| `dependsOn` arrays in workflow factories used role names instead of task description strings (silent DAG failure) | Corrected to match full task description strings as used by `steps.findIndex()` |
-
-### Remaining Architectural Gaps
-
-| Gap | Location | Severity | Notes |
-| --- | -------- | -------- | ----- |
-| **Two-phase `globalOrchestrator` construction** | `coderclaw/orchestrator.ts:737`, `gateway/server-startup.ts` | Medium | `AgentOrchestrator` is exported as a module-level singleton and configured incrementally via 5+ setter calls. Proper fix: constructor injection with a factory function, but requires splitting the module. Acceptable given the constraint that credentials are only available after config loading. |
-| **`project-context.ts` — 600-line God Object** | `coderclaw/project-context.ts` | Medium | File owns 7 concerns: workflow persistence, knowledge memory, workspace state, `.coderClaw/` directory resolution, spec I/O, project YAML loading, and Builderforce field updates. Each concern should be a dedicated module. |
-| **`startGatewaySidecars()` — 14-responsibility function** | `gateway/server-startup.ts` | Medium | Single function sets up: session lock cleanup, orchestrator, browser control, Gmail watcher, model validation, hooks, channels, internal hooks, plugin services, memory backend, SSM memory, Builderforce relay, knowledge loop, and cron poller. Violates SRP. Each subsystem warrants its own `startXxx()` function. |
-| **`BuilderforceRelayService` — 11-responsibility class** | `infra/builderforce-relay.ts` | Medium | One class handles: WS connection, heartbeat, ping/pong, reconnect, assignment context fetch, remote dispatch, execution lifecycle, spec sync, approval gate, channel routing, and peer-result callbacks. Should be decomposed into focused adapters. |
-| **ISP violation in `CoderClawToolsOptions`** | `agents/coderclaw-tools.ts` | Low | The options interface has 22 fields. Callers passing `{}` implicitly depend on all of them as optional. Group into sub-interfaces by concern (session, workflow, channels, credentials). |
-| **Anemic `Task`/`Workflow` domain entities** | `coderclaw/orchestrator.ts` | Low | `Task` and `Workflow` are plain data structs with no behaviour. Business rules (e.g. "a completed task cannot transition to running") live in the orchestrator service rather than on the entity. Wrapping with proper aggregate roots would enforce invariants. |
-| **Module-level mutable singletons** | `infra/workflow-telemetry.ts`, `infra/ssm-memory-service.ts`, `infra/approval-gate.ts` | Low | Module-level `let` variables act as global mutable state; makes unit testing require import-level mocking. Prefer class-based service objects with explicit lifecycle (as already done for `BuilderforceRelayService`, `KnowledgeLoopService`). |
 
 ## 🗺️ Roadmap
 
@@ -935,13 +899,13 @@ Details: [Nodes](https://docs.coderclaw.ai/nodes) · [macOS app](https://docs.co
 
 Details: [Session tools](https://docs.coderclaw.ai/concepts/session-tool)
 
-## Skills registry (ClawHub)
+## Skills registry (Builderforce.ai Marketplace)
 
-ClawHub is a minimal skill registry. With ClawHub enabled, the agent can search for skills automatically and pull in new ones as needed.
+CoderClaw integrates with the [Builderforce.ai Marketplace](https://builderforce.ai/marketplace) for skill discovery and installation. When a Builderforce connection is configured, assigned skills are automatically fetched at startup and made available to the agent.
 
-By default CoderClaw points at the public ClawHub service, but the registry endpoint and even the CLI hint are configurable via `skills.registry` in your config – this makes it easy to support self‑hosted OpenClaw registries or forks.
+Skills can be browsed, purchased, and assigned to a specific claw from the Builderforce portal. Once assigned, they are synced to the claw via the relay connection and available immediately without a restart.
 
-[ClawHub](https://clawhub.com)
+The registry endpoint and CLI hint are configurable via `skills.registry` in your config — this makes it easy to support self-hosted registries as well.
 
 ## Chat commands
 
@@ -998,7 +962,7 @@ Minimal `~/.coderclaw/coderclaw.json` (model + defaults):
 ```json5
 {
   agent: {
-    model: "coderclawllm/auto",
+    model: "builderforcellm/auto",
   },
 }
 ```

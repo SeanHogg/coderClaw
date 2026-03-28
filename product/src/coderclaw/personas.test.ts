@@ -50,14 +50,14 @@ describe("PersonaRegistry", () => {
   });
 
   it("lower-precedence source does NOT override higher", () => {
-    registry.register(makePlugin("my-role", "clawhub"));
-    // user-global is lower than clawhub
+    registry.register(makePlugin("my-role", "marketplace"));
+    // user-global is lower than marketplace
     registry.register(makePlugin("my-role", "user-global"));
-    expect(registry.resolve("my-role")?.source).toBe("clawhub");
+    expect(registry.resolve("my-role")?.source).toBe("marketplace");
   });
 
   it("builderforce-assigned is the highest-precedence source", () => {
-    registry.register(makePlugin("my-role", "clawhub"));
+    registry.register(makePlugin("my-role", "marketplace"));
     registry.register(makePlugin("my-role", "builderforce-assigned"));
     expect(registry.resolve("my-role")?.source).toBe("builderforce-assigned");
   });
@@ -158,7 +158,7 @@ describe("loadPersonaFromFile", () => {
       [
         "name: security-specialist",
         "description: Security-focused reviewer",
-        "clawhubId: acme/security-specialist",
+        "marketplaceId: acme/security-specialist",
         "version: '2.0.0'",
         "author: acme-corp",
         "license: Commercial",
@@ -170,8 +170,8 @@ describe("loadPersonaFromFile", () => {
       "utf-8",
     );
 
-    const plugin = await loadPersonaFromFile(filePath, "clawhub");
-    expect(plugin?.pluginMetadata?.clawhubId).toBe("acme/security-specialist");
+    const plugin = await loadPersonaFromFile(filePath, "marketplace");
+    expect(plugin?.pluginMetadata?.marketplaceId).toBe("acme/security-specialist");
     expect(plugin?.pluginMetadata?.version).toBe("2.0.0");
     expect(plugin?.pluginMetadata?.requiresLicense).toBe(true);
     expect(plugin?.pluginMetadata?.tags).toEqual(["security", "compliance"]);

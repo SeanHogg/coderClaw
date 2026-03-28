@@ -159,7 +159,7 @@ function buildDocsSection(params: { docsPath?: string; isMinimal: boolean; readT
     "Mirror: https://docs.coderclaw.ai",
     "Source: https://github.com/SeanHogg/coderClaw",
     "Community: https://discord.gg/coderclaw",
-    "Find new skills: https://clawhub.com",
+    "Find new skills: https://builderforce.ai/marketplace",
     "For CoderClaw behavior, commands, config, or architecture: consult local docs first.",
     "When diagnosing issues, run `coderclaw status` yourself when possible; only ask the user if you lack access (e.g., sandboxed).",
     "",
