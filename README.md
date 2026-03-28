@@ -15,14 +15,44 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
-**CoderClaw** is the self-hosted, multi-agent AI coding system that replaces GitHub Copilot, Cursor, Windsurf, and Claude Code. Your code stays on your machine. Your agents run your workflows. No vendor lock-in, no IDE tether, no subscription ceiling. It’s self-hosted and MIT‑licensed.
+**CoderClaw** is the self-hosted, multi-agent AI coding system that replaces GitHub Copilot, Cursor, Windsurf, and Claude Code. Your code stays on your machine. Your agents run your workflows. No vendor lock-in, no IDE tether, no subscription ceiling. MIT-licensed.
 
-**Built for anyone who wants their own custom assistant.** Whether you’re a solo developer, a bootstrapped startup, or a large engineering organization, CoderClaw lets you design the behaviors, memory, and workflows that match your needs — without giving up control.
+---
+
+## Who Is CoderClaw For?
+
+### Solo Developers & Indie Hackers
+
+You want a personal coding assistant that **knows your project** — not a stateless autocomplete that forgets context between sessions. CoderClaw persists memory in `.coderClaw/`, works from your terminal or your chat apps, and runs any model including free local models via Ollama. Zero subscription.
+
+### Startups (5–50 developers)
+
+Use [BuilderForce.ai](https://builderforce.ai) as a **virtual AI workforce**: a small human team coordinates a fleet of AI agents handling code generation, review, testing, and documentation — with Builderforce as the task board and audit trail. Free tier available — see [builderforce.ai/pricing](https://builderforce.ai/pricing).
+
+### Enterprises (100–1,000+ developers)
+
+Run **complex multi-agent pipelines** at scale: parallel execution across hundreds of repositories, RBAC for department-level isolation, full audit trails for compliance (SOC 2, HIPAA-adjacent workflows), human-in-the-loop approval gates, and air-gapped deployment options. Builderforce slots in as the orchestration layer without disrupting existing tooling. Contact [hello@builderforce.ai](mailto:hello@builderforce.ai) for enterprise licensing.
+
+---
+
+## Why CoderClaw?
+
+Existing tools are powerful autocomplete engines — but they stop at the file boundary. GitHub Copilot finishes your line. Cursor rewrites your function. Claude Code edits your file. None of them plan a feature end-to-end, coordinate a reviewer with a test generator, remember what you decided last sprint, or recover when a task goes sideways.
+
+Modern software delivery is not a single-step problem. Planning, coding, reviewing, testing, debugging, refactoring, and documenting happen in parallel across multiple contexts. The gap between "AI writes a function" and "AI ships a feature" is still entirely manual.
+
+CoderClaw closes that gap: a fully self-hosted orchestration runtime that coordinates specialized agents through your entire development lifecycle — with persistent memory, self-healing guardrails, and human-in-the-loop governance built in.
+
+---
+
+**CoderClaw** is the self-hosted, multi-agent AI coding system that replaces GitHub Copilot, Cursor, Windsurf, and Claude Code. Your code stays on your machine. Your agents run your workflows. No vendor lock-in, no IDE tether, no subscription ceiling. It's self-hosted and MIT‑licensed.
+
+**Built for anyone who wants their own custom assistant.** Whether you're a solo developer, a bootstrapped startup, or a large engineering organization, CoderClaw lets you design the behaviors, memory, and workflows that match your needs — without giving up control.
 
 CoderClaw is modeled after the human brain:
 - **Amygdala (self-healing guardrails):** detects failures, drift, and anomalies; triggers repair workflows and escalation paths.
 - **Hippocampus (memory):** stores project history, decisions, and context in `.coderclaw/memory/` for reliable recall across sessions.
-- **Cortex (reasoning & planning):** orchestrates agents, plans tasks, and makes context-aware decisions using local “brain” state and persistent knowledge.
+- **Cortex (reasoning & planning):** orchestrates agents, plans tasks, and makes context-aware decisions using local "brain" state and persistent knowledge.
 
 More broadly, **coderclaw.ai** is a **self-healing AI engineering agent and orchestration platform** that manages tasks, workflows, and collaboration across all AI agents. It provides persistent memory, context-aware reasoning, and self-repair — allowing AI systems to detect failures, fix themselves, and adapt over time — while keeping humans in the loop for governance and approval. The result: resilient, self-healing software systems with less engineering toil and better delivery outcomes.
 
@@ -37,15 +67,14 @@ When linked, CoderClaw performs a full two-way sync at startup:
 - **Execution lifecycle** — `task.assign` dispatches report `running` on receipt and `completed`/`failed` on session end via `PATCH /api/claws/:id/executions/:eid/state`
 - **Workflow telemetry** — spans forwarded to `/api/workflows` in real time; portal timeline reflects every task and workflow as it executes
 
-## � Versioning (Release Process)
+## Versioning (Release Process)
 
 CoderClaw follows the **`YYYY.M.D[-beta.N]`** version scheme (e.g. `2026.3.11` or `2026.3.11-beta.1`).
 
 - **Do not manually edit** `version` fields in `package.json` — use the official release tooling.
 - Run `pnpm release` to bump versions, update changelogs, and keep all extension packages in sync.
 
-
-## �🔌 Connect Cursor or Continue.dev to CoderClaw (MCP)
+## 🔌 Connect Cursor or Continue.dev to CoderClaw (MCP)
 
 CoderClaw exposes its tools as an **MCP server** at `http://localhost:18789/mcp`.
 Add it to Cursor or Continue.dev to get CoderClaw's semantic search, project knowledge,
@@ -108,28 +137,41 @@ CODERCLAW_STAGED=true coderclaw gateway
 
 ## 🔄 Why CoderClaw instead of GitHub Copilot, Cursor, or Claude Code?
 
-|                                            | **CoderClaw**                            | GitHub Copilot              | Cursor / Windsurf  | Claude Code        | Continue.dev      |
-| ------------------------------------------ | ---------------------------------------- | --------------------------- | ------------------ | ------------------ | ----------------- |
-| **Price**                                  | Free (MIT)                               | $19/user/month              | $20/user/month     | Usage-based        | Free (MIT)        |
-| **Self-hosted / open source**              | ✅ MIT, fully self-hosted                | ❌ Microsoft cloud          | ❌ Vendor cloud    | ❌ Anthropic cloud | ✅ MIT, extension |
-| **IDE-independent**                        | ✅ Any channel / CLI                     | ❌ VS Code only             | ❌ Fork of VS Code | ⚠️ Terminal only   | ❌ IDE extension  |
-| **Any model provider**                     | ✅ 30+ providers (Ollama, API, Bedrock…) | ❌ GPT-4o / Claude only     | ⚠️ Limited list    | ❌ Anthropic only  | ✅ Any model      |
-| **MCP support — consume**                  | ✅ via mcporter bridge                   | ❌                          | ✅ Native          | ❌                 | ✅ Native         |
-| **MCP support — expose as server**         | ✅ `/mcp` endpoint on gateway            | ❌                          | ❌                 | ❌                 | ❌                |
-| **Codebase semantic search**               | ✅ `codebase_search` tool                | ⚠️ Limited                  | ✅ `@codebase`     | ⚠️ Basic RAG       | ✅ `@codebase`    |
-| **Staged diff / accept-reject**            | ✅ `/diff`, `/accept`, `/reject`         | ❌                          | ✅ Composer panel  | ❌                 | ✅ `⌘K` diff      |
-| **Multi-agent orchestration**              | ✅ 7 roles + dependency DAG              | ❌ Single inline suggestion | ❌ Single agent    | ❌ Single agent    | ❌ Single agent   |
-| **Planning workflow (PRD → Arch → Tasks)** | ✅ `/spec` command                       | ❌                          | ❌                 | ❌                 | ❌                |
-| **Adversarial review pass**                | ✅ Built-in workflow type                | ❌                          | ❌                 | ❌                 | ❌                |
-| **Session handoffs**                       | ✅ `/handoff` cmd + auto-load            | ❌                          | ❌                 | ❌                 | ❌                |
-| **Workflow persistence across restarts**   | ✅ YAML checkpoint + resume              | ❌                          | ❌                 | ❌                 | ❌                |
-| **Post-task knowledge loop**               | ✅ `.coderClaw/memory/` auto-updated     | ❌                          | ❌                 | ❌                 | ❌                |
-| **Claw-to-claw distributed delegation**    | ✅ `remote:<id>` / `remote:auto[caps]` ¹ | ❌                          | ❌                 | ❌                 | ❌                |
-| **Deep AST + git-history analysis**        | ✅                                       | ❌                          | ⚠️ Basic RAG       | ⚠️ Basic RAG       | ⚠️ Basic RAG      |
-| **Persistent project knowledge**           | ✅ `.coderClaw/`                         | ❌                          | ⚠️ In-session only | ⚠️ In-session only | ❌                |
-| **Works in WhatsApp / Telegram / Slack**   | ✅                                       | ❌                          | ❌                 | ❌                 | ❌                |
-| **RBAC + audit trails**                    | ✅                                       | ❌                          | ❌                 | ❌                 | ❌                |
-| **Open source (MIT)**                      | ✅                                       | ❌                          | ❌                 | ❌                 | ✅                |
+|                                            | **CoderClaw**                            | GitHub Copilot              | Cursor / Windsurf  | Claude Code        | Devin              | OpenHands         | OpenClaw          | Aider             | Continue.dev      |
+| ------------------------------------------ | ---------------------------------------- | --------------------------- | ------------------ | ------------------ | ------------------ | ----------------- | ----------------- | ----------------- | ----------------- |
+| **Price**                                  | Free (MIT)                               | $19/user/month              | $20/user/month     | Usage-based        | $500/month         | Free (MIT)        | Free + API tokens | Free (MIT)        | Free (MIT)        |
+| **Self-hosted / open source**              | ✅ MIT, fully self-hosted                | ❌ Microsoft cloud          | ❌ Vendor cloud    | ❌ Anthropic cloud | ❌ Cloud only      | ✅ MIT            | ✅ MIT            | ✅ MIT            | ✅ MIT, extension |
+| **IDE-independent**                        | ✅ Any channel / CLI                     | ❌ VS Code only             | ❌ Fork of VS Code | ⚠️ Terminal only   | ✅ Web UI          | ✅ Web UI / CLI   | ✅ CLI            | ✅ CLI            | ❌ IDE extension  |
+| **Any model provider**                     | ✅ 30+ providers (Ollama, API, Bedrock…) | ❌ GPT-4o / Claude only     | ⚠️ Limited list    | ❌ Anthropic only  | ❌ Proprietary     | ✅ Any model      | ✅ Any model      | ✅ Any model      | ✅ Any model      |
+| **Local / offline models (Ollama)**        | ✅                                       | ❌                          | ⚠️ Limited         | ❌                 | ❌                 | ✅                | ✅                | ✅                | ✅                |
+| **Air-gapped / private deployment**        | ✅                                       | ❌                          | ❌                 | ❌                 | ❌                 | ✅                | ✅                | ✅                | ✅                |
+| **MCP support — consume**                  | ✅ via mcporter bridge                   | ❌                          | ✅ Native          | ❌                 | ❌                 | ❌                | ❌                | ❌                | ✅ Native         |
+| **MCP support — expose as server**         | ✅ `/mcp` endpoint on gateway            | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ❌                | ❌                | ❌                |
+| **Codebase semantic search**               | ✅ `codebase_search` tool                | ⚠️ Limited                  | ✅ `@codebase`     | ⚠️ Basic RAG       | ✅                 | ⚠️ Basic          | ⚠️ Basic          | ⚠️ Git-aware      | ✅ `@codebase`    |
+| **Deep AST + git-history analysis**        | ✅                                       | ❌                          | ⚠️ Basic RAG       | ⚠️ Basic RAG       | ⚠️ Basic RAG       | ⚠️ Basic RAG      | ❌                | ⚠️ Git-aware      | ⚠️ Basic RAG      |
+| **Staged diff / accept-reject**            | ✅ `/diff`, `/accept`, `/reject`         | ❌                          | ✅ Composer panel  | ❌                 | ❌                 | ❌                | ❌                | ✅ Git diff       | ✅ `⌘K` diff      |
+| **Multi-agent orchestration**              | ✅ 7 roles + dependency DAG              | ❌ Single suggestion        | ❌ Single agent    | ❌ Single agent    | ❌ Single agent    | ❌ Single agent   | ❌ Single agent   | ❌ Single agent   | ❌ Single agent   |
+| **Planning workflow (PRD → Arch → Tasks)** | ✅ `/spec` command                       | ❌                          | ❌                 | ❌                 | ⚠️ Basic task plan | ❌                | ❌                | ❌                | ❌                |
+| **Bug-fix workflow**                       | ✅ Analyzer → Creator → Reviewer         | ⚠️ Inline only             | ⚠️ Inline only     | ⚠️ Inline only     | ✅                 | ⚠️ Single-pass    | ⚠️ Single-pass    | ⚠️ Single-pass    | ⚠️ Inline only    |
+| **Refactor workflow**                      | ✅ Reviewer → Refactor Agent → Tests     | ❌                          | ⚠️ Single-pass     | ⚠️ Single-pass     | ⚠️ Single-pass     | ⚠️ Single-pass    | ⚠️ Single-pass    | ⚠️ Single-pass    | ❌                |
+| **Adversarial review pass**                | ✅ Built-in workflow type                | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ❌                | ❌                | ❌                |
+| **Human-in-the-loop approval gates**       | ✅ Suspend + approve via portal          | ❌                          | ❌                 | ❌                 | ⚠️ Basic           | ❌                | ❌                | ❌                | ❌                |
+| **Self-healing / error recovery**          | ✅ Amygdala — detects + reruns           | ❌                          | ❌                 | ❌                 | ⚠️ Retry only      | ⚠️ Retry only     | ❌                | ❌                | ❌                |
+| **Scheduled automation (cron)**            | ✅ Builderforce-synced cron jobs         | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ⚠️ Via skills     | ❌                | ❌                |
+| **CI/CD pipeline integration**             | ✅ CLI + webhook triggers                | ⚠️ PR suggestions only      | ❌                 | ⚠️ CLI only        | ⚠️ API             | ⚠️ API            | ❌                | ⚠️ CLI            | ❌                |
+| **Custom agent personas / roles**          | ✅ YAML in `.coderClaw/personas/`        | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ❌                | ❌                | ❌                |
+| **100+ bundled skills**                    | ✅ 53 built-in + marketplace             | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ✅ 100+ AgentSkills| ❌               | ❌                |
+| **Session handoffs**                       | ✅ `/handoff` cmd + auto-load            | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ❌                | ❌                | ❌                |
+| **Workflow persistence across restarts**   | ✅ YAML checkpoint + resume              | ❌                          | ❌                 | ❌                 | ⚠️ Session-based   | ❌                | ❌                | ❌                | ❌                |
+| **Post-task knowledge loop**               | ✅ `.coderClaw/memory/` auto-updated     | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ❌                | ❌                | ❌                |
+| **Persistent project knowledge**           | ✅ `.coderClaw/`                         | ❌                          | ⚠️ In-session only | ⚠️ In-session only | ⚠️ In-session only | ❌                | ❌                | ❌                | ❌                |
+| **Claw-to-claw distributed delegation**    | ✅ `remote:<id>` / `remote:auto[caps]` ¹ | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ❌                | ❌                | ❌                |
+| **Fleet / multi-machine coordination**     | ✅ Builderforce fleet registry           | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ❌                | ❌                | ❌                |
+| **Works in WhatsApp / Telegram / Slack**   | ✅ 15+ channels                          | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ✅ WhatsApp + Discord | ❌            | ❌                |
+| **Voice + Talk mode**                      | ✅ macOS / iOS / Android                 | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ❌                | ❌                | ❌                |
+| **Mobile companion apps**                  | ✅ iOS + Android nodes                   | ❌                          | ❌                 | ❌                 | ❌                 | ❌                | ❌                | ❌                | ❌                |
+| **RBAC + audit trails**                    | ✅                                       | ❌                          | ❌                 | ❌                 | ⚠️ Basic           | ❌                | ❌                | ❌                | ❌                |
+| **Open source (MIT)**                      | ✅                                       | ❌                          | ❌                 | ❌                 | ❌                 | ✅                | ✅                | ✅                | ✅                |
 
 CoderClaw is not a plugin or an IDE extension. It is a **full orchestration runtime** that understands your codebase, coordinates specialized agents, and works wherever you do — in your terminal, your chat apps, or your CI pipeline.
 
@@ -149,22 +191,22 @@ This repository is organized so that the **CoderClaw product** (CLI, gateway, ag
 
 When you run CoderClaw (e.g. `coderclaw gateway` or `coderclaw agent`), it **only creates or updates files** in:
 
-- **Project-local:** `<cwd>/.coderclaw/` — context, memory, sessions, personas, agents, skills for the project you’re in.
+- **Project-local:** `<cwd>/.coderclaw/` — context, memory, sessions, personas, agents, skills for the project you're in.
 - **Global:** `~/.coderclaw/` (or `CODERCLAW_STATE_DIR`) — config, logs, models cache, credentials, daemon scripts, workspace data.
 
 No other directories are written to by the product.
 
 ## 🔀 Running multiple CoderClaw instances (side-by-side versions)
 
-You can run and install **two or more CoderClaw instances** on the same machine (e.g. one default, one for “work”, one for experiments). Each instance has its own config, port, state, and (when installed as a daemon) its own service name.
+You can run and install **two or more CoderClaw instances** on the same machine (e.g. one default, one for "work", one for experiments). Each instance has its own config, port, state, and (when installed as a daemon) its own service name.
 
 **How it works**
 
 - **Install-path isolation** — State dir is derived from where CoderClaw is installed. Different installs (e.g. different npm/pnpm global roots) get different state dirs: `~/.coderclaw/<install-id>`. Run the v1 binary in terminal A and the v2 binary in terminal B; each gets its own `~/.coderclaw/<id>` and gateway. No env vars needed.
 - **Legacy** — If you already have `~/.coderclaw` with `coderclaw.json`, that keeps working; new installs use the subdir.
 - **Config** — Config is loaded from that state dir: `<state-dir>/coderclaw.json`. Override with `CODERCLAW_CONFIG_PATH` if needed.
-- **Port** — Each instance must listen on a different port. Set `gateway.port` in that instance’s config (or `CODERCLAW_GATEWAY_PORT` when starting). Default is `18789`; use e.g. `18790` for a second instance.
-- **Daemon (launchd / systemd / schtasks)** — When you install the gateway as a service, the **profile** (or state dir) is baked into the service: different profile → different state dir, script path, and service name (e.g. “CoderClaw Gateway (work)” on Windows, `coderclaw-gateway-work` on Linux, `ai.coderclaw.work` on macOS).
+- **Port** — Each instance must listen on a different port. Set `gateway.port` in that instance's config (or `CODERCLAW_GATEWAY_PORT` when starting). Default is `18789`; use e.g. `18790` for a second instance.
+- **Daemon (launchd / systemd / schtasks)** — When you install the gateway as a service, the **profile** (or state dir) is baked into the service: different profile → different state dir, script path, and service name (e.g. "CoderClaw Gateway (work)" on Windows, `coderclaw-gateway-work` on Linux, `ai.coderclaw.work` on macOS).
 - **Gateway lock** — The lock file is keyed by config path, so multiple instances do not block each other.
 
 **Ways to run a second instance**
@@ -181,8 +223,8 @@ You can run and install **two or more CoderClaw instances** on the same machine 
 | ----------- | ------------------------- | ------------------------------------------ |
 | State dir   | `~/.coderclaw`            | `~/.coderclaw-work`                        |
 | Config      | `~/.coderclaw/coderclaw.json` | `~/.coderclaw-work/coderclaw.json`     |
-| Port        | `18789` (or config)       | Set in that instance’s config (e.g. 18790) |
-| Daemon name | “CoderClaw Gateway”       | “CoderClaw Gateway (work)” / `coderclaw-gateway-work` |
+| Port        | `18789` (or config)       | Set in that instance's config (e.g. 18790) |
+| Daemon name | "CoderClaw Gateway"       | "CoderClaw Gateway (work)" / `coderclaw-gateway-work` |
 
 So: **two terminals, two versions** — run the right `coderclaw` in each and give each gateway a different port. They can't share one gateway; each gets its own state and port by install path (or by profile / `CODERCLAW_STATE_DIR` if you set them).
 
@@ -283,6 +325,8 @@ If you want to stop paying for Copilot subscriptions, escape the IDE tether, and
 
 [Website](https://coderclaw.ai) · [Docs](https://docs.coderclaw.ai) · [Vision](VISION.md) · [Multi-Agent System](docs/coderclaw.md) · [Examples](examples/coderclaw) · [Getting Started](https://docs.coderclaw.ai/start/getting-started) · [Updating](https://docs.coderclaw.ai/install/updating) · [Showcase](https://docs.coderclaw.ai/start/showcase) · [FAQ](https://docs.coderclaw.ai/start/faq) · [Discord](https://discord.gg/coderclaw)
 
+---
+
 ## 🚀 Quick Start
 
 ### Installation
@@ -363,6 +407,73 @@ Send messages to your connected channels (WhatsApp, Telegram, Slack, Discord, et
 @coderclaw create a refactoring plan for the authentication module
 
 @coderclaw review the latest changes for security issues
+```
+
+
+## 🔌 IDE & Editor Integrations
+
+CoderClaw exposes its full tool surface as an **MCP server**, making it available
+inside any MCP-compatible IDE without switching to the CoderClaw TUI.
+
+### Connect Cursor or Continue.dev (MCP)
+
+CoderClaw exposes its tools as an **MCP server** at `http://localhost:18789/mcp`.
+Add it to Cursor or Continue.dev to get CoderClaw's semantic search, project knowledge,
+and git history inside your existing IDE:
+
+**Cursor** (`~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "coderclaw": {
+      "url": "http://localhost:18789/mcp"
+    }
+  }
+}
+```
+
+**Continue.dev** (`~/.continue/config.json`):
+
+```json
+{
+  "contextProviders": [
+    {
+      "name": "mcp",
+      "params": {
+        "serverUrl": "http://localhost:18789/mcp"
+      }
+    }
+  ]
+}
+```
+
+Once connected, use `@codebase_search`, `@project_knowledge`, and `@git_history`
+as context in Cursor Composer or Continue.dev chat.
+
+### Pair Programming with Staged Diffs
+
+CoderClaw now supports **staged edit mode** — agent file changes are buffered for
+your review before landing on disk, exactly like Cursor Composer's accept/reject panel:
+
+```bash
+# Enable staged mode (agent edits are buffered, not written immediately)
+CODERCLAW_STAGED=true coderclaw gateway
+
+# Review what the agent wants to change
+/diff
+
+# Review a specific file
+/diff src/auth/login.ts
+
+# Accept all changes
+/accept
+
+# Accept one file
+/accept src/auth/login.ts
+
+# Reject everything and start over
+/reject all
 ```
 
 Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run `coderclaw doctor`).
@@ -705,15 +816,6 @@ CoderClaw (the gateway + CLI) is **MIT-licensed and free forever**. You pay only
 | **Builderforce.ai** | Cloud portal: fleet visibility, workflow telemetry dashboard, human-in-the-loop approval gates, audit trails, persona registry, spec review UI. | See [builderforce.ai](https://builderforce.ai) |
 | **Enterprise** | Self-hosted Builderforce, SSO, SAML, SCIM, dedicated support, SLA, air-gapped deployment. | Contact [hello@builderforce.ai](mailto:hello@builderforce.ai) |
 
-## Who Uses coderClaw.ai?
-
-### Startups (5–50 developers)
-
-Use [BuilderForce.ai](https://builderforce.ai) as a **virtual AI workforce**: a small human team coordinates a fleet of AI agents that handle code generation, review, testing, and documentation — with Builderforce as the task board and audit trail. A free tier is available; see [builderforce.ai/pricing](https://builderforce.ai/pricing) for pricing.
-
-### Enterprises (100–1,000+ developers)
-
-Run **complex multi-agent pipelines** at scale: parallel execution across hundreds of repositories, strict RBAC for department-level isolation, full audit trails for compliance (SOC 2, HIPAA-adjacent workflows), and private/self-hosted deployment options. Adoption is seamless — Builderforce slots in as the orchestration layer without disrupting existing developer tooling.
 
 ## Star History
 
@@ -779,46 +881,6 @@ Run **complex multi-agent pipelines** at scale: parallel execution across hundre
 - **Builderforce sync** — workflow spec pull, persona export sync, project context push, artifact scope resolution, platform persona sync, usage quota monitoring with ≥ 80% budget warning.
 
 **Open items**: Architecture.md auto-update after structural edits threshold · Builderforce.ai Marketplace persona install CLI flow.
-
-
-## 🗺️ Roadmap
-
-The items below are the next high-impact milestones, ordered by business priority. Items marked **P0** are blocking shipped features; **P1** are required for full enterprise readiness.
-
-### P0 — Blocking Today
-
-| Item | What it unlocks |
-| ---- | --------------- |
-| **Remote task result streaming** | Multi-claw orchestration actually returns results. Today `remote:<id>` steps complete but return empty output, making dependent workflow steps non-functional. Fix: `correlationId` round-trip on `ClawRelayDO` so the originating claw awaits the `remote.result` frame. |
-| **Execution WebSocket streaming** | Replaces 2-second polling loop in `clawlink-adapter.ts` with a server-push stream; cuts execution latency and load on the Builderforce relay. |
-| **Live Orchestration Workspace** (Builderforce SPA) | Real-time DAG view of running agents — task status, role, model, streaming output. Required to demo and sell the multi-agent story; Devin and Windsurf Cascade both ship this. |
-| **CoderClaw as MCP Provider** | Exposes `project_knowledge`, `codebase_search`, `git_history`, and `workflow_status` via the `/mcp` endpoint on the local gateway. Cursor and Continue.dev users can call CoderClaw tools without switching to the CoderClaw TUI — this is a distribution multiplier. |
-
-### P1 — Enterprise Readiness
-
-| Item | What it unlocks |
-| ---- | --------------- |
-| **Diff staging & inline approval API** | Agent file edits buffered for human review before landing on disk. Risk-averse teams (the highest-value buyer segment) require this. `/diff`, `/accept`, `/reject` commands are already in the TUI; the Builderforce-side `pending_diffs` table and relay frame complete the loop. |
-| **Spec & workflow storage API** | `/spec` workflow outputs (PRD, arch spec, task list) pushed to Builderforce and queryable by goal/status/project. Turns ephemeral planning runs into auditable, reviewable artifacts with a lifecycle. |
-| **Spec review + workflow portal SPA** | Web UI for product owners to view, review, and approve agent-generated specs, then trigger implementation workflows. |
-
-### P2 — Observability & Unit Economics
-
-| Item | What it unlocks |
-| ---- | --------------- |
-| **Token usage dashboard** | Historical context pressure, token spend, and compaction events per session. Required before any usage-based pricing model can be built. |
-| **Agent run audit trail** | Immutable, queryable log of every tool call (name, args, result, duration) per run. Required for SOC 2 / compliance-sensitive buyers. |
-| **Fleet capability management SPA** | Per-claw online status, reported capabilities, and declared capabilities — UI for the `remote:auto[caps]` routing already implemented in the orchestrator. |
-| **Persona registry API** | Team-shared agent personas synced from Builderforce to all claws via heartbeat response; no more manual YAML file distribution. |
-
-### P3 — Future Moat
-
-| Item | What it unlocks |
-| ---- | --------------- |
-| **Model cost tracking** | Per-session cost estimate, monthly budget alerts, per-project breakdown. Foundation for COGS control and chargeback. |
-| **Approval workflow API** | Agent requests human approval before destructive operations (`rm`, force-push, deploy). Relay frame triggers browser notification; execution is suspended until approved/rejected. |
-| **Spec import (GitHub Issues / Linear / Jira)** | `/spec import <url>` converts an issue tracker ticket into a Builderforce spec and starts the planning workflow. |
-| **Cross-claw memory sharing** | Opt-in memory sync between claws with tenant-scoped access control, deduplication by content hash, and `#private` tag filtering. |
 
 ## How it works (short)
 
