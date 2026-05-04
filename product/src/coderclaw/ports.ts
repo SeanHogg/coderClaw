@@ -73,7 +73,7 @@ export interface AgentTransportDispatchPayload {
 }
 
 export type AgentTransportDispatchResult =
-  | { status: "accepted"; targetId: string; output?: string }
+  | { status: "accepted"; targetId: string; output?: string; childSessionKey?: string }
   | { status: "failed"; error: string; targetId?: string };
 
 /** Unified transport interface for local + remote claw dispatch. */

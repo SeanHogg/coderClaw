@@ -28,6 +28,8 @@ import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { KnowledgeLoopService, setKnowledgeLoopService } from "../infra/knowledge-loop.js";
 import { BuilderforceAgentTransport } from "../infra/agent-transport.js";
+import { CompositeAgentTransport } from "../infra/composite-agent-transport.js";
+import { LocalAgentTransport } from "../infra/local-agent-transport.js";
 import {
   LocalResultBrokerAdapter,
   SsmMemoryAdapter,
@@ -90,9 +92,17 @@ async function cleanStaleSessions(params: Pick<SidecarParams, "defaultWorkspaceD
 /** Wire orchestrator ports and rehydrate any persisted incomplete workflows. */
 async function startOrchestrator(params: Pick<SidecarParams, "defaultWorkspaceDir" | "log">): Promise<void> {
   globalOrchestrator.setProjectRoot(params.defaultWorkspaceDir);
+  // Local transport is always available — in-process subagent spawn works
+  // without credentials. The remote transport gets added later (in
+  // startBuilderforceServices) when BUILDERFORCE_API_KEY + clawId are present.
+  const localResultBroker = new LocalResultBrokerAdapter();
+  const localTransport = new LocalAgentTransport({
+    getContext: () => globalOrchestrator.currentSpawnContext(),
+    localResultBroker,
+  });
   globalOrchestrator.configure({
     telemetry: new WorkflowTelemetryAdapter(),
-    localResultBroker: new LocalResultBrokerAdapter(),
+    agentTransport: new CompositeAgentTransport({ local: localTransport }),
   });
   const incompleteWorkflows = await globalOrchestrator.loadPersistedWorkflows();
   if (incompleteWorkflows.length > 0) {
@@ -293,11 +303,23 @@ async function startBuilderforceServices(
 
       void syncCoderClawDirectoryOnStartup({ workspaceDir: params.defaultWorkspaceDir, log: params.log });
 
+      // Upgrade the orchestrator's transport: local stays available, remote
+      // gets added now that we have credentials. Re-uses the local broker that
+      // startOrchestrator already wired so output collection stays consistent.
+      const localResultBroker = new LocalResultBrokerAdapter();
+      const localTransport = new LocalAgentTransport({
+        getContext: () => globalOrchestrator.currentSpawnContext(),
+        localResultBroker,
+      });
+      const remoteTransport = new BuilderforceAgentTransport({
+        baseUrl,
+        myClawId: String(clawId),
+        apiKey,
+      });
       globalOrchestrator.configure({
-        agentTransport: new BuilderforceAgentTransport({
-          baseUrl,
-          myClawId: String(clawId),
-          apiKey,
+        agentTransport: new CompositeAgentTransport({
+          local: localTransport,
+          remote: remoteTransport,
         }),
         relayService: relay,
       });

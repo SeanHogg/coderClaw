@@ -5,12 +5,12 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { spawnSubagentDirect, type SpawnSubagentContext } from "../agents/subagent-spawn.js";
+import type { SpawnSubagentContext } from "../agents/subagent-spawn.js";
 import type { IRelayService } from "./relay-service.js";
 import type {
+  AgentTransportDispatchResult,
   IAgentTransport,
   IAgentMemoryService,
-  ILocalResultBroker,
   ITelemetryService,
 } from "./ports.js";
 import { logDebug } from "../logger.js";
@@ -82,7 +82,6 @@ export type OrchestratorConfig = {
   telemetry?: ITelemetryService;
   memoryService?: IAgentMemoryService | null;
   agentTransport?: IAgentTransport | null;
-  localResultBroker?: ILocalResultBroker;
   relayService?: IRelayService;
 };
 
@@ -101,11 +100,13 @@ export class AgentOrchestrator {
   private telemetry: ITelemetryService | null = null;
   /** Domain port: memory recall — injected after SSM initialisation. */
   private memoryService: IAgentMemoryService | null = null;
-  /** Unified local/remote transport for task dispatch and claw discovery
-   *  — injected when BUILDERFORCE_API_KEY is present. */
+  /** Unified local/remote transport for task dispatch and claw discovery.
+   *  Always wired by the gateway (local-only when no API key, composite when
+   *  BUILDERFORCE_API_KEY is present). */
   private agentTransport: IAgentTransport | null = null;
-  /** Domain port: local subagent result awaiting. */
-  private localResultBroker: ILocalResultBroker | null = null;
+  /** Per-task spawn context, exposed to local transports via `currentSpawnContext()`.
+   *  Single-threaded by virtue of the orchestrator's serial executeTask loop. */
+  private activeSpawnContext: SpawnSubagentContext | null = null;
 
   /** Enable disk persistence for workflows and workflow telemetry. Call at gateway startup. */
   setProjectRoot(
@@ -154,9 +155,6 @@ export class AgentOrchestrator {
     if (config.agentTransport !== undefined) {
       this.agentTransport = config.agentTransport;
     }
-    if (config.localResultBroker !== undefined) {
-      this.localResultBroker = config.localResultBroker;
-    }
     if (config.relayService !== undefined) {
       this.relayService = config.relayService;
     }
@@ -179,9 +177,12 @@ export class AgentOrchestrator {
     this.agentTransport = transport;
   }
 
-  /** @deprecated Use configure({ localResultBroker }) instead. */
-  setLocalResultBroker(broker: ILocalResultBroker): void {
-    this.localResultBroker = broker;
+  /** Returns the currently-executing task's spawn context. Used by local
+   *  transports (via a closure passed at construction time) so they can
+   *  forward channel/session identifiers into spawned subagents. Returns
+   *  an empty context when no task is in flight. */
+  currentSpawnContext(): SpawnSubagentContext {
+    return this.activeSpawnContext ?? {};
   }
 
   /** @deprecated Use configure({ relayService }) instead. */
@@ -443,24 +444,11 @@ export class AgentOrchestrator {
       // the resolved provider directly to spawnSubagentDirect.
     }
 
-    // Remote dispatch: role "remote:<clawId>", "remote:auto", or "remote:auto[cap1,cap2]"
-    // delegates the task to a peer claw via Builderforce.
+    // Pre-dispatch: fetch remote-context bundle so the target claw sees this
+    // claw's `.coderClaw/` directory. Remote-only; skipped for auto-targets
+    // (claw isn't selected yet) and for local dispatch.
     if (task.agentRole.startsWith("remote:")) {
-      if (!this.agentTransport) {
-        task.status = "failed";
-        task.error =
-          "Remote dispatch not configured — set BUILDERFORCE_API_KEY and builderforce.instanceId";
-        task.completedAt = new Date();
-        this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
-        this.persistWorkflow(workflow);
-        throw new Error(task.error);
-      }
-
       const targetClawId = task.agentRole.slice("remote:".length);
-
-      // Fetch remote context bundle before dispatch so the remote claw has
-      // up-to-date context from this claw's .coderClaw/ directory (P4-2).
-      // Skip for capability-based routing (claw isn't selected yet).
       const isAutoTarget = targetClawId === "auto" || targetClawId.startsWith("auto[");
       if (this.relayService && !isAutoTarget) {
         try {
@@ -482,79 +470,54 @@ export class AgentOrchestrator {
           logDebug(`[orchestrator] fetchRemoteContext failed: ${String(err)}`);
         }
       }
-
-      const correlationId = crypto.randomUUID();
-      const remoteResult = await this.agentTransport.dispatch({
-        target: task.agentRole,
-        input: taskInput,
-        correlationId,
-        timeoutMs: 600_000,
-      });
-      if (remoteResult.status !== "accepted") {
-        task.status = "failed";
-        task.error = remoteResult.error;
-        task.completedAt = new Date();
-        this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
-        this.persistWorkflow(workflow);
-        throw new Error(task.error);
-      }
-      const output =
-        remoteResult.output ??
-        `Task ${task.id} dispatched to remote claw ${remoteResult.targetId} (result pending)`;
-      task.status = "completed";
-      task.completedAt = new Date();
-      task.output = output;
-      this.taskResults.set(task.id, output);
-      this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
-      this.persistWorkflow(workflow);
-      return output;
     }
 
-    // Local dispatch: spawn a subagent in this process.
-    const roleConfig = findAgentRole(task.agentRole);
-    if (!roleConfig) {
-      const err = `Unknown agent role: ${task.agentRole}. Define it in .coderclaw/personas/ or use a built-in role.`;
-      this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, err);
-      throw new Error(err);
-    }
-    const result = await spawnSubagentDirect(
-      {
-        task: taskInput,
-        label: task.description,
-        agentId: task.agentRole,
-        roleConfig,
-      },
-      context,
-    );
-
-    if (result.status === "accepted") {
-      task.childSessionKey = result.childSessionKey;
-
-      // Await the subagent's actual output so dependent tasks receive real context
-      // rather than a placeholder. spawnSubagentDirect is fire-and-forget; the
-      // local-result-broker subscribes to the lifecycle end event and fetches the
-      // session history to extract the last assistant message.
-      const rawOutput = this.localResultBroker
-        ? await this.localResultBroker.awaitResult(result.runId ?? "", result.childSessionKey ?? "", 600_000)
-        : "";
-
-      task.status = "completed";
-      task.completedAt = new Date();
-      const output = rawOutput || `Task ${task.id} completed`;
-      task.output = output;
-      this.taskResults.set(task.id, output);
-      this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
-      this.persistWorkflow(workflow);
-
-      return output;
-    } else {
+    // Unified dispatch: local + remote both flow through the configured
+    // `agentTransport` (CompositeAgentTransport) which routes by prefix.
+    if (!this.agentTransport) {
       task.status = "failed";
-      task.error = result.error || "Failed to spawn subagent";
+      task.error =
+        "Agent transport not configured — orchestrator must be wired with at least a LocalAgentTransport.";
       task.completedAt = new Date();
       this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
       this.persistWorkflow(workflow);
       throw new Error(task.error);
     }
+
+    const correlationId = crypto.randomUUID();
+    this.activeSpawnContext = context;
+    let result: AgentTransportDispatchResult;
+    try {
+      result = await this.agentTransport.dispatch({
+        target: task.agentRole,
+        input: taskInput,
+        correlationId,
+        timeoutMs: 600_000,
+      });
+    } finally {
+      this.activeSpawnContext = null;
+    }
+
+    if (result.status !== "accepted") {
+      task.status = "failed";
+      task.error = result.error;
+      task.completedAt = new Date();
+      this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt, task.error);
+      this.persistWorkflow(workflow);
+      throw new Error(task.error);
+    }
+
+    if (result.childSessionKey) task.childSessionKey = result.childSessionKey;
+    const output =
+      result.output ||
+      `Task ${task.id} dispatched to ${result.targetId} (result pending)`;
+    task.status = "completed";
+    task.completedAt = new Date();
+    task.output = output;
+    this.taskResults.set(task.id, output);
+    this.telemetry?.emitTaskEnd(workflow.id, task.id, task.agentRole, task.startedAt);
+    this.persistWorkflow(workflow);
+    return output;
   }
 
   /**
