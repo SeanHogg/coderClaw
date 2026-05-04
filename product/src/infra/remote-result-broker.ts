@@ -20,7 +20,7 @@ const pending = new Map<string, PendingCallback>();
 
 // ── Backpressure queue (P4-3) ────────────────────────────────────────────────
 
-/** Queue of resolve-callbacks waiting for a dispatch slot. */
+/** Queue of register-callbacks waiting for a dispatch slot. */
 const waitQueue: Array<() => void> = [];
 
 /** Maximum number of simultaneously active remote result awaits. Configurable via setMaxConcurrentRemote(). */
@@ -31,52 +31,52 @@ export function setMaxConcurrentRemote(max: number): void {
   maxConcurrentRemote = Math.max(1, max);
 }
 
-/**
- * Acquire a dispatch slot, waiting in a FIFO queue if the concurrency limit
- * has been reached.  Must be paired with a releaseSlot() call.
- */
-async function acquireSlot(): Promise<void> {
-  if (pending.size < maxConcurrentRemote) {
-    return; // slot available immediately
-  }
-  // Wait until a slot opens
-  await new Promise<void>((resolve) => {
-    waitQueue.push(resolve);
-  });
-}
-
 /** Release a dispatch slot, unblocking the next waiter if any. */
 function releaseSlot(): void {
   const next = waitQueue.shift();
-  if (next) {
-    next();
-  }
+  if (next) next();
+}
+
+/** Register the timeout + pending entry. Single source for slow + fast paths (DRY). */
+function registerPending(
+  correlationId: string,
+  timeoutMs: number,
+  resolve: (result: string) => void,
+  reject: (err: Error) => void,
+): void {
+  const timeoutHandle = setTimeout(() => {
+    pending.delete(correlationId);
+    releaseSlot();
+    reject(
+      new Error(
+        `Remote task timed out after ${timeoutMs / 1000}s (correlationId=${correlationId})`,
+      ),
+    );
+  }, timeoutMs);
+  pending.set(correlationId, { resolve, reject, timeoutHandle });
 }
 
 /**
  * Wait up to timeoutMs for a result keyed by correlationId.
  * Rejects with a timeout error if no result arrives in time.
  *
- * If the number of in-flight remote tasks already equals maxConcurrentRemote,
- * this call blocks (FIFO queue) until a slot opens.
+ * Fast path (slot available): the `pending` entry is registered **synchronously**
+ * before this function returns, so callers can race a `resolveRemoteResult` /
+ * `pendingRemoteCount` call right after the call without a missing-entry race.
+ *
+ * Slow path (`pending.size >= maxConcurrentRemote`): the registration is queued
+ * FIFO and runs once an earlier task releases its slot.
  */
-export async function awaitRemoteResult(
+export function awaitRemoteResult(
   correlationId: string,
   timeoutMs = 300_000,
 ): Promise<string> {
-  await acquireSlot();
-
   return new Promise<string>((resolve, reject) => {
-    const timeoutHandle = setTimeout(() => {
-      pending.delete(correlationId);
-      releaseSlot();
-      reject(
-        new Error(
-          `Remote task timed out after ${timeoutMs / 1000}s (correlationId=${correlationId})`,
-        ),
-      );
-    }, timeoutMs);
-    pending.set(correlationId, { resolve, reject, timeoutHandle });
+    if (pending.size < maxConcurrentRemote) {
+      registerPending(correlationId, timeoutMs, resolve, reject);
+    } else {
+      waitQueue.push(() => registerPending(correlationId, timeoutMs, resolve, reject));
+    }
   });
 }
 
