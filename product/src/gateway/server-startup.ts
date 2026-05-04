@@ -27,9 +27,9 @@ import { CronPollerService } from "../infra/cron-poller.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { KnowledgeLoopService, setKnowledgeLoopService } from "../infra/knowledge-loop.js";
+import { BuilderforceAgentTransport } from "../infra/agent-transport.js";
 import {
   LocalResultBrokerAdapter,
-  RemoteAgentDispatcherAdapter,
   SsmMemoryAdapter,
   WorkflowTelemetryAdapter,
 } from "../infra/orchestrator-ports-adapter.js";
@@ -294,7 +294,11 @@ async function startBuilderforceServices(
       void syncCoderClawDirectoryOnStartup({ workspaceDir: params.defaultWorkspaceDir, log: params.log });
 
       globalOrchestrator.configure({
-        remoteDispatcher: new RemoteAgentDispatcherAdapter({ baseUrl, myClawId: String(clawId), apiKey }),
+        agentTransport: new BuilderforceAgentTransport({
+          baseUrl,
+          myClawId: String(clawId),
+          apiKey,
+        }),
         relayService: relay,
       });
     }

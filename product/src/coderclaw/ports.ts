@@ -8,7 +8,7 @@
  * Port taxonomy (Hexagonal Architecture):
  *   - ITelemetryService  — emit workflow/task lifecycle spans
  *   - IAgentMemoryService — recall similar memories, build team memory context
- *   - IRemoteAgentDispatcher — dispatch tasks to peer claws
+ *   - IAgentTransport — unified discover + dispatch for local/remote claws
  *   - ILocalResultBroker — await results from locally-spawned subagents
  */
 
@@ -51,20 +51,36 @@ export interface IAgentMemoryService {
   recallSimilar(query: string, limit: number): Promise<Array<{ key: string; content: string }>>;
 }
 
-// ── Remote dispatch ───────────────────────────────────────────────────────────
+// ── Agent transport (unified local + remote dispatch) ─────────────────────────
 
-export type RemoteDispatchResult = { status: "accepted"; error?: undefined } | { status: "failed"; error?: string };
+export type AgentTransportKind = "local" | "remote";
 
-export interface IRemoteAgentDispatcher {
-  /** The local claw ID used as the callback address for remote result delivery. */
-  readonly myClawId: string;
-  selectByCapability(requiredCaps: string[]): Promise<{ id: number; name: string } | null>;
-  dispatch(
-    targetClawId: string,
-    input: string,
-    opts: { correlationId: string; callbackClawId: string },
-  ): Promise<RemoteDispatchResult>;
-  awaitResult(correlationId: string, timeoutMs: number): Promise<string>;
+export interface AgentTransportEntry {
+  id: string;
+  name: string;
+  online: boolean;
+  capabilities: string[];
+  kind: AgentTransportKind;
+}
+
+export interface AgentTransportDispatchPayload {
+  target: string;
+  input: string;
+  requiredCapabilities?: string[];
+  correlationId?: string;
+  callbackClawId?: string;
+  timeoutMs?: number;
+}
+
+export type AgentTransportDispatchResult =
+  | { status: "accepted"; targetId: string; output?: string }
+  | { status: "failed"; error: string; targetId?: string };
+
+/** Unified transport interface for local + remote claw dispatch. */
+export interface IAgentTransport {
+  discover(requiredCapabilities?: string[]): Promise<AgentTransportEntry[]>;
+  dispatch(payload: AgentTransportDispatchPayload): Promise<AgentTransportDispatchResult>;
+  register?(entry: AgentTransportEntry): Promise<void> | void;
 }
 
 // ── Local result broker ───────────────────────────────────────────────────────

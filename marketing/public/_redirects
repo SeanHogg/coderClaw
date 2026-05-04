@@ -1,1 +1,32 @@
+# Discord (kept as 302 — community link)
 /discord https://discord.gg/clawd 302
+
+# coderclaw.ai → builderforce.ai/coderclaw
+# Marketing content has been merged into the BuilderForce.ai portal.
+# All public pages 301 to their /coderclaw equivalents.
+
+/                                         https://builderforce.ai/coderclaw                                  301
+/showcase                                 https://builderforce.ai/coderclaw/showcase                         301
+/integrations                             https://builderforce.ai/coderclaw/integrations                     301
+/skills                                   https://builderforce.ai/coderclaw/skills                           301
+/shoutouts                                https://builderforce.ai/coderclaw/shoutouts                        301
+
+/docs                                     https://builderforce.ai/coderclaw/docs/getting-started             301
+/docs/getting-started                     https://builderforce.ai/coderclaw/docs/getting-started             301
+/docs/guides                              https://builderforce.ai/coderclaw/docs/guides                      301
+/docs/api-reference                       https://builderforce.ai/coderclaw/docs/api-reference               301
+/docs/examples                            https://builderforce.ai/coderclaw/docs/examples                    301
+/docs/coderclaw-vs-alternatives           https://builderforce.ai/coderclaw/docs/coderclaw-vs-alternatives   301
+
+/coderclawlink                            https://builderforce.ai                                            301
+/coderclawlink/*                          https://builderforce.ai/:splat                                     301
+
+# Blog: BuilderForce hosts a single blog now
+/blog                                     https://builderforce.ai/blog                                       301
+/blog/*                                   https://builderforce.ai/blog/:splat                                301
+
+# Newsletter unsubscribe stays inside the API
+/unsubscribe                              https://api.builderforce.ai/api/auth/newsletter/unsubscribe        301
+
+# Install scripts remain on coderclaw.ai for now (CLI users)
+# /install.sh, /install.ps1 etc are not redirected — kept locally.

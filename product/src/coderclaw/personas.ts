@@ -186,9 +186,9 @@ export class PersonaRegistry {
 function metaStr(
   pluginMeta: PersonaPlugin["pluginMetadata"] | undefined,
   raw: Record<string, unknown>,
-  field: keyof NonNullable<PersonaPlugin["pluginMetadata"]>,
+  field: keyof NonNullable<PersonaPlugin["pluginMetadata"]> | "clawhubId",
 ): string | undefined {
-  const fromMeta = pluginMeta?.[field];
+  const fromMeta = field === "clawhubId" ? undefined : pluginMeta?.[field];
   if (typeof fromMeta === "string") {
     return fromMeta;
   }

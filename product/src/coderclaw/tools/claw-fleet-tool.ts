@@ -14,7 +14,7 @@ import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import { jsonResult } from "../../agents/tools/common.js";
 import { readSharedEnvVar } from "../../infra/env-file.js";
-import type { FleetEntry } from "../../infra/remote-subagent.js";
+import { fetchFleetEntries } from "../../infra/remote-subagent.js";
 import { loadProjectContext } from "../project-context.js";
 
 const ClawFleetSchema = Type.Object({
@@ -72,29 +72,17 @@ export const clawFleetTool: AgentTool<typeof ClawFleetSchema, string> = {
         }) as AgentToolResult<string>;
       }
 
-      const url = `${baseUrl.replace(/\/$/, "")}/api/claws/fleet`;
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "X-Claw-From": String(clawId),
-        },
-        signal: AbortSignal.timeout(15_000),
+      // Diagnostic listing — query the raw fleet (with self) so total/online
+      // counts reflect the full tenant view. Apply onlineOnly + capability
+      // filters locally to derive the `filtered` view.
+      const allEntries = await fetchFleetEntries({
+        baseUrl,
+        myClawId: String(clawId),
+        apiKey,
       });
-
-      if (!res.ok) {
-        const body = await res.text();
-        return jsonResult({
-          ok: false,
-          error: `Fleet API error ${res.status}: ${body}`,
-        }) as AgentToolResult<string>;
-      }
-
-      const data = (await res.json()) as { fleet: FleetEntry[] };
-      let fleet = onlineOnly ? data.fleet.filter((c) => c.online) : data.fleet;
-
-      // Apply capability filter if requested
+      let filtered = onlineOnly ? allEntries.filter((c) => c.online) : allEntries;
       if (requireCapabilities && requireCapabilities.length > 0) {
-        fleet = fleet.filter((c) =>
+        filtered = filtered.filter((c) =>
           requireCapabilities.every((cap) => c.capabilities.includes(cap)),
         );
       }
@@ -106,10 +94,10 @@ export const clawFleetTool: AgentTool<typeof ClawFleetSchema, string> = {
 
       return jsonResult({
         ok: true,
-        fleet,
-        total: data.fleet.length,
-        online: data.fleet.filter((c) => c.online).length,
-        filtered: fleet.length,
+        fleet: filtered,
+        total: allEntries.length,
+        online: allEntries.filter((c) => c.online).length,
+        filtered: filtered.length,
         tip: autoTip,
       }) as AgentToolResult<string>;
     } catch (error) {

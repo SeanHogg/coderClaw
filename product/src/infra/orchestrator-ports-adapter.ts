@@ -9,17 +9,9 @@
 import type {
   IAgentMemoryService,
   ILocalResultBroker,
-  IRemoteAgentDispatcher,
   ITelemetryService,
-  RemoteDispatchResult,
 } from "../coderclaw/ports.js";
 import { awaitLocalSubagentResult } from "./local-result-broker.js";
-import { awaitRemoteResult } from "./remote-result-broker.js";
-import {
-  dispatchToRemoteClaw,
-  selectClawByCapability,
-  type RemoteDispatchOptions,
-} from "./remote-subagent.js";
 import { getSsmMemoryService } from "./ssm-memory-service.js";
 import {
   emitTaskEnd,
@@ -87,38 +79,6 @@ export class SsmMemoryAdapter implements IAgentMemoryService {
     limit: number,
   ): Promise<Array<{ key: string; content: string }>> {
     return getSsmMemoryService()?.recallSimilar(query, limit) ?? Promise.resolve([]);
-  }
-}
-
-// ── Remote dispatch adapter ───────────────────────────────────────────────────
-
-export class RemoteAgentDispatcherAdapter implements IRemoteAgentDispatcher {
-  readonly myClawId: string;
-
-  constructor(private readonly opts: RemoteDispatchOptions) {
-    this.myClawId = opts.myClawId;
-  }
-
-  async selectByCapability(
-    requiredCaps: string[],
-  ): Promise<{ id: number; name: string } | null> {
-    return selectClawByCapability(this.opts, requiredCaps);
-  }
-
-  async dispatch(
-    targetClawId: string,
-    input: string,
-    callbackOpts: { correlationId: string; callbackClawId: string },
-  ): Promise<RemoteDispatchResult> {
-    const result = await dispatchToRemoteClaw(this.opts, targetClawId, input, callbackOpts);
-    if (result.status === "accepted") {
-      return { status: "accepted" };
-    }
-    return { status: "failed", error: result.error };
-  }
-
-  async awaitResult(correlationId: string, timeoutMs: number): Promise<string> {
-    return awaitRemoteResult(correlationId, timeoutMs);
   }
 }
 
