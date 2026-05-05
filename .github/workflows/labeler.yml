@@ -549,7 +549,7 @@ jobs:
                 label: "r: support",
                 close: true,
                 message:
-                  "Please use [our support server](https://discord.gg/coderclaw) and ask in #help or #users-helping-users to resolve this, or follow the stuck FAQ at https://docs.coderclaw.ai/help/faq#im-stuck-whats-the-fastest-way-to-get-unstuck.",
+                  "Please use [our support server](https://discord.gg/coderclaw) and ask in #help or #users-helping-users to resolve this, or follow the stuck FAQ at https://builderforce.ai/docs/help/faq#im-stuck-whats-the-fastest-way-to-get-unstuck.",
               },
               {
                 label: "r: testflight",
@@ -560,7 +560,7 @@ jobs:
                 label: "r: third-party-extension",
                 close: true,
                 message:
-                  "Please make this as a third-party plugin that you maintain yourself in your own repo. Docs: https://docs.coderclaw.ai/plugin. Feel free to open a PR after to add it to our community plugins page: https://docs.coderclaw.ai/plugins/community",
+                  "Please make this as a third-party plugin that you maintain yourself in your own repo. Docs: https://builderforce.ai/docs/plugin. Feel free to open a PR after to add it to our community plugins page: https://builderforce.ai/docs/plugins/community",
               },
               {
                 label: "r: moltbook",
