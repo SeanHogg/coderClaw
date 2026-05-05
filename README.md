@@ -186,8 +186,10 @@ This repository is organized so that the **CoderClaw product** (CLI, gateway, ag
 | **`product/`** | All CoderClaw product code: CLI, gateway, agents, extensions, skills, tests. This is the main package you run and extend. |
 | **`apps/`**    | Companion apps (e.g. Android, iOS, macOS) — shared, built separately from the product. |
 | **`assets/`**  | Shared assets (images, branding). Used by product and apps. |
-| **`marketing/`** | Marketing site for [coderclaw.ai](https://coderclaw.ai) (Astro -> Cloudflare Workers via Wrangler). |
-| **`docs-site/`** | Documentation site (now inside this repo). Source for [docs.coderclaw.ai](https://docs.coderclaw.ai). |
+
+> Marketing site and docs now live in the [Builderforce.ai repo](https://github.com/SeanHogg/Builderforce.ai)
+> at `frontend/src/app/coderclaw/*` and `docs-site/` respectively. They are
+> served from `https://builderforce.ai/coderclaw/*` and `https://builderforce.ai/docs/*`.
 
 When you run CoderClaw (e.g. `coderclaw gateway` or `coderclaw agent`), it **only creates or updates files** in:
 
@@ -323,7 +325,7 @@ It connects to the channels you already use (WhatsApp, Telegram, Slack, Discord,
 
 If you want to stop paying for Copilot subscriptions, escape the IDE tether, and run AI agents that actually orchestrate your full dev workflow — this is it.
 
-[Website](https://coderclaw.ai) · [Docs](https://docs.coderclaw.ai) · [Vision](VISION.md) · [Multi-Agent System](docs/coderclaw.md) · [Examples](examples/coderclaw) · [Getting Started](https://docs.coderclaw.ai/start/getting-started) · [Updating](https://docs.coderclaw.ai/install/updating) · [Showcase](https://docs.coderclaw.ai/start/showcase) · [FAQ](https://docs.coderclaw.ai/start/faq) · [Discord](https://discord.gg/coderclaw)
+[Website](https://coderclaw.ai) · [Docs](https://builderforce.ai/docs) · [Vision](VISION.md) · [Multi-Agent System](docs/coderclaw.md) · [Examples](examples/coderclaw) · [Getting Started](https://builderforce.ai/docs/start/getting-started) · [Updating](https://builderforce.ai/docs/install/updating) · [Showcase](https://builderforce.ai/docs/start/showcase) · [FAQ](https://builderforce.ai/docs/start/faq) · [Discord](https://discord.gg/coderclaw)
 
 ---
 
@@ -476,7 +478,7 @@ CODERCLAW_STAGED=true coderclaw gateway
 /reject all
 ```
 
-Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run `coderclaw doctor`).
+Upgrading? [Updating guide](https://builderforce.ai/docs/install/updating) (and run `coderclaw doctor`).
 
 ## 🏗️ Project Structure
 
@@ -504,12 +506,12 @@ This persistent context enables deep codebase understanding and intelligent agen
 - **[Anthropic](https://www.anthropic.com/)** (Claude Pro/Max)
 - **[OpenAI](https://openai.com/)** (ChatGPT/Codex)
 
-Model note: while any model is supported, the default is **BuilderForceLLM (`builderforcellm/auto`)** for a managed free-model pool with automatic failover. See [Onboarding](https://docs.coderclaw.ai/start/onboarding).
+Model note: while any model is supported, the default is **BuilderForceLLM (`builderforcellm/auto`)** for a managed free-model pool with automatic failover. See [Onboarding](https://builderforce.ai/docs/start/onboarding).
 
 ## Models (selection + auth)
 
-- Models config + CLI: [Models](https://docs.coderclaw.ai/concepts/models)
-- Auth profile rotation (OAuth vs API keys) + fallbacks: [Model failover](https://docs.coderclaw.ai/concepts/model-failover)
+- Models config + CLI: [Models](https://builderforce.ai/docs/concepts/models)
+- Auth profile rotation (OAuth vs API keys) + fallbacks: [Model failover](https://builderforce.ai/docs/concepts/model-failover)
 
 ## Install (recommended)
 
@@ -528,7 +530,7 @@ The wizard installs the Gateway daemon (launchd/systemd user service) so it stay
 
 Runtime: **Node ≥22**.
 
-Full beginner guide (auth, pairing, channels): [Getting started](https://docs.coderclaw.ai/start/getting-started)
+Full beginner guide (auth, pairing, channels): [Getting started](https://builderforce.ai/docs/start/getting-started)
 
 ```bash
 coderclaw onboard --install-daemon
@@ -545,7 +547,7 @@ coderclaw agent --message "Analyze the codebase structure" --thinking high
 coderclaw agent --message "Create a user authentication feature with tests and review" --thinking high
 ```
 
-Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run `coderclaw doctor`).
+Upgrading? [Updating guide](https://builderforce.ai/docs/install/updating) (and run `coderclaw doctor`).
 
 ## Development channels
 
@@ -554,7 +556,7 @@ Upgrading? [Updating guide](https://docs.coderclaw.ai/install/updating) (and run
 - **dev**: moving head of `main`, npm dist-tag `dev` (when published).
 
 Switch channels (git + npm): `coderclaw update --channel stable|beta|dev`.
-Details: [Development channels](https://docs.coderclaw.ai/install/development-channels).
+Details: [Development channels](https://builderforce.ai/docs/install/development-channels).
 
 ## From source (development)
 
@@ -580,7 +582,7 @@ Note: `pnpm coderclaw ...` runs TypeScript directly (via `tsx`). `pnpm build` pr
 
 CoderClaw connects to real messaging surfaces. Treat inbound DMs as **untrusted input**.
 
-Full security guide: [Security](https://docs.coderclaw.ai/gateway/security)
+Full security guide: [Security](https://builderforce.ai/docs/gateway/security)
 
 Default behavior on Telegram/WhatsApp/Signal/iMessage/Microsoft Teams/Discord/Google Chat/Slack:
 
@@ -592,14 +594,14 @@ Run `coderclaw doctor` to surface risky/misconfigured DM policies.
 
 ## Highlights
 
-- **[Local-first Gateway](https://docs.coderclaw.ai/gateway)** — single control plane for sessions, channels, tools, and events.
-- **[Multi-channel inbox](https://docs.coderclaw.ai/channels)** — WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, BlueBubbles (iMessage), iMessage (legacy), Microsoft Teams, Matrix, Zalo, Zalo Personal, WebChat, macOS, iOS/Android.
-- **[Multi-agent routing](https://docs.coderclaw.ai/gateway/configuration)** — route inbound channels/accounts/peers to isolated agents (workspaces + per-agent sessions).
-- **[Voice Wake](https://docs.coderclaw.ai/nodes/voicewake) + [Talk Mode](https://docs.coderclaw.ai/nodes/talk)** — always-on speech for macOS/iOS/Android with ElevenLabs.
-- **[Live Canvas](https://docs.coderclaw.ai/platforms/mac/canvas)** — agent-driven visual workspace with [A2UI](https://docs.coderclaw.ai/platforms/mac/canvas#canvas-a2ui).
-- **[First-class tools](https://docs.coderclaw.ai/tools)** — browser, canvas, nodes, cron, sessions, and Discord/Slack actions.
-- **[Companion apps](https://docs.coderclaw.ai/platforms/macos)** — macOS menu bar app + iOS/Android [nodes](https://docs.coderclaw.ai/nodes).
-- **[Onboarding](https://docs.coderclaw.ai/start/wizard) + [skills](https://docs.coderclaw.ai/tools/skills)** — wizard-driven setup with bundled/managed/workspace skills.
+- **[Local-first Gateway](https://builderforce.ai/docs/gateway)** — single control plane for sessions, channels, tools, and events.
+- **[Multi-channel inbox](https://builderforce.ai/docs/channels)** — WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, BlueBubbles (iMessage), iMessage (legacy), Microsoft Teams, Matrix, Zalo, Zalo Personal, WebChat, macOS, iOS/Android.
+- **[Multi-agent routing](https://builderforce.ai/docs/gateway/configuration)** — route inbound channels/accounts/peers to isolated agents (workspaces + per-agent sessions).
+- **[Voice Wake](https://builderforce.ai/docs/nodes/voicewake) + [Talk Mode](https://builderforce.ai/docs/nodes/talk)** — always-on speech for macOS/iOS/Android with ElevenLabs.
+- **[Live Canvas](https://builderforce.ai/docs/platforms/mac/canvas)** — agent-driven visual workspace with [A2UI](https://builderforce.ai/docs/platforms/mac/canvas#canvas-a2ui).
+- **[First-class tools](https://builderforce.ai/docs/tools)** — browser, canvas, nodes, cron, sessions, and Discord/Slack actions.
+- **[Companion apps](https://builderforce.ai/docs/platforms/macos)** — macOS menu bar app + iOS/Android [nodes](https://builderforce.ai/docs/nodes).
+- **[Onboarding](https://builderforce.ai/docs/start/wizard) + [skills](https://builderforce.ai/docs/tools/skills)** — wizard-driven setup with bundled/managed/workspace skills.
 
 ## CoderClaw Distributed Runtime
 
@@ -659,7 +661,7 @@ const state = await runtime.submitTask({
 });
 ```
 
-Full guide: [Builderforce Integration](https://docs.coderclaw.ai/builderforce.ai)
+Full guide: [Builderforce Integration](https://builderforce.ai/docs/builderforce.ai)
 
 ### Builderforce in the coderClaw.ai Ecosystem
 
@@ -825,45 +827,45 @@ CoderClaw (the gateway + CLI) is **MIT-licensed and free forever**. You pay only
 
 ### Core platform
 
-- [Gateway WS control plane](https://docs.coderclaw.ai/gateway) with sessions, presence, config, cron, webhooks, [Control UI](https://docs.coderclaw.ai/web), and [Canvas host](https://docs.coderclaw.ai/platforms/mac/canvas#canvas-a2ui).
-- [CLI surface](https://docs.coderclaw.ai/tools/agent-send): gateway, agent, send, [wizard](https://docs.coderclaw.ai/start/wizard), and [doctor](https://docs.coderclaw.ai/gateway/doctor).
-- [Pi agent runtime](https://docs.coderclaw.ai/concepts/agent) in RPC mode with tool streaming and block streaming.
-- [Session model](https://docs.coderclaw.ai/concepts/session): `main` for direct chats, group isolation, activation modes, queue modes, reply-back. Group rules: [Groups](https://docs.coderclaw.ai/concepts/groups).
-- [Media pipeline](https://docs.coderclaw.ai/nodes/images): images/audio/video, transcription hooks, size caps, temp file lifecycle. Audio details: [Audio](https://docs.coderclaw.ai/nodes/audio).
+- [Gateway WS control plane](https://builderforce.ai/docs/gateway) with sessions, presence, config, cron, webhooks, [Control UI](https://builderforce.ai/docs/web), and [Canvas host](https://builderforce.ai/docs/platforms/mac/canvas#canvas-a2ui).
+- [CLI surface](https://builderforce.ai/docs/tools/agent-send): gateway, agent, send, [wizard](https://builderforce.ai/docs/start/wizard), and [doctor](https://builderforce.ai/docs/gateway/doctor).
+- [Pi agent runtime](https://builderforce.ai/docs/concepts/agent) in RPC mode with tool streaming and block streaming.
+- [Session model](https://builderforce.ai/docs/concepts/session): `main` for direct chats, group isolation, activation modes, queue modes, reply-back. Group rules: [Groups](https://builderforce.ai/docs/concepts/groups).
+- [Media pipeline](https://builderforce.ai/docs/nodes/images): images/audio/video, transcription hooks, size caps, temp file lifecycle. Audio details: [Audio](https://builderforce.ai/docs/nodes/audio).
 
 ### Channels
 
-- [Channels](https://docs.coderclaw.ai/channels): [WhatsApp](https://docs.coderclaw.ai/channels/whatsapp) (Baileys), [Telegram](https://docs.coderclaw.ai/channels/telegram) (grammY), [Slack](https://docs.coderclaw.ai/channels/slack) (Bolt), [Discord](https://docs.coderclaw.ai/channels/discord) (discord.js), [Google Chat](https://docs.coderclaw.ai/channels/googlechat) (Chat API), [Signal](https://docs.coderclaw.ai/channels/signal) (signal-cli), [BlueBubbles](https://docs.coderclaw.ai/channels/bluebubbles) (iMessage, recommended), [iMessage](https://docs.coderclaw.ai/channels/imessage) (legacy imsg), [Microsoft Teams](https://docs.coderclaw.ai/channels/msteams) (extension), [Matrix](https://docs.coderclaw.ai/channels/matrix) (extension), [Zalo](https://docs.coderclaw.ai/channels/zalo) (extension), [Zalo Personal](https://docs.coderclaw.ai/channels/zalouser) (extension), [WebChat](https://docs.coderclaw.ai/web/webchat).
-- [Group routing](https://docs.coderclaw.ai/concepts/group-messages): mention gating, reply tags, per-channel chunking and routing. Channel rules: [Channels](https://docs.coderclaw.ai/channels).
+- [Channels](https://builderforce.ai/docs/channels): [WhatsApp](https://builderforce.ai/docs/channels/whatsapp) (Baileys), [Telegram](https://builderforce.ai/docs/channels/telegram) (grammY), [Slack](https://builderforce.ai/docs/channels/slack) (Bolt), [Discord](https://builderforce.ai/docs/channels/discord) (discord.js), [Google Chat](https://builderforce.ai/docs/channels/googlechat) (Chat API), [Signal](https://builderforce.ai/docs/channels/signal) (signal-cli), [BlueBubbles](https://builderforce.ai/docs/channels/bluebubbles) (iMessage, recommended), [iMessage](https://builderforce.ai/docs/channels/imessage) (legacy imsg), [Microsoft Teams](https://builderforce.ai/docs/channels/msteams) (extension), [Matrix](https://builderforce.ai/docs/channels/matrix) (extension), [Zalo](https://builderforce.ai/docs/channels/zalo) (extension), [Zalo Personal](https://builderforce.ai/docs/channels/zalouser) (extension), [WebChat](https://builderforce.ai/docs/web/webchat).
+- [Group routing](https://builderforce.ai/docs/concepts/group-messages): mention gating, reply tags, per-channel chunking and routing. Channel rules: [Channels](https://builderforce.ai/docs/channels).
 
 ### Apps + nodes
 
-- [macOS app](https://docs.coderclaw.ai/platforms/macos): menu bar control plane, [Voice Wake](https://docs.coderclaw.ai/nodes/voicewake)/PTT, [Talk Mode](https://docs.coderclaw.ai/nodes/talk) overlay, [WebChat](https://docs.coderclaw.ai/web/webchat), debug tools, [remote gateway](https://docs.coderclaw.ai/gateway/remote) control.
-- [iOS node](https://docs.coderclaw.ai/platforms/ios): [Canvas](https://docs.coderclaw.ai/platforms/mac/canvas), [Voice Wake](https://docs.coderclaw.ai/nodes/voicewake), [Talk Mode](https://docs.coderclaw.ai/nodes/talk), camera, screen recording, Bonjour pairing.
-- [Android node](https://docs.coderclaw.ai/platforms/android): [Canvas](https://docs.coderclaw.ai/platforms/mac/canvas), [Talk Mode](https://docs.coderclaw.ai/nodes/talk), camera, screen recording, optional SMS.
-- [macOS node mode](https://docs.coderclaw.ai/nodes): system.run/notify + canvas/camera exposure.
+- [macOS app](https://builderforce.ai/docs/platforms/macos): menu bar control plane, [Voice Wake](https://builderforce.ai/docs/nodes/voicewake)/PTT, [Talk Mode](https://builderforce.ai/docs/nodes/talk) overlay, [WebChat](https://builderforce.ai/docs/web/webchat), debug tools, [remote gateway](https://builderforce.ai/docs/gateway/remote) control.
+- [iOS node](https://builderforce.ai/docs/platforms/ios): [Canvas](https://builderforce.ai/docs/platforms/mac/canvas), [Voice Wake](https://builderforce.ai/docs/nodes/voicewake), [Talk Mode](https://builderforce.ai/docs/nodes/talk), camera, screen recording, Bonjour pairing.
+- [Android node](https://builderforce.ai/docs/platforms/android): [Canvas](https://builderforce.ai/docs/platforms/mac/canvas), [Talk Mode](https://builderforce.ai/docs/nodes/talk), camera, screen recording, optional SMS.
+- [macOS node mode](https://builderforce.ai/docs/nodes): system.run/notify + canvas/camera exposure.
 
 ### Tools + automation
 
-- [Browser control](https://docs.coderclaw.ai/tools/browser): dedicated coderclaw Chrome/Chromium, snapshots, actions, uploads, profiles.
-- [Canvas](https://docs.coderclaw.ai/platforms/mac/canvas): [A2UI](https://docs.coderclaw.ai/platforms/mac/canvas#canvas-a2ui) push/reset, eval, snapshot.
-- [Nodes](https://docs.coderclaw.ai/nodes): camera snap/clip, screen record, [location.get](https://docs.coderclaw.ai/nodes/location-command), notifications.
-- [Cron + wakeups](https://docs.coderclaw.ai/automation/cron-jobs); [webhooks](https://docs.coderclaw.ai/automation/webhook); [Gmail Pub/Sub](https://docs.coderclaw.ai/automation/gmail-pubsub).
-- [Skills platform](https://docs.coderclaw.ai/tools/skills): bundled, managed, and workspace skills with install gating + UI.
+- [Browser control](https://builderforce.ai/docs/tools/browser): dedicated coderclaw Chrome/Chromium, snapshots, actions, uploads, profiles.
+- [Canvas](https://builderforce.ai/docs/platforms/mac/canvas): [A2UI](https://builderforce.ai/docs/platforms/mac/canvas#canvas-a2ui) push/reset, eval, snapshot.
+- [Nodes](https://builderforce.ai/docs/nodes): camera snap/clip, screen record, [location.get](https://builderforce.ai/docs/nodes/location-command), notifications.
+- [Cron + wakeups](https://builderforce.ai/docs/automation/cron-jobs); [webhooks](https://builderforce.ai/docs/automation/webhook); [Gmail Pub/Sub](https://builderforce.ai/docs/automation/gmail-pubsub).
+- [Skills platform](https://builderforce.ai/docs/tools/skills): bundled, managed, and workspace skills with install gating + UI.
 
 ### Runtime + safety
 
-- [Channel routing](https://docs.coderclaw.ai/concepts/channel-routing), [retry policy](https://docs.coderclaw.ai/concepts/retry), and [streaming/chunking](https://docs.coderclaw.ai/concepts/streaming).
-- [Presence](https://docs.coderclaw.ai/concepts/presence), [typing indicators](https://docs.coderclaw.ai/concepts/typing-indicators), and [usage tracking](https://docs.coderclaw.ai/concepts/usage-tracking).
-- [Models](https://docs.coderclaw.ai/concepts/models), [model failover](https://docs.coderclaw.ai/concepts/model-failover), and [session pruning](https://docs.coderclaw.ai/concepts/session-pruning).
-- [Security](https://docs.coderclaw.ai/gateway/security) and [troubleshooting](https://docs.coderclaw.ai/channels/troubleshooting).
+- [Channel routing](https://builderforce.ai/docs/concepts/channel-routing), [retry policy](https://builderforce.ai/docs/concepts/retry), and [streaming/chunking](https://builderforce.ai/docs/concepts/streaming).
+- [Presence](https://builderforce.ai/docs/concepts/presence), [typing indicators](https://builderforce.ai/docs/concepts/typing-indicators), and [usage tracking](https://builderforce.ai/docs/concepts/usage-tracking).
+- [Models](https://builderforce.ai/docs/concepts/models), [model failover](https://builderforce.ai/docs/concepts/model-failover), and [session pruning](https://builderforce.ai/docs/concepts/session-pruning).
+- [Security](https://builderforce.ai/docs/gateway/security) and [troubleshooting](https://builderforce.ai/docs/channels/troubleshooting).
 
 ### Ops + packaging
 
-- [Control UI](https://docs.coderclaw.ai/web) + [WebChat](https://docs.coderclaw.ai/web/webchat) served directly from the Gateway.
-- [Tailscale Serve/Funnel](https://docs.coderclaw.ai/gateway/tailscale) or [SSH tunnels](https://docs.coderclaw.ai/gateway/remote) with token/password auth.
-- [Nix mode](https://docs.coderclaw.ai/install/nix) for declarative config; [Docker](https://docs.coderclaw.ai/install/docker)-based installs.
-- [Doctor](https://docs.coderclaw.ai/gateway/doctor) migrations, [logging](https://docs.coderclaw.ai/logging).
+- [Control UI](https://builderforce.ai/docs/web) + [WebChat](https://builderforce.ai/docs/web/webchat) served directly from the Gateway.
+- [Tailscale Serve/Funnel](https://builderforce.ai/docs/gateway/tailscale) or [SSH tunnels](https://builderforce.ai/docs/gateway/remote) with token/password auth.
+- [Nix mode](https://builderforce.ai/docs/install/nix) for declarative config; [Docker](https://builderforce.ai/docs/install/docker)-based installs.
+- [Doctor](https://builderforce.ai/docs/gateway/doctor) migrations, [logging](https://builderforce.ai/docs/logging).
 
 ### CoderClaw Orchestration Engine
 
@@ -903,12 +905,12 @@ WhatsApp / Telegram / Slack / Discord / Google Chat / Signal / iMessage / BlueBu
 
 ## Key subsystems
 
-- **[Gateway WebSocket network](https://docs.coderclaw.ai/concepts/architecture)** — single WS control plane for clients, tools, and events (plus ops: [Gateway runbook](https://docs.coderclaw.ai/gateway)).
-- **[Tailscale exposure](https://docs.coderclaw.ai/gateway/tailscale)** — Serve/Funnel for the Gateway dashboard + WS (remote access: [Remote](https://docs.coderclaw.ai/gateway/remote)).
-- **[Browser control](https://docs.coderclaw.ai/tools/browser)** — coderclaw‑managed Chrome/Chromium with CDP control.
-- **[Canvas + A2UI](https://docs.coderclaw.ai/platforms/mac/canvas)** — agent‑driven visual workspace (A2UI host: [Canvas/A2UI](https://docs.coderclaw.ai/platforms/mac/canvas#canvas-a2ui)).
-- **[Voice Wake](https://docs.coderclaw.ai/nodes/voicewake) + [Talk Mode](https://docs.coderclaw.ai/nodes/talk)** — always‑on speech and continuous conversation.
-- **[Nodes](https://docs.coderclaw.ai/nodes)** — Canvas, camera snap/clip, screen record, `location.get`, notifications, plus macOS‑only `system.run`/`system.notify`.
+- **[Gateway WebSocket network](https://builderforce.ai/docs/concepts/architecture)** — single WS control plane for clients, tools, and events (plus ops: [Gateway runbook](https://builderforce.ai/docs/gateway)).
+- **[Tailscale exposure](https://builderforce.ai/docs/gateway/tailscale)** — Serve/Funnel for the Gateway dashboard + WS (remote access: [Remote](https://builderforce.ai/docs/gateway/remote)).
+- **[Browser control](https://builderforce.ai/docs/tools/browser)** — coderclaw‑managed Chrome/Chromium with CDP control.
+- **[Canvas + A2UI](https://builderforce.ai/docs/platforms/mac/canvas)** — agent‑driven visual workspace (A2UI host: [Canvas/A2UI](https://builderforce.ai/docs/platforms/mac/canvas#canvas-a2ui)).
+- **[Voice Wake](https://builderforce.ai/docs/nodes/voicewake) + [Talk Mode](https://builderforce.ai/docs/nodes/talk)** — always‑on speech and continuous conversation.
+- **[Nodes](https://builderforce.ai/docs/nodes)** — Canvas, camera snap/clip, screen record, `location.get`, notifications, plus macOS‑only `system.run`/`system.notify`.
 
 ## Tailscale access (Gateway dashboard)
 
@@ -925,7 +927,7 @@ Notes:
 - Funnel refuses to start unless `gateway.auth.mode: "password"` is set.
 - Optional: `gateway.tailscale.resetOnExit` to undo Serve/Funnel on shutdown.
 
-Details: [Tailscale guide](https://docs.coderclaw.ai/gateway/tailscale) · [Web surfaces](https://docs.coderclaw.ai/web)
+Details: [Tailscale guide](https://builderforce.ai/docs/gateway/tailscale) · [Web surfaces](https://builderforce.ai/docs/web)
 
 ## Remote Gateway (Linux is great)
 
@@ -935,7 +937,7 @@ It’s perfectly fine to run the Gateway on a small Linux instance. Clients (mac
 - **Device nodes** run device‑local actions (`system.run`, camera, screen recording, notifications) via `node.invoke`.
   In short: exec runs where the Gateway lives; device actions run where the device lives.
 
-Details: [Remote access](https://docs.coderclaw.ai/gateway/remote) · [Nodes](https://docs.coderclaw.ai/nodes) · [Security](https://docs.coderclaw.ai/gateway/security)
+Details: [Remote access](https://builderforce.ai/docs/gateway/remote) · [Nodes](https://builderforce.ai/docs/nodes) · [Security](https://builderforce.ai/docs/gateway/security)
 
 ## macOS permissions via the Gateway protocol
 
@@ -950,7 +952,7 @@ Elevated bash (host permissions) is separate from macOS TCC:
 - Use `/elevated on|off` to toggle per‑session elevated access when enabled + allowlisted.
 - Gateway persists the per‑session toggle via `sessions.patch` (WS method) alongside `thinkingLevel`, `verboseLevel`, `model`, `sendPolicy`, and `groupActivation`.
 
-Details: [Nodes](https://docs.coderclaw.ai/nodes) · [macOS app](https://docs.coderclaw.ai/platforms/macos) · [Gateway protocol](https://docs.coderclaw.ai/concepts/architecture)
+Details: [Nodes](https://builderforce.ai/docs/nodes) · [macOS app](https://builderforce.ai/docs/platforms/macos) · [Gateway protocol](https://builderforce.ai/docs/concepts/architecture)
 
 ## Agent to Agent (sessions\_\* tools)
 
@@ -959,7 +961,7 @@ Details: [Nodes](https://docs.coderclaw.ai/nodes) · [macOS app](https://docs.co
 - `sessions_history` — fetch transcript logs for a session.
 - `sessions_send` — message another session; optional reply‑back ping‑pong + announce step (`REPLY_SKIP`, `ANNOUNCE_SKIP`).
 
-Details: [Session tools](https://docs.coderclaw.ai/concepts/session-tool)
+Details: [Session tools](https://builderforce.ai/docs/concepts/session-tool)
 
 ## Skills registry (Builderforce.ai Marketplace)
 
@@ -1003,13 +1005,13 @@ Note: signed builds required for macOS permissions to stick across rebuilds (see
 - Voice trigger forwarding + Canvas surface.
 - Controlled via `coderclaw nodes …`.
 
-Runbook: [iOS connect](https://docs.coderclaw.ai/platforms/ios).
+Runbook: [iOS connect](https://builderforce.ai/docs/platforms/ios).
 
 ### Android node (optional)
 
 - Pairs via the same Bridge + pairing flow as iOS.
 - Exposes Canvas, Camera, and Screen capture commands.
-- Runbook: [Android connect](https://docs.coderclaw.ai/platforms/android).
+- Runbook: [Android connect](https://builderforce.ai/docs/platforms/android).
 
 ## Agent workspace + skills
 
@@ -1029,7 +1031,7 @@ Minimal `~/.coderclaw/coderclaw.json` (model + defaults):
 }
 ```
 
-[Full configuration reference (all keys + examples).](https://docs.coderclaw.ai/gateway/configuration)
+[Full configuration reference (all keys + examples).](https://builderforce.ai/docs/gateway/configuration)
 
 ## Security model (important)
 
@@ -1037,15 +1039,15 @@ Minimal `~/.coderclaw/coderclaw.json` (model + defaults):
 - **Group/channel safety:** set `agents.defaults.sandbox.mode: "non-main"` to run **non‑main sessions** (groups/channels) inside per‑session Docker sandboxes; bash then runs in Docker for those sessions.
 - **Sandbox defaults:** allowlist `bash`, `process`, `read`, `write`, `edit`, `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`; denylist `browser`, `canvas`, `nodes`, `cron`, `discord`, `gateway`.
 
-Details: [Security guide](https://docs.coderclaw.ai/gateway/security) · [Docker + sandboxing](https://docs.coderclaw.ai/install/docker) · [Sandbox config](https://docs.coderclaw.ai/gateway/configuration)
+Details: [Security guide](https://builderforce.ai/docs/gateway/security) · [Docker + sandboxing](https://builderforce.ai/docs/install/docker) · [Sandbox config](https://builderforce.ai/docs/gateway/configuration)
 
-### [WhatsApp](https://docs.coderclaw.ai/channels/whatsapp)
+### [WhatsApp](https://builderforce.ai/docs/channels/whatsapp)
 
 - Link the device: `pnpm coderclaw channels login` (stores creds in `~/.coderclaw/credentials`).
 - Allowlist who can talk to the assistant via `channels.whatsapp.allowFrom`.
 - If `channels.whatsapp.groups` is set, it becomes a group allowlist; include `"*"` to allow all.
 
-### [Telegram](https://docs.coderclaw.ai/channels/telegram)
+### [Telegram](https://builderforce.ai/docs/channels/telegram)
 
 - Set `TELEGRAM_BOT_TOKEN` or `channels.telegram.botToken` (env wins).
 - Optional: set `channels.telegram.groups` (with `channels.telegram.groups."*".requireMention`); when set, it is a group allowlist (include `"*"` to allow all). Also `channels.telegram.allowFrom` or `channels.telegram.webhookUrl` + `channels.telegram.webhookSecret` as needed.
@@ -1060,11 +1062,11 @@ Details: [Security guide](https://docs.coderclaw.ai/gateway/security) · [Docker
 }
 ```
 
-### [Slack](https://docs.coderclaw.ai/channels/slack)
+### [Slack](https://builderforce.ai/docs/channels/slack)
 
 - Set `SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` (or `channels.slack.botToken` + `channels.slack.appToken`).
 
-### [Discord](https://docs.coderclaw.ai/channels/discord)
+### [Discord](https://builderforce.ai/docs/channels/discord)
 
 - Set `DISCORD_BOT_TOKEN` or `channels.discord.token` (env wins).
 - Optional: set `commands.native`, `commands.text`, or `commands.useAccessGroups`, plus `channels.discord.allowFrom`, `channels.discord.guilds`, or `channels.discord.mediaMaxMb` as needed.
@@ -1079,27 +1081,27 @@ Details: [Security guide](https://docs.coderclaw.ai/gateway/security) · [Docker
 }
 ```
 
-### [Signal](https://docs.coderclaw.ai/channels/signal)
+### [Signal](https://builderforce.ai/docs/channels/signal)
 
 - Requires `signal-cli` and a `channels.signal` config section.
 
-### [BlueBubbles (iMessage)](https://docs.coderclaw.ai/channels/bluebubbles)
+### [BlueBubbles (iMessage)](https://builderforce.ai/docs/channels/bluebubbles)
 
 - **Recommended** iMessage integration.
 - Configure `channels.bluebubbles.serverUrl` + `channels.bluebubbles.password` and a webhook (`channels.bluebubbles.webhookPath`).
 - The BlueBubbles server runs on macOS; the Gateway can run on macOS or elsewhere.
 
-### [iMessage (legacy)](https://docs.coderclaw.ai/channels/imessage)
+### [iMessage (legacy)](https://builderforce.ai/docs/channels/imessage)
 
 - Legacy macOS-only integration via `imsg` (Messages must be signed in).
 - If `channels.imessage.groups` is set, it becomes a group allowlist; include `"*"` to allow all.
 
-### [Microsoft Teams](https://docs.coderclaw.ai/channels/msteams)
+### [Microsoft Teams](https://builderforce.ai/docs/channels/msteams)
 
 - Configure a Teams app + Bot Framework, then add a `msteams` config section.
 - Allowlist who can talk via `msteams.allowFrom`; group access via `msteams.groupAllowFrom` or `msteams.groupPolicy: "open"`.
 
-### [WebChat](https://docs.coderclaw.ai/web/webchat)
+### [WebChat](https://builderforce.ai/docs/web/webchat)
 
 - Uses the Gateway WebSocket; no separate WebChat port/config.
 
@@ -1118,69 +1120,69 @@ Browser control (optional):
 
 Use these when you’re past the onboarding flow and want the deeper reference.
 
-- [Start with the docs index for navigation and “what’s where.”](https://docs.coderclaw.ai)
-- [Read the architecture overview for the gateway + protocol model.](https://docs.coderclaw.ai/concepts/architecture)
-- [Use the full configuration reference when you need every key and example.](https://docs.coderclaw.ai/gateway/configuration)
-- [Run the Gateway by the book with the operational runbook.](https://docs.coderclaw.ai/gateway)
-- [Learn how the Control UI/Web surfaces work and how to expose them safely.](https://docs.coderclaw.ai/web)
-- [Understand remote access over SSH tunnels or tailnets.](https://docs.coderclaw.ai/gateway/remote)
-- [Follow the onboarding wizard flow for a guided setup.](https://docs.coderclaw.ai/start/wizard)
-- [Wire external triggers via the webhook surface.](https://docs.coderclaw.ai/automation/webhook)
-- [Set up Gmail Pub/Sub triggers.](https://docs.coderclaw.ai/automation/gmail-pubsub)
-- [Learn the macOS menu bar companion details.](https://docs.coderclaw.ai/platforms/mac/menu-bar)
-- [Platform guides: Windows (WSL2)](https://docs.coderclaw.ai/platforms/windows), [Linux](https://docs.coderclaw.ai/platforms/linux), [macOS](https://docs.coderclaw.ai/platforms/macos), [iOS](https://docs.coderclaw.ai/platforms/ios), [Android](https://docs.coderclaw.ai/platforms/android)
-- [Debug common failures with the troubleshooting guide.](https://docs.coderclaw.ai/channels/troubleshooting)
-- [Review security guidance before exposing anything.](https://docs.coderclaw.ai/gateway/security)
+- [Start with the docs index for navigation and “what’s where.”](https://builderforce.ai/docs)
+- [Read the architecture overview for the gateway + protocol model.](https://builderforce.ai/docs/concepts/architecture)
+- [Use the full configuration reference when you need every key and example.](https://builderforce.ai/docs/gateway/configuration)
+- [Run the Gateway by the book with the operational runbook.](https://builderforce.ai/docs/gateway)
+- [Learn how the Control UI/Web surfaces work and how to expose them safely.](https://builderforce.ai/docs/web)
+- [Understand remote access over SSH tunnels or tailnets.](https://builderforce.ai/docs/gateway/remote)
+- [Follow the onboarding wizard flow for a guided setup.](https://builderforce.ai/docs/start/wizard)
+- [Wire external triggers via the webhook surface.](https://builderforce.ai/docs/automation/webhook)
+- [Set up Gmail Pub/Sub triggers.](https://builderforce.ai/docs/automation/gmail-pubsub)
+- [Learn the macOS menu bar companion details.](https://builderforce.ai/docs/platforms/mac/menu-bar)
+- [Platform guides: Windows (WSL2)](https://builderforce.ai/docs/platforms/windows), [Linux](https://builderforce.ai/docs/platforms/linux), [macOS](https://builderforce.ai/docs/platforms/macos), [iOS](https://builderforce.ai/docs/platforms/ios), [Android](https://builderforce.ai/docs/platforms/android)
+- [Debug common failures with the troubleshooting guide.](https://builderforce.ai/docs/channels/troubleshooting)
+- [Review security guidance before exposing anything.](https://builderforce.ai/docs/gateway/security)
 
 ## Advanced docs (discovery + control)
 
-- [Discovery + transports](https://docs.coderclaw.ai/gateway/discovery)
-- [Bonjour/mDNS](https://docs.coderclaw.ai/gateway/bonjour)
-- [Gateway pairing](https://docs.coderclaw.ai/gateway/pairing)
-- [Remote gateway README](https://docs.coderclaw.ai/gateway/remote-gateway-readme)
-- [Control UI](https://docs.coderclaw.ai/web/control-ui)
-- [Dashboard](https://docs.coderclaw.ai/web/dashboard)
+- [Discovery + transports](https://builderforce.ai/docs/gateway/discovery)
+- [Bonjour/mDNS](https://builderforce.ai/docs/gateway/bonjour)
+- [Gateway pairing](https://builderforce.ai/docs/gateway/pairing)
+- [Remote gateway README](https://builderforce.ai/docs/gateway/remote-gateway-readme)
+- [Control UI](https://builderforce.ai/docs/web/control-ui)
+- [Dashboard](https://builderforce.ai/docs/web/dashboard)
 
 ## Operations & troubleshooting
 
-- [Health checks](https://docs.coderclaw.ai/gateway/health)
-- [Gateway lock](https://docs.coderclaw.ai/gateway/gateway-lock)
-- [Background process](https://docs.coderclaw.ai/gateway/background-process)
-- [Browser troubleshooting (Linux)](https://docs.coderclaw.ai/tools/browser-linux-troubleshooting)
-- [Logging](https://docs.coderclaw.ai/logging)
+- [Health checks](https://builderforce.ai/docs/gateway/health)
+- [Gateway lock](https://builderforce.ai/docs/gateway/gateway-lock)
+- [Background process](https://builderforce.ai/docs/gateway/background-process)
+- [Browser troubleshooting (Linux)](https://builderforce.ai/docs/tools/browser-linux-troubleshooting)
+- [Logging](https://builderforce.ai/docs/logging)
 
 ## Deep dives
 
-- [Agent loop](https://docs.coderclaw.ai/concepts/agent-loop)
-- [Presence](https://docs.coderclaw.ai/concepts/presence)
-- [TypeBox schemas](https://docs.coderclaw.ai/concepts/typebox)
-- [RPC adapters](https://docs.coderclaw.ai/reference/rpc)
-- [Queue](https://docs.coderclaw.ai/concepts/queue)
+- [Agent loop](https://builderforce.ai/docs/concepts/agent-loop)
+- [Presence](https://builderforce.ai/docs/concepts/presence)
+- [TypeBox schemas](https://builderforce.ai/docs/concepts/typebox)
+- [RPC adapters](https://builderforce.ai/docs/reference/rpc)
+- [Queue](https://builderforce.ai/docs/concepts/queue)
 
 ## Workspace & skills
 
-- [Skills config](https://docs.coderclaw.ai/tools/skills-config)
-- [Default AGENTS](https://docs.coderclaw.ai/reference/AGENTS.default)
-- [Templates: AGENTS](https://docs.coderclaw.ai/reference/templates/AGENTS)
-- [Templates: BOOTSTRAP](https://docs.coderclaw.ai/reference/templates/BOOTSTRAP)
-- [Templates: IDENTITY](https://docs.coderclaw.ai/reference/templates/IDENTITY)
-- [Templates: SOUL](https://docs.coderclaw.ai/reference/templates/SOUL)
-- [Templates: TOOLS](https://docs.coderclaw.ai/reference/templates/TOOLS)
-- [Templates: USER](https://docs.coderclaw.ai/reference/templates/USER)
+- [Skills config](https://builderforce.ai/docs/tools/skills-config)
+- [Default AGENTS](https://builderforce.ai/docs/reference/AGENTS.default)
+- [Templates: AGENTS](https://builderforce.ai/docs/reference/templates/AGENTS)
+- [Templates: BOOTSTRAP](https://builderforce.ai/docs/reference/templates/BOOTSTRAP)
+- [Templates: IDENTITY](https://builderforce.ai/docs/reference/templates/IDENTITY)
+- [Templates: SOUL](https://builderforce.ai/docs/reference/templates/SOUL)
+- [Templates: TOOLS](https://builderforce.ai/docs/reference/templates/TOOLS)
+- [Templates: USER](https://builderforce.ai/docs/reference/templates/USER)
 
 ## Platform internals
 
-- [macOS dev setup](https://docs.coderclaw.ai/platforms/mac/dev-setup)
-- [macOS menu bar](https://docs.coderclaw.ai/platforms/mac/menu-bar)
-- [macOS voice wake](https://docs.coderclaw.ai/platforms/mac/voicewake)
-- [iOS node](https://docs.coderclaw.ai/platforms/ios)
-- [Android node](https://docs.coderclaw.ai/platforms/android)
-- [Windows (WSL2)](https://docs.coderclaw.ai/platforms/windows)
-- [Linux app](https://docs.coderclaw.ai/platforms/linux)
+- [macOS dev setup](https://builderforce.ai/docs/platforms/mac/dev-setup)
+- [macOS menu bar](https://builderforce.ai/docs/platforms/mac/menu-bar)
+- [macOS voice wake](https://builderforce.ai/docs/platforms/mac/voicewake)
+- [iOS node](https://builderforce.ai/docs/platforms/ios)
+- [Android node](https://builderforce.ai/docs/platforms/android)
+- [Windows (WSL2)](https://builderforce.ai/docs/platforms/windows)
+- [Linux app](https://builderforce.ai/docs/platforms/linux)
 
 ## Email hooks (Gmail)
 
-- [docs.coderclaw.ai/gmail-pubsub](https://docs.coderclaw.ai/automation/gmail-pubsub)
+- [builderforce.ai/docs/gmail-pubsub](https://builderforce.ai/docs/automation/gmail-pubsub)
 
 ## Community
 

@@ -1,4 +1,0 @@
-# docs.coderclaw.ai — CoderClaw + CoderClawLink documentation (Astro Starlight)
-name = "coderclaw-docs"
-pages_build_output_dir = "./dist"
-compatibility_date = "2024-01-01"
