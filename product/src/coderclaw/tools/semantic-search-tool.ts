@@ -17,7 +17,6 @@
  */
 
 import { execFileSync } from "node:child_process";
-import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
@@ -259,8 +258,12 @@ async function walkSourceFiles(root: string): Promise<string[]> {
       continue;
     }
     for (const entry of entries) {
-      if (entry.name.startsWith(".") && entry.name !== ".coderClaw") continue;
-      if (IGNORED_DIRS.has(entry.name)) continue;
+      if (entry.name.startsWith(".") && entry.name !== ".coderClaw") {
+        continue;
+      }
+      if (IGNORED_DIRS.has(entry.name)) {
+        continue;
+      }
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         queue.push(full);
@@ -390,7 +393,9 @@ function bm25Score(queryTokens: string[], fileEntry: FileEntry, index: SearchInd
   for (const q of queryTokens) {
     // Find all tokens in the file that start with q (prefix match)
     const tf = fileEntry.tokens.filter((t) => t === q || t.startsWith(q + "_")).length;
-    if (tf === 0) continue;
+    if (tf === 0) {
+      continue;
+    }
 
     const df = index.docFreq[q] ?? 1;
     const idf = Math.log((N - df + 0.5) / (df + 0.5) + 1);
@@ -405,7 +410,9 @@ function bm25Score(queryTokens: string[], fileEntry: FileEntry, index: SearchInd
 // ---------------------------------------------------------------------------
 
 function extractSnippet(projectRoot: string, relPath: string, queryTokens: string[]): string {
-  if (queryTokens.length === 0) return "";
+  if (queryTokens.length === 0) {
+    return "";
+  }
   const absPath = path.join(projectRoot, relPath);
   const keyword = queryTokens[0];
   try {
@@ -524,7 +531,7 @@ export const semanticSearchTool: AgentTool<typeof SemanticSearchSchema, string> 
 
     // Score all candidate files
     const scored = candidates
-      .map((f, i) => {
+      .map((f) => {
         const fileIdx = index.files.indexOf(f);
         let score = bm25Score(queryTokens, f, index);
 
@@ -540,12 +547,14 @@ export const semanticSearchTool: AgentTool<typeof SemanticSearchSchema, string> 
 
         // Recency bonus (files modified in last 7 days)
         const ageDays = (Date.now() - f.mtime) / (1000 * 60 * 60 * 24);
-        if (ageDays < 7) score += 1;
+        if (ageDays < 7) {
+          score += 1;
+        }
 
         return { file: f, score, fileIdx, symbolMatches };
       })
       .filter((r) => r.score > 0)
-      .sort((a, b) => b.score - a.score)
+      .toSorted((a, b) => b.score - a.score)
       .slice(0, Math.min(topK, MAX_RESULTS));
 
     const results = scored.map((r) => ({

@@ -40,9 +40,15 @@ function extractText(content: unknown): string {
   }
   if (content !== null && typeof content === "object") {
     const obj = content as Record<string, unknown>;
-    if (typeof obj.text === "string") return obj.text.trim();
-    if (typeof obj.output === "string") return obj.output.trim();
-    if (typeof obj.content === "string") return obj.content.trim();
+    if (typeof obj.text === "string") {
+      return obj.text.trim();
+    }
+    if (typeof obj.output === "string") {
+      return obj.output.trim();
+    }
+    if (typeof obj.content === "string") {
+      return obj.content.trim();
+    }
   }
   return "";
 }
@@ -61,11 +67,17 @@ async function readSubagentOutput(sessionKey: string): Promise<string> {
     const messages = Array.isArray(history?.messages) ? history.messages : [];
     for (let i = messages.length - 1; i >= 0; i--) {
       const msg = messages[i];
-      if (!msg || typeof msg !== "object") continue;
+      if (!msg || typeof msg !== "object") {
+        continue;
+      }
       const m = msg as Record<string, unknown>;
-      if (m.role !== "assistant") continue;
+      if (m.role !== "assistant") {
+        continue;
+      }
       const text = extractText(m.content ?? m.text);
-      if (text) return text;
+      if (text) {
+        return text;
+      }
     }
   } catch (err) {
     logDebug(`[local-result-broker] chat.history failed for ${sessionKey}: ${String(err)}`);
@@ -101,7 +113,9 @@ export function awaitLocalSubagentResult(
     let settled = false;
 
     const deadline = setTimeout(() => {
-      if (settled) return;
+      if (settled) {
+        return;
+      }
       settled = true;
       stop();
       logDebug(`[local-result-broker] timed out waiting for runId=${runId} after ${timeoutMs}ms`);
@@ -109,10 +123,16 @@ export function awaitLocalSubagentResult(
     }, timeoutMs);
 
     const stop = onAgentEvent((evt) => {
-      if (settled) return;
-      if (evt.runId !== runId) return;
+      if (settled) {
+        return;
+      }
+      if (evt.runId !== runId) {
+        return;
+      }
       const phase = typeof evt.data?.phase === "string" ? evt.data.phase : null;
-      if (phase !== "end" && phase !== "error") return;
+      if (phase !== "end" && phase !== "error") {
+        return;
+      }
 
       settled = true;
       clearTimeout(deadline);

@@ -159,10 +159,12 @@ describe("BuilderforceAgentTransport", () => {
 
 describe("LocalAgentTransport", () => {
   let broker: ILocalResultBroker;
+  let awaitResultMock: ILocalResultBroker["awaitResult"];
   let transport: LocalAgentTransport;
 
   beforeEach(() => {
-    broker = { awaitResult: vi.fn(async () => "subagent output") };
+    awaitResultMock = vi.fn(async () => "subagent output");
+    broker = { awaitResult: awaitResultMock };
     transport = new LocalAgentTransport({
       getContext: () => ({}),
       localResultBroker: broker,
@@ -173,7 +175,7 @@ describe("LocalAgentTransport", () => {
     const entries = await transport.discover();
     expect(entries.length).toBeGreaterThan(0);
     expect(entries.every((e) => e.kind === "local")).toBe(true);
-    expect(entries.every((e) => e.online === true)).toBe(true);
+    expect(entries.every((e) => e.online)).toBe(true);
     expect(entries.map((e) => e.id)).toContain("code-creator");
   });
 
@@ -199,7 +201,7 @@ describe("LocalAgentTransport", () => {
       expect.objectContaining({ task: "build a thing", agentId: "code-creator" }),
       {},
     );
-    expect(broker.awaitResult).toHaveBeenCalledWith("run-1", "sess-1", 5000);
+    expect(awaitResultMock).toHaveBeenCalledWith("run-1", "sess-1", 5000);
     expect(result).toEqual({
       status: "accepted",
       targetId: "code-creator",

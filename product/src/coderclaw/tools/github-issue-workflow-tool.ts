@@ -114,7 +114,9 @@ async function fetchIssue(ref: ParsedIssueRef, token: string): Promise<GitHubIss
 function classifyIssue(issue: GitHubIssue): "feature" | "bugfix" {
   const bugLabels = new Set(["bug", "bugfix", "defect", "fix", "regression"]);
   for (const label of issue.labels) {
-    if (bugLabels.has(label.name.toLowerCase())) return "bugfix";
+    if (bugLabels.has(label.name.toLowerCase())) {
+      return "bugfix";
+    }
   }
   return "feature";
 }
@@ -160,7 +162,9 @@ async function createGitHubPR(opts: {
         draft: true,
       }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      return null;
+    }
     const pr = (await res.json()) as { html_url: string };
     return pr.html_url;
   } catch {

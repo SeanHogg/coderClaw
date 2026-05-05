@@ -507,7 +507,9 @@ export class AgentOrchestrator {
       throw new Error(task.error);
     }
 
-    if (result.childSessionKey) task.childSessionKey = result.childSessionKey;
+    if (result.childSessionKey) {
+      task.childSessionKey = result.childSessionKey;
+    }
     const output =
       result.output || `Task ${task.id} dispatched to ${result.targetId} (result pending)`;
     task.status = "completed";

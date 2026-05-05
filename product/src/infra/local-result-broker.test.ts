@@ -108,9 +108,8 @@ describe("awaitLocalSubagentResult", () => {
 
   it("does not double-resolve if lifecycle fires after timeout", async () => {
     let resolveCount = 0;
-    const original = Promise;
     const promise = awaitLocalSubagentResult("run-race", "agent:claude:subagent:r", 30);
-    promise.then(() => resolveCount++);
+    void promise.then(() => resolveCount++);
 
     await new Promise((r) => setTimeout(r, 60)); // let it time out
     emitEvent({ runId: "run-race", data: { phase: "end" } }); // late arrival

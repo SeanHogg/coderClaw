@@ -20,9 +20,13 @@ import {
  * an `agentRole` string — single source of truth for the auto-target syntax.
  */
 export function parseAutoTarget(targetId: string): string[] | null {
-  if (targetId === "auto") return [];
+  if (targetId === "auto") {
+    return [];
+  }
   const inline = targetId.match(/^auto\[(.+)]$/);
-  if (!inline) return null;
+  if (!inline) {
+    return null;
+  }
   return inline[1]
     .split(",")
     .map((cap) => cap.trim())

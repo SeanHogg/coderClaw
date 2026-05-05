@@ -188,7 +188,9 @@ export class WorkflowTelemetryService {
   // ── Private helpers ───────────────────────────────────────────────────────
 
   private async appendSpan(span: WorkflowSpan): Promise<void> {
-    if (!this.projectRoot) return;
+    if (!this.projectRoot) {
+      return;
+    }
 
     this.syncToBuilderforce(span);
     this.forwardToOtelProxy(span);
@@ -224,7 +226,9 @@ export class WorkflowTelemetryService {
    *   task.fail         → PATCH /api/workflows/:wfId/tasks/:tid  (status=failed)
    */
   private syncToBuilderforce(span: WorkflowSpan): void {
-    if (!this.apiUrl || !this.apiKey || !this.clawId) return;
+    if (!this.apiUrl || !this.apiKey || !this.clawId) {
+      return;
+    }
 
     const base = normalizeBaseUrl(this.apiUrl);
     const headers: Record<string, string> = {
@@ -232,7 +236,9 @@ export class WorkflowTelemetryService {
       Authorization: `Bearer ${this.apiKey}`,
       "X-Claw-Id": this.clawId,
     };
-    if (span.traceId) headers["X-Trace-Id"] = span.traceId;
+    if (span.traceId) {
+      headers["X-Trace-Id"] = span.traceId;
+    }
 
     const doFetch = (url: string, method: string, body: unknown) =>
       fetch(url, { method, headers, body: JSON.stringify(body) }).catch((err) =>
@@ -286,9 +292,13 @@ export class WorkflowTelemetryService {
 
   /** Forward span to Builderforce OTel ingest endpoint (fire-and-forget). */
   private forwardToOtelProxy(span: WorkflowSpan): void {
-    if (!this.apiUrl || !this.apiKey || !this.clawId) return;
+    if (!this.apiUrl || !this.apiKey || !this.clawId) {
+      return;
+    }
     const clawIdNum = parseInt(this.clawId, 10);
-    if (Number.isNaN(clawIdNum)) return;
+    if (Number.isNaN(clawIdNum)) {
+      return;
+    }
 
     const base = normalizeBaseUrl(this.apiUrl);
     fetch(`${base}/api/telemetry/spans?clawId=${clawIdNum}`, {

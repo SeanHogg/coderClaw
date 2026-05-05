@@ -56,7 +56,9 @@ function listLocalRoles(): AgentRole[] {
   const seen = new Set(builtins.map((r) => r.name));
   const personas: AgentRole[] = [];
   for (const persona of globalPersonaRegistry.listAll()) {
-    if (seen.has(persona.name)) continue;
+    if (seen.has(persona.name)) {
+      continue;
+    }
     const role = findAgentRole(persona.name);
     if (role) {
       personas.push(role);
@@ -81,7 +83,9 @@ export class LocalAgentTransport implements IAgentTransport {
 
   async discover(requiredCapabilities: string[] = []): Promise<AgentTransportEntry[]> {
     const all = listLocalRoles().map(roleToEntry);
-    if (requiredCapabilities.length === 0) return all;
+    if (requiredCapabilities.length === 0) {
+      return all;
+    }
     return all.filter((entry) =>
       requiredCapabilities.every((cap) => entry.capabilities.includes(cap)),
     );

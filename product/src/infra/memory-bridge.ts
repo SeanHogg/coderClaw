@@ -25,6 +25,8 @@ export function getKnowledgeLoop(): IKnowledgeLoop | null {
 }
 
 export async function buildTeamMemoryContext(): Promise<string> {
-  if (!_buildTeamMemoryContext) return "";
+  if (!_buildTeamMemoryContext) {
+    return "";
+  }
   return _buildTeamMemoryContext();
 }

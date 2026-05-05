@@ -229,7 +229,7 @@ export function createInitialMambaState(params?: {
   const order = params?.order ?? 4;
   const channels = params?.channels ?? 16;
   return {
-    data: new Array<number>(channels * order).fill(0),
+    data: Array.from<number>({ length: channels * order }).fill(0),
     dim,
     order,
     channels,

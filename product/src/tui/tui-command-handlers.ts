@@ -95,7 +95,9 @@ type CommandHandlerContext = {
  * Called fire-and-forget on /exit and awaited on /new (before reset clears history).
  */
 async function autoCheckpointSession(chatLog: { hasUserMessages: () => boolean }): Promise<void> {
-  if (!chatLog.hasUserMessages()) return;
+  if (!chatLog.hasUserMessages()) {
+    return;
+  }
   try {
     await saveSessionHandoff(process.cwd(), {
       sessionId: randomUUID(),

@@ -22,7 +22,9 @@ export type AgentTransportMap = Partial<Record<AgentTransportKind, IAgentTranspo
 
 /** Resolve a target string to its transport kind. */
 export function transportKindForTarget(target: string): AgentTransportKind {
-  if (target.startsWith("remote:")) return "remote";
+  if (target.startsWith("remote:")) {
+    return "remote";
+  }
   // Bare role names and explicit `local:` both route to local.
   return "local";
 }
@@ -37,9 +39,7 @@ export class CompositeAgentTransport implements IAgentTransport {
 
   async discover(requiredCapabilities: string[] = []): Promise<AgentTransportEntry[]> {
     const lists = await Promise.all(
-      (Object.values(this.transports) as IAgentTransport[]).map((t) =>
-        t.discover(requiredCapabilities),
-      ),
+      Object.values(this.transports).map((t) => t.discover(requiredCapabilities)),
     );
     return lists.flat();
   }

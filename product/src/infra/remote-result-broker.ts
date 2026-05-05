@@ -34,7 +34,9 @@ export function setMaxConcurrentRemote(max: number): void {
 /** Release a dispatch slot, unblocking the next waiter if any. */
 function releaseSlot(): void {
   const next = waitQueue.shift();
-  if (next) next();
+  if (next) {
+    next();
+  }
 }
 
 /** Register the timeout + pending entry. Single source for slow + fast paths (DRY). */
