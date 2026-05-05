@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { CoderClawPluginApi, CoderClawPluginService } from "coderclaw/plugin-sdk";
+import type { CoderClawPluginApi, CoderClawPluginService } from "@seanhogg/coderclaw/plugin-sdk";
 
 type ArmGroup = "camera" | "screen" | "writes" | "all";
 

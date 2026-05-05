@@ -5,7 +5,7 @@
   "description": "CoderClaw WhatsApp channel plugin",
   "type": "module",
   "devDependencies": {
-    "coderclaw": "workspace:*"
+    "@seanhogg/coderclaw": "workspace:*"
   },
   "coderclaw": {
     "extensions": [

@@ -1,4 +1,4 @@
-import type { CoderClawConfig, PluginRuntime } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, PluginRuntime } from "@seanhogg/coderclaw/plugin-sdk";
 import { describe, expect, it, vi } from "vitest";
 import { linePlugin } from "./channel.js";
 import { setLineRuntime } from "./runtime.js";

@@ -10,7 +10,7 @@
     "openai": "^6.22.0"
   },
   "devDependencies": {
-    "coderclaw": "workspace:*"
+    "@seanhogg/coderclaw": "workspace:*"
   },
   "coderclaw": {
     "extensions": [

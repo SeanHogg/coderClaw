@@ -3,7 +3,7 @@ import type {
   DmConfig,
   DmPolicy,
   GroupPolicy,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 
 export type { DmPolicy, GroupPolicy };
 

@@ -6,15 +6,14 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { SpawnSubagentContext } from "../agents/subagent-spawn.js";
-import type { IRelayService } from "./relay-service.js";
+import { logDebug } from "../logger.js";
+import { findAgentRole } from "./agent-roles.js";
 import type {
   AgentTransportDispatchResult,
   IAgentTransport,
   IAgentMemoryService,
   ITelemetryService,
 } from "./ports.js";
-import { logDebug } from "../logger.js";
-import { findAgentRole } from "./agent-roles.js";
 import {
   saveWorkflowState,
   loadWorkflowState,
@@ -22,6 +21,7 @@ import {
   type PersistedWorkflow,
   type PersistedTask,
 } from "./project-context.js";
+import type { IRelayService } from "./relay-service.js";
 import {
   DEFAULT_ROUTING_RULES,
   parseRoutingRules,
@@ -509,8 +509,7 @@ export class AgentOrchestrator {
 
     if (result.childSessionKey) task.childSessionKey = result.childSessionKey;
     const output =
-      result.output ||
-      `Task ${task.id} dispatched to ${result.targetId} (result pending)`;
+      result.output || `Task ${task.id} dispatched to ${result.targetId} (result pending)`;
     task.status = "completed";
     task.completedAt = new Date();
     task.output = output;
@@ -819,17 +818,23 @@ export function createSecurityAuditWorkflow(target: string): WorkflowStep[] {
     {
       role: "bug-analyzer",
       task: `Perform a security vulnerability scan of: ${target}. Check for OWASP Top 10 (injection, XSS, CSRF, broken auth, sensitive data exposure, SSRF, etc.), hardcoded secrets, insecure dependencies, and missing input validation.`,
-      dependsOn: [`Build a threat model for: ${target}. Identify attack surface, trust boundaries, data flows, and external integrations.`],
+      dependsOn: [
+        `Build a threat model for: ${target}. Identify attack surface, trust boundaries, data flows, and external integrations.`,
+      ],
     },
     {
       role: "code-creator",
       task: `Produce prioritised remediation recommendations for all vulnerabilities found in: ${target}. Include concrete code examples or patches for the highest-severity issues.`,
-      dependsOn: [`Perform a security vulnerability scan of: ${target}. Check for OWASP Top 10 (injection, XSS, CSRF, broken auth, sensitive data exposure, SSRF, etc.), hardcoded secrets, insecure dependencies, and missing input validation.`],
+      dependsOn: [
+        `Perform a security vulnerability scan of: ${target}. Check for OWASP Top 10 (injection, XSS, CSRF, broken auth, sensitive data exposure, SSRF, etc.), hardcoded secrets, insecure dependencies, and missing input validation.`,
+      ],
     },
     {
       role: "code-reviewer",
       task: `Review the proposed security fixes for: ${target}. Verify completeness, check for regressions, and produce a final sign-off checklist with residual risk summary.`,
-      dependsOn: [`Produce prioritised remediation recommendations for all vulnerabilities found in: ${target}. Include concrete code examples or patches for the highest-severity issues.`],
+      dependsOn: [
+        `Produce prioritised remediation recommendations for all vulnerabilities found in: ${target}. Include concrete code examples or patches for the highest-severity issues.`,
+      ],
     },
   ];
 }

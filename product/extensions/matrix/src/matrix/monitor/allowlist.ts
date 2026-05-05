@@ -1,4 +1,4 @@
-import type { AllowlistMatch } from "coderclaw/plugin-sdk";
+import type { AllowlistMatch } from "@seanhogg/coderclaw/plugin-sdk";
 
 function normalizeAllowList(list?: Array<string | number>) {
   return (list ?? []).map((entry) => String(entry).trim()).filter(Boolean);

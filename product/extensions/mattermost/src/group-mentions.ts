@@ -1,4 +1,4 @@
-import type { ChannelGroupContext } from "coderclaw/plugin-sdk";
+import type { ChannelGroupContext } from "@seanhogg/coderclaw/plugin-sdk";
 import { resolveMattermostAccount } from "./mattermost/accounts.js";
 
 export function resolveMattermostGroupRequireMention(

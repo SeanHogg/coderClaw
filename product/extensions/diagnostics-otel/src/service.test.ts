@@ -96,17 +96,18 @@ vi.mock("@opentelemetry/semantic-conventions", () => ({
   },
 }));
 
-vi.mock("coderclaw/plugin-sdk", async () => {
-  const actual =
-    await vi.importActual<typeof import("coderclaw/plugin-sdk")>("coderclaw/plugin-sdk");
+vi.mock("@seanhogg/coderclaw/plugin-sdk", async () => {
+  const actual = await vi.importActual<typeof import("@seanhogg/coderclaw/plugin-sdk")>(
+    "@seanhogg/coderclaw/plugin-sdk",
+  );
   return {
     ...actual,
     registerLogTransport: registerLogTransportMock,
   };
 });
 
-import type { CoderClawPluginServiceContext } from "coderclaw/plugin-sdk";
-import { emitDiagnosticEvent } from "coderclaw/plugin-sdk";
+import type { CoderClawPluginServiceContext } from "@seanhogg/coderclaw/plugin-sdk";
+import { emitDiagnosticEvent } from "@seanhogg/coderclaw/plugin-sdk";
 import { createDiagnosticsOtelService } from "./service.js";
 
 describe("diagnostics-otel service", () => {

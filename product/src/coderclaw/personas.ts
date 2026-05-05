@@ -219,7 +219,8 @@ export async function loadPersonaFromFile(
     // Top-level shortcuts for common marketplace fields (PERSONA.yaml may use either form).
     // "clawhubId" is accepted as a legacy alias for "marketplaceId".
     const mergedMeta: PersonaPlugin["pluginMetadata"] = {
-      marketplaceId: metaStr(pluginMeta, raw, "marketplaceId") ?? metaStr(pluginMeta, raw, "clawhubId"),
+      marketplaceId:
+        metaStr(pluginMeta, raw, "marketplaceId") ?? metaStr(pluginMeta, raw, "clawhubId"),
       version: metaStr(pluginMeta, raw, "version"),
       author: metaStr(pluginMeta, raw, "author"),
       authorUrl: metaStr(pluginMeta, raw, "authorUrl"),

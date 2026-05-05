@@ -10,7 +10,7 @@
     "express": "^5.2.1"
   },
   "devDependencies": {
-    "coderclaw": "workspace:*"
+    "@seanhogg/coderclaw": "workspace:*"
   },
   "coderclaw": {
     "extensions": [

@@ -9,8 +9,11 @@ import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { ParentBasedSampler, TraceIdRatioBasedSampler } from "@opentelemetry/sdk-trace-base";
 import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
-import type { DiagnosticEventPayload, CoderClawPluginService } from "coderclaw/plugin-sdk";
-import { onDiagnosticEvent, registerLogTransport } from "coderclaw/plugin-sdk";
+import type {
+  DiagnosticEventPayload,
+  CoderClawPluginService,
+} from "@seanhogg/coderclaw/plugin-sdk";
+import { onDiagnosticEvent, registerLogTransport } from "@seanhogg/coderclaw/plugin-sdk";
 
 const DEFAULT_SERVICE_NAME = "coderclaw";
 

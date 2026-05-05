@@ -1,4 +1,4 @@
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
 import { resolveMattermostAccount } from "./accounts.js";
 import { createMattermostClient, fetchMattermostMe, type MattermostClient } from "./client.js";
 

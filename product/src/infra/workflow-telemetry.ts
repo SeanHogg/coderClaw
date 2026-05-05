@@ -141,12 +141,7 @@ export class WorkflowTelemetryService {
     this.activeTraceId = null;
   }
 
-  emitTaskStart(
-    workflowId: string,
-    taskId: string,
-    agentRole: string,
-    description: string,
-  ): void {
+  emitTaskStart(workflowId: string, taskId: string, agentRole: string, description: string): void {
     void this.appendSpan({
       kind: "task.start",
       workflowId,
@@ -274,18 +269,17 @@ export class WorkflowTelemetryService {
         });
         break;
       case "task.complete":
-        void doFetch(
-          `${base}/api/workflows/${span.workflowId}/tasks/${span.taskId}`,
-          "PATCH",
-          { status: "completed", completedAt: span.ts },
-        );
+        void doFetch(`${base}/api/workflows/${span.workflowId}/tasks/${span.taskId}`, "PATCH", {
+          status: "completed",
+          completedAt: span.ts,
+        });
         break;
       case "task.fail":
-        void doFetch(
-          `${base}/api/workflows/${span.workflowId}/tasks/${span.taskId}`,
-          "PATCH",
-          { status: "failed", error: span.error, completedAt: span.ts },
-        );
+        void doFetch(`${base}/api/workflows/${span.workflowId}/tasks/${span.taskId}`, "PATCH", {
+          status: "failed",
+          error: span.error,
+          completedAt: span.ts,
+        });
         break;
     }
   }

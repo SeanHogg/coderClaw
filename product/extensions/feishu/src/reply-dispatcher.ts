@@ -5,7 +5,7 @@ import {
   type CoderClawConfig,
   type ReplyPayload,
   type RuntimeEnv,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import { resolveFeishuAccount } from "./accounts.js";
 import { createFeishuClient } from "./client.js";
 import type { MentionTarget } from "./mention.js";

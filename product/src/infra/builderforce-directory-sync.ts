@@ -6,8 +6,8 @@ import {
   resolveCoderClawDir,
   updateWorkspaceState,
 } from "../coderclaw/project-context.js";
-import { readSharedEnvVar } from "./env-file.js";
 import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
+import { readSharedEnvVar } from "./env-file.js";
 
 type SyncLog = { warn: (msg: string) => void };
 
@@ -162,7 +162,9 @@ export async function syncCoderClawDirectoryOnStartup(params: {
   log: SyncLog;
 }): Promise<void> {
   const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
-  const baseUrl = normalizeBaseUrl(readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai");
+  const baseUrl = normalizeBaseUrl(
+    readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai",
+  );
   if (!apiKey) {
     return;
   }

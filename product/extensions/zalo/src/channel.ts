@@ -3,7 +3,7 @@ import type {
   ChannelDock,
   ChannelPlugin,
   CoderClawConfig,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   applyAccountNameToChannelSection,
   buildChannelConfigSchema,
@@ -17,7 +17,7 @@ import {
   PAIRING_APPROVED_MESSAGE,
   resolveChannelAccountConfigBasePath,
   setAccountEnabledInConfigSection,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   listZaloAccountIds,
   resolveDefaultZaloAccountId,

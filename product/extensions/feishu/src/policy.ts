@@ -2,8 +2,8 @@ import type {
   AllowlistMatch,
   ChannelGroupContext,
   GroupToolPolicyConfig,
-} from "coderclaw/plugin-sdk";
-import { resolveAllowlistMatchSimple } from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
+import { resolveAllowlistMatchSimple } from "@seanhogg/coderclaw/plugin-sdk";
 import type { FeishuConfig, FeishuGroupConfig } from "./types.js";
 
 export type FeishuAllowlistMatch = AllowlistMatch<"wildcard" | "id" | "name">;

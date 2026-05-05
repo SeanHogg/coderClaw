@@ -1,4 +1,4 @@
-import type { CoderClawConfig, RuntimeEnv } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, RuntimeEnv } from "@seanhogg/coderclaw/plugin-sdk";
 import type { MSTeamsConversationStore } from "./conversation-store.js";
 import { buildFileInfoCard, parseFileConsentInvoke, uploadToConsentUrl } from "./file-consent.js";
 import type { MSTeamsAdapter } from "./messenger.js";

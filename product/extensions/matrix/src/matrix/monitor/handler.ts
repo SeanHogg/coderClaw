@@ -1,4 +1,3 @@
-import type { LocationMessageEventContent, MatrixClient } from "@vector-im/matrix-bot-sdk";
 import {
   createReplyPrefixOptions,
   createTypingCallbacks,
@@ -9,7 +8,8 @@ import {
   type PluginRuntime,
   type RuntimeEnv,
   type RuntimeLogger,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
+import type { LocationMessageEventContent, MatrixClient } from "@vector-im/matrix-bot-sdk";
 import type { CoreConfig, MatrixRoomConfig, ReplyToMode } from "../../types.js";
 import { fetchEventSummary } from "../actions/summary.js";
 import {

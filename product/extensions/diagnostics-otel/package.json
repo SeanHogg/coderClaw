@@ -17,7 +17,7 @@
     "@opentelemetry/semantic-conventions": "^1.39.0"
   },
   "devDependencies": {
-    "coderclaw": "workspace:*"
+    "@seanhogg/coderclaw": "workspace:*"
   },
   "coderclaw": {
     "extensions": [

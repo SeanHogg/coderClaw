@@ -67,10 +67,7 @@ function registerPending(
  * Slow path (`pending.size >= maxConcurrentRemote`): the registration is queued
  * FIFO and runs once an earlier task releases its slot.
  */
-export function awaitRemoteResult(
-  correlationId: string,
-  timeoutMs = 300_000,
-): Promise<string> {
+export function awaitRemoteResult(correlationId: string, timeoutMs = 300_000): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (pending.size < maxConcurrentRemote) {
       registerPending(correlationId, timeoutMs, resolve, reject);

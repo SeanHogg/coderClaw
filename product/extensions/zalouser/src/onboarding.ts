@@ -3,7 +3,7 @@ import type {
   ChannelOnboardingDmPolicy,
   CoderClawConfig,
   WizardPrompter,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   addWildcardAllowFrom,
   DEFAULT_ACCOUNT_ID,
@@ -11,7 +11,7 @@ import {
   normalizeAccountId,
   promptAccountId,
   promptChannelAccessConfig,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   listZalouserAccountIds,
   resolveDefaultZalouserAccountId,

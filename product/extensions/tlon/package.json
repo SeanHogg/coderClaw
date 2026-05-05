@@ -8,7 +8,7 @@
     "@urbit/aura": "^3.0.0"
   },
   "devDependencies": {
-    "coderclaw": "workspace:*"
+    "@seanhogg/coderclaw": "workspace:*"
   },
   "coderclaw": {
     "extensions": [

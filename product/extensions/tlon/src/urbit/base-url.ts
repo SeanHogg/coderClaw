@@ -1,4 +1,4 @@
-import { isBlockedHostname, isPrivateIpAddress } from "coderclaw/plugin-sdk";
+import { isBlockedHostname, isPrivateIpAddress } from "@seanhogg/coderclaw/plugin-sdk";
 
 export type UrbitBaseUrlValidation =
   | { ok: true; baseUrl: string; hostname: string }

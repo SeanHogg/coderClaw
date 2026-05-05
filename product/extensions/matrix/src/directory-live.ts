@@ -1,4 +1,4 @@
-import type { ChannelDirectoryEntry } from "coderclaw/plugin-sdk";
+import type { ChannelDirectoryEntry } from "@seanhogg/coderclaw/plugin-sdk";
 import { resolveMatrixAuth } from "./matrix/client.js";
 
 type MatrixUserResult = {

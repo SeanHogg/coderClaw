@@ -17,8 +17,8 @@ import {
   type ChannelPlugin,
   type ChannelStatusIssue,
   type CoderClawConfig,
-} from "coderclaw/plugin-sdk";
-import { GoogleChatConfigSchema } from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
+import { GoogleChatConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import {
   listGoogleChatAccountIds,
   resolveDefaultGoogleChatAccountId,

@@ -1,4 +1,4 @@
-import type { CoderClawConfig, DmPolicy } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, DmPolicy } from "@seanhogg/coderclaw/plugin-sdk";
 import {
   addWildcardAllowFrom,
   formatDocsLink,
@@ -10,7 +10,7 @@ import {
   DEFAULT_ACCOUNT_ID,
   normalizeAccountId,
   migrateBaseNameToDefaultAccount,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   listGoogleChatAccountIds,
   resolveDefaultGoogleChatAccountId,

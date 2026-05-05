@@ -1,4 +1,4 @@
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
 import { expect, vi } from "vitest";
 
 export function createMattermostTestConfig(): CoderClawConfig {

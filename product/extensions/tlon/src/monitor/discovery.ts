@@ -1,4 +1,4 @@
-import type { RuntimeEnv } from "coderclaw/plugin-sdk";
+import type { RuntimeEnv } from "@seanhogg/coderclaw/plugin-sdk";
 import { formatChangesDate } from "./utils.js";
 
 export async function fetchGroupChanges(

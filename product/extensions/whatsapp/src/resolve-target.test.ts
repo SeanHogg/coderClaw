@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { installCommonResolveTargetErrorCases } from "../../shared/resolve-target-test-helpers.js";
 
-vi.mock("coderclaw/plugin-sdk", () => ({
+vi.mock("@seanhogg/coderclaw/plugin-sdk", () => ({
   getChatChannelMeta: () => ({ id: "whatsapp", label: "WhatsApp" }),
   normalizeWhatsAppTarget: (value: string) => {
     if (value === "invalid-target") return null;

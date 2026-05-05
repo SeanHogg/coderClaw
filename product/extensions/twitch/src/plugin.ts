@@ -5,8 +5,8 @@
  * This is the primary entry point for the Twitch channel integration.
  */
 
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
-import { buildChannelConfigSchema } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
+import { buildChannelConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import { twitchMessageActions } from "./actions.js";
 import { removeClientManager } from "./client-manager-registry.js";
 import { TwitchConfigSchema } from "./config-schema.js";

@@ -1,4 +1,4 @@
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
 import type { NostrProfile } from "./config-schema.js";
 import { getPublicKeyFromPrivate } from "./nostr-bus.js";
 import { DEFAULT_RELAYS } from "./nostr-bus.js";

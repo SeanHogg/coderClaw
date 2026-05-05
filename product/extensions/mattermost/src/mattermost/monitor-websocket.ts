@@ -1,4 +1,4 @@
-import type { ChannelAccountSnapshot, RuntimeEnv } from "coderclaw/plugin-sdk";
+import type { ChannelAccountSnapshot, RuntimeEnv } from "@seanhogg/coderclaw/plugin-sdk";
 import WebSocket from "ws";
 import type { MattermostPost } from "./client.js";
 import { rawDataToString } from "./monitor-helpers.js";

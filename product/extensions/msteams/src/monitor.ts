@@ -4,7 +4,7 @@ import {
   summarizeMapping,
   type CoderClawConfig,
   type RuntimeEnv,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import type { Request, Response } from "express";
 import { createMSTeamsConversationStoreFs } from "./conversation-store-fs.js";
 import type { MSTeamsConversationStore } from "./conversation-store.js";

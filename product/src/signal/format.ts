@@ -1,11 +1,11 @@
 import type { MarkdownTableMode } from "../config/types.base.js";
-import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import {
   chunkMarkdownIR,
   markdownToIR,
   type MarkdownIR,
   type MarkdownStyle,
 } from "../markdown/ir.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 type SignalTextStyle = "BOLD" | "ITALIC" | "STRIKETHROUGH" | "MONOSPACE" | "SPOILER";
 

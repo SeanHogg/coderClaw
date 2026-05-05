@@ -1,5 +1,5 @@
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
-import { createReplyPrefixOptions } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
+import { createReplyPrefixOptions } from "@seanhogg/coderclaw/plugin-sdk";
 import { beforeEach, describe, expect, it } from "vitest";
 import { mattermostPlugin } from "./channel.js";
 import { resetMattermostReactionBotUserCacheForTests } from "./mattermost/reactions.js";

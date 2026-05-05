@@ -1,6 +1,6 @@
+import type { BaseProbeResult } from "@seanhogg/coderclaw/plugin-sdk";
 import { StaticAuthProvider } from "@twurple/auth";
 import { ChatClient } from "@twurple/chat";
-import type { BaseProbeResult } from "coderclaw/plugin-sdk";
 import type { TwitchAccountConfig } from "./types.js";
 import { normalizeToken } from "./utils/twitch.js";
 

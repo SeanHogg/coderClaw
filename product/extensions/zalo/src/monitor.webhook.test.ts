@@ -1,6 +1,6 @@
 import { createServer, type RequestListener } from "node:http";
 import type { AddressInfo } from "node:net";
-import type { CoderClawConfig, PluginRuntime } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, PluginRuntime } from "@seanhogg/coderclaw/plugin-sdk";
 import { describe, expect, it, vi } from "vitest";
 import { handleZaloWebhookRequest, registerZaloWebhookTarget } from "./monitor.js";
 import type { ResolvedZaloAccount } from "./types.js";

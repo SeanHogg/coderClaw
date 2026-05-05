@@ -4,7 +4,7 @@ import {
   resolveControlCommandGate,
   type CoderClawConfig,
   type RuntimeEnv,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import type { ResolvedIrcAccount } from "./accounts.js";
 import { normalizeIrcAllowlist, resolveIrcAllowlistMatch } from "./normalize.js";
 import {

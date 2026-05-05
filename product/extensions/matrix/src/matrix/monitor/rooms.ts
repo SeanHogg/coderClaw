@@ -1,4 +1,7 @@
-import { buildChannelKeyCandidates, resolveChannelEntryMatch } from "coderclaw/plugin-sdk";
+import {
+  buildChannelKeyCandidates,
+  resolveChannelEntryMatch,
+} from "@seanhogg/coderclaw/plugin-sdk";
 import type { MatrixRoomConfig } from "../../types.js";
 
 export type MatrixRoomConfigResolved = {

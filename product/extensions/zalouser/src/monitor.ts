@@ -1,11 +1,15 @@
 import type { ChildProcess } from "node:child_process";
-import type { CoderClawConfig, MarkdownTableMode, RuntimeEnv } from "coderclaw/plugin-sdk";
+import type {
+  CoderClawConfig,
+  MarkdownTableMode,
+  RuntimeEnv,
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   createReplyPrefixOptions,
   mergeAllowlist,
   resolveSenderCommandAuthorization,
   summarizeMapping,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import { getZalouserRuntime } from "./runtime.js";
 import { sendMessageZalouser } from "./send.js";
 import type { ResolvedZalouserAccount, ZcaFriend, ZcaGroup, ZcaMessage } from "./types.js";

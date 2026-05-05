@@ -1,4 +1,4 @@
-import type { CoderClawConfig, CoderClawPluginApi } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
 
 type ThreadOwnershipConfig = {
   forwarderUrl?: string;

@@ -1,5 +1,5 @@
 import { format } from "node:util";
-import { mergeAllowlist, summarizeMapping, type RuntimeEnv } from "coderclaw/plugin-sdk";
+import { mergeAllowlist, summarizeMapping, type RuntimeEnv } from "@seanhogg/coderclaw/plugin-sdk";
 import { resolveMatrixTargets } from "../../resolve-targets.js";
 import { getMatrixRuntime } from "../../runtime.js";
 import type { CoreConfig, ReplyToMode } from "../../types.js";

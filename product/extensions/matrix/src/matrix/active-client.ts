@@ -1,5 +1,5 @@
+import { normalizeAccountId } from "@seanhogg/coderclaw/plugin-sdk/account-id";
 import type { MatrixClient } from "@vector-im/matrix-bot-sdk";
-import { normalizeAccountId } from "coderclaw/plugin-sdk/account-id";
 
 // Support multiple active clients for multi-account
 const activeClients = new Map<string, MatrixClient>();

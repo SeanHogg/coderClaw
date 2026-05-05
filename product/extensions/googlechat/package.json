@@ -8,7 +8,7 @@
     "google-auth-library": "^10.5.0"
   },
   "devDependencies": {
-    "coderclaw": "workspace:*"
+    "@seanhogg/coderclaw": "workspace:*"
   },
   "peerDependencies": {
     "coderclaw": ">=2026.1.26"

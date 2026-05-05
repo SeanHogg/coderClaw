@@ -1,5 +1,8 @@
+import type {
+  GatewayRequestHandlerOptions,
+  CoderClawPluginApi,
+} from "@seanhogg/coderclaw/plugin-sdk";
 import { Type } from "@sinclair/typebox";
-import type { GatewayRequestHandlerOptions, CoderClawPluginApi } from "coderclaw/plugin-sdk";
 import { registerVoiceCallCli } from "./src/cli.js";
 import {
   VoiceCallConfigSchema,

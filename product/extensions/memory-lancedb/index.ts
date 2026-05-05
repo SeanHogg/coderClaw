@@ -8,8 +8,8 @@
 
 import { randomUUID } from "node:crypto";
 import type * as LanceDB from "@lancedb/lancedb";
+import type { CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
 import { Type } from "@sinclair/typebox";
-import type { CoderClawPluginApi } from "coderclaw/plugin-sdk";
 import OpenAI from "openai";
 import {
   DEFAULT_CAPTURE_MAX_CHARS,

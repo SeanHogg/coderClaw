@@ -1,1 +1,1 @@
-export { withFileLock } from "coderclaw/plugin-sdk";
+export { withFileLock } from "@seanhogg/coderclaw/plugin-sdk";

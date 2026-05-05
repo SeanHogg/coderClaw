@@ -1,5 +1,5 @@
+import type { CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
 import { Type } from "@sinclair/typebox";
-import type { CoderClawPluginApi } from "coderclaw/plugin-sdk";
 import { createFeishuClient } from "./client.js";
 import type { FeishuConfig } from "./types.js";
 

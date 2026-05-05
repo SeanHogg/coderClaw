@@ -1,4 +1,4 @@
-import type { BaseProbeResult } from "coderclaw/plugin-sdk";
+import type { BaseProbeResult } from "@seanhogg/coderclaw/plugin-sdk";
 import type {
   BlockStreamingCoalesceConfig,
   DmConfig,
@@ -8,7 +8,7 @@ import type {
   GroupToolPolicyConfig,
   MarkdownConfig,
   CoderClawConfig,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 
 export type IrcChannelConfig = {
   requireMention?: boolean;

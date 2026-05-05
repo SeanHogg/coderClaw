@@ -39,10 +39,10 @@ import type { CoderClawConfig } from "../config/types.js";
 import type { SessionsPatchResult } from "../gateway/protocol/index.js";
 import { syncCoderClawDirectoryWithMetaUpdate } from "../infra/builderforce-directory-sync.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
-import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
 import { logDebug, logWarn } from "../logger.js";
 import { normalizeAgentId } from "../routing/session-key.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { helpText, parseCommand } from "./commands.js";
 import type { ChatLog } from "./components/chat-log.js";
 import {
@@ -967,7 +967,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         const projectRoot = process.cwd();
         const apiKey = readSharedEnvVar("BUILDERFORCE_API_KEY")?.trim();
         const baseUrl = normalizeBaseUrl(
-          readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai"
+          readSharedEnvVar("BUILDERFORCE_URL") ?? "https://api.builderforce.ai",
         );
         if (!apiKey) {
           chatLog.addSystem(
@@ -986,7 +986,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         chatLog.addSystem("Syncing .coderClaw directory to Builderforce…");
         tui.requestRender();
         try {
-          const projectId = ctx?.builderforce?.projectId ? Number(ctx.builderforce.projectId) : undefined;
+          const projectId = ctx?.builderforce?.projectId
+            ? Number(ctx.builderforce.projectId)
+            : undefined;
           const { fileCount } = await syncCoderClawDirectoryWithMetaUpdate({
             workspaceDir: projectRoot,
             apiKey,

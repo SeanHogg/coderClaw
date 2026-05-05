@@ -1,6 +1,6 @@
 import { EventEmitter } from "node:events";
 import type { IncomingMessage } from "node:http";
-import type { CoderClawConfig, PluginRuntime } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, PluginRuntime } from "@seanhogg/coderclaw/plugin-sdk";
 import { describe, expect, it, vi } from "vitest";
 import { createMockServerResponse } from "../../../src/test-utils/mock-http-response.js";
 import type { ResolvedGoogleChatAccount } from "./accounts.js";

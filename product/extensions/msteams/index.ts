@@ -1,5 +1,5 @@
-import type { CoderClawPluginApi } from "coderclaw/plugin-sdk";
-import { emptyPluginConfigSchema } from "coderclaw/plugin-sdk";
+import type { CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
+import { emptyPluginConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import { msteamsPlugin } from "./src/channel.js";
 import { setMSTeamsRuntime } from "./src/runtime.js";
 

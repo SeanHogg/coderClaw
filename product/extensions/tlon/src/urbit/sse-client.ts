@@ -1,5 +1,5 @@
 import { Readable } from "node:stream";
-import type { LookupFn, SsrFPolicy } from "coderclaw/plugin-sdk";
+import type { LookupFn, SsrFPolicy } from "@seanhogg/coderclaw/plugin-sdk";
 import { ensureUrbitChannelOpen, pokeUrbitChannel, scryUrbitPath } from "./channel-ops.js";
 import { getUrbitContext, normalizeUrbitCookie } from "./context.js";
 import { urbitFetch } from "./fetch.js";

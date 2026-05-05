@@ -20,15 +20,15 @@ import {
   triggerInternalHook,
 } from "../hooks/internal-hooks.js";
 import { loadInternalHooks } from "../hooks/loader.js";
+import { BuilderforceAgentTransport } from "../infra/agent-transport.js";
 import { initApprovalGate } from "../infra/approval-gate.js";
 import { syncCoderClawDirectoryOnStartup } from "../infra/builderforce-directory-sync.js";
 import { BuilderforceRelayService } from "../infra/builderforce-relay.js";
+import { CompositeAgentTransport } from "../infra/composite-agent-transport.js";
 import { CronPollerService } from "../infra/cron-poller.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { KnowledgeLoopService, setKnowledgeLoopService } from "../infra/knowledge-loop.js";
-import { BuilderforceAgentTransport } from "../infra/agent-transport.js";
-import { CompositeAgentTransport } from "../infra/composite-agent-transport.js";
 import { LocalAgentTransport } from "../infra/local-agent-transport.js";
 import {
   LocalResultBrokerAdapter,
@@ -72,7 +72,9 @@ type SidecarParams = {
 // ── Single-responsibility subsystem starters ──────────────────────────────────
 
 /** Remove lock files from sessions that died without releasing their locks. */
-async function cleanStaleSessions(params: Pick<SidecarParams, "defaultWorkspaceDir" | "log">): Promise<void> {
+async function cleanStaleSessions(
+  params: Pick<SidecarParams, "defaultWorkspaceDir" | "log">,
+): Promise<void> {
   try {
     const stateDir = resolveStateDir(process.env);
     const sessionDirs = await resolveAgentSessionDirs(stateDir);
@@ -90,7 +92,9 @@ async function cleanStaleSessions(params: Pick<SidecarParams, "defaultWorkspaceD
 }
 
 /** Wire orchestrator ports and rehydrate any persisted incomplete workflows. */
-async function startOrchestrator(params: Pick<SidecarParams, "defaultWorkspaceDir" | "log">): Promise<void> {
+async function startOrchestrator(
+  params: Pick<SidecarParams, "defaultWorkspaceDir" | "log">,
+): Promise<void> {
   globalOrchestrator.setProjectRoot(params.defaultWorkspaceDir);
   // Local transport is always available — in-process subagent spawn works
   // without credentials. The remote transport gets added later (in
@@ -131,7 +135,10 @@ async function startHooks(
   await startGmailWatcherWithLogs({ cfg: params.cfg, log: params.logHooks });
 
   if (params.cfg.hooks?.gmail?.model) {
-    const hooksModelRef = resolveHooksGmailModel({ cfg: params.cfg, defaultProvider: DEFAULT_PROVIDER });
+    const hooksModelRef = resolveHooksGmailModel({
+      cfg: params.cfg,
+      defaultProvider: DEFAULT_PROVIDER,
+    });
     if (hooksModelRef) {
       const { provider: defaultProvider, model: defaultModel } = resolveConfiguredModelRef({
         cfg: params.cfg,
@@ -139,7 +146,13 @@ async function startHooks(
         defaultModel: DEFAULT_MODEL,
       });
       const catalog = await loadModelCatalog({ config: params.cfg });
-      const status = getModelRefStatus({ cfg: params.cfg, catalog, ref: hooksModelRef, defaultProvider, defaultModel });
+      const status = getModelRefStatus({
+        cfg: params.cfg,
+        catalog,
+        ref: hooksModelRef,
+        defaultProvider,
+        defaultModel,
+      });
       if (!status.allowed) {
         params.logHooks.warn(
           `hooks.gmail.model "${status.key}" not in agents.defaults.models allowlist (will use primary instead)`,
@@ -212,7 +225,9 @@ async function startPlugins(
 }
 
 /** Start the QMD memory backend and SSM hippocampus layer. */
-function startMemoryBackend(params: Pick<SidecarParams, "cfg" | "defaultWorkspaceDir" | "log">): void {
+function startMemoryBackend(
+  params: Pick<SidecarParams, "cfg" | "defaultWorkspaceDir" | "log">,
+): void {
   void startGatewayMemoryBackend({ cfg: params.cfg, log: params.log }).catch((err) => {
     params.log.warn(`qmd memory startup initialization failed: ${String(err)}`);
   });
@@ -260,7 +275,12 @@ async function startBuilderforceServices(
     const projectId = ctx?.builderforce?.projectId ? Number(ctx.builderforce.projectId) : undefined;
 
     if (clawId) {
-      globalOrchestrator.setProjectRoot(params.defaultWorkspaceDir, String(clawId), baseUrl, apiKey);
+      globalOrchestrator.setProjectRoot(
+        params.defaultWorkspaceDir,
+        String(clawId),
+        baseUrl,
+        apiKey,
+      );
       initApprovalGate({ baseUrl, clawId: String(clawId), apiKey });
 
       relay = new BuilderforceRelayService({
@@ -301,7 +321,10 @@ async function startBuilderforceServices(
       void cronPoller.start();
       params.log.warn("[cron-poller] started");
 
-      void syncCoderClawDirectoryOnStartup({ workspaceDir: params.defaultWorkspaceDir, log: params.log });
+      void syncCoderClawDirectoryOnStartup({
+        workspaceDir: params.defaultWorkspaceDir,
+        log: params.log,
+      });
 
       // Upgrade the orchestrator's transport: local stays available, remote
       // gets added now that we have credentials. Re-uses the local broker that

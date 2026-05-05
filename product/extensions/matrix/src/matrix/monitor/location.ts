@@ -1,9 +1,9 @@
-import type { LocationMessageEventContent } from "@vector-im/matrix-bot-sdk";
 import {
   formatLocationText,
   toLocationContext,
   type NormalizedLocation,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
+import type { LocationMessageEventContent } from "@vector-im/matrix-bot-sdk";
 import { EventType } from "./types.js";
 
 export type MatrixLocationPayload = {

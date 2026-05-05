@@ -7,7 +7,10 @@ import { logDebug } from "../logger.js";
 import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { onAgentEvent } from "./agent-events.js";
 import type { TeamMemoryEntry } from "./api-contract.js";
-import { syncCoderClawDirectory, type SyncCoderClawDirParams } from "./builderforce-directory-sync.js";
+import {
+  syncCoderClawDirectory,
+  type SyncCoderClawDirParams,
+} from "./builderforce-directory-sync.js";
 import { registerKnowledgeLoop, registerTeamMemoryContextBuilder } from "./memory-bridge.js";
 import { getSsmMemoryService } from "./ssm-memory-service.js";
 

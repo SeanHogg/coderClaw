@@ -9,7 +9,7 @@ import {
   type ChannelPlugin,
   type CoderClawConfig,
   type ChannelSetupInput,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   listNextcloudTalkAccountIds,
   resolveDefaultNextcloudTalkAccountId,

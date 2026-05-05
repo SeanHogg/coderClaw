@@ -11,6 +11,7 @@ import { isTruthyEnvValue } from "../infra/env.js";
 import { detectMime } from "../media/mime.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { ensureDir, resolveUserPath } from "../utils.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import {
   CANVAS_HOST_PATH,
   CANVAS_WS_PATH,
@@ -18,7 +19,6 @@ import {
   injectCanvasLiveReload,
 } from "./a2ui.js";
 import { normalizeUrlPath, resolveFileWithinRoot } from "./file-resolver.js";
-import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 export type CanvasHostOpts = {
   runtime: RuntimeEnv;

@@ -1,5 +1,5 @@
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
-export { createDedupeCache, rawDataToString } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
+export { createDedupeCache, rawDataToString } from "@seanhogg/coderclaw/plugin-sdk";
 
 export type ResponsePrefixContext = {
   model?: string;

@@ -37,7 +37,9 @@ export class CompositeAgentTransport implements IAgentTransport {
 
   async discover(requiredCapabilities: string[] = []): Promise<AgentTransportEntry[]> {
     const lists = await Promise.all(
-      (Object.values(this.transports) as IAgentTransport[]).map((t) => t.discover(requiredCapabilities)),
+      (Object.values(this.transports) as IAgentTransport[]).map((t) =>
+        t.discover(requiredCapabilities),
+      ),
     );
     return lists.flat();
   }

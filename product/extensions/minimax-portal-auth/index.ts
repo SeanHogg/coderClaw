@@ -3,7 +3,7 @@ import {
   type CoderClawPluginApi,
   type ProviderAuthContext,
   type ProviderAuthResult,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import { loginMiniMaxPortalOAuth, type MiniMaxRegion } from "./oauth.js";
 
 const PROVIDER_ID = "minimax-portal";

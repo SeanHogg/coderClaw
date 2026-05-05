@@ -1,4 +1,4 @@
-import type { BaseProbeResult } from "coderclaw/plugin-sdk";
+import type { BaseProbeResult } from "@seanhogg/coderclaw/plugin-sdk";
 import { normalizeMattermostBaseUrl, type MattermostUser } from "./client.js";
 
 export type MattermostProbe = BaseProbeResult & {

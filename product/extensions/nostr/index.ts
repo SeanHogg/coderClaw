@@ -1,5 +1,5 @@
-import type { CoderClawPluginApi } from "coderclaw/plugin-sdk";
-import { emptyPluginConfigSchema } from "coderclaw/plugin-sdk";
+import type { CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
+import { emptyPluginConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import { nostrPlugin } from "./src/channel.js";
 import type { NostrProfile } from "./src/config-schema.js";
 import { createNostrProfileHttpHandler } from "./src/nostr-profile-http.js";

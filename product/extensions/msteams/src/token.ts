@@ -1,4 +1,4 @@
-import type { MSTeamsConfig } from "coderclaw/plugin-sdk";
+import type { MSTeamsConfig } from "@seanhogg/coderclaw/plugin-sdk";
 
 export type MSTeamsCredentials = {
   appId: string;

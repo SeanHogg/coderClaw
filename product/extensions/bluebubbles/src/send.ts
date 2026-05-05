@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
-import { stripMarkdown } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
+import { stripMarkdown } from "@seanhogg/coderclaw/plugin-sdk";
 import { resolveBlueBubblesAccount } from "./accounts.js";
 import { getCachedBlueBubblesPrivateApiStatus } from "./probe.js";
 import { extractBlueBubblesMessageId, resolveBlueBubblesSendTarget } from "./send-helpers.js";

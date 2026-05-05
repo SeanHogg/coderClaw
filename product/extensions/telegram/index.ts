@@ -1,5 +1,5 @@
-import type { ChannelPlugin, CoderClawPluginApi } from "coderclaw/plugin-sdk";
-import { emptyPluginConfigSchema } from "coderclaw/plugin-sdk";
+import type { ChannelPlugin, CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
+import { emptyPluginConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import { telegramPlugin } from "./src/channel.js";
 import { setTelegramRuntime } from "./src/runtime.js";
 

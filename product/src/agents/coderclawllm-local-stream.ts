@@ -37,6 +37,7 @@ import type { AssistantMessage, StopReason, TextContent, Usage } from "@mariozec
 import { createAssistantMessageEventStream } from "@mariozechner/pi-ai";
 import type { CoderClawConfig } from "../config/config.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { retrieveRelevantContext } from "./coderclawllm-rag.js";
 import { checkLocalBrainRequirements } from "./coderclawllm-syscheck.js";
 import {
@@ -47,6 +48,7 @@ import {
   parseToolCalls,
   type ToolResult,
 } from "./coderclawllm-tools.js";
+import { loadMambaState, mambaStateToContextLine } from "./mamba-state-engine.js";
 import {
   AMYGDALA_DEFAULT_DTYPE,
   AMYGDALA_DEFAULT_MODEL_ID,
@@ -57,8 +59,6 @@ import {
   getOrCreatePipeline,
   loadCoderClawMemory,
 } from "./transformers-stream.js";
-import { loadMambaState, mambaStateToContextLine } from "./mamba-state-engine.js";
-import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -189,8 +189,7 @@ async function callOllama(opts: {
   temperature: number;
   signal?: AbortSignal;
 }): Promise<string | null> {
-  const base =
-    normalizeBaseUrl(opts.baseUrl.replace(/\/v1\/?$/i, "")) || "http://127.0.0.1:11434";
+  const base = normalizeBaseUrl(opts.baseUrl.replace(/\/v1\/?$/i, "")) || "http://127.0.0.1:11434";
   try {
     const res = await fetch(`${base}/api/chat`, {
       method: "POST",

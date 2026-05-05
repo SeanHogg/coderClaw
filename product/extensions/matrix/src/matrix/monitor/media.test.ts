@@ -1,4 +1,4 @@
-import type { PluginRuntime } from "coderclaw/plugin-sdk";
+import type { PluginRuntime } from "@seanhogg/coderclaw/plugin-sdk";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { setMatrixRuntime } from "../../runtime.js";
 import { downloadMatrixMedia } from "./media.js";

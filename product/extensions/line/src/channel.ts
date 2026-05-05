@@ -9,7 +9,7 @@ import {
   type LineConfig,
   type LineChannelData,
   type ResolvedLineAccount,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import { getLineRuntime } from "./runtime.js";
 
 // LINE channel metadata

@@ -1,4 +1,4 @@
-import type { CoderClawPluginApi } from "coderclaw/plugin-sdk";
+import type { CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
 
 type ElevenLabsVoice = {
   voice_id: string;

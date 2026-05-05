@@ -94,7 +94,8 @@ export class LocalAgentTransport implements IAgentTransport {
     // Capability auto-routing for `local:auto` / `local:auto[caps]`.
     const inlineCaps = parseAutoTarget(stripped);
     if (inlineCaps !== null) {
-      const requiredCaps = inlineCaps.length > 0 ? inlineCaps : (payload.requiredCapabilities ?? []);
+      const requiredCaps =
+        inlineCaps.length > 0 ? inlineCaps : (payload.requiredCapabilities ?? []);
       const candidates = await this.discover(requiredCaps);
       const picked = candidates[0];
       if (!picked) {

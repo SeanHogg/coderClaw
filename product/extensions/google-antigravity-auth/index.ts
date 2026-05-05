@@ -6,7 +6,7 @@ import {
   isWSL2Sync,
   type CoderClawPluginApi,
   type ProviderAuthContext,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 
 const CLIENT_ID = process.env.CODERCLAW_GOOGLE_OAUTH_CLIENT_ID?.trim() ?? "";
 const CLIENT_SECRET = process.env.CODERCLAW_GOOGLE_OAUTH_CLIENT_SECRET?.trim() ?? "";

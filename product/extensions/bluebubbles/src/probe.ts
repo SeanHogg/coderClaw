@@ -1,4 +1,4 @@
-import type { BaseProbeResult } from "coderclaw/plugin-sdk";
+import type { BaseProbeResult } from "@seanhogg/coderclaw/plugin-sdk";
 import { buildBlueBubblesApiUrl, blueBubblesFetchWithTimeout } from "./types.js";
 
 export type BlueBubblesProbe = BaseProbeResult & {

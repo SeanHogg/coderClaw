@@ -1,11 +1,11 @@
 import { timingSafeEqual } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
 import {
   registerWebhookTarget,
   rejectNonPostWebhookRequest,
   resolveWebhookTargets,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   normalizeWebhookMessage,
   normalizeWebhookReaction,

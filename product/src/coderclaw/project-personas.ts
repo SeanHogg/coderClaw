@@ -2,9 +2,9 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 import { loadPersonasFromDir } from "./personas.js";
-import type { AgentRole, PersonaAssignment, PersonaPlugin } from "./types.js";
-import { resolveCoderClawDir } from "./project-dir.js";
 import { loadProjectContext, saveProjectContext } from "./project-context-store.js";
+import { resolveCoderClawDir } from "./project-dir.js";
+import type { AgentRole, PersonaAssignment, PersonaPlugin } from "./types.js";
 
 const LEGACY_AGENTS_DIR = "agents";
 

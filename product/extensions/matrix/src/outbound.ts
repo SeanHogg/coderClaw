@@ -1,4 +1,4 @@
-import type { ChannelOutboundAdapter } from "coderclaw/plugin-sdk";
+import type { ChannelOutboundAdapter } from "@seanhogg/coderclaw/plugin-sdk";
 import { sendMessageMatrix, sendPollMatrix } from "./matrix/send.js";
 import { getMatrixRuntime } from "./runtime.js";
 

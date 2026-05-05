@@ -6,7 +6,7 @@ import {
   type CoderClawConfig,
   type MSTeamsReplyStyle,
   type RuntimeEnv,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import type { MSTeamsAccessTokenProvider } from "./attachments/types.js";
 import type { StoredConversationReference } from "./conversation-store.js";
 import {

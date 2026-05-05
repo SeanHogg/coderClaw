@@ -4,8 +4,12 @@ import type {
   CoderClawConfig,
   DmPolicy,
   WizardPrompter,
-} from "coderclaw/plugin-sdk";
-import { addWildcardAllowFrom, DEFAULT_ACCOUNT_ID, formatDocsLink } from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
+import {
+  addWildcardAllowFrom,
+  DEFAULT_ACCOUNT_ID,
+  formatDocsLink,
+} from "@seanhogg/coderclaw/plugin-sdk";
 import { resolveFeishuCredentials } from "./accounts.js";
 import { probeFeishu } from "./probe.js";
 import type { FeishuConfig } from "./types.js";

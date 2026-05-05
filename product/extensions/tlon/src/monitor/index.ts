@@ -1,6 +1,6 @@
 import { format } from "node:util";
-import type { RuntimeEnv, ReplyPayload, CoderClawConfig } from "coderclaw/plugin-sdk";
-import { createReplyPrefixOptions } from "coderclaw/plugin-sdk";
+import type { RuntimeEnv, ReplyPayload, CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
+import { createReplyPrefixOptions } from "@seanhogg/coderclaw/plugin-sdk";
 import { getTlonRuntime } from "../runtime.js";
 import { normalizeShip, parseChannelNest } from "../targets.js";
 import { resolveTlonAccount } from "../types.js";

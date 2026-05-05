@@ -234,9 +234,9 @@ export function loadCoderClawPlugins(options: PluginLoadOptions = {}): PluginReg
       ...(pluginSdkAlias || pluginSdkAccountIdAlias
         ? {
             alias: {
-              ...(pluginSdkAlias ? { "coderclaw/plugin-sdk": pluginSdkAlias } : {}),
+              ...(pluginSdkAlias ? { "@seanhogg/coderclaw/plugin-sdk": pluginSdkAlias } : {}),
               ...(pluginSdkAccountIdAlias
-                ? { "coderclaw/plugin-sdk/account-id": pluginSdkAccountIdAlias }
+                ? { "@seanhogg/coderclaw/plugin-sdk/account-id": pluginSdkAccountIdAlias }
                 : {}),
             },
           }

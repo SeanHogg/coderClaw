@@ -9,13 +9,13 @@
  */
 
 import { note, outro, spinner } from "@clack/prompts";
+import { saveMambaState } from "../agents/mamba-state-engine.js";
 import { loadProjectContext, updateProjectContextFields } from "../coderclaw/project-context.js";
 import type { AgentPackage, AgentPackageV2, InstalledWorkforceAgent } from "../coderclaw/types.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
 import { theme } from "../terminal/theme.js";
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
 import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
-import { saveMambaState } from "../agents/mamba-state-engine.js";
 
 // ---------------------------------------------------------------------------
 // Constants

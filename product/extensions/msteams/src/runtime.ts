@@ -1,4 +1,4 @@
-import type { PluginRuntime } from "coderclaw/plugin-sdk";
+import type { PluginRuntime } from "@seanhogg/coderclaw/plugin-sdk";
 
 let runtime: PluginRuntime | null = null;
 

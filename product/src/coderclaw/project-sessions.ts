@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
-import type { SessionHandoff } from "./types.js";
 import { resolveCoderClawDir } from "./project-dir.js";
+import type { SessionHandoff } from "./types.js";
 
 /**
  * Save a session handoff document to .coderClaw/sessions/.

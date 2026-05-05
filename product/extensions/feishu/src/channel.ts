@@ -1,10 +1,10 @@
-import type { ChannelMeta, ChannelPlugin, CoderClawConfig } from "coderclaw/plugin-sdk";
+import type { ChannelMeta, ChannelPlugin, CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
 import {
   buildBaseChannelStatusSummary,
   createDefaultChannelRuntimeState,
   DEFAULT_ACCOUNT_ID,
   PAIRING_APPROVED_MESSAGE,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   resolveFeishuAccount,
   resolveFeishuCredentials,

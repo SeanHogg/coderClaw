@@ -1,6 +1,6 @@
+import type { RuntimeEnv } from "@seanhogg/coderclaw/plugin-sdk";
 import type { MatrixClient } from "@vector-im/matrix-bot-sdk";
 import { AutojoinRoomsMixin } from "@vector-im/matrix-bot-sdk";
-import type { RuntimeEnv } from "coderclaw/plugin-sdk";
 import { getMatrixRuntime } from "../../runtime.js";
 import type { CoreConfig } from "../../types.js";
 

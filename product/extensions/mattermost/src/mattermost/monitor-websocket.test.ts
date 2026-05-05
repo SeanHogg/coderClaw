@@ -1,4 +1,4 @@
-import type { RuntimeEnv } from "coderclaw/plugin-sdk";
+import type { RuntimeEnv } from "@seanhogg/coderclaw/plugin-sdk";
 import { describe, expect, it, vi } from "vitest";
 import {
   createMattermostConnectOnce,

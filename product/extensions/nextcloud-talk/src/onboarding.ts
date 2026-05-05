@@ -9,7 +9,7 @@ import {
   type ChannelOnboardingDmPolicy,
   type CoderClawConfig,
   type WizardPrompter,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   listNextcloudTalkAccountIds,
   resolveDefaultNextcloudTalkAccountId,

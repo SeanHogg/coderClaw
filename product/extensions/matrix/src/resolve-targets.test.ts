@@ -1,4 +1,4 @@
-import type { ChannelDirectoryEntry } from "coderclaw/plugin-sdk";
+import type { ChannelDirectoryEntry } from "@seanhogg/coderclaw/plugin-sdk";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { listMatrixDirectoryGroupsLive, listMatrixDirectoryPeersLive } from "./directory-live.js";
 import { resolveMatrixTargets } from "./resolve-targets.js";

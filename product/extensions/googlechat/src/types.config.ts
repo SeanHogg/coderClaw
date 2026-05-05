@@ -1,3 +1,3 @@
-import type { GoogleChatAccountConfig, GoogleChatConfig } from "coderclaw/plugin-sdk";
+import type { GoogleChatAccountConfig, GoogleChatConfig } from "@seanhogg/coderclaw/plugin-sdk";
 
 export type { GoogleChatAccountConfig, GoogleChatConfig };

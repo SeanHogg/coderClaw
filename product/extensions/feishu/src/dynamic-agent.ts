@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { CoderClawConfig, PluginRuntime } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, PluginRuntime } from "@seanhogg/coderclaw/plugin-sdk";
 import type { DynamicAgentCreationConfig } from "./types.js";
 
 export type MaybeCreateDynamicAgentResult = {

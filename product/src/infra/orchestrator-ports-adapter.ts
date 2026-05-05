@@ -41,12 +41,7 @@ export class WorkflowTelemetryAdapter implements ITelemetryService {
     emitWorkflowEnd(workflowId, failed);
   }
 
-  emitTaskStart(
-    workflowId: string,
-    taskId: string,
-    agentRole: string,
-    description: string,
-  ): void {
+  emitTaskStart(workflowId: string, taskId: string, agentRole: string, description: string): void {
     emitTaskStart(workflowId, taskId, agentRole, description);
   }
 
@@ -85,11 +80,7 @@ export class SsmMemoryAdapter implements IAgentMemoryService {
 // ── Local result broker adapter ───────────────────────────────────────────────
 
 export class LocalResultBrokerAdapter implements ILocalResultBroker {
-  async awaitResult(
-    runId: string,
-    childSessionKey: string,
-    timeoutMs: number,
-  ): Promise<string> {
+  async awaitResult(runId: string, childSessionKey: string, timeoutMs: number): Promise<string> {
     return awaitLocalSubagentResult(runId, childSessionKey, timeoutMs);
   }
 }

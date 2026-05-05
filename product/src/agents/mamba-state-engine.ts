@@ -14,10 +14,10 @@
 
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import type { MambaStateSnapshot } from "../coderclaw/types.js";
 import { resolveCoderClawDir } from "../coderclaw/project-context.js";
-import { createSubsystemLogger } from "../logging/subsystem.js";
+import type { MambaStateSnapshot } from "../coderclaw/types.js";
 import { readSharedEnvVar } from "../infra/env-file.js";
+import { createSubsystemLogger } from "../logging/subsystem.js";
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
 import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
@@ -55,9 +55,9 @@ export function jsSelectiveScan(params: {
 
   // Simple deterministic SSM parameters (no learned weights needed for context injection)
   const A = -0.1; // decay factor: 0 < |A| < 1 keeps the recurrence stable
-  const B = 0.5;  // input gain
-  const C = 1.0;  // output projection
-  const D = 0.1;  // skip connection
+  const B = 0.5; // input gain
+  const C = 1.0; // output projection
+  const D = 0.1; // skip connection
 
   // Project input into channel space (wrap around if dim > channels)
   const xProj = new Float32Array(channels);
@@ -163,7 +163,9 @@ export async function syncMambaStateToRegistry(params: {
     log.debug("No CODERCLAW_LINK_API_KEY — skipping mamba state sync");
     return;
   }
-  const base = normalizeBaseUrl(params.registryUrl ?? readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai");
+  const base = normalizeBaseUrl(
+    params.registryUrl ?? readSharedEnvVar("CODERCLAW_LINK_URL") ?? "https://api.builderforce.ai",
+  );
   const url = `${base}/api/ide/agents/${encodeURIComponent(params.agentId)}/mamba-state`;
   try {
     const res = await fetchWithTimeout(
@@ -194,10 +196,10 @@ export async function syncMambaStateToRegistry(params: {
  * character-frequency embedding (dim-length Float32Array).  Returns the
  * updated snapshot and the memory context line for the system prompt.
  */
-export function advanceMambaState(params: {
-  state: MambaStateSnapshot;
-  userMessage: string;
-}): { nextState: MambaStateSnapshot; memoryContext: string } {
+export function advanceMambaState(params: { state: MambaStateSnapshot; userMessage: string }): {
+  nextState: MambaStateSnapshot;
+  memoryContext: string;
+} {
   const { state, userMessage } = params;
 
   // Encode the message as a normalised character-frequency vector (dim-length)

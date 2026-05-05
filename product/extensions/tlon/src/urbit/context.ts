@@ -1,4 +1,4 @@
-import type { SsrFPolicy } from "coderclaw/plugin-sdk";
+import type { SsrFPolicy } from "@seanhogg/coderclaw/plugin-sdk";
 import { validateUrbitBaseUrl } from "./base-url.js";
 import { UrbitUrlError } from "./errors.js";
 

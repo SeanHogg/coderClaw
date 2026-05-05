@@ -1,4 +1,8 @@
-import type { BlockStreamingCoalesceConfig, DmPolicy, GroupPolicy } from "coderclaw/plugin-sdk";
+import type {
+  BlockStreamingCoalesceConfig,
+  DmPolicy,
+  GroupPolicy,
+} from "@seanhogg/coderclaw/plugin-sdk";
 
 export type MattermostChatMode = "oncall" | "onmessage" | "onchar";
 

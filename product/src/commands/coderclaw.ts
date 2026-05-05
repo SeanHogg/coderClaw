@@ -16,6 +16,7 @@ import { readConfigFileSnapshot, writeConfigFile } from "../config/config.js";
 import { upsertSharedEnvVar, readSharedEnvVar } from "../infra/env-file.js";
 import { theme } from "../terminal/theme.js";
 import { runTui } from "../tui/tui.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { VERSION } from "../version.js";
 import {
   setAnthropicApiKey,
@@ -28,7 +29,6 @@ import {
   removeWorkforceAgent,
   DEFAULT_REGISTRY_URL,
 } from "./workforce-agent.js";
-import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 // ---------------------------------------------------------------------------
 // Persistent session
@@ -53,7 +53,9 @@ export async function runCoderClawSession(
   }
   if (context?.builderforce) {
     const label =
-      context.builderforce.instanceSlug ?? context.builderforce.instanceName ?? context.builderforce.instanceId;
+      context.builderforce.instanceSlug ??
+      context.builderforce.instanceName ??
+      context.builderforce.instanceId;
     lines.push(theme.muted(`  \u{1F517} Builderforce \u00b7 ${label}`));
   }
   lines.push(theme.muted(`  ${cwd}`));
@@ -987,10 +989,13 @@ async function promptBuilderforceSetup(
   try {
     if (authMode === "register") {
       authSpin.start("Creating account…");
-      const res = await builderforceApiFetch<{ token: string }>(`${serverUrl}/api/auth/web/register`, {
-        method: "POST",
-        body: JSON.stringify({ email, username: usernameForReg, password: pwd }),
-      });
+      const res = await builderforceApiFetch<{ token: string }>(
+        `${serverUrl}/api/auth/web/register`,
+        {
+          method: "POST",
+          body: JSON.stringify({ email, username: usernameForReg, password: pwd }),
+        },
+      );
       webToken = res.token;
       authSpin.stop("Account created");
     } else {
@@ -1014,10 +1019,9 @@ async function promptBuilderforceSetup(
   tenantSpin.start("Loading workspaces…");
   let tenants: Array<{ id: number; name: string; slug: string }> = [];
   try {
-    const res = await builderforceApiFetch<{ tenants: Array<{ id: number; name: string; slug: string }> }>(
-      `${serverUrl}/api/auth/my-tenants`,
-      { token: webToken },
-    );
+    const res = await builderforceApiFetch<{
+      tenants: Array<{ id: number; name: string; slug: string }>;
+    }>(`${serverUrl}/api/auth/my-tenants`, { token: webToken });
     tenants = res.tenants;
     tenantSpin.stop(`${tenants.length} workspace(s) found`);
   } catch (err) {
@@ -1066,11 +1070,14 @@ async function promptBuilderforceSetup(
   // ── 5. Get tenant-scoped JWT ──────────────────────────────────────────────
   let tenantJwt = "";
   try {
-    const res = await builderforceApiFetch<{ token: string }>(`${serverUrl}/api/auth/tenant-token`, {
-      method: "POST",
-      token: webToken,
-      body: JSON.stringify({ tenantId }),
-    });
+    const res = await builderforceApiFetch<{ token: string }>(
+      `${serverUrl}/api/auth/tenant-token`,
+      {
+        method: "POST",
+        token: webToken,
+        body: JSON.stringify({ tenantId }),
+      },
+    );
     tenantJwt = res.token;
   } catch (err) {
     note(String(err instanceof Error ? err.message : err), "Could not get workspace token");

@@ -2,7 +2,7 @@ import {
   resolveChannelMediaMaxBytes,
   type CoderClawConfig,
   type PluginRuntime,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import type { MSTeamsAccessTokenProvider } from "./attachments/types.js";
 import { createMSTeamsConversationStoreFs } from "./conversation-store-fs.js";
 import type {

@@ -1,4 +1,4 @@
-import type { CoderClawConfig, PluginRuntime, RuntimeEnv } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, PluginRuntime, RuntimeEnv } from "@seanhogg/coderclaw/plugin-sdk";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { FeishuMessageEvent } from "./bot.js";
 import { handleFeishuMessage } from "./bot.js";

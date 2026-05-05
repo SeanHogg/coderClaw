@@ -1,5 +1,5 @@
-import type { ChannelPlugin, CoderClawPluginApi } from "coderclaw/plugin-sdk";
-import { emptyPluginConfigSchema } from "coderclaw/plugin-sdk";
+import type { ChannelPlugin, CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
+import { emptyPluginConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import { ircPlugin } from "./src/channel.js";
 import { setIrcRuntime } from "./src/runtime.js";
 

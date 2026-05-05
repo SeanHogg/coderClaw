@@ -1,4 +1,4 @@
-import { MarkdownConfigSchema, buildChannelConfigSchema } from "coderclaw/plugin-sdk";
+import { MarkdownConfigSchema, buildChannelConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import { z } from "zod";
 
 const allowFromEntry = z.union([z.string(), z.number()]);

@@ -10,13 +10,13 @@ import {
 } from "../agents/model-selection.js";
 import { resolveModel } from "../agents/pi-embedded-runner/model.js";
 import type { CoderClawConfig } from "../config/config.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import type {
   ResolvedTtsConfig,
   ResolvedTtsModelOverrides,
   TtsDirectiveOverrides,
   TtsDirectiveParseResult,
 } from "./tts.js";
-import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 
 const DEFAULT_ELEVENLABS_BASE_URL = "https://api.elevenlabs.io";
 const TEMP_FILE_CLEANUP_DELAY_MS = 5 * 60 * 1000; // 5 minutes

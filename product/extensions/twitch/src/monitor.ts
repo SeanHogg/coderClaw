@@ -5,8 +5,8 @@
  * resolves agent routes, and handles replies.
  */
 
-import type { ReplyPayload, CoderClawConfig } from "coderclaw/plugin-sdk";
-import { createReplyPrefixOptions } from "coderclaw/plugin-sdk";
+import type { ReplyPayload, CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
+import { createReplyPrefixOptions } from "@seanhogg/coderclaw/plugin-sdk";
 import { checkTwitchAccessControl } from "./access-control.js";
 import { getOrCreateClientManager } from "./client-manager-registry.js";
 import { getTwitchRuntime } from "./runtime.js";

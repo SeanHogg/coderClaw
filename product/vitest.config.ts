@@ -11,14 +11,14 @@ const ciWorkers = isWindows ? 2 : 3;
 
 export default defineConfig({
   resolve: {
-    // Keep this ordered: the base `coderclaw/plugin-sdk` alias is a prefix match.
+    // Keep this ordered: the base `@seanhogg/coderclaw/plugin-sdk` alias is a prefix match.
     alias: [
       {
-        find: "coderclaw/plugin-sdk/account-id",
+        find: "@seanhogg/coderclaw/plugin-sdk/account-id",
         replacement: path.join(repoRoot, "src", "plugin-sdk", "account-id.ts"),
       },
       {
-        find: "coderclaw/plugin-sdk",
+        find: "@seanhogg/coderclaw/plugin-sdk",
         replacement: path.join(repoRoot, "src", "plugin-sdk", "index.ts"),
       },
     ],

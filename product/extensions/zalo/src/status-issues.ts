@@ -1,4 +1,4 @@
-import type { ChannelAccountSnapshot, ChannelStatusIssue } from "coderclaw/plugin-sdk";
+import type { ChannelAccountSnapshot, ChannelStatusIssue } from "@seanhogg/coderclaw/plugin-sdk";
 
 type ZaloAccountStatus = {
   accountId?: unknown;

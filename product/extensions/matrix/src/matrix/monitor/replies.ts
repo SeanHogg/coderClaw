@@ -1,5 +1,5 @@
+import type { MarkdownTableMode, ReplyPayload, RuntimeEnv } from "@seanhogg/coderclaw/plugin-sdk";
 import type { MatrixClient } from "@vector-im/matrix-bot-sdk";
-import type { MarkdownTableMode, ReplyPayload, RuntimeEnv } from "coderclaw/plugin-sdk";
 import { getMatrixRuntime } from "../../runtime.js";
 import { sendMessageMatrix } from "../send.js";
 

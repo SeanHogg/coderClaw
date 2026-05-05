@@ -23,12 +23,7 @@ export interface ITelemetryService {
   }): void;
   emitWorkflowStart(workflowId: string, description?: string): void;
   emitWorkflowEnd(workflowId: string, failed: boolean): void;
-  emitTaskStart(
-    workflowId: string,
-    taskId: string,
-    agentRole: string,
-    description: string,
-  ): void;
+  emitTaskStart(workflowId: string, taskId: string, agentRole: string, description: string): void;
   emitTaskEnd(
     workflowId: string,
     taskId: string,

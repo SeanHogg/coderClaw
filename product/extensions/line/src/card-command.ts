@@ -1,4 +1,8 @@
-import type { LineChannelData, CoderClawPluginApi, ReplyPayload } from "coderclaw/plugin-sdk";
+import type {
+  LineChannelData,
+  CoderClawPluginApi,
+  ReplyPayload,
+} from "@seanhogg/coderclaw/plugin-sdk";
 import {
   createActionCard,
   createImageCard,
@@ -7,7 +11,7 @@ import {
   createReceiptCard,
   type CardAction,
   type ListItem,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 
 const CARD_USAGE = `Usage: /card <type> "title" "body" [options]
 

@@ -6,8 +6,8 @@ import type { ChannelId } from "../channels/plugins/types.js";
 import type { CoderClawConfig } from "../config/config.js";
 import { readJsonBodyWithLimit, requestBodyErrorToText } from "../infra/http-body.js";
 import { normalizeAgentId } from "../routing/session-key.js";
-import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { normalizeMessageChannel } from "../utils/message-channel.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { type HookMappingResolved, resolveHookMappings } from "./hooks-mapping.js";
 
 const DEFAULT_HOOKS_PATH = "/hooks";

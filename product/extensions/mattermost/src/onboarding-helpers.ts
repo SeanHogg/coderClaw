@@ -1,1 +1,1 @@
-export { promptAccountId } from "coderclaw/plugin-sdk";
+export { promptAccountId } from "@seanhogg/coderclaw/plugin-sdk";

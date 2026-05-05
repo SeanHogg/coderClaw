@@ -1,5 +1,5 @@
-import type { AnyAgentTool, CoderClawPluginApi } from "coderclaw/plugin-sdk";
-import { emptyPluginConfigSchema } from "coderclaw/plugin-sdk";
+import type { AnyAgentTool, CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
+import { emptyPluginConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import { zalouserDock, zalouserPlugin } from "./src/channel.js";
 import { setZalouserRuntime } from "./src/runtime.js";
 import { ZalouserToolSchema, executeZalouserTool } from "./src/tool.js";

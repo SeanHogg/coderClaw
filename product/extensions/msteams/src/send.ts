@@ -1,5 +1,5 @@
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
-import { loadWebMedia, resolveChannelMediaMaxBytes } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
+import { loadWebMedia, resolveChannelMediaMaxBytes } from "@seanhogg/coderclaw/plugin-sdk";
 import { createMSTeamsConversationStoreFs } from "./conversation-store-fs.js";
 import {
   classifyMSTeamsSendError,

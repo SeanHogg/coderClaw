@@ -1,6 +1,6 @@
-import type { DmPolicy, GroupPolicy } from "coderclaw/plugin-sdk";
+import type { DmPolicy, GroupPolicy } from "@seanhogg/coderclaw/plugin-sdk";
 
-export type { DmPolicy, GroupPolicy } from "coderclaw/plugin-sdk";
+export type { DmPolicy, GroupPolicy } from "@seanhogg/coderclaw/plugin-sdk";
 
 export type BlueBubblesGroupConfig = {
   /** If true, only respond in this group when mentioned. */

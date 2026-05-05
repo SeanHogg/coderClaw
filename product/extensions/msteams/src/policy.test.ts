@@ -1,4 +1,4 @@
-import type { MSTeamsConfig } from "coderclaw/plugin-sdk";
+import type { MSTeamsConfig } from "@seanhogg/coderclaw/plugin-sdk";
 import { describe, expect, it } from "vitest";
 import {
   isMSTeamsGroupAllowed,

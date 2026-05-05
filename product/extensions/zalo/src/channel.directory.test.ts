@@ -1,4 +1,4 @@
-import type { CoderClawConfig, RuntimeEnv } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, RuntimeEnv } from "@seanhogg/coderclaw/plugin-sdk";
 import { describe, expect, it } from "vitest";
 import { zaloPlugin } from "./channel.js";
 

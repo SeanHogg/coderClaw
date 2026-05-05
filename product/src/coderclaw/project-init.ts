@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { stringify as stringifyYaml } from "yaml";
-import type { ProjectContext, ProjectRules } from "./types.js";
 import { resolveCoderClawDir } from "./project-dir.js";
+import type { ProjectContext, ProjectRules } from "./types.js";
 
 /**
  * Initialize a new coderClaw project directory

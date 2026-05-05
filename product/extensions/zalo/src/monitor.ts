@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { CoderClawConfig, MarkdownTableMode } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig, MarkdownTableMode } from "@seanhogg/coderclaw/plugin-sdk";
 import {
   createReplyPrefixOptions,
   readJsonBodyWithLimit,
@@ -9,7 +9,7 @@ import {
   resolveWebhookPath,
   resolveWebhookTargets,
   requestBodyErrorToText,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import type { ResolvedZaloAccount } from "./accounts.js";
 import {
   ZaloApiError,

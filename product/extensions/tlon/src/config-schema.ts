@@ -1,4 +1,4 @@
-import { buildChannelConfigSchema } from "coderclaw/plugin-sdk";
+import { buildChannelConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import { z } from "zod";
 
 const ShipSchema = z.string().min(1);

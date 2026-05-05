@@ -1,5 +1,5 @@
-import type { LookupFn } from "coderclaw/plugin-sdk";
-import { SsrFBlockedError } from "coderclaw/plugin-sdk";
+import type { LookupFn } from "@seanhogg/coderclaw/plugin-sdk";
+import { SsrFBlockedError } from "@seanhogg/coderclaw/plugin-sdk";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { authenticate } from "./auth.js";
 

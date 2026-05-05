@@ -2,7 +2,7 @@ import {
   emptyPluginConfigSchema,
   type CoderClawPluginApi,
   type ProviderAuthContext,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import { loginQwenPortalOAuth } from "./oauth.js";
 
 const PROVIDER_ID = "qwen-portal";

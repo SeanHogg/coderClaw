@@ -1,4 +1,4 @@
-import type { LookupFn, SsrFPolicy } from "coderclaw/plugin-sdk";
+import type { LookupFn, SsrFPolicy } from "@seanhogg/coderclaw/plugin-sdk";
 import { UrbitAuthError } from "./errors.js";
 import { urbitFetch } from "./fetch.js";
 

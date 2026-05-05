@@ -1,6 +1,6 @@
 import os from "node:os";
-import type { CoderClawPluginApi } from "coderclaw/plugin-sdk";
-import { approveDevicePairing, listDevicePairing } from "coderclaw/plugin-sdk";
+import type { CoderClawPluginApi } from "@seanhogg/coderclaw/plugin-sdk";
+import { approveDevicePairing, listDevicePairing } from "@seanhogg/coderclaw/plugin-sdk";
 import qrcode from "qrcode-terminal";
 
 function renderQrAscii(data: string): Promise<string> {

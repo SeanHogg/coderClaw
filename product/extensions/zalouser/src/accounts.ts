@@ -1,5 +1,5 @@
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
-import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "coderclaw/plugin-sdk/account-id";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
+import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "@seanhogg/coderclaw/plugin-sdk/account-id";
 import type { ResolvedZalouserAccount, ZalouserAccountConfig, ZalouserConfig } from "./types.js";
 import { runZca, parseJsonOutput } from "./zca.js";
 

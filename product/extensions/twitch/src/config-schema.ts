@@ -1,4 +1,4 @@
-import { MarkdownConfigSchema } from "coderclaw/plugin-sdk";
+import { MarkdownConfigSchema } from "@seanhogg/coderclaw/plugin-sdk";
 import { z } from "zod";
 
 /**

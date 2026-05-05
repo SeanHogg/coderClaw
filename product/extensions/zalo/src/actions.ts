@@ -2,8 +2,8 @@ import type {
   ChannelMessageActionAdapter,
   ChannelMessageActionName,
   CoderClawConfig,
-} from "coderclaw/plugin-sdk";
-import { jsonResult, readStringParam } from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
+import { jsonResult, readStringParam } from "@seanhogg/coderclaw/plugin-sdk";
 import { listEnabledZaloAccounts } from "./accounts.js";
 import { sendMessageZalo } from "./send.js";
 

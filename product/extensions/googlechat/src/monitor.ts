@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { CoderClawConfig } from "coderclaw/plugin-sdk";
+import type { CoderClawConfig } from "@seanhogg/coderclaw/plugin-sdk";
 import {
   createReplyPrefixOptions,
   readJsonBodyWithLimit,
@@ -9,7 +9,7 @@ import {
   resolveWebhookTargets,
   requestBodyErrorToText,
   resolveMentionGatingWithBypass,
-} from "coderclaw/plugin-sdk";
+} from "@seanhogg/coderclaw/plugin-sdk";
 import { type ResolvedGoogleChatAccount } from "./accounts.js";
 import {
   downloadGoogleChatMedia,

@@ -1,4 +1,4 @@
-import type { DmPolicy, GroupPolicy } from "coderclaw/plugin-sdk";
+import type { DmPolicy, GroupPolicy } from "@seanhogg/coderclaw/plugin-sdk";
 export type { DmPolicy, GroupPolicy };
 
 export type ReplyToMode = "off" | "first" | "all";

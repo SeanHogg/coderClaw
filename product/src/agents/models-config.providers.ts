@@ -1,5 +1,6 @@
 import type { CoderClawConfig } from "../config/config.js";
 import type { ModelDefinitionConfig } from "../config/types.models.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { ensureAuthProfileStore, listProfilesForProvider } from "./auth-profiles.js";
 import { discoverBedrockModels } from "./bedrock-discovery.js";
 import {
@@ -14,7 +15,6 @@ import {
 } from "./huggingface-models.js";
 import { resolveAwsSdkEnvVarName, resolveEnvApiKey } from "./model-auth.js";
 import { OLLAMA_NATIVE_BASE_URL } from "./ollama-stream.js";
-import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import {
   buildSyntheticModelDefinition,
   SYNTHETIC_BASE_URL,

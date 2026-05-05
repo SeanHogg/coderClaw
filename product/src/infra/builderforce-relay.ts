@@ -11,7 +11,6 @@
 
 import { createHash } from "node:crypto";
 import { randomUUID } from "node:crypto";
-import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { WebSocket } from "ws";
@@ -20,6 +19,7 @@ import type { IRelayService } from "../coderclaw/relay-service.js";
 import { GatewayClient, type GatewayClientOptions } from "../gateway/client.js";
 import type { EventFrame } from "../gateway/protocol/index.js";
 import { logDebug, logWarn } from "../logger.js";
+import { normalizeBaseUrl } from "../utils/normalize-base-url.js";
 import { onAgentEvent } from "./agent-events.js";
 import { resolveApproval } from "./approval-gate.js";
 import {
@@ -27,10 +27,14 @@ import {
   mergeBuilderforceContext,
   type AssignmentContextResponse,
 } from "./builderforce-context.js";
+import {
+  RelayHeartbeat,
+  RelayLogPoller,
+  RelayPresencePoller,
+} from "./builderforce-relay-helpers.js";
 import { resolveRemoteResult } from "./remote-result-broker.js";
 import { dispatchResultToRemoteClaw, type RemoteDispatchOptions } from "./remote-subagent.js";
 import { setRelayHook } from "./workflow-telemetry.js";
-import { RelayHeartbeat, RelayLogPoller, RelayPresencePoller } from "./builderforce-relay-helpers.js";
 
 function extractChatText(message: unknown): string {
   if (!message || typeof message !== "object") {
@@ -235,7 +239,9 @@ export class BuilderforceRelayService implements IRelayService {
         signal: AbortSignal.timeout(15_000),
       });
       if (!res.ok) {
-        logDebug(`[builderforce-relay] context-bundle for claw ${remoteClawId} failed: ${res.status}`);
+        logDebug(
+          `[builderforce-relay] context-bundle for claw ${remoteClawId} failed: ${res.status}`,
+        );
         return;
       }
       bundle = (await res.json()) as typeof bundle;

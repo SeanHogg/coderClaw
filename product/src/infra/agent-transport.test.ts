@@ -1,14 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as subagentSpawn from "../agents/subagent-spawn.js";
 import type { ILocalResultBroker } from "../coderclaw/ports.js";
 import { BuilderforceAgentTransport, parseAutoTarget } from "./agent-transport.js";
-import {
-  CompositeAgentTransport,
-  transportKindForTarget,
-} from "./composite-agent-transport.js";
+import { CompositeAgentTransport, transportKindForTarget } from "./composite-agent-transport.js";
 import { LocalAgentTransport } from "./local-agent-transport.js";
-import * as remoteSubagent from "./remote-subagent.js";
 import * as remoteResultBroker from "./remote-result-broker.js";
-import * as subagentSpawn from "../agents/subagent-spawn.js";
+import * as remoteSubagent from "./remote-subagent.js";
 
 const baseOpts = { baseUrl: "https://api.example.test", myClawId: "1", apiKey: "k" };
 
@@ -54,16 +51,38 @@ describe("transportKindForTarget", () => {
 describe("BuilderforceAgentTransport", () => {
   it("auto-routes to first online peer satisfying capabilities", async () => {
     vi.spyOn(remoteSubagent, "fetchFleetEntries").mockResolvedValue([
-      { id: 1, name: "self", slug: "self", online: true, connectedAt: null, lastSeenAt: null, capabilities: ["gpu"] },
-      { id: 2, name: "peer-no-gpu", slug: "p2", online: true, connectedAt: null, lastSeenAt: null, capabilities: [] },
-      { id: 3, name: "peer-gpu", slug: "p3", online: true, connectedAt: null, lastSeenAt: null, capabilities: ["gpu"] },
+      {
+        id: 1,
+        name: "self",
+        slug: "self",
+        online: true,
+        connectedAt: null,
+        lastSeenAt: null,
+        capabilities: ["gpu"],
+      },
+      {
+        id: 2,
+        name: "peer-no-gpu",
+        slug: "p2",
+        online: true,
+        connectedAt: null,
+        lastSeenAt: null,
+        capabilities: [],
+      },
+      {
+        id: 3,
+        name: "peer-gpu",
+        slug: "p3",
+        online: true,
+        connectedAt: null,
+        lastSeenAt: null,
+        capabilities: ["gpu"],
+      },
     ]);
     const dispatchSpy = vi
       .spyOn(remoteSubagent, "dispatchToRemoteClaw")
       .mockResolvedValue({ status: "accepted" });
-    const awaitSpy = vi
-      .spyOn(remoteResultBroker, "awaitRemoteResult")
-      .mockResolvedValue("ok");
+    const awaitSpy = vi.spyOn(remoteResultBroker, "awaitRemoteResult").mockResolvedValue("ok");
 
     const transport = new BuilderforceAgentTransport(baseOpts);
     const result = await transport.dispatch({
@@ -74,13 +93,26 @@ describe("BuilderforceAgentTransport", () => {
 
     expect(result).toEqual({ status: "accepted", targetId: "3", output: "ok" });
     // Excludes self (id=1) and the peer without gpu (id=2); picks id=3
-    expect(dispatchSpy).toHaveBeenCalledWith(baseOpts, "3", "do work", expect.objectContaining({ correlationId: "corr-1" }));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      baseOpts,
+      "3",
+      "do work",
+      expect.objectContaining({ correlationId: "corr-1" }),
+    );
     expect(awaitSpy).toHaveBeenCalledWith("corr-1", expect.any(Number));
   });
 
   it("returns failed when no peer satisfies required capabilities", async () => {
     vi.spyOn(remoteSubagent, "fetchFleetEntries").mockResolvedValue([
-      { id: 2, name: "peer", slug: "p2", online: true, connectedAt: null, lastSeenAt: null, capabilities: [] },
+      {
+        id: 2,
+        name: "peer",
+        slug: "p2",
+        online: true,
+        connectedAt: null,
+        lastSeenAt: null,
+        capabilities: [],
+      },
     ]);
 
     const transport = new BuilderforceAgentTransport(baseOpts);
@@ -248,7 +280,11 @@ describe("CompositeAgentTransport", () => {
   it("routes local: targets to the local transport", async () => {
     const local = {
       discover: vi.fn(async () => []),
-      dispatch: vi.fn(async () => ({ status: "accepted" as const, targetId: "code-creator", output: "l" })),
+      dispatch: vi.fn(async () => ({
+        status: "accepted" as const,
+        targetId: "code-creator",
+        output: "l",
+      })),
     };
     const remote = { discover: vi.fn(async () => []), dispatch: vi.fn() };
     const composite = new CompositeAgentTransport({ local, remote });
@@ -261,7 +297,11 @@ describe("CompositeAgentTransport", () => {
   it("routes bare role names (no prefix) to the local transport", async () => {
     const local = {
       discover: vi.fn(async () => []),
-      dispatch: vi.fn(async () => ({ status: "accepted" as const, targetId: "code-creator", output: "l" })),
+      dispatch: vi.fn(async () => ({
+        status: "accepted" as const,
+        targetId: "code-creator",
+        output: "l",
+      })),
     };
     const composite = new CompositeAgentTransport({ local });
 
@@ -286,7 +326,13 @@ describe("CompositeAgentTransport", () => {
   it("discover() concatenates entries from all wired transports", async () => {
     const local = {
       discover: vi.fn(async () => [
-        { id: "code-creator", name: "code-creator", online: true, capabilities: [], kind: "local" as const },
+        {
+          id: "code-creator",
+          name: "code-creator",
+          online: true,
+          capabilities: [],
+          kind: "local" as const,
+        },
       ]),
       dispatch: vi.fn(),
     };
